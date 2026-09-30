@@ -17,7 +17,10 @@ export const seoContent = {
     "Lør–søn": ["Saturday", "Sunday"],
   } as Record<string, SchemaDay[]>,
 
-  /** Photo used for every clinic in the structured data (same placeholder as the /klinikker cards). */
-  // TODO: replace with a photo of each clinic once they exist.
+  /**
+   * Photo used in the structured data for a clinic without its own `seoImage`
+   * (content/clinics.ts); same placeholder as the /klinikker cards.
+   */
+  // TODO: set seoImage (and geo) on each clinic in content/clinics.ts once photos exist.
   clinicImage: "/images/results/behandling-3.jpg",
 };

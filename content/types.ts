@@ -47,6 +47,17 @@ export type PriceValue =
 
 export type OpeningHours = { days: string; hours: string };
 
+/**
+ * A clinic's ids at the booking provider (config/site.ts → booking.provider). Set the one
+ * for the market's provider; lib/booking.ts builds the links from it.
+ */
+export type ClinicBookingIds = {
+  /** Gecko calendar id, "12" or "12.13" (Gecko admin). Preselects the clinic in the Gecko calendar. */
+  geckoCalendarId?: string;
+  /** TIMMA reservation id, e.g. "filloxstortingsgata" (→ https://bestill.timma.no/reservation/filloxstortingsgata). */
+  timmaId?: string;
+};
+
 export type Clinic = {
   slug: string;
   /** Short name used in menus and footer, e.g. "City2". */
@@ -63,10 +74,12 @@ export type Clinic = {
   hoursSummary?: string;
   /** Transport / parking note. */
   note?: string;
+  /** Ids at the booking provider (Gecko calendar id / TIMMA reservation id). */
+  booking?: ClinicBookingIds;
   /**
-   * Booking link for this clinic (defaults to site.booking.href), e.g. "/booking?klinik=city2",
-   * or "/booking?geckoCalendarId=12" once the Gecko calendar id is known (Gecko's iframe.js
-   * reads it from the page URL and preselects the clinic).
+   * Booking link for this clinic (defaults to site.booking.href). Build it with
+   * clinicBookingHref() from lib/booking.ts: "/booking?klinik=city2", or
+   * "/booking?geckoCalendarId=12" once the Gecko calendar id is known.
    */
   bookingHref?: string;
   /** Google Maps / directions URL. */
@@ -74,6 +87,12 @@ export type Clinic = {
   status: "open" | "coming-soon";
   /** Shown when status is "coming-soon", e.g. "Åbner 1. november". */
   openingNote?: string;
+  /**
+   * Structured data (JSON-LD) only: a photo of this clinic (path under /public) and its
+   * coordinates. Without a photo the clinic node uses content/seo.ts `clinicImage`.
+   */
+  seoImage?: string;
+  geo?: { latitude: number; longitude: number };
 };
 
 /* --------------------------------------------------------------- Treatments */
@@ -133,6 +152,11 @@ export type Treatment = {
   short: string;
   /** Name in the mobile menu level 2 when it differs (design mm3), e.g. "Hårtab for mænd (PRF)". */
   mobileMenuName?: string;
+  /**
+   * Search/share title (before " · Fillox") when it should say more than the page title,
+   * e.g. "Botox i København – pris og behandling". Keep the full title ≤ 60 characters.
+   */
+  metaTitle?: string;
   /** Detail-page content. Optional: treatments without it render the generic template with `short`. */
   detail?: {
     /** Page title (H1, breadcrumb, book bar) when it differs from `name`, e.g. "Lip Filler". */

@@ -1,22 +1,28 @@
+import { routes } from "@/content/routes";
+import type { SiteConfig } from "./types";
+
 /**
- * Market configuration — the ONLY place for market-level facts (domain, locale,
- * currency, contact details, booking provider). Components read from here; they
- * never hard-code any of these values.
+ * Market configuration — the ONLY place for market-level facts (domain, country, locale,
+ * currency, price format, contact details, booking provider). Components read from here;
+ * they never hard-code any of these values. The shape is config/types.ts (SiteConfig).
  *
- * fillox.no is a separate repo built from this one: swap this file + /content.
+ * fillox.no is a separate repo built from this one: swap this file + /content
+ * (see README.md → "Rebranding til fillox.no").
  */
-export const site = {
-  market: "dk" as const,
+export const site: SiteConfig = {
+  market: "dk",
+  country: "DK",
   name: "Fillox",
   legalName: "Fillox Danmark ApS",
   domain: "fillox.dk",
   url: "https://fillox.dk",
-  /** BCP 47 locale, used for Intl formatting and <html lang>. */
+  /** BCP 47 locale, used for Intl formatting. */
   locale: "da-DK",
+  /** <html lang>. */
   lang: "da",
   currency: "DKK",
-  /** Short currency label shown after prices, e.g. "799 kr". */
-  currencyLabel: "kr",
+  /** "{amount} kr" → "1.499 kr". */
+  pricePattern: "{amount} kr",
 
   contact: {
     phone: "35 10 00 50",
@@ -36,17 +42,18 @@ export const site = {
   },
 
   trustpilot: {
-    label: "Fremragende",
     score: 4.7,
-    /** Displayed score string, locale-formatted. */
-    scoreText: "4,7",
     url: "https://dk.trustpilot.com/review/fillox.dk",
   },
 
-  /** Gecko Booking embed (rendered on /booking). */
+  /**
+   * Gecko Booking: one calendar for every clinic, embedded on /booking. Per-clinic Gecko
+   * calendar ids live on the clinics (content/clinics.ts → booking.geckoCalendarId).
+   * fillox.no uses { provider: "timma", href, timmaBaseUrl } instead (config/types.ts).
+   */
   booking: {
-    href: "/booking",
-    provider: "gecko" as const,
+    provider: "gecko",
+    href: routes.booking,
     geckoHost: "filloxdanmark.app4.geckobooking.dk",
     geckoIcCode: "8e00766ca8cc633be72131fc48608e4bb8796",
   },
@@ -60,4 +67,4 @@ export const site = {
   },
 };
 
-export type Site = typeof site;
+export type Site = SiteConfig;

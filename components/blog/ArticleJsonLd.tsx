@@ -10,7 +10,7 @@ import { absoluteUrl, type ArticleView } from "./articleView";
  * The publisher is the site-wide Organization node rendered by the root layout.
  */
 export function ArticleJsonLd({ view }: { view: ArticleView }) {
-  const { post, author, category } = view;
+  const { post, author } = view;
   const url = absoluteUrl(view.path);
   const organization = { "@id": ORGANIZATION_ID };
 
@@ -36,6 +36,8 @@ export function ArticleJsonLd({ view }: { view: ArticleView }) {
     author: author
       ? {
           "@type": "Person",
+          // Same @id as the Person node on the author's /behandlere profile.
+          "@id": `${absoluteUrl(teamMemberHref(author.slug))}#person`,
           name: author.fullName ?? author.name,
           jobTitle: author.title ?? author.role,
           url: absoluteUrl(teamMemberHref(author.slug)),
@@ -46,11 +48,9 @@ export function ArticleJsonLd({ view }: { view: ArticleView }) {
     publisher: organization,
   };
 
-  const crumbs = [
-    blogArticle.blogCrumb,
-    { label: category.label, href: category.href },
-    { label: post.title, href: view.path },
-  ];
+  // Blog → article. The category crumb is left out: its /blog?kategori= URL canonicalises
+  // to /blog (same as TreatmentJsonLd); articleSection already carries the category.
+  const crumbs = [blogArticle.blogCrumb, { label: post.title, href: view.path }];
   const breadcrumbs = {
     "@type": "BreadcrumbList",
     itemListElement: crumbs.map((c, i) => ({

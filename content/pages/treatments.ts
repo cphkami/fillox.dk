@@ -187,24 +187,48 @@ export const treatmentPage = {
    */
   // TODO: copy review (image choice + alt texts)
   categoryImages: {
-    fillers: { src: "/images/hero/hero-1.jpg", alt: "Kvinde med opsat hår foran en rosa baggrund", position: "50% 35%" },
+    fillers: {
+      src: "/images/hero/hero-1.jpg",
+      alt: "Kvinde med opsat hår foran en rosa baggrund",
+      position: "50% 35%",
+      width: 1200,
+      height: 1500,
+    },
     rynkebehandling: {
       src: "/images/results/duo-color.jpg",
       alt: "To smilende kvinder foran en beige og rosa baggrund",
       position: "50% 50%",
+      width: 1600,
+      height: 1096,
     },
-    hudforbedring: { src: "/images/hero/hero-2.jpg", alt: "Kvinde i blåt lys", position: "50% 35%" },
+    hudforbedring: {
+      src: "/images/hero/hero-2.jpg",
+      alt: "Kvinde i blåt lys",
+      position: "50% 35%",
+      width: 1200,
+      height: 1500,
+    },
     "laser-harfjerning": {
       src: "/images/results/duo-pink.jpg",
       alt: "To smilende kvinder foran en rosa baggrund",
       position: "50% 50%",
+      width: 2000,
+      height: 1228,
     },
-    hartab: { src: "/images/hero/hero-3.jpg", alt: "Kvinde med langt brunt hår i aftenlys", position: "50% 35%" },
+    hartab: {
+      src: "/images/hero/hero-3.jpg",
+      alt: "Kvinde med langt brunt hår i aftenlys",
+      position: "50% 35%",
+      width: 1200,
+      height: 1500,
+    },
     // Neutral clinic photo: the "for mænd" pages have no practitioner of their own.
     "for-maend": {
       src: "/images/results/behandling-3.jpg",
       alt: "Fillox-logoet på væggen i klinikken",
       position: "90% 50%",
+      width: 800,
+      height: 533,
     },
   } as Record<string, ImageRef>,
 
@@ -213,6 +237,8 @@ export const treatmentPage = {
     src: "/images/results/duo-pink.jpg",
     alt: "To smilende kvinder foran en rosa baggrund",
     position: "50% 50%",
+    width: 2000,
+    height: 1228,
   } satisfies ImageRef,
 
   /**

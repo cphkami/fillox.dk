@@ -61,6 +61,8 @@ export const treatments: Treatment[] = [
         src: IMG.duoPink,
         alt: "To smilende kvinder foran en rosa baggrund",
         position: "50% 50%",
+        width: 2000,
+        height: 1228,
       },
       facts: [
         { label: "Pris", value: from(999) },
@@ -209,6 +211,8 @@ export const treatments: Treatment[] = [
         src: IMG.duoColor,
         alt: "To smilende kvinder foran en beige og rosa baggrund",
         position: "50% 50%",
+        width: 1600,
+        height: 1096,
       },
       facts: [
         { label: "Pris", value: from(799) },

@@ -43,6 +43,8 @@ export const ui = {
   /** "4,7 ud af 5" — used in the rating's accessible label. */
   outOf: "ud af",
   trustpilot: "Trustpilot",
+  /** Rating label before the stars ("Fremragende ★★★★½"). */
+  trustpilotLabel: "Fremragende",
 } as const;
 
 export type UiStrings = typeof ui;

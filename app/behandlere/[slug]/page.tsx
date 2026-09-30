@@ -8,6 +8,7 @@ import { PractitionerHero } from "@/components/practitioner/PractitionerHero";
 import { resolveProfile } from "@/components/practitioner/profile";
 import { ReviewSection } from "@/components/practitioner/ReviewSection";
 import { TeamRow } from "@/components/practitioner/TeamRow";
+import { ORGANIZATION_ID } from "@/components/seo";
 import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
 import { practitionerPage } from "@/content/pages/practitioner";
@@ -28,8 +29,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!member) return {};
   const profile = resolveProfile(member);
   const title = practitionerPage.meta.title(profile.displayName, profile.title);
-  // The short (mobile) intro fits a search snippet; the desktop intro runs ~240 characters.
-  const description = profile.introShort ?? profile.intro ?? profile.title;
+  // The first intro that fits a search snippet (70–160 characters). The full intro names the
+  // person, so it wins when it fits (team bios, ~115 characters); a profile's desktop intro
+  // runs ~240 characters, so profiles use their short (mobile) intro.
+  const fits = (s?: string) => !!s && s.length >= 70 && s.length <= 160;
+  const description =
+    [profile.intro, profile.introShort].find(fits) ?? profile.introShort ?? profile.intro ?? profile.title;
   const href = teamMemberHref(member.slug);
 
   return {
@@ -43,7 +48,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: href,
       title: layoutCopy.meta.titleTemplate.replace("%s", title),
       description,
-      images: [{ url: profile.desktopImage.src, alt: profile.desktopImage.alt }],
+      images: [
+        {
+          url: profile.desktopImage.src,
+          width: profile.desktopImage.width,
+          height: profile.desktopImage.height,
+          alt: profile.desktopImage.alt,
+        },
+      ],
     },
   };
 }
@@ -64,15 +76,18 @@ export default async function PractitionerPage({ params }: Props) {
     profile.approach || profile.offers || profile.experience || profile.reviews.length > 0,
   );
 
+  const url = new URL(teamMemberHref(member.slug), site.url).toString();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
+    // Same @id as the blog author node, so a profile and its articles are one entity.
+    "@id": `${url}#person`,
     name: profile.displayName,
     jobTitle: profile.title,
     description: profile.intro,
     image: new URL(profile.desktopImage.src, site.url).toString(),
-    url: new URL(teamMemberHref(member.slug), site.url).toString(),
-    worksFor: { "@type": "Organization", name: site.name, url: site.url },
+    url,
+    worksFor: { "@id": ORGANIZATION_ID },
   };
 
   return (

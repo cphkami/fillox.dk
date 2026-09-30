@@ -3,10 +3,13 @@
  * every form is declared once in public/__forms.html so Netlify detects it at
  * deploy time, and the client POSTs url-encoded data to that static file.
  *
- * When adding a form: add a matching <form name="…" data-netlify="true"> with the
- * same field names to public/__forms.html.
+ * The form names are market content (content/forms.ts). When adding a form: add its name
+ * there and a matching <form name="…" data-netlify="true"> with the same field names to
+ * public/__forms.html (`npm run check:market` checks the names).
  */
-export type FormName = "kontakt" | "osterbro-besked" | "nyhedsbrev";
+import type { FormName } from "@/content/forms";
+
+export type { FormName };
 
 export async function submitForm(formName: FormName, data: Record<string, string>): Promise<void> {
   const body = new URLSearchParams({ "form-name": formName, ...data }).toString();

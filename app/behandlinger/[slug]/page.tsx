@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!treatment) return {};
   const view = buildTreatmentView(treatment);
   return treatmentsMetadata({
-    title: view.title,
+    title: view.metaTitle,
     description: view.description,
     path: view.path,
     image: view.hero.image,

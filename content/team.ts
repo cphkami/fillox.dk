@@ -1,5 +1,6 @@
 import type { TeamMember } from "./types";
 import { site } from "@/config/site";
+import { formatDecimal } from "@/lib/format";
 
 /**
  * Practitioners in display order (design 6a team row, 6om / mo Om os).
@@ -26,6 +27,8 @@ export const team: TeamMember[] = [
       src: "/images/team/tom.jpg",
       alt: "Dr. Tom Haugland, æstetisk læge hos Fillox",
       position: "50% 50%",
+      width: 509,
+      height: 800,
     },
     crops: {
       // s6om-tom: wide photo, zoom 1.63 on the face.
@@ -52,6 +55,8 @@ export const team: TeamMember[] = [
       src: "/images/team/alberte.jpg",
       alt: "Alberte, kosmetisk behandler hos Fillox",
       position: "50% 50%",
+      width: 1920,
+      height: 2560,
     },
     crops: {
       // s6om-alb
@@ -60,6 +65,8 @@ export const team: TeamMember[] = [
         alt: "Alberte, kosmetisk behandler hos Fillox",
         position: "38% 80%",
         zoom: 1.33,
+        width: 1920,
+        height: 2560,
       },
     },
     bio: "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden.",
@@ -78,13 +85,15 @@ export const team: TeamMember[] = [
         alt: "Alberte, kosmetisk behandler hos Fillox",
         position: "42% 62%",
         zoom: 1.19,
+        width: 1920,
+        height: 2560,
       },
       primaryCta: { label: "Book tid hos Alberte", href: bookWith("alberte") },
       secondaryCta: { label: "Se behandlinger", href: "#behandlinger" },
       facts: [
         { label: "Arbejder i", value: "City2 & Amager" },
         { label: "Specialer", value: "Laser & hudforbedring" },
-        { label: "Trustpilot", value: `${site.trustpilot.scoreText} ★ fra sine kunder` },
+        { label: "Trustpilot", value: `${formatDecimal(site.trustpilot.score)} ★ fra sine kunder` },
       ],
       approach: {
         eyebrow: "Sådan arbejder jeg",
@@ -189,6 +198,8 @@ export const team: TeamMember[] = [
       src: "/images/team/annika.jpg",
       alt: "Annika, kosmetisk sygeplejerske hos Fillox",
       position: "50% 50%",
+      width: 1920,
+      height: 2560,
     },
     crops: {
       // s6om-ann
@@ -197,6 +208,8 @@ export const team: TeamMember[] = [
         alt: "Annika, kosmetisk sygeplejerske hos Fillox",
         position: "42% 76%",
         zoom: 1.37,
+        width: 1920,
+        height: 2560,
       },
       // s6bx-annika (Botox page, "Din behandler")
       practitioner: {
@@ -204,6 +217,8 @@ export const team: TeamMember[] = [
         alt: "Annika, kosmetisk sygeplejerske hos Fillox",
         position: "48% 69%",
         zoom: 1.36,
+        width: 1920,
+        height: 2560,
       },
     },
     bio: "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden om de forskellige behandlinger og muligheder.",
@@ -223,6 +238,8 @@ export const team: TeamMember[] = [
       src: "/images/team/maria.jpg",
       alt: "Maria, sygeplejerske hos Fillox",
       position: "50% 50%",
+      width: 533,
+      height: 800,
     },
     crops: {
       // s6om-mar
@@ -231,12 +248,16 @@ export const team: TeamMember[] = [
         alt: "Maria, sygeplejerske hos Fillox",
         position: "54% 15%",
         zoom: 1.24,
+        width: 533,
+        height: 800,
       },
       // s6c-maria (Lip filler page) has no stored crop: centred.
       practitioner: {
         src: "/images/team/maria.jpg",
         alt: "Maria, sygeplejerske hos Fillox",
         position: "50% 50%",
+        width: 533,
+        height: 800,
       },
     },
     bio: "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring og ekspert i både fillers og botox.",
@@ -253,6 +274,8 @@ export const team: TeamMember[] = [
       src: "/images/team/mike.jpg",
       alt: "Mike, kosmetisk behandler hos Fillox",
       position: "50% 50%",
+      width: 2136,
+      height: 2560,
     },
     crops: {
       // s6om-mik
@@ -261,6 +284,8 @@ export const team: TeamMember[] = [
         alt: "Mike, kosmetisk behandler hos Fillox",
         position: "43% 51%",
         zoom: 1.19,
+        width: 2136,
+        height: 2560,
       },
     },
     bio: "Mike har mange års erfaring i den kosmetiske branche og er kendt for sin rolige tilgang og skarpe øje for detaljer.",

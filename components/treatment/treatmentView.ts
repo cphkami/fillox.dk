@@ -76,6 +76,8 @@ export type TreatmentView = {
   path: string;
   /** Meta description. */
   description: string;
+  /** <title> / og:title text (the treatment's `metaTitle`, else `title`). */
+  metaTitle: string;
 };
 
 const overviewHref = mainNav.find((n) => n.kind === "treatments")?.href ?? "/behandlinger";
@@ -281,5 +283,6 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     },
     path: `${overviewHref}/${treatment.slug}`,
     description: d?.lead ?? copy.metaDescription(treatment.short, priceFromText),
+    metaTitle: treatment.metaTitle ?? title,
   };
 }

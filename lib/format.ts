@@ -1,8 +1,14 @@
 import { site } from "@/config/site";
 
 const numberFormat = new Intl.NumberFormat(site.locale, { maximumFractionDigits: 0 });
+const decimalFormat = new Intl.NumberFormat(site.locale, { maximumFractionDigits: 1 });
 
-/** 1499 → "1.499 kr" (DK) / "1 499 kr" (NO). */
+/** 1499 → "1.499 kr" (DK, pricePattern "{amount} kr"); the pattern comes from config/site.ts. */
 export function formatPrice(amount: number): string {
-  return `${numberFormat.format(amount)} ${site.currencyLabel}`;
+  return site.pricePattern.replace("{amount}", numberFormat.format(amount));
+}
+
+/** 4.7 → "4,7" (DK) — at most one decimal, in the market locale (Trustpilot score). */
+export function formatDecimal(value: number): string {
+  return decimalFormat.format(value);
 }

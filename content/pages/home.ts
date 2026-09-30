@@ -1,5 +1,6 @@
 import type { ImageRef, Link } from "../types";
 import { site } from "@/config/site";
+import { formatDecimal } from "@/lib/format";
 import { ui } from "../ui";
 
 /**
@@ -43,7 +44,7 @@ export const homePage = {
     stats: [
       { value: "10.000+", label: "Behandlinger" },
       { value: "4", label: "Klinikker" },
-      { value: `${site.trustpilot.scoreText} ★`, label: "Trustpilot" },
+      { value: `${formatDecimal(site.trustpilot.score)} ★`, label: "Trustpilot" },
     ] satisfies Stat[],
   },
 

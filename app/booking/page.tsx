@@ -5,11 +5,22 @@ import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
 
 const copy = layoutCopy.booking;
+const { ogImage, titleTemplate } = layoutCopy.meta;
 
 export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
   alternates: { canonical: site.booking.href },
+  // Nested objects replace the root layout's, so repeat the shared Open Graph fields.
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    locale: site.locale.replace("-", "_"),
+    url: site.booking.href,
+    title: titleTemplate.replace("%s", copy.metaTitle),
+    description: copy.metaDescription,
+    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }],
+  },
 };
 
 /** /booking — intro + Gecko Booking calendar (mirrors the live fillox.dk/booking). */
@@ -45,7 +56,10 @@ export default function BookingPage() {
 
       <Container gutter="surface" className="mt-3 md:mt-6">
         <div className="min-h-[640px] overflow-hidden rounded-[24px] bg-white p-2 md:p-6">
-          <GeckoEmbed host={site.booking.geckoHost} icCode={site.booking.geckoIcCode} />
+          {/* TODO(timma): render the TIMMA clinic picker when booking.provider === "timma" (fillox.no). */}
+          {site.booking.provider === "gecko" && (
+            <GeckoEmbed host={site.booking.geckoHost} icCode={site.booking.geckoIcCode} />
+          )}
         </div>
       </Container>
     </>

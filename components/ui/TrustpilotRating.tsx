@@ -1,6 +1,7 @@
 import { site } from "@/config/site";
 import { ui } from "@/content/ui";
 import { cn } from "@/lib/cn";
+import { formatDecimal } from "@/lib/format";
 
 type TrustpilotRatingProps = {
   /** "md" = 20px squares (desktop), "sm" = 18px squares (mobile). */
@@ -9,7 +10,7 @@ type TrustpilotRatingProps = {
   tone?: "ink" | "light";
   /** Score 0–5; defaults to site.trustpilot.score. Stars are shown in half steps. */
   score?: number;
-  /** Label before the stars; defaults to site.trustpilot.label ("Fremragende"). */
+  /** Label before the stars; defaults to ui.trustpilotLabel ("Fremragende"). */
   label?: string;
   /** Link the rating to the Trustpilot profile (site.trustpilot.url). */
   linked?: boolean;
@@ -22,16 +23,13 @@ export function TrustpilotRating({
   size = "md",
   tone = "ink",
   score = site.trustpilot.score,
-  label = site.trustpilot.label,
+  label = ui.trustpilotLabel,
   linked = false,
   className,
 }: TrustpilotRatingProps) {
   // Trustpilot shows stars in half steps (4.7 → 4.5 stars).
   const shown = Math.round(score * 2) / 2;
-  const scoreText =
-    score === site.trustpilot.score
-      ? site.trustpilot.scoreText
-      : score.toLocaleString(site.locale, { maximumFractionDigits: 1 });
+  const scoreText = formatDecimal(score);
   const box = size === "md" ? "size-5 text-[14px]" : "size-[18px] text-[13px]";
 
   const content = (

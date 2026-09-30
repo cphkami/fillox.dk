@@ -22,7 +22,7 @@ function postalAddress(lines: string[]) {
     streetAddress: lines.slice(0, -1).join(", ") || undefined,
     postalCode: match?.[1],
     addressLocality: match ? match[2] : last,
-    addressCountry: site.market.toUpperCase(),
+    addressCountry: site.country,
   };
 }
 
@@ -60,10 +60,11 @@ export function organizationGraph() {
     "@id": clinicUrl(clinic),
     name: clinic.fullName,
     url: clinicUrl(clinic),
-    image: abs(seoContent.clinicImage),
+    image: abs(clinic.seoImage ?? seoContent.clinicImage),
     telephone,
     email: site.contact.email,
     address: postalAddress(clinic.address),
+    ...(clinic.geo ? { geo: { "@type": "GeoCoordinates", ...clinic.geo } } : {}),
     openingHoursSpecification: openingHours(clinic.hours),
     hasMap: clinic.directionsHref,
     currenciesAccepted: site.currency,
@@ -104,7 +105,7 @@ export function organizationGraph() {
       "@id": WEBSITE_ID,
       name: site.name,
       url: site.url,
-      inLanguage: site.locale,
+      inLanguage: site.lang,
       publisher: { "@id": ORGANIZATION_ID },
     },
     ...clinicNodes,

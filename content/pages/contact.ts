@@ -77,7 +77,7 @@ export const contactPage = {
   meta: {
     title: "Kontakt",
     // TODO: copy review (meta description is not in the design; built from the hero text)
-    description: `Har du spørgsmål til en behandling, en booking eller et resultat? Ring på ${site.contact.phone}, skriv til ${site.contact.email} eller send os en besked, så svarer en af vores behandlere dig.`,
+    description: `Spørgsmål til en behandling eller en booking? Ring på ${site.contact.phone}, skriv til ${site.contact.email} eller send os en besked, så svarer en behandler dig.`,
   },
 
   hero: {

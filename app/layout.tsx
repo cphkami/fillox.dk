@@ -37,7 +37,8 @@ export const metadata: Metadata = {
     ],
   },
   twitter: { card: "summary_large_image" },
-  // Favicons come from the app/icon.png + app/apple-icon.png file conventions.
+  // Favicons come from the app/favicon.ico (16/32/48, made from icon.png), app/icon.png and
+  // app/apple-icon.png file conventions.
 };
 
 export const viewport: Viewport = {

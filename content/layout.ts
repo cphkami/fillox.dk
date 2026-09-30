@@ -3,6 +3,8 @@
  * menu, footer, 404 and the /booking page. Components import from here and
  * never hard-code these strings.
  */
+import { routes } from "./routes";
+
 export const layoutCopy = {
   meta: {
     /** Used when a page sets no title of its own. */
@@ -12,7 +14,7 @@ export const layoutCopy = {
     titleTemplate: "%s · Fillox",
     // TODO: copy review (expanded from the mf hero lead; not in the design)
     description:
-      "Trygge, professionelle behandlinger med botox, fillers og hudforbedring – udført af læger og sygeplejersker og tilpasset din egen anatomi. Klinikker i København og omegn.",
+      "Trygge behandlinger med botox, fillers og hudforbedring – udført af læger og sygeplejersker og tilpasset din anatomi. Klinikker i København og omegn.",
     /** Default social sharing image (1200×630 crop is taken from the centre). */
     // TODO: copy review (alt text)
     ogImage: {
@@ -26,6 +28,8 @@ export const layoutCopy = {
   /** Visually hidden link that jumps past the header. */
   // TODO: copy review (accessible names below are not in the design)
   skipLink: "Gå til indhold",
+  /** Id of <main> (the skip link's target, shown in the address bar as #indhold). */
+  mainId: "indhold",
 
   header: {
     /** Accessible name of the desktop header navigation. */
@@ -37,9 +41,9 @@ export const layoutCopy = {
      * (keyed by the nav item's href). E.g. practitioner profiles live under "Om os".
      */
     activePrefixes: {
-      "/behandlinger": ["/behandlinger"],
-      "/klinikker": ["/klinikker"],
-      "/om-os": ["/om-os", "/behandlere", "/kontakt", "/ledige-stillinger", "/content-creator"],
+      [routes.treatments]: [routes.treatments],
+      [routes.clinics]: [routes.clinics],
+      [routes.about]: [routes.about, routes.practitioners, routes.contact, routes.jobs, routes.creator],
     } as Record<string, string[]>,
   },
 
@@ -87,6 +91,25 @@ export const layoutCopy = {
       "Vælg klinik, behandling og tidspunkt i kalenderen herunder. Du starter altid med en konsultation, hvor din behandler gennemgår dine ønsker og lægger en plan sammen med dig.",
     helpTitle: "Brug for hjælp til at booke?",
     helpText: "Ring eller skriv til os, så finder vi den rigtige tid sammen.",
+    /**
+     * Query parameters of booking links: /booking?klinik=city2 (clinic cards, menus) and
+     * /booking?behandler=alberte (practitioner CTAs). Built by lib/booking.ts.
+     */
+    params: { clinic: "klinik", practitioner: "behandler" },
+    /**
+     * Clinic picker above the calendar. Only used with a per-clinic booking provider
+     * (config/site.ts → booking.provider "timma", as on fillox.no); the Gecko calendar
+     * (fillox.dk) has its own clinic selector.
+     */
+    // TODO: copy review (not in the design; unused while fillox.dk books through Gecko)
+    clinicPicker: {
+      label: "Vælg klinik",
+      hint: "Vælg den klinik, du vil booke i, så åbner kalenderen herunder.",
+      /** Accessible name of the booking iframe, e.g. "Book tid i Fillox City2". */
+      iframeTitle: (clinicName: string) => `Book tid i ${clinicName}`,
+      /** Link under the calendar that opens the provider's booking page directly. */
+      openDirect: "Åbn bookingen i et nyt vindue",
+    },
   },
 };
 

@@ -1,5 +1,5 @@
 import type { Clinic } from "./types";
-import { site } from "@/config/site";
+import { withBookingLinks } from "@/lib/booking";
 
 const standardHours = [
   { days: "Man–fre", hours: "10–20" },
@@ -10,18 +10,14 @@ const standardHours = [
 const standardHoursSummary = "Hverdage 10–20 · Weekend 10–18";
 
 /**
- * Per-clinic booking link (design mm2: "each clinic has its own booking link").
- * With a Gecko calendar id ("12" or "12.13"), Gecko's iframe.js preselects the clinic
- * from the page URL (?geckoCalendarId=); without one, `?klinik=` keeps the link
- * clinic-specific (analytics) and the calendar opens unfiltered.
+ * Clinics in display order (design 6kl / footer).
+ *
+ * Booking (design mm2: "each clinic has its own booking link"): `booking` holds the clinic's
+ * id at the booking provider, and withBookingLinks() (lib/booking.ts) derives `bookingHref`
+ * from it: "/booking?geckoCalendarId=12" with a Gecko calendar id (Gecko's iframe.js then
+ * preselects the clinic), otherwise "/booking?klinik=city2".
  */
-const clinicBooking = (slug: string, geckoCalendarId?: string) =>
-  geckoCalendarId
-    ? `${site.booking.href}?geckoCalendarId=${geckoCalendarId}`
-    : `${site.booking.href}?klinik=${slug}`;
-
-/** Clinics in display order (design 6kl / footer). */
-export const clinics: Clinic[] = [
+export const clinics: Clinic[] = withBookingLinks([
   {
     slug: "city2",
     name: "City2",
@@ -29,8 +25,8 @@ export const clinics: Clinic[] = [
     address: ["Cityringen 2, Plan 3", "2630 Høje Taastrup"],
     hours: standardHours,
     hoursSummary: standardHoursSummary,
-    // TODO: pass the clinic's Gecko calendar id (Gecko admin) as 2nd argument to preselect it.
-    bookingHref: clinicBooking("city2"),
+    // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to preselect it.
+    booking: {},
     note: "Gratis parkering i centret. 2 min. fra Taastrup St.",
     directionsHref: "https://www.google.com/maps/search/?api=1&query=Fillox+City2+Cityringen+2+2630+H%C3%B8je+Taastrup",
     status: "open",
@@ -42,8 +38,8 @@ export const clinics: Clinic[] = [
     address: ["Reberbanegade 3", "2300 København S"],
     hours: standardHours,
     hoursSummary: standardHoursSummary,
-    // TODO: pass the clinic's Gecko calendar id (Gecko admin) as 2nd argument to preselect it.
-    bookingHref: clinicBooking("amager-centret"),
+    // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to preselect it.
+    booking: {},
     note: "Metro: Amagerbro St. Parkering i centret.",
     directionsHref: "https://www.google.com/maps/search/?api=1&query=Fillox+Amager+Centret+Reberbanegade+3+2300+K%C3%B8benhavn+S",
     status: "open",
@@ -55,8 +51,8 @@ export const clinics: Clinic[] = [
     address: ["Rathsacksvej 1", "1852 Frederiksberg"],
     hours: standardHours,
     hoursSummary: standardHoursSummary,
-    // TODO: pass the clinic's Gecko calendar id (Gecko admin) as 2nd argument to preselect it.
-    bookingHref: clinicBooking("frederiksberg"),
+    // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to preselect it.
+    booking: {},
     note: "Nyåbnet. 5 min. fra Forum og Frederiksberg Metro.",
     directionsHref: "https://www.google.com/maps/search/?api=1&query=Fillox+Rathsacksvej+1+1852+Frederiksberg",
     status: "open",
@@ -71,6 +67,6 @@ export const clinics: Clinic[] = [
     openingNote: "Åbner 1. november",
     note: "Vi åbner 1. november. Skriv dig op, så får du besked, når vi åbner for booking.",
   },
-];
+]);
 
 export const openClinics = clinics.filter((c) => c.status === "open");
