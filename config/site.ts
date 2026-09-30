@@ -8,7 +8,7 @@
 export const site = {
   market: "dk" as const,
   name: "Fillox",
-  legalName: "Fillox ApS",
+  legalName: "Fillox Danmark ApS",
   domain: "fillox.dk",
   url: "https://fillox.dk",
   /** BCP 47 locale, used for Intl formatting and <html lang>. */

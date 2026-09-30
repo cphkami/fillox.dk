@@ -21,6 +21,12 @@ export type ImageRef = {
    * `transform: scale(zoom); transform-origin: position` on the <img>.
    */
   zoom?: number;
+  /**
+   * Intrinsic pixel size of the file. Optional: only needed where the size is
+   * published, e.g. og:image:width / og:image:height for a blog post's share image.
+   */
+  width?: number;
+  height?: number;
 };
 
 export type Link = { label: string; href: string };
@@ -247,6 +253,11 @@ export type TeamMember = {
   bio?: string;
   /** Shorter bio on Om os (mobile). */
   bioShort?: string;
+  /**
+   * Personal quote on the Om os card (6om spec note: "et personligt citat"). Not in the
+   * mockups and no copy yet; rendered only when set. Include the market's quotation marks.
+   */
+  quote?: string;
   /** One-liner in the blog article author box, e.g. "Kosmetisk sygeplejerske, uddannet i Fillox af Dr. Tom." */
   authorBio?: string;
   /** Shown first / wide on Om os (fagligt ansvarlig). */
@@ -336,6 +347,12 @@ export type BlogPost = {
   relatedPostSlugs?: string[];
   /** "Læs også" on mobile when the design differs (shows 2). */
   relatedPostSlugsMobile?: string[];
+  /**
+   * CSS object-position of `image` on the blog pages (6blog/mbl cards and thumbnails,
+   * 6art/mar article hero and "Læs også") when it differs from `image.position`,
+   * e.g. "50% 50%" (the design crops these photos centred).
+   */
+  blogImagePosition?: string;
 };
 
 /* --------------------------------------------------------------- Navigation */
@@ -345,3 +362,33 @@ export type NavItem =
   | { kind: "treatments"; label: string; href: string }
   | { kind: "clinics"; label: string; href: string }
   | { kind: "menu"; label: string; href: string; items: Link[] };
+
+/* --------------------------------------------------------------- Text pages */
+
+/**
+ * Inline rich text: a plain string, or a list of runs. A run is a string, or a
+ * `{ text, href?, strong? }` object for a link and/or bold text.
+ */
+export type RichSpan = string | { text: string; href?: string; strong?: boolean };
+export type RichText = string | RichSpan[];
+
+/**
+ * Body block of a simple text page (/handelsbetingelser, /privatlivspolitik,
+ * /ledige-stillinger, /content-creator), rendered by components/text-page.
+ */
+export type TextBlock =
+  | { type: "h2"; text: string; id?: string }
+  | { type: "h3"; text: string }
+  | { type: "paragraph"; text: RichText }
+  | { type: "list"; style?: "bullet" | "number"; items: RichText[] }
+  /** Short lines kept on separate rows (addresses, contact details). `card` sets them on a white card. */
+  | { type: "lines"; lines: RichText[]; card?: boolean };
+
+/** Copy for a text page: hero, body blocks and an optional CTA card beside the text. */
+export type TextPageContent = {
+  meta: { title: string; description: string };
+  hero: { eyebrow?: string; title: string; intro?: string; image?: ImageRef };
+  body: TextBlock[];
+  /** CTA card (desktop: sticky beside the text; mobile: after it). The first action is the primary button. */
+  aside?: { eyebrow?: string; title: string; text?: string; actions: Link[] };
+};

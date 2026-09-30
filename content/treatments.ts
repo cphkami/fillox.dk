@@ -325,7 +325,7 @@ export const treatments: Treatment[] = [
     name: "Skinbooster",
     categorySlug: "hudforbedring",
     // 6b (Ejal 40 1.499 kr) and Alberte's profile both say "fra 1.499 kr"; the home
-    // bestseller row (6a) shows "FRA 999 KR" and keeps that value in `bestsellers`.
+    // bestseller row (6a) shows "FRA 999 KR" but reads this value (see `bestsellers`).
     priceFrom: 1499,
     short: "Fugt, glød og forbedring af hudens kvalitet.",
   },
@@ -415,6 +415,25 @@ export const treatments: Treatment[] = [
 
 /* -------------------------------------------------------------- bestsellers */
 
+/**
+ * Price + link of a bestseller row, read from the treatment itself so the home page can
+ * never show a different "fra" price than the treatment page it links to.
+ */
+function bestsellerTreatment(slug: string): Pick<Bestseller, "priceFrom" | "href"> {
+  const priceFrom = treatments.find((t) => t.slug === slug)?.priceFrom;
+  if (priceFrom === undefined) throw new Error(`bestsellers: no priceFrom for treatment "${slug}"`);
+  return { priceFrom, href: treatmentHref(slug) };
+}
+
+/** Same for a row that links to a whole category: its lowest "fra" price. */
+function bestsellerCategory(categorySlug: string): Pick<Bestseller, "priceFrom" | "href"> {
+  const prices = treatments
+    .filter((t) => t.categorySlug === categorySlug)
+    .flatMap((t) => (t.priceFrom === undefined ? [] : [t.priceFrom]));
+  if (!prices.length) throw new Error(`bestsellers: empty category "${categorySlug}"`);
+  return { priceFrom: Math.min(...prices), href: `/behandlinger#${categorySlug}` };
+}
+
 /** Home page "Vores bestsellers" (design 6a desktop, mf mobile). */
 export const bestsellers: Bestseller[] = [
   {
@@ -422,24 +441,23 @@ export const bestsellers: Bestseller[] = [
     name: "Botox",
     description: "Mimiklinjer og udvalgte kosmetiske behandlingsområder.",
     mobileDescription: "Mimiklinjer og udvalgte behandlingsområder.",
-    priceFrom: 799,
-    href: "/behandlinger/botox",
+    ...bestsellerTreatment("botox"),
   },
   {
     number: "02",
     name: "Filler",
     description: "Kontur, volumen og harmonisering af ansigtets proportioner.",
     mobileDescription: "Kontur, volumen og harmonisering.",
-    priceFrom: 999,
-    href: "/behandlinger#fillers",
+    ...bestsellerCategory("fillers"),
   },
   {
     number: "03",
     name: "Skinbooster",
     description: "Fugt, glød og forbedring af hudens kvalitet.",
     mobileDescription: "Fugt, glød og bedre hudkvalitet.",
-    priceFrom: 999,
-    href: "/behandlinger/skinbooster",
+    // 6a/mf show "fra 999 kr" here, but 6b, 6alb and ma all price Skinbooster from 1.499 kr.
+    // TODO: price review (Fillox to confirm; the treatment's priceFrom is used everywhere).
+    ...bestsellerTreatment("skinbooster"),
     highlighted: true,
   },
   {
@@ -447,16 +465,14 @@ export const bestsellers: Bestseller[] = [
     name: "Laser",
     description: "Målrettede behandlinger til hudens struktur og udtryk.",
     mobileDescription: "Hudens struktur og udtryk.",
-    priceFrom: 500,
-    href: "/behandlinger/laser-harfjerning",
+    ...bestsellerTreatment("laser-harfjerning"),
   },
   {
     number: "05",
     name: "PRF",
     description: "En regenerativ behandling baseret på kroppens egne ressourcer.",
     mobileDescription: "Kroppens egne ressourcer.",
-    priceFrom: 2499,
-    href: "/behandlinger/prf-hud",
+    ...bestsellerTreatment("prf-hud"),
   },
 ];
 

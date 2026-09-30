@@ -1,0 +1,100 @@
+import Link from "next/link";
+import { ButtonLink, Container, Eyebrow, Photo } from "@/components/ui";
+import { blogPostHref } from "@/content/blog";
+import { treatmentPage as copy } from "@/content/pages/treatments";
+import { cn } from "@/lib/cn";
+import type { TreatmentView } from "./treatmentView";
+
+/** Desktop grid + card image `sizes` by number of posts (one post: a wide card, photo left). */
+const layouts = {
+  1: { grid: "md:grid-cols-1", card: "md:grid md:grid-cols-2", photo: "md:h-full md:min-h-[300px]", sizes: "(min-width: 1180px) 534px, 50vw" },
+  2: { grid: "md:grid-cols-2", card: "", photo: "", sizes: "(min-width: 1180px) 522px, 50vw" },
+  3: { grid: "md:grid-cols-3", card: "", photo: "", sizes: "(min-width: 1180px) 340px, 30vw" },
+} as const;
+
+/**
+ * "Fra bloggen · Læs mere om …" (6c/6bx: header with "Alle artikler om …" and three
+ * photo cards; mb: heading and compact text cards).
+ */
+export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["posts"]> }) {
+  const layout = layouts[Math.min(posts.items.length, 3) as 1 | 2 | 3];
+  const single = posts.items.length === 1;
+  return (
+    <Container as="section" aria-labelledby="fra-bloggen" className="pt-2 pb-12 md:pt-0 md:pb-24">
+      <div className="mb-4 md:mb-9 md:flex md:items-end md:justify-between md:gap-6">
+        <div>
+          <Eyebrow className="mb-3.5 max-md:hidden">{posts.eyebrow}</Eyebrow>
+          <h2
+            id="fra-bloggen"
+            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1]"
+          >
+            {posts.title}
+          </h2>
+          {posts.intro ? (
+            <p className="max-w-[56ch] text-[16px] leading-[1.75] text-muted max-md:hidden">{posts.intro}</p>
+          ) : null}
+        </div>
+        {posts.link ? (
+          <ButtonLink href={posts.link.href} variant="outline" size="mdTight" className="shrink-0 max-md:hidden">
+            {posts.link.label}
+          </ButtonLink>
+        ) : null}
+      </div>
+
+      <ul className={cn("flex flex-col gap-4 md:grid md:gap-6", layout.grid)}>
+        {posts.items.map((post) => {
+          const kind = post.kind ?? post.category;
+          return (
+            <li key={post.slug} className="flex">
+              <article
+                className={cn(
+                  "relative flex w-full flex-col overflow-hidden rounded-[18px] bg-white px-[18px] py-4 transition-shadow hover:shadow-menu md:rounded-[24px] md:p-0",
+                  layout.card,
+                )}
+              >
+                <Photo
+                  image={{ ...post.image, alt: "" }}
+                  sizes={layout.sizes}
+                  className={cn("h-[220px] shrink-0 max-md:hidden", layout.photo)}
+                />
+                <div
+                  className={cn(
+                    "flex flex-1 flex-col md:px-5 md:pt-[26px] md:pb-[30px] lg:px-7",
+                    single && "md:justify-center md:px-10 md:py-10 lg:px-14",
+                  )}
+                >
+                  <p className="text-[12px] text-muted md:mb-2.5 md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
+                    <span className="md:hidden">
+                      {kind}
+                      {post.readingMinutes ? ` · ${post.readingMinutes} ${copy.posts.minutes}` : ""}
+                    </span>
+                    <span className="max-md:hidden">
+                      {kind} · {post.readingTime}
+                    </span>
+                  </p>
+                  <h3 className="mt-1 text-[16px] leading-[1.4] font-semibold md:mt-0 md:mb-[18px] md:text-[20px] md:leading-[1.3] md:tracking-display">
+                    <Link href={blogPostHref(post.slug)} className="after:absolute after:inset-0 after:content-['']">
+                      {post.title}
+                    </Link>
+                  </h3>
+                  {single ? (
+                    <p className="mb-[22px] max-w-[52ch] text-[16px] leading-[1.75] text-muted max-md:hidden">{post.excerpt}</p>
+                  ) : null}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "self-start border-b border-ink pb-[3px] text-[14px] max-md:hidden",
+                      !single && "mt-auto",
+                    )}
+                  >
+                    {copy.posts.readArticle} →
+                  </span>
+                </div>
+              </article>
+            </li>
+          );
+        })}
+      </ul>
+    </Container>
+  );
+}

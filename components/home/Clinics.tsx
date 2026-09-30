@@ -1,0 +1,113 @@
+import Link from "next/link";
+import { Container, SectionHeading } from "@/components/ui";
+import type { HomePage } from "@/content/pages/home";
+import type { Clinic } from "@/content/types";
+import { cn } from "@/lib/cn";
+import { ArrowCircle } from "./ArrowCircle";
+
+/** Joins address lines with ", " on mobile; each line is its own row from lg. */
+function AddressLines({ lines }: { lines: string[] }) {
+  return lines.map((line, i) => (
+    <span key={line} className="lg:block">
+      {i > 0 ? <span className="lg:hidden">, </span> : null}
+      {line}
+    </span>
+  ));
+}
+
+/**
+ * "Hverdage 10–20 · Weekend 10–18". The parts never break inside, and when the second
+ * part wraps, its "·" (drawn in the column gap) falls outside the box and is clipped, so
+ * no line starts or ends with a dangling separator.
+ */
+function HoursSummary({ text, className }: { text: string; className?: string }) {
+  const parts = text.split(/\s+·\s+/);
+  if (parts.length < 2) return <p className={className}>{text}</p>;
+  return (
+    <p className={cn("flex flex-wrap gap-x-[.75em] overflow-hidden", className)}>
+      {parts.map((part, i) => (
+        <span key={part} className="whitespace-nowrap">
+          {i > 0 ? <span className="-ml-[.75em] inline-block w-[.75em] text-center">·</span> : null}
+          {part}
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/**
+ * "Her finder du Fillox". Desktop (6a): four white cards. Mobile (mf): stacked cards
+ * with a round arrow; the clinic that is not open yet shows its opening note instead.
+ */
+export function Clinics({
+  copy,
+  clinics,
+  clinicsHref,
+}: {
+  copy: HomePage["clinics"];
+  clinics: Clinic[];
+  /** Find klinik page; each open card links to `${clinicsHref}#${slug}`. */
+  clinicsHref: string;
+}) {
+  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] lg:block lg:p-7";
+
+  return (
+    <Container as="section" aria-labelledby="home-clinics-title" className="pt-14 pb-11 lg:py-[84px]">
+      <SectionHeading
+        id="home-clinics-title"
+        title={copy.title}
+        align="left"
+        leading="normal"
+        className="mb-4 lg:mb-10 lg:text-center"
+      />
+
+      <ul className="flex flex-col gap-2.5 md:grid md:grid-cols-2 lg:grid-cols-4 lg:gap-[18px]">
+        {clinics.map((clinic) => {
+          const open = clinic.status === "open";
+          const body = (
+            <div className="text-[14px] leading-[1.55] text-muted lg:leading-[1.6]">
+              <h3
+                className={cn(
+                  "text-[17px] font-semibold text-ink lg:mb-2 lg:text-[20px] lg:leading-[normal] lg:tracking-display",
+                  open && "transition-colors group-hover:text-plum",
+                )}
+              >
+                {clinic.name}
+              </h3>
+              {open ? (
+                <>
+                  <p>
+                    <AddressLines lines={clinic.address} />
+                  </p>
+                  {clinic.hoursSummary ? (
+                    <HoursSummary
+                      text={clinic.hoursSummary}
+                      className="lg:mt-2 lg:leading-[normal] lg:text-plum"
+                    />
+                  ) : null}
+                </>
+              ) : (
+                <p className="font-semibold text-plum lg:mt-1.5 lg:text-[12px] lg:leading-[normal] lg:font-normal lg:tracking-[2px] lg:uppercase">
+                  {clinic.openingNote}
+                </p>
+              )}
+            </div>
+          );
+
+          return (
+            <li key={clinic.slug}>
+              {open ? (
+                <Link href={`${clinicsHref}#${clinic.slug}`} className={cn("group", card)}>
+                  {body}
+                  <ArrowCircle className="bg-sand text-plum group-hover:bg-powder lg:hidden" />
+                </Link>
+              ) : (
+                <div className={card}>{body}</div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </Container>
+  );
+}

@@ -1,0 +1,99 @@
+import Link from "next/link";
+import type { ReactNode } from "react";
+import type { ContactChannel } from "@/content/pages/contact";
+import { cn } from "@/lib/cn";
+
+/** Mobile (mc) wording below 768px, desktop (6ko) wording from 768px. */
+function Variant({ mobile, desktop }: { mobile?: string; desktop: string }) {
+  if (!mobile || mobile === desktop) return <>{desktop}</>;
+  return (
+    <>
+      <span className="md:hidden">{mobile}</span>
+      <span className="max-md:hidden">{desktop}</span>
+    </>
+  );
+}
+
+function ChannelCard({ href, className, children }: { href?: string; className: string; children: ReactNode }) {
+  // No href: an information card (no link, no arrow). tel:/mailto: are plain anchors;
+  // internal pages go through next/link.
+  if (!href) return <div className={className}>{children}</div>;
+  if (href.startsWith("/")) {
+    return (
+      <Link href={href} className={className}>
+        {children}
+      </Link>
+    );
+  }
+  return (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  );
+}
+
+type ContactChannelsProps = {
+  channels: ContactChannel[];
+  label: string;
+};
+
+/**
+ * The three contact cards (phone, e-mail, on-call doctor). Desktop (6ko): label + value
+ * on the left, a note on the right, the on-call card in plum. Mobile (mc): large tap
+ * targets with an arrow circle, the on-call card in sand. A card without `href` is not a
+ * link and has no arrow (the on-call card: its number is in the booking confirmation).
+ */
+export function ContactChannels({ channels, label }: ContactChannelsProps) {
+  return (
+    <ul aria-label={label} className="flex flex-col gap-4 md:gap-3">
+      {channels.map((channel) => {
+        const accent = channel.tone === "accent";
+        const linked = !!channel.href;
+        return (
+          <li key={channel.id}>
+            <ChannelCard
+              href={channel.href}
+              className={cn(
+                "group relative flex items-center justify-between gap-4 rounded-[20px] px-5 py-[18px] transition-colors md:flex-wrap md:gap-y-1 md:px-7 md:py-[22px]",
+                accent ? "bg-sand md:bg-plum md:text-cream" : "bg-white",
+                accent && linked && "md:hover:bg-plum-deep",
+              )}
+            >
+              <span className="min-w-0">
+                <span
+                  className={cn(
+                    "block text-[12px] font-semibold tracking-[1.5px] text-muted uppercase md:mb-1.5 md:font-bold md:tracking-[2px]",
+                    accent ? "md:text-powder" : "md:text-plum",
+                  )}
+                >
+                  <Variant mobile={channel.labelShort} desktop={channel.label} />
+                </span>
+                <span
+                  className={cn(
+                    "mt-0.5 block text-[19px] font-semibold break-words text-plum md:mt-0 md:text-[22px] md:tracking-display",
+                    accent ? "md:text-cream" : "md:text-ink",
+                    !accent && linked && "md:group-hover:text-plum",
+                  )}
+                >
+                  <Variant mobile={channel.valueShort} desktop={channel.value} />
+                </span>
+              </span>
+              {/* Mobile shows an arrow instead of the note; screen readers still get the note. */}
+              <span className={cn("shrink-0 text-right text-[14px] max-md:sr-only", accent ? "text-blush" : "text-muted")}>
+                {channel.note}
+              </span>
+              {linked ? (
+                <span
+                  aria-hidden="true"
+                  className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sand text-plum md:hidden"
+                >
+                  →
+                </span>
+              ) : null}
+            </ChannelCard>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}

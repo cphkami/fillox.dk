@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { OrganizationJsonLd } from "@/components/seo";
 import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
 import "./globals.css";
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <Footer />
+        <OrganizationJsonLd />
       </body>
     </html>
   );

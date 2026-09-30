@@ -1,0 +1,71 @@
+import Link from "next/link";
+import { Photo } from "@/components/ui";
+import { blogPostHref } from "@/content/blog";
+import { blogPage as copy } from "@/content/pages/blog";
+import type { BlogPost } from "@/content/types";
+import { cn } from "@/lib/cn";
+import { cardFocusRing, joinMeta, shortReadingTime, stretchedLink } from "./postView";
+
+type PostCardProps = {
+  post: BlogPost;
+  /**
+   * Mobile look (below 768px): "list" = row with a hairline under it (mbl overview list),
+   * "plain" = row without the hairline (mar "Læs også"). From 768px both are the white
+   * photo card from 6blog / 6art.
+   */
+  variant?: "list" | "plain";
+  /** Heading level of the title (h3 under a section h2). */
+  headingLevel?: "h2" | "h3";
+  className?: string;
+};
+
+/**
+ * Blog post teaser. Below 768px a compact row (88px thumbnail, "Filler · 4 min",
+ * title); from 768px a white card (220px photo, "FILLER · 4 MIN LÆSNING", title,
+ * "Læs artiklen →"). The whole card is clickable through the title link.
+ */
+export function PostCard({ post, variant = "list", headingLevel: Heading = "h3", className }: PostCardProps) {
+  return (
+    <article
+      className={cn(
+        "group relative flex h-full items-center gap-3.5 rounded-[6px]",
+        variant === "list" && "max-md:border-b max-md:border-line max-md:pb-3.5",
+        cardFocusRing,
+        "md:flex-col md:items-stretch md:gap-0 md:overflow-hidden md:rounded-[20px] md:bg-white md:transition-shadow md:duration-200 md:hover:shadow-menu",
+        className,
+      )}
+    >
+      <div className="size-[88px] shrink-0 overflow-hidden rounded-[14px] md:h-[220px] md:w-full md:rounded-none">
+        <Photo
+          image={{ ...post.image, alt: "" }}
+          position={post.blogImagePosition}
+          sizes="(min-width: 1180px) 360px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 88px"
+          className="size-full"
+        />
+      </div>
+
+      <div className="min-w-0 md:flex md:flex-1 md:flex-col md:gap-2.5 md:px-[26px] md:pt-6 md:pb-7">
+        <p className="text-[12px] text-muted md:hidden">{joinMeta(post.category, shortReadingTime(post))}</p>
+        <p className="text-[12px] font-bold tracking-[2px] text-plum uppercase max-md:hidden">
+          {post.category}
+          {copy.separator}
+          <span className="font-semibold text-muted">{post.readingTime}</span>
+        </p>
+
+        <Heading className="mt-0.5 text-[16px] leading-[1.4] font-semibold md:mt-0 md:text-[19px] md:leading-[1.35] md:tracking-[-.01em]">
+          <Link
+            href={blogPostHref(post.slug)}
+            className={cn(stretchedLink, "transition-colors group-hover:text-plum md:group-hover:text-ink")}
+          >
+            {post.title}
+          </Link>
+        </Heading>
+
+        <span aria-hidden="true" className="mt-1 text-[14px] font-semibold text-plum max-md:hidden">
+          {copy.list.readArticle}{" "}
+          <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+        </span>
+      </div>
+    </article>
+  );
+}

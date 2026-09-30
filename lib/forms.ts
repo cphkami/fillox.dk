@@ -6,7 +6,7 @@
  * When adding a form: add a matching <form name="…" data-netlify="true"> with the
  * same field names to public/__forms.html.
  */
-export type FormName = "kontakt" | "osterbro-besked";
+export type FormName = "kontakt" | "osterbro-besked" | "nyhedsbrev";
 
 export async function submitForm(formName: FormName, data: Record<string, string>): Promise<void> {
   const body = new URLSearchParams({ "form-name": formName, ...data }).toString();
