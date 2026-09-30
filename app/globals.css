@@ -1,26 +1,135 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Fillox design tokens (design "Fillox Signature v2", mobile spec + brand kit).
+ * Use them as Tailwind utilities: bg-plum, text-muted, border-line, bg-cream/8 …
+ */
+@theme {
+  /* Brand colours */
+  --color-plum: #6b3840; /* primary: buttons, links, names, dark bands */
+  --color-plum-deep: #572d34; /* hover state of plum buttons */
+  --color-cream: #f7f2ea; /* page base */
+  --color-sand: #efe6dc; /* surfaces: hero panel, cards, icon circles */
+  --color-powder: #e8d3ce; /* secondary surface, buttons on plum */
+  --color-blush: #efe2de; /* body text on plum */
+  --color-ink: #242724; /* headings / body text */
+  --color-muted: #5e4f4d; /* secondary text */
+  --color-line: #e3d6cc; /* hairlines on light */
+  --color-rule: #d9bfb8; /* dividers in hero stats, legal text on plum */
+  --color-taupe: #b39c89; /* eyebrow on dark photos */
+  --color-placeholder: #8a7f7c; /* input placeholder text */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Trustpilot */
+  --color-trustpilot: #00b67a;
+  --color-trustpilot-empty: #dcdce6;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Shadows */
+  --shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1); /* mega menu / dropdowns */
+  --shadow-float: 0 10px 30px rgba(36, 39, 36, 0.18); /* floating book bar */
+
+  /* Letter-spacing */
+  --tracking-display: -0.03em; /* H2 / card titles */
+  --tracking-hero: -0.035em; /* desktop H1 */
+  --tracking-eyebrow: 2px;
+
+  /* Motion */
+  --animate-menu-in: menu-in 200ms ease-out;
+  --animate-fade-in: fade-in 150ms ease-out;
+
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/*
+ * Arrows (→ ←) are not in Poppins. next/font's metric fallback (Arial) would draw them
+ * long and thin; the design gets them from the system fallback (Lucida Grande on macOS).
+ * Elsewhere local() fails and the stack continues as normal.
+ */
+@font-face {
+  font-family: "Fillox Arrows";
+  src: local("Lucida Grande"), local("LucidaGrande");
+  font-weight: 100 500;
+  unicode-range: U+2190-21FF;
+}
+@font-face {
+  font-family: "Fillox Arrows";
+  src: local("Lucida Grande Bold"), local("LucidaGrande-Bold");
+  font-weight: 600 900;
+  unicode-range: U+2190-21FF;
+}
+
+@theme inline {
+  /* Poppins is loaded by next/font in app/layout.tsx (CSS var --font-poppins). Symbol glyphs
+     Poppins lacks (▾ ★ ✕) fall through to the generic sans-serif, exactly as in the design. */
+  --font-sans: "Fillox Arrows", var(--font-poppins), sans-serif;
+}
+
+@layer base {
+  html {
+    /* Keeps anchor targets clear of the sticky header. */
+    scroll-padding-top: 88px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (min-width: 64rem) {
+    html {
+      scroll-padding-top: 104px;
+    }
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    /* The design sets no line-height unless stated: match the browser's "normal". */
+    line-height: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-powder);
+    color: var(--color-ink);
+  }
+
+  /* Visible focus ring in plum; on plum surfaces (data-surface="plum") in powder. */
+  :focus-visible {
+    outline: 2px solid var(--color-plum);
+    outline-offset: 3px;
+  }
+  [data-surface="plum"] :focus-visible {
+    outline-color: var(--color-powder);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    /* 0s, not 0.01ms: a non-zero duration would make EVERY element (transition-property
+       defaults to `all`) transition inherited `visibility`, which keeps just-opened
+       menus unfocusable for a frame. */
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
 }
