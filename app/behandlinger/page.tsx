@@ -82,12 +82,12 @@ export default function TreatmentsOverviewPage() {
                 key={category.slug}
                 id={category.slug}
                 aria-labelledby={`${category.slug}-title`}
-                className={cn(side && "lg:grid lg:grid-cols-3 lg:items-start lg:gap-6")}
+                className={cn(side && "lg:grid lg:grid-cols-3 lg:items-start lg:gap-fluid-24")}
               >
                 <div
                   className={cn(
                     "mb-4 flex flex-col gap-2 md:mb-9 md:flex-row md:items-end md:justify-between md:gap-6",
-                    side && "lg:mb-0 lg:flex-col lg:items-start lg:justify-start lg:gap-5",
+                    side ? "lg:mb-0 lg:flex-col lg:items-start lg:justify-start lg:gap-5 xl:gap-fluid-20" : "xl:mb-fluid-36",
                     count === 1 && "lg:col-span-2",
                   )}
                 >
@@ -99,7 +99,7 @@ export default function TreatmentsOverviewPage() {
                       {category.name}
                     </h2>
                     {intro ? (
-                      <p className="max-w-[56ch] text-[16px] leading-[1.7] text-muted md:leading-[1.75]">{intro}</p>
+                      <p className="max-w-[56ch] text-body leading-[1.7] text-muted md:leading-[1.75]">{intro}</p>
                     ) : null}
                   </div>
                   {card ? (
@@ -110,7 +110,7 @@ export default function TreatmentsOverviewPage() {
                 </div>
                 <ul
                   className={cn(
-                    "grid gap-3 md:grid-cols-2 md:gap-6",
+                    "grid gap-3 md:grid-cols-2 md:gap-fluid-24",
                     !side && "lg:grid-cols-3",
                     side && count === 1 && "lg:grid-cols-1",
                     side && count > 1 && "lg:col-span-2 lg:grid-cols-2",

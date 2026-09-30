@@ -19,7 +19,7 @@ export function PriceSection({ prices }: { prices: NonNullable<TreatmentView["pr
           {prices.title}
         </h2>
         {prices.intro ? (
-          <p className="text-[16px] leading-[1.7] text-muted md:max-w-[52ch] md:leading-[1.75]">
+          <p className="text-body leading-[1.7] text-muted md:max-w-[52ch] md:leading-[1.75]">
             <ResponsiveText mobile={prices.mobileIntro} desktop={prices.intro} />
           </p>
         ) : null}
@@ -29,11 +29,13 @@ export function PriceSection({ prices }: { prices: NonNullable<TreatmentView["pr
           {prices.items.map((item, i) => (
             <div
               key={`${item.label}-${i}`}
-              className="flex justify-between gap-3 border-t border-line py-[15px] text-[15px] last:border-b md:py-4 md:text-[16px]"
+              // 16px rows and a 14px note on mobile too (the design's 15 / 13, raised to the
+              // body / small-text minimums).
+              className="flex justify-between gap-3 border-t border-line py-[15px] text-body last:border-b md:py-4"
             >
               <dt>
                 <ResponsiveText mobile={item.mobileLabel} desktop={item.label} />
-                {item.note ? <span className="text-[13px] text-muted md:text-[14px]"> · {item.note}</span> : null}
+                {item.note ? <span className="text-small text-muted"> · {item.note}</span> : null}
               </dt>
               <dd className="font-semibold whitespace-nowrap">{item.price}</dd>
             </div>

@@ -207,14 +207,14 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
               aria-label={homeLabel}
               onClick={onNavigate}
               // White plate behind the dark logo in Windows high contrast (dark canvas), as in the header.
-              className="rounded-sm forced-colors:bg-white forced-colors:outline-[color:CanvasText] forced-colors:forced-color-adjust-none"
+              className="flex min-h-11 items-center rounded-sm forced-colors:bg-white forced-colors:outline-[color:CanvasText] forced-colors:forced-color-adjust-none"
             >
               <Image
                 src={site.brand.logoDark}
                 alt=""
                 width={site.brand.logoWidth}
                 height={site.brand.logoHeight}
-                className="h-[26px] w-auto"
+                className="h-[22px] w-auto"
               />
             </Link>
             <button

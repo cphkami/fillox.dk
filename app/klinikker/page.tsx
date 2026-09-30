@@ -20,14 +20,15 @@ export default function ClinicsPage() {
     <>
       <section aria-labelledby="klinikker-title" className={cn(containerClasses("none"), "md:px-surface")}>
         <div className="flex flex-col gap-4 px-5 py-6 md:block md:rounded-[24px] md:bg-sand md:px-14 md:py-20 md:text-center xl:py-fluid-80">
-          <Eyebrow className="mb-[18px] max-md:hidden">{hero.eyebrow}</Eyebrow>
+          {/* From 1280px the eyebrow → H1 → intro gaps grow with the H1 (as the /kontakt hero). */}
+          <Eyebrow className="mb-[18px] max-md:hidden xl:mb-fluid-18">{hero.eyebrow}</Eyebrow>
           <h1
             id="klinikker-title"
-            className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-5 md:text-[52px] md:leading-[1.02] lg:text-h1"
+            className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-5 md:text-[52px] md:leading-[1.02] lg:text-h1 xl:mb-fluid-20"
           >
             {hero.title}
           </h1>
-          <p className="text-[16px] leading-[1.7] text-muted md:mx-auto md:max-w-[52ch] md:text-[18px] md:leading-[1.75] xl:text-lead">
+          <p className="text-[16px] leading-[1.7] text-muted md:mx-auto md:max-w-[52ch] md:text-lead md:leading-[1.75]">
             <ResponsiveText mobile={hero.introShort} desktop={hero.intro} />
           </p>
           <ClinicMap label={map.label} image={map.image} pins={map.pins} clinics={clinics} className="md:hidden" />

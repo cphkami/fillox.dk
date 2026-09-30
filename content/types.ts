@@ -203,7 +203,6 @@ export type Bestseller = {
   mobileDescription?: string;
   priceFrom: number;
   href: string;
-  highlighted?: boolean;
 };
 
 /* --------------------------------------------------------------------- Team */

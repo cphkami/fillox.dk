@@ -11,10 +11,10 @@ const tones = {
 } as const;
 
 const sizes = {
-  /** 12px · 700 · +2px — the default eyebrow on every page. */
-  sm: "text-[12px] font-bold tracking-[2px]",
-  /** 14px · 600 · +.2em — the desktop hero eyebrow ("Æstetisk medicin"). */
-  lg: "text-[14px] font-semibold tracking-[.2em]",
+  /** 12px (`text-micro`, 13 at 1600) · 700 · +2px — the default eyebrow on every page. */
+  sm: "text-micro font-bold tracking-[2px]",
+  /** 14px (`text-small`, 15 at 1600) · 600 · +.2em — the desktop hero eyebrow ("Æstetisk medicin"). */
+  lg: "text-small font-semibold tracking-[.2em]",
 } as const;
 
 type EyebrowProps = {

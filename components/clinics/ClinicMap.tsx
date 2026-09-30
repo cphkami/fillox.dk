@@ -67,7 +67,7 @@ export function ClinicMap({ label, image, pins, clinics, className }: ClinicMapP
                       soon ? "border-[3px] border-plum bg-cream" : "bg-plum",
                     )}
                   />
-                  <span className="rounded-full bg-white px-2.5 py-1 text-[12px] leading-[1.35] font-semibold whitespace-nowrap text-plum shadow-[0_2px_8px_rgba(36,39,36,.1)] transition-colors group-hover:bg-plum group-hover:text-cream">
+                  <span className="rounded-full bg-white px-2.5 py-1 text-micro leading-[1.35] font-semibold whitespace-nowrap text-plum shadow-[0_2px_8px_rgba(36,39,36,.1)] transition-colors group-hover:bg-plum group-hover:text-cream">
                     {clinic.name}
                     {soon && clinic.openingNote ? <span className="sr-only">{`, ${clinic.openingNote}`}</span> : null}
                   </span>

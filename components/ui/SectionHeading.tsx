@@ -4,7 +4,7 @@ import { Eyebrow } from "./Eyebrow";
 
 type SectionHeadingProps = {
   title: ReactNode;
-  /** Optional paragraph under the title (16px/1.75, max 56ch). */
+  /** Optional paragraph under the title (16px/1.75 → 18px at 1600 via `text-body`, max 56ch). */
   intro?: ReactNode;
   /** Optional eyebrow above the title. */
   eyebrow?: ReactNode;
@@ -18,7 +18,9 @@ type SectionHeadingProps = {
    * - "tight" (default) 1.1 — 6a "Vores bestsellers"; 6alb all three H2s; 6b "Del betalingen op i
    *   rater"; 6c/6bx practitioner H2, "Vælg din mængde" / "Betal pr. område", "Læs mere om …";
    *   6om "Hvorfor vælge Fillox".
-   * - "normal" (line-height: normal, one line = 60px instead of 44px) — 6a "Vi fremkalder, vi
+   * - "normal" (the design's line-height: normal, one line = 60px instead of 44px; built as 1.1 plus
+   *   .2em padding above and below, so a single line is identical and a wrapped title keeps a
+   *   1.1 line gap instead of 1.5) — 6a "Vi fremkalder, vi
    *   forandrer ikke", "Mød dem, der behandler dig", "Her finder du Fillox"; 6om "Mød vores
    *   behandlere"; 6c/6bx "Om behandlingen", "Resultater med …", "Ofte stillede spørgsmål",
    *   "Klar til at booke?"; 6ko "Besøg os".
@@ -41,7 +43,7 @@ type SectionHeadingProps = {
 
 const leadings = {
   tight: "leading-[1.15] md:leading-[1.1]",
-  normal: "leading-[1.15] md:leading-normal",
+  normal: "leading-[1.15] md:py-[.2em] md:leading-[1.1]",
 } as const;
 
 const introGaps = { 12: "mt-3", 16: "mt-4" } as const;
@@ -86,7 +88,7 @@ export function SectionHeading({
       {intro ? (
         <p
           className={cn(
-            "max-w-[56ch] text-[16px] leading-[1.75]",
+            "max-w-[56ch] text-body leading-[1.75]",
             introGaps[introGap],
             centered && "mx-auto",
             tone === "light" ? "text-blush" : "text-muted",

@@ -7,19 +7,26 @@ import { Responsive } from "./Responsive";
 /**
  * Renders the typed article body (content/types.ts `BlogBlock`). Type sizes from 6art
  * (desktop: lead 19px, body 17px/1.75, H2 28px) and mar (mobile: lead 18px, body
- * 17px/1.7, H2 22px). Blocks without a design (h3, quote, tip, image) follow the same
- * visual language. The parent sets the vertical rhythm (gap 16px / 18px).
+ * 17px/1.7, H2 22px); from 1280px they grow with the type scale (lead `text-title`, body
+ * `text-body-lg`, H2 `text-h3-lg`). Blocks without a design (h3, quote, tip, image) follow
+ * the same visual language. The parent sets the vertical rhythm (gap 16px / 18px, growing
+ * to ~22px at 1600 with the type, like the space above H2s and H3s).
+ *
+ * Prose keeps one reading measure from 768px: paragraphs and lists 57ch (≤ 75 characters a
+ * line), the lead 51ch, which is the same width at its larger size (19 vs 17px), so lead and
+ * body share one right edge. Headings, cards and figures use the full 720px column.
  */
 export function ArticleBody({ blocks }: { blocks: BlogBlock[] }) {
   return blocks.map((block, i) => <Block key={i} block={block} />);
 }
 
-const bodyText = "text-[17px] leading-[1.7] text-muted md:leading-[1.75]";
+/** Body copy: 17px (19px at 1600), capped at a 57ch line (≤ 75 characters) from 768px. */
+const bodyText = "text-body-lg leading-[1.7] text-muted md:max-w-[57ch] md:leading-[1.75]";
 
 function Block({ block }: { block: BlogBlock }) {
   switch (block.type) {
     case "lead":
-      return <p className="text-[18px] leading-[1.65] text-ink md:text-[19px] md:leading-[1.7]">{block.text}</p>;
+      return <p className="text-[18px] leading-[1.65] text-ink md:max-w-[51ch] md:text-[19px] md:leading-[1.7] xl:text-title">{block.text}</p>;
 
     case "paragraph":
       return (
@@ -30,14 +37,14 @@ function Block({ block }: { block: BlogBlock }) {
 
     case "h2":
       return (
-        <h2 id={block.id} className="mt-3 text-[22px] font-semibold tracking-display md:mt-[22px] md:text-[28px] md:leading-[1.2]">
+        <h2 id={block.id} className="mt-3 text-[22px] font-semibold tracking-display md:mt-[22px] md:text-[28px] md:leading-[1.2] xl:mt-fluid-22 xl:text-h3-lg">
           {block.text}
         </h2>
       );
 
     case "h3":
       return (
-        <h3 id={block.id} className="mt-2 text-[19px] leading-[1.3] font-semibold tracking-[-.01em] md:mt-3 md:text-[21px]">
+        <h3 id={block.id} className="mt-2 text-[19px] leading-[1.3] font-semibold tracking-[-.01em] md:mt-3 md:text-[21px] xl:mt-fluid-12 xl:text-title-lg">
           {block.text}
         </h3>
       );
@@ -47,7 +54,7 @@ function Block({ block }: { block: BlogBlock }) {
       return (
         <List
           className={cn(
-            "grid gap-2 pl-5 text-[17px] leading-[1.6] text-muted",
+            "grid gap-2 pl-5 text-body-lg leading-[1.6] text-muted md:max-w-[57ch]",
             block.style === "number" ? "list-decimal" : "list-disc",
           )}
         >
@@ -61,18 +68,18 @@ function Block({ block }: { block: BlogBlock }) {
     case "quote":
       return (
         <figure className="my-2 border-l-2 border-plum pl-5 md:pl-6">
-          <blockquote className="text-[19px] leading-[1.55] font-medium tracking-[-.01em] text-ink md:text-[21px]">
+          <blockquote className="text-[19px] leading-[1.55] font-medium tracking-[-.01em] text-ink md:text-[21px] xl:text-title-lg">
             <p>{block.text}</p>
           </blockquote>
-          {block.cite ? <figcaption className="mt-2 text-[14px] text-muted">{block.cite}</figcaption> : null}
+          {block.cite ? <figcaption className="mt-2 text-small text-muted">{block.cite}</figcaption> : null}
         </figure>
       );
 
     case "tip":
       return (
-        <aside className="rounded-[20px] bg-sand p-5 md:px-7 md:py-6">
+        <aside className="rounded-[20px] bg-sand p-5 md:px-7 md:py-6 xl:px-fluid-28 xl:py-fluid-24">
           {block.title ? <Eyebrow className="mb-2">{block.title}</Eyebrow> : null}
-          <p className="text-[16px] leading-[1.7] text-ink">{block.text}</p>
+          <p className="text-body leading-[1.7] text-ink">{block.text}</p>
         </aside>
       );
 
@@ -82,7 +89,7 @@ function Block({ block }: { block: BlogBlock }) {
           <div className="overflow-hidden rounded-[20px]">
             <Photo image={block.image} sizes="(min-width: 800px) 720px, 100vw" className="aspect-[16/10]" />
           </div>
-          {block.caption ? <figcaption className="mt-2.5 text-[14px] leading-[1.6] text-muted">{block.caption}</figcaption> : null}
+          {block.caption ? <figcaption className="mt-2.5 text-small leading-[1.6] text-muted">{block.caption}</figcaption> : null}
         </figure>
       );
 

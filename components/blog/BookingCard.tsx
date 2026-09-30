@@ -26,11 +26,11 @@ export function BookingCard({ treatmentSlug, eyebrow, note, hideNoteOnMobile }: 
   return (
     <aside
       aria-label={eyebrow}
-      className="flex flex-col gap-3 rounded-[20px] bg-sand p-5 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-5 md:px-7 md:py-6"
+      className="flex flex-col gap-3 rounded-[20px] bg-sand p-5 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-5 md:px-7 md:py-6 xl:px-fluid-28 xl:py-fluid-24"
     >
       <div>
         <Eyebrow className="md:mb-1.5">{eyebrow}</Eyebrow>
-        <p className="text-[18px] font-semibold max-md:mt-3">
+        <p className="text-lead font-semibold max-md:mt-3">
           {name}
           {treatment.priceFrom ? (
             <span className="font-normal text-muted">
@@ -40,7 +40,7 @@ export function BookingCard({ treatmentSlug, eyebrow, note, hideNoteOnMobile }: 
           ) : null}
         </p>
         {note ? (
-          <p className={cn("mt-0.5 text-[14px] text-muted", hideNoteOnMobile && "max-md:hidden")}>{note}</p>
+          <p className={cn("mt-0.5 text-small text-muted", hideNoteOnMobile && "max-md:hidden")}>{note}</p>
         ) : null}
       </div>
       <ButtonLink
@@ -48,7 +48,7 @@ export function BookingCard({ treatmentSlug, eyebrow, note, hideNoteOnMobile }: 
         size="mdTight"
         mobileSize="lg"
         fullWidth="mobile"
-        className="md:px-7!"
+        className="md:px-7! xl:px-fluid-28/32!"
       >
         {ui.bookCta}
       </ButtonLink>

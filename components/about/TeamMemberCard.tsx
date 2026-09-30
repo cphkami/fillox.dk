@@ -19,9 +19,15 @@ import { cn } from "@/lib/cn";
  *   beyond ~1.03:1 at the 1.63 zoom. From 1280px the featured block uses the team grid's
  *   column gap (--team-gap-x, set by TeamSection), so the photo lines up with the first
  *   two grid cards and the text with the last two; the bio measure widens from 50ch to
- *   58ch there (still 16px) so it fills more of its wider cell.
+ *   58ch there so it fills more of its wider cell. Type follows the scale from 1280px
+ *   (names 24 → 28 / 40 → 48, bio 16 → 18, title 14 → 15, link 14 → 16).
+ * - Featured photo: tom-wide.jpg is a 560px-wide portrait padded with blurred sides to
+ *   1320×880, so the 1.63 zoom is the smallest that hides them in the 53:52 slot (zoom 1
+ *   shows ≈ 130px of blur on each side at 1600). It stays soft on wide screens until a
+ *   larger original replaces it.
  * - Tablet 768–1023 (no design): the grid cards sit two per row with the uncropped
- *   portrait at 4:5, capped at 440px high (the 6om crops only fit the 246×340 slot).
+ *   portrait at 4:5, capped at 440px high (the 6om crops only fit the 246×340 slot). The
+ *   featured block splits 0.85fr / 1fr so its bio column keeps a readable measure.
  * - `quote` (6om spec note: "et personligt citat") renders as a small blockquote when set.
  *
  * The whole card links to the practitioner's profile (/behandlere/<slug>). When the
@@ -46,7 +52,9 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
         featured &&
           "min-[560px]:grid min-[560px]:grid-cols-2 min-[560px]:items-center min-[560px]:gap-x-4 min-[560px]:pb-2.5",
         featured &&
-          "md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-10 md:pb-0 lg:gap-14 xl:grid-cols-2 xl:gap-x-(--team-gap-x)",
+          // Tablet (no design): 0.85fr / 1fr so the bio gets ≈ 350px (≈ 44 characters per line
+          // instead of 39); from 1024px the 6om split 1.1fr / 1fr.
+          "md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] md:gap-10 md:pb-0 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14 xl:grid-cols-2 xl:gap-x-(--team-gap-x)",
       )}
     >
       {/*
@@ -99,7 +107,7 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
             "text-[22px] font-semibold tracking-display text-plum",
             featured
               ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px] xl:text-h2"
-              : "md:mt-[22px] md:mb-1 md:text-[24px]",
+              : "md:mt-[22px] md:mb-1 md:text-[24px] xl:text-h3-md",
           )}
         >
           {ctaIsProfile ? (
@@ -113,13 +121,13 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
             </Link>
           )}
         </h3>
-        <p className={cn("text-[13px] text-muted md:text-[14px]", featured ? "md:mb-5 xl:mb-6" : "md:mb-3.5")}>
+        <p className={cn("text-[13px] text-muted md:text-small", featured ? "md:mb-5 xl:mb-6" : "md:mb-3.5")}>
           <ResponsiveText mobile={member.titleShort} desktop={member.title ?? member.role} />
         </p>
         {member.bio ? (
           <p
             className={cn(
-              "text-[15px] leading-[1.65] text-muted md:text-[16px] md:leading-[1.75]",
+              "text-[15px] leading-[1.65] text-muted md:text-body md:leading-[1.75]",
               featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]",
             )}
           >
@@ -129,22 +137,24 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
         {member.quote ? (
           <blockquote
             className={cn(
-              "mt-1.5 border-l-2 border-plum pl-3 text-[15px] leading-[1.6] font-medium text-ink md:text-[16px]",
+              "mt-1.5 border-l-2 border-plum pl-3 text-[15px] leading-[1.6] font-medium text-ink md:text-body",
               featured ? "md:mt-0 md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]" : "md:mt-3.5",
             )}
           >
             <p>{member.quote}</p>
           </blockquote>
         ) : null}
-        <div className={cn("mt-auto md:text-[14px]", !featured && "md:pt-4")}>
+        <div className={cn("mt-auto md:text-ui-sm", !featured && "md:pt-4")}>
           <Link
             href={cta.href}
             className={cn(
               "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-plum transition-colors hover:text-plum-deep",
-              "md:h-auto md:border-b md:pb-[3px] md:text-[14px] md:font-normal",
+              "md:h-auto md:border-b md:pb-[3px] md:text-ui-sm md:font-normal",
               // 6om: Dr. Tom's link is an ink inline-block; the grid cards use an inline plum span.
               featured ? "md:inline-block md:border-ink md:text-ink md:hover:text-plum" : "md:inline md:border-plum",
-              ctaIsProfile ? stretched : "relative z-10",
+              // A separate CTA (Dr. Tom) gets an invisible 44px hit area from 768px, where the link
+              // itself is only as tall as its text.
+              ctaIsProfile ? stretched : "relative z-10 md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3",
             )}
           >
             {cta.label}

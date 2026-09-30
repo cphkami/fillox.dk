@@ -17,13 +17,12 @@ export const metadata: Metadata = pageMetadata(meta, PATH);
 /** Treatment page for a price row, when the row names one that has a page. */
 const rowHref = (slug: string | undefined) => (slug && getTreatment(slug) ? treatmentHref(slug) : undefined);
 
-/** Price cards with prices formatted on the server (lib/format), ready for the client accordion. */
+/** Price cards with prices formatted on the server (lib/format), ready for the client component. */
 const categories: PriceCategoryView[] = priceCards.map((card) => ({
   id: card.id,
   title: card.title,
   eyebrow: card.eyebrow,
   chipLabel: card.chipLabel,
-  countLabel: pricesPage.count(card.rows.length),
   rows: card.rows.map((row) => ({
     label: row.label,
     note: row.note,

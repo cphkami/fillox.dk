@@ -20,18 +20,18 @@ export function ReviewSection({ reviews }: { reviews: Review[] }) {
               <p
                 role="img"
                 aria-label={`${rating} ${ui.outOf} 5`}
-                className="tracking-[4px] text-plum md:mb-[18px] md:text-[18px]"
+                className="tracking-[4px] text-plum md:mb-[18px] md:text-lead"
               >
                 {"★".repeat(rating)}
               </p>
-              <blockquote className="text-[17px] leading-[1.55] font-medium md:mx-auto md:mb-4 md:max-w-[30em] md:text-[24px] md:leading-[1.4] md:font-semibold md:tracking-display lg:text-quote">
+              <blockquote className="text-[17px] leading-[1.55] font-medium md:mx-auto md:mb-4 md:max-w-[30em] md:text-h3-md md:leading-[1.4] md:font-semibold md:tracking-display lg:text-quote">
                 <p>
                   {quoteOpen}
                   <ResponsiveText mobile={review.quoteShort} desktop={review.quote} />
                   {quoteClose}
                 </p>
               </blockquote>
-              <figcaption className="text-[13px] text-muted md:text-[14px]">
+              <figcaption className="text-[13px] text-muted md:text-small">
                 {review.author}
                 {separator}
                 {review.source}

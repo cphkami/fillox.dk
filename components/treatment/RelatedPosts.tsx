@@ -9,7 +9,8 @@ import type { TreatmentView } from "./treatmentView";
  * Desktop grid, photo height and card image `sizes` by number of posts (one post: a wide
  * card, photo left). Photos are 220px tall up to 1280px and grow to 300px at the 1600px
  * canvas, so they keep the design's proportion as the columns widen. `sizes` = the widest
- * slot on the 1600px canvas (1440px content width, 24px gaps).
+ * slot on the 1600px canvas (1440px content width; gaps 24px up to 1280, 29px at 1600, so the
+ * values ask for a few px more than the slot).
  * Three posts on a tablet (768–1023px) would be 213px-wide columns with 4-line titles, so
  * there they stack as wide cards (photo left, 2 : 3) and become the design's 3 columns at lg.
  */
@@ -34,7 +35,7 @@ const layouts = {
     grid: "md:grid-cols-1 lg:grid-cols-3",
     card: "md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:flex",
     photo: "md:h-full md:min-h-[220px] lg:h-fluid-220/300 lg:min-h-0",
-    body: "md:px-8 md:py-7 lg:px-7 lg:pt-[26px] lg:pb-[30px]",
+    body: "md:px-8 md:py-7 lg:px-7 lg:pt-[26px] lg:pb-[30px] xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30",
     // "FOREBYGGELSE · 3 MIN LÆSNING" wraps in columns narrower than the design canvas's.
     longMetaFrom: "canvas",
     sizes: "(min-width: 1600px) 464px, (min-width: 1024px) 30vw, 40vw",
@@ -50,7 +51,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
   const single = posts.items.length === 1;
   return (
     <Container as="section" aria-labelledby={copy.sectionIds.posts} className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
-      <div className="mb-4 md:mb-9 md:flex md:items-end md:justify-between md:gap-6">
+      <div className="mb-4 md:mb-9 md:flex md:items-end md:justify-between md:gap-6 xl:mb-fluid-36">
         <div>
           <Eyebrow className="mb-3.5 max-md:hidden">{posts.eyebrow}</Eyebrow>
           <h2
@@ -60,7 +61,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
             {posts.title}
           </h2>
           {posts.intro ? (
-            <p className="max-w-[56ch] text-[16px] leading-[1.75] text-muted max-md:hidden">{posts.intro}</p>
+            <p className="max-w-[56ch] text-body leading-[1.75] text-muted max-md:hidden">{posts.intro}</p>
           ) : null}
         </div>
         {posts.link ? (
@@ -70,7 +71,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
         ) : null}
       </div>
 
-      <ul className={cn("flex flex-col gap-4 md:grid md:gap-6", layout.grid)}>
+      <ul className={cn("flex flex-col gap-4 md:grid md:gap-fluid-24", layout.grid)}>
         {posts.items.map((post) => {
           const kind = post.kind ?? post.category;
           return (
@@ -86,14 +87,17 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                   sizes={layout.sizes}
                   className={cn("shrink-0 max-md:hidden", layout.photo)}
                 />
+                {/* Card paddings grow with the type from 1280 (`*-fluid-N`). */}
                 <div
                   className={cn(
                     "flex flex-1 flex-col",
-                    layout.body || "md:px-5 md:pt-[26px] md:pb-[30px] lg:px-7",
-                    single && "md:justify-center md:px-10 md:py-10 lg:px-14",
+                    single
+                      ? "md:justify-center md:px-10 md:pt-[26px] md:pb-[30px] lg:px-14 xl:px-fluid-56 xl:pt-fluid-26 xl:pb-fluid-30"
+                      : layout.body ||
+                          "md:px-5 md:pt-[26px] md:pb-[30px] lg:px-7 xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30",
                   )}
                 >
-                  <p className="text-[12px] text-muted md:mb-2.5 md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
+                  <p className="text-micro text-muted md:mb-2.5 md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
                     {/* Short meta ("Guide · 4 min") on mobile, the long label from md (three
                         columns: from the 1180px design canvas). */}
                     <span className={layout.longMetaFrom === "md" ? "md:hidden" : "min-[73.75rem]:hidden"}>
@@ -104,18 +108,25 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                       {kind} · {post.readingTime}
                     </span>
                   </p>
-                  <h3 className="mt-1 text-[16px] leading-[1.4] font-semibold md:mt-0 md:mb-[18px] md:text-[20px] md:leading-[1.3] md:tracking-display">
+                  {/* The single wide card's title grows 20 → 26px from 1280 (one step above the
+                      excerpt's 18px at 1600), as the /blog featured card does; ≤ 1280 unchanged. */}
+                  <h3
+                    className={cn(
+                      "mt-1 text-[16px] leading-[1.4] font-semibold md:mt-0 md:mb-[18px] md:text-h4 md:leading-[1.3] md:tracking-display",
+                      single && "xl:mb-fluid-18 xl:text-[length:clamp(20px,calc(-4px+1.875vw),26px)]",
+                    )}
+                  >
                     <Link href={blogPostHref(post.slug)} className="after:absolute after:inset-0 after:content-['']">
                       {post.title}
                     </Link>
                   </h3>
                   {single ? (
-                    <p className="mb-[22px] max-w-[52ch] text-[16px] leading-[1.75] text-muted max-md:hidden">{post.excerpt}</p>
+                    <p className="mb-[22px] max-w-[52ch] text-body leading-[1.75] text-muted max-md:hidden xl:mb-fluid-22">{post.excerpt}</p>
                   ) : null}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "self-start border-b border-ink pb-[3px] text-[14px] max-md:hidden",
+                      "self-start border-b border-ink pb-[3px] text-ui-sm max-md:hidden",
                       !single && "mt-auto",
                     )}
                   >

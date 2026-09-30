@@ -59,7 +59,7 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
                   className="h-[280px] [--photo-radius:20px] lg:aspect-[5/6] lg:h-auto lg:shadow-[0_10px_30px_rgba(107,56,64,.10)] lg:[--photo-radius:24px]"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                 />
-                <span className="mt-2 block text-[14px] text-muted lg:mt-3.5 lg:px-1.5 lg:text-[16px] lg:italic">
+                <span className="mt-2 block text-[14px] text-muted lg:mt-3.5 lg:px-1.5 lg:text-body lg:italic">
                   {item.caption}
                 </span>
               </Link>

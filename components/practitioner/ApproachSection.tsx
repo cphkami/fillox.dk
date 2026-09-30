@@ -20,11 +20,11 @@ export function ApproachSection({ approach, titleId }: ApproachSectionProps) {
 
         <ul className="flex flex-col gap-3 md:gap-4 lg:grid lg:grid-cols-3 lg:gap-6">
           {approach.items.map((item) => (
-            <li key={item.title} className="rounded-[18px] bg-white px-5 py-[18px] md:rounded-[24px] md:p-[34px] 2xl:p-10">
-              <h3 className="mb-1 text-[17px] font-semibold text-plum md:mb-2.5 md:text-h3 md:tracking-display">
+            <li key={item.title} className="rounded-[18px] bg-white px-5 py-[18px] md:rounded-[24px] md:p-[34px] xl:p-fluid-34/40">
+              <h3 className="mb-1 text-[17px] font-semibold text-plum md:mb-2.5 md:py-[.2em] md:text-h3 md:leading-[1.1] md:tracking-display">
                 {item.title}
               </h3>
-              <p className="text-[15px] leading-[1.6] text-muted md:text-[16px] md:leading-[1.75]">
+              <p className="text-[15px] leading-[1.6] text-muted md:text-body md:leading-[1.75]">
                 <ResponsiveText mobile={item.textShort} desktop={item.text} />
               </p>
             </li>

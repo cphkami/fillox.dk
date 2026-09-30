@@ -21,18 +21,19 @@ export default function NotFound() {
         <Eyebrow>{copy.eyebrow}</Eyebrow>
         <h1
           id="not-found-title"
-          className="mt-4 text-[36px] leading-[1.08] font-semibold tracking-display md:mt-5 md:text-[64px] md:leading-[1.02] md:tracking-hero xl:text-h1"
+          className="mt-4 text-[36px] leading-[1.08] font-semibold tracking-display md:mt-5 md:text-h1 md:leading-[1.02] md:tracking-hero"
         >
           {copy.title}
         </h1>
-        <p className="mx-auto mt-5 max-w-[46ch] text-[16px] leading-[1.7] text-muted md:mt-6 md:text-[18px] md:leading-[1.75] xl:text-lead">
+        <p className="mx-auto mt-5 max-w-[46ch] text-[16px] leading-[1.7] text-muted md:mt-6 md:text-lead md:leading-[1.75]">
           {copy.text}
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-4 md:mt-9 md:flex-row md:gap-[18px]">
           <ButtonLink href={site.booking.href} size="md" mobileSize="lg" fullWidth="mobile">
             {ui.bookCta}
           </ButtonLink>
-          <ButtonLink href="/" variant="textLink">
+          {/* An invisible hit area (12px above and below) makes the text link a 44px touch target. */}
+          <ButtonLink href="/" variant="textLink" className="relative after:absolute after:-inset-x-1 after:-inset-y-3">
             {copy.homeCta}
           </ButtonLink>
         </div>

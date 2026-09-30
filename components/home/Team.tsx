@@ -37,7 +37,7 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
           className="lg:mb-3.5 lg:text-center"
         />
 
-        <TeamLink link={copy.link} className="mb-fluid-48 text-center text-[14px] leading-[normal] max-lg:hidden" />
+        <TeamLink link={copy.link} className="mb-fluid-48 text-center text-ui-sm leading-[normal] max-lg:hidden" />
 
         <ScrollRow
           aria-label={copy.listLabel}
@@ -61,12 +61,12 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
                 <h3
                   className={cn(
                     "mt-2.5 text-[16px] font-semibold text-plum",
-                    "lg:mt-[18px] lg:border-t lg:border-plum lg:pt-3.5 lg:text-[20px] lg:tracking-display lg:text-ink lg:group-hover:text-plum",
+                    "lg:mt-[18px] lg:border-t lg:border-plum lg:pt-3.5 lg:text-h4 lg:tracking-display lg:text-ink lg:group-hover:text-plum",
                   )}
                 >
                   {member.name}
                 </h3>
-                <p className="text-[13px] text-muted lg:mt-1 lg:text-[12px] lg:tracking-[2px] lg:text-plum lg:uppercase">
+                <p className="text-[13px] text-muted lg:mt-1 lg:text-micro lg:tracking-[2px] lg:text-plum lg:uppercase">
                   {member.role}
                 </p>
               </Link>

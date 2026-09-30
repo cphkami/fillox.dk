@@ -32,20 +32,24 @@ const PHONE_PATTERN = /^\+?[\d\s()-]+$/;
 const MOBILE_QUERY = "(max-width: 47.99rem)";
 
 /**
- * Mobile (mc): white pills, 52px high. Desktop (6ko): cream fields, 16px radius, 58px high.
- * Typed text is 16px everywhere (smaller text makes iOS zoom in on focus); placeholders are
- * 15px on mobile as in mc, which does not trigger the zoom.
+ * Mobile (mc): white pills, 52px high. Desktop (6ko): cream fields, 16px radius, 59px high.
+ * Typed text is 16px up to 1280px (smaller text makes iOS zoom in on focus), then grows with
+ * the body text (`text-body`, 18px at 1600) while the fields grow 59 → 64px (textarea
+ * 120 → 132px) so the text keeps its inset. Placeholders are 15px on mobile as in mc, which
+ * does not trigger the zoom.
  */
 const fieldBase =
-  "block w-full border border-line bg-white px-5 text-[16px] text-ink transition-colors hover:border-rule focus:border-plum aria-[invalid=true]:border-plum md:bg-cream";
+  "block w-full border border-line bg-white px-5 text-[16px] text-ink transition-colors hover:border-rule focus:border-plum aria-[invalid=true]:border-plum md:bg-cream xl:text-body";
 /**
- * Placeholder colours: --color-placeholder on mobile (mc), --color-placeholder-soft on
- * desktop (6ko). The soft one is defined on the form card (FormCard) until it becomes a
- * token in app/globals.css.
+ * One placeholder colour everywhere, --color-placeholder (4.7:1 on cream, 5.3:1 on white).
+ * The design's lighter desktop grey (6ko, #9a8b87) failed WCAG AA and is gone.
  */
-const placeholderColor =
-  "placeholder:text-placeholder max-md:placeholder:text-[15px] md:placeholder:text-(--color-placeholder-soft)";
-const inputClasses = cn(fieldBase, placeholderColor, "h-[52px] rounded-full md:h-[59px] md:rounded-[16px]");
+const placeholderColor = "placeholder:text-placeholder max-md:placeholder:text-[15px]";
+const inputClasses = cn(
+  fieldBase,
+  placeholderColor,
+  "h-[52px] rounded-full md:h-[59px] md:rounded-[16px] xl:h-fluid-59/64",
+);
 
 type ContactFormProps = {
   copy: ContactFormCopy;
@@ -107,10 +111,11 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           ref={successRef}
           tabIndex={-1}
           role="status"
-          className="rounded-[18px] bg-white px-5 py-5 focus:outline-none md:rounded-[16px] md:bg-cream md:px-6 md:py-6"
+          className="rounded-[18px] bg-white px-5 py-5 focus:outline-none md:rounded-[16px] md:bg-cream md:px-6 md:py-6 xl:p-fluid-24"
         >
-          <p className="text-[18px] font-semibold tracking-display text-ink">{copy.success.title}</p>
-          <p className="mt-2 text-[15px] leading-[1.7] text-muted">{copy.success.text}</p>
+          <p className="text-lead font-semibold tracking-display text-ink">{copy.success.title}</p>
+          <p className="mt-2 text-body-sm leading-[1.7] text-muted">{copy.success.text}</p>
+          {/* 44px touch target: a min-height on mobile, an invisible hit area from md (tablet). */}
           <button
             type="button"
             onClick={() => {
@@ -120,7 +125,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
               focusNext.current = "name";
               setStatus("idle");
             }}
-            className="mt-4 inline-flex items-center text-[14px] text-ink hover:text-plum max-md:mt-2 max-md:min-h-11"
+            className="mt-4 inline-flex items-center text-ui-sm text-ink hover:text-plum max-md:mt-2 max-md:min-h-11 md:relative md:after:absolute md:after:-inset-x-1 md:after:-inset-y-2.5"
           >
             <span className="border-b border-current pb-[3px]">{copy.success.again}</span>
           </button>
@@ -279,7 +284,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                     // there (and the overlay's copy of it is hidden below).
                     "text-transparent forced-colors:text-[color:CanvasText]"
                   : // Native text (no JS / before hydration): placeholder colour while the empty option is chosen.
-                    "has-[option[value='']:checked]:text-placeholder md:has-[option[value='']:checked]:text-(--color-placeholder-soft)",
+                    "has-[option[value='']:checked]:text-placeholder",
               )}
             >
               <option value="">{fields.clinic.placeholder}</option>
@@ -294,8 +299,8 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
               <span
                 aria-hidden="true"
                 className={cn(
-                  "pointer-events-none absolute inset-0 flex items-center px-[21px] text-[16px] max-md:text-[15px] md:justify-between",
-                  clinic ? "text-ink" : "text-placeholder md:text-(--color-placeholder-soft)",
+                  "pointer-events-none absolute inset-0 flex items-center px-[21px] text-[16px] max-md:text-[15px] md:justify-between xl:text-body",
+                  clinic ? "text-ink" : "text-placeholder",
                 )}
               >
                 <span className="truncate forced-colors:invisible">{clinic || fields.clinic.placeholder}</span>
@@ -304,7 +309,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
             ) : (
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-[21px] text-[16px] text-placeholder md:text-(--color-placeholder-soft)"
+                className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-[21px] text-[16px] text-placeholder xl:text-body"
               >
                 ▾
               </span>
@@ -325,13 +330,17 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
             className={cn(
               fieldBase,
               placeholderColor,
-              "h-[120px] resize-none rounded-[18px] py-3.5 leading-normal md:rounded-[16px] md:py-4",
+              "h-[120px] resize-none rounded-[18px] py-3.5 leading-normal md:rounded-[16px] md:py-4 xl:h-fluid-120/132",
             )}
           />
         </FieldRow>
 
         <div className={cn("md:col-span-2", !copy.consent.showOnDesktop && "md:hidden")}>
-          <label htmlFor={id("consent")} className="flex cursor-pointer items-start gap-2.5 text-[13px] leading-[1.5] text-muted">
+          {/* min-h-11: the whole row (checkbox + text) is a 44px touch target. */}
+          <label
+            htmlFor={id("consent")}
+            className="flex min-h-11 cursor-pointer items-start gap-2.5 text-fine leading-[1.5] text-muted"
+          >
             <span className="relative flex size-[22px] shrink-0">
               <input
                 ref={consentRef}
@@ -367,7 +376,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
         </div>
 
         {submitFailed ? (
-          <p role="alert" className="text-[14px] leading-[1.6] font-semibold text-plum md:col-span-2">
+          <p role="alert" className="text-small leading-[1.6] font-semibold text-plum md:col-span-2">
             {copy.errors.submit}
           </p>
         ) : null}
@@ -402,14 +411,15 @@ function FormCard({
   return (
     <div
       className={cn(
-        // --color-placeholder-soft: the desktop (6ko) placeholder colour, used by the fields.
-        "rounded-[24px] bg-sand px-5 py-7 [--color-placeholder-soft:#9a8b87] md:bg-white md:p-10",
+        "rounded-[24px] bg-sand px-5 py-7 md:bg-white md:p-10 xl:p-fluid-40/48",
         className,
       )}
     >
+      {/* One short line at every width, so line-height normal (as in 6ko) stays: the
+          leading-[1.1] py-[.2em] swap moves the glyphs by a sub-pixel at 768. */}
       <h2
         id={titleId}
-        className="mb-3.5 text-[28px] leading-[1.15] font-semibold tracking-display text-ink md:mb-6 md:leading-normal"
+        className="mb-3.5 text-[28px] leading-[1.15] font-semibold tracking-display text-ink md:mb-6 md:text-h3-lg md:leading-normal xl:mb-fluid-24"
       >
         {title}
       </h2>
@@ -433,7 +443,7 @@ function FieldRow({
 }) {
   return (
     <div className={cn("flex min-w-0 flex-col gap-1.5 md:gap-2", className)}>
-      <label htmlFor={id} className="text-[14px] font-semibold text-ink">
+      <label htmlFor={id} className="text-ui-sm font-semibold text-ink">
         {label}
       </label>
       {children}
@@ -444,7 +454,7 @@ function FieldRow({
 
 function ErrorText({ id, className, children }: { id: string; className?: string; children: ReactNode }) {
   return (
-    <p id={id} className={cn("mt-0.5 text-[13px] leading-[1.5] font-semibold text-plum", className)}>
+    <p id={id} className={cn("mt-0.5 text-fine leading-[1.5] font-semibold text-plum", className)}>
       {children}
     </p>
   );

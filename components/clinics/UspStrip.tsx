@@ -19,8 +19,8 @@ export function UspStrip({ items, label, className }: UspStripProps) {
       <ul className="grid gap-8 rounded-[24px] bg-plum p-10 text-blush md:grid-cols-3 lg:gap-10 lg:p-14 xl:gap-fluid-40 xl:px-16 xl:py-fluid-56 2xl:px-20">
         {items.map((item) => (
           <li key={item.title}>
-            <h2 className="mb-2.5 text-[12px] font-bold tracking-[2px] text-powder uppercase">{item.title}</h2>
-            <p className="text-[16px] leading-[1.75]">{item.text}</p>
+            <h2 className="mb-2.5 text-micro font-bold tracking-[2px] text-powder uppercase">{item.title}</h2>
+            <p className="text-body leading-[1.75]">{item.text}</p>
           </li>
         ))}
       </ul>

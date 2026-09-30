@@ -12,6 +12,10 @@ type TeamRowProps = { members: TeamMember[]; titleId: string };
  * Styled like the home page team row (6a / mf): from 768px a powder panel with the
  * portraits in a 4-column row; below 768px a horizontal scroll-snap row on the page
  * background. Every portrait links to that practitioner's profile.
+ *
+ * Names: the home row's 20px up to 1280px, then 20 → 25px at 1600 (the portraits here are
+ * much taller than the home row's, ≈ 326×460 at 1600); no token runs 20 → 25, hence the clamp
+ * (same formula as the type scale).
  */
 export function TeamRow({ members, titleId }: TeamRowProps) {
   const copy = practitionerPage.otherTeam;
@@ -44,10 +48,10 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
                   className="h-[190px] [--photo-radius:18px] md:aspect-[190/268] md:h-auto md:[--photo-radius:20px]"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                 />
-                <h3 className="mt-2.5 text-[16px] font-semibold text-plum md:mt-[18px] md:border-t md:border-plum md:pt-3.5 md:text-[20px] md:tracking-display md:text-ink md:group-hover:text-plum">
+                <h3 className="mt-2.5 text-[16px] font-semibold text-plum md:mt-[18px] md:border-t md:border-plum md:pt-3.5 md:text-h4 md:tracking-display xl:text-[length:clamp(20px,1.5625vw,25px)] md:text-ink md:group-hover:text-plum">
                   {member.name}
                 </h3>
-                <p className="text-[13px] text-muted md:mt-1 md:text-[12px] md:tracking-[2px] md:text-plum md:uppercase">
+                <p className="text-[13px] text-muted md:mt-1 md:text-micro md:tracking-[2px] md:text-plum md:uppercase">
                   {member.role}
                 </p>
               </Link>
@@ -55,7 +59,7 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
           ))}
         </ScrollRow>
 
-        <p className="text-[15px] leading-[44px] md:mt-fluid-48 md:text-center md:text-[14px] md:leading-normal">
+        <p className="text-[15px] leading-[44px] md:mt-fluid-48 md:text-center md:text-ui-sm md:leading-normal">
           <ArrowLink href={copy.link.href} className="max-md:text-[15px]">
             {copy.link.label}
           </ArrowLink>

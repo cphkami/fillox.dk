@@ -145,7 +145,7 @@ export const team: TeamMember[] = [
           },
           {
             name: "Signatur ansigtsbehandling",
-            description: "Peeling, maske og LED med Dr. Dennis Gross.",
+            description: "Peeling, maske og LED med Dr. Dennis\u00a0Gross.",
             price: { kind: "amount", amount: 999 },
             treatmentSlug: "signatur-ansigtsbehandling",
           },

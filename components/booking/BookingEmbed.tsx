@@ -10,7 +10,12 @@ import { TimmaEmbed, type TimmaClinic } from "./TimmaEmbed";
  * The online booking on /booking for the market's provider (config/site.ts → booking):
  * - gecko (fillox.dk): Gecko Booking's calendar for every clinic. Gecko's fluid calendar keeps
  *   its 1280px width (1184px) and is centred in the card: wider, its rows (service ↔ price) and
- *   progress bar spread too far apart to read.
+ *   progress bar spread too far apart to read. Its text (11–14px) is set by Gecko and can't be
+ *   restyled from here. Scaling the iframe up on wide screens was tried and rejected: CSS
+ *   `zoom: 1.125` works in Chrome (content zoomed, Gecko's auto height still fits) but WebKit
+ *   (Safari 26) zooms the content without growing its viewport, so the prices, the chevrons
+ *   and the "Videre" button are cut off; a `transform: scale()` would need its own height
+ *   bookkeeping around Gecko's height script and its scroll-into-view (`geckoCalcScrollTo`) on load.
  * - timma (fillox.no): a clinic picker + that clinic's TIMMA reservation page at full width.
  *   Only open clinics with a TIMMA id are offered (`npm run check:market` fails without one).
  * Adding a provider = a variant in config/types.ts (BookingConfig) + a case here.

@@ -25,9 +25,13 @@ export function VisitClinics({ title, clinics, clinicsHref, titleId, className }
       <SectionHeading id={titleId} title={title} leading="normal" className="mb-fluid-40" />
       <ul className="grid gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
         {clinics.map((clinic) => (
-          <li key={clinic.slug} className="border-t border-plum pt-5">
+          <li key={clinic.slug} className="border-t border-plum pt-5 xl:pt-fluid-20">
             <h3 className="mb-2 text-h4 font-semibold tracking-display text-ink">
-              <Link href={`${clinicsHref}#${clinic.slug}`} className="transition-colors hover:text-plum">
+              {/* Invisible hit area: the 28px name becomes a 44px touch target (tablet) without moving. */}
+              <Link
+                href={`${clinicsHref}#${clinic.slug}`}
+                className="relative transition-colors after:absolute after:-inset-x-1 after:-inset-y-2 hover:text-plum"
+              >
                 {clinic.name}
               </Link>
             </h3>

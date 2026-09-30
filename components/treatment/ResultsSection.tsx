@@ -44,7 +44,7 @@ function Half({ image, label, tone }: { image: ImageRef; label: string; tone: "b
       <span
         aria-hidden="true"
         className={cn(
-          "absolute top-2 left-2 rounded-full bg-cream px-2.5 py-[3px] text-[12px] font-semibold text-ink md:top-3.5 md:left-3.5 md:px-3.5 md:py-1.5 md:tracking-[.12em] md:uppercase",
+          "absolute top-2 left-2 rounded-full bg-cream px-2.5 py-[3px] text-micro font-semibold text-ink md:top-3.5 md:left-3.5 md:px-3.5 md:py-1.5 md:tracking-[.12em] md:uppercase",
           tone === "after" && "md:bg-plum md:text-cream",
         )}
       >
@@ -75,7 +75,7 @@ export function ResultsSection({ results }: { results: NonNullable<TreatmentView
         label={copy.results.scrollLabel}
         className="-mr-5 snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:mr-0 md:overflow-visible [&::-webkit-scrollbar]:hidden"
       >
-        <ul className="flex w-max gap-3 pr-5 md:grid md:w-auto md:grid-cols-3 md:gap-6 md:pr-0">
+        <ul className="flex w-max gap-3 pr-5 md:grid md:w-auto md:grid-cols-3 md:gap-fluid-24 md:pr-0">
           {results.items.map((item, i) => (
             <li key={i} className="w-[300px] flex-none snap-start md:w-auto">
               <figure className="rounded-[20px] bg-white p-2.5 md:rounded-none md:bg-transparent md:p-0">
@@ -83,7 +83,7 @@ export function ResultsSection({ results }: { results: NonNullable<TreatmentView
                   <Half image={item.before} label={copy.results.before} tone="before" />
                   <Half image={item.after} label={copy.results.after} tone="after" />
                 </div>
-                <figcaption className="px-1.5 pt-2.5 pb-1 text-[13px] text-muted md:mt-3.5 md:p-0 md:text-[14px]">
+                <figcaption className="px-1.5 pt-2.5 pb-1 text-small text-muted md:mt-3.5 md:p-0">
                   <ResponsiveText mobile={item.mobileCaption} desktop={item.caption} />
                 </figcaption>
               </figure>

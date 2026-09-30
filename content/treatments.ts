@@ -481,7 +481,6 @@ export const bestsellers: Bestseller[] = [
     // 6a/mf show "fra 999 kr" here, but 6b, 6alb and ma all price Skinbooster from 1.499 kr.
     // TODO: price review (Fillox to confirm; the treatment's priceFrom is used everywhere).
     ...bestsellerTreatment("skinbooster"),
-    highlighted: true,
   },
   {
     number: "04",

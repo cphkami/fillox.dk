@@ -16,18 +16,21 @@ import { cn } from "@/lib/cn";
 export type ButtonVariant = "primary" | "light" | "lightInk" | "outline" | "outlineInk" | "white" | "textLink";
 
 /**
- * Padding is vertical × horizontal · font size (all from the design sections).
- * - xs       10px 22px · 13px (6alb offer cards "Book hos Alberte")
- * - sm       13px 30px · 14px (desktop header "Book tid")
- * - mdTight  14px 30px · 14px ("Alle artikler om …", "Få besked", 6b "Book tid"). For the
- *            14px 32px / 14px 36px one-offs ("Vis flere artikler", "Se alle behandlinger →")
- *            add className="px-8!" / "px-9!".
- * - md       16px 36px · 14px (hero / footer / profile CTAs)
- * - xl       16px 42px · 14px (6c/6bx book band "Book Botox · fra 799 kr")
- * - chip     10px 20px · 14px on desktop (6blog filter chips); 44px high, 0 18px below 768px
- *            (mp / mbl chips, mobile "Book" pills)
- * - lg       52px high, 0 26px · 15px (mobile primary)
- * - compact  44px high, 0 20px · 14px (mobile header "Book tid" only; chips use `chip`)
+ * Padding is vertical × horizontal (from the design sections). Every size uses `text-ui`
+ * (app/globals.css): 15px below 1280px (the design's 13/14px, raised for legibility), 16 → 17px
+ * from 1280 to 1600, where the paddings grow with it (`*-fluid-N/M`). Heights below 1280 → at 1600:
+ * - xs       11px 22px (6alb offer cards "Book hos Alberte")                        44.5 → 47.5
+ * - sm       13px 30px (desktop header "Book tid")                                  48.5 → 53.5
+ * - mdTight  14px 30px ("Alle artikler om …", "Få besked", 6b "Book tid")           50.5 → 55.5
+ *            For the 14px 32px / 14px 36px one-offs ("Vis flere artikler", "Se alle
+ *            behandlinger →") add className="px-8! xl:px-fluid-32/36!" / "px-9! xl:px-fluid-36/40!".
+ * - md       16px 36px (hero / footer / profile CTAs)                               54.5 → 59.5
+ * - xl       16px 42px (6c/6bx book band "Book Botox · fra 799 kr")                  54.5 → 59.5
+ * - chip     11px 20px on desktop (6blog filter chips)                              44.5 → 47.5
+ *            44px high, 0 18px below 768px (mp / mbl chips, mobile "Book" pills)
+ * - lg       52px high, 0 26px (mobile primary)
+ * - compact  44px high, 0 20px (mobile header "Book tid" only; chips use `chip`)
+ * Don't set a font size on a button from a page: the whole site's buttons share `text-ui`.
  */
 export type ButtonSize = "xs" | "sm" | "mdTight" | "md" | "xl" | "chip" | "lg" | "compact";
 
@@ -56,24 +59,24 @@ const variants: Record<ButtonVariant, string> = {
   outline: "rounded-full border border-plum text-plum hover:bg-plum hover:text-cream",
   outlineInk: "rounded-full border border-ink text-ink hover:bg-ink hover:text-cream",
   white: "rounded-full border border-line bg-white text-ink hover:border-plum hover:text-plum",
-  textLink: "border-b border-current pb-[3px] text-[14px] text-ink hover:text-plum",
+  textLink: "border-b border-current pb-[3px] text-ui text-ink hover:text-plum",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  xs: "px-[22px] py-[10px] text-[13px]",
-  sm: "px-[30px] py-[13px] text-[14px]",
-  mdTight: "px-[30px] py-[14px] text-[14px]",
-  md: "px-9 py-4 text-[14px]",
-  xl: "px-[42px] py-4 text-[14px]",
-  chip: "px-5 py-2.5 text-[14px] max-md:h-11 max-md:px-[18px] max-md:py-0",
-  lg: "h-[52px] px-[26px] text-[15px]",
-  compact: "h-11 px-5 text-[14px]",
+  xs: "px-[22px] py-[11px] text-ui xl:px-fluid-22/24",
+  sm: "px-[30px] py-[13px] text-ui xl:px-fluid-30/34 xl:py-fluid-13/14",
+  mdTight: "px-[30px] py-[14px] text-ui xl:px-fluid-30/34 xl:py-fluid-14/15",
+  md: "px-9 py-4 text-ui xl:px-fluid-36/40 xl:py-fluid-16/17",
+  xl: "px-[42px] py-4 text-ui xl:px-fluid-42/48 xl:py-fluid-16/17",
+  chip: "px-5 py-[11px] text-ui max-md:h-11 max-md:px-[18px] max-md:py-0 xl:px-fluid-20/22",
+  lg: "h-[52px] px-[26px] text-ui",
+  compact: "h-11 px-5 text-ui",
 };
 
 const mobileSizes: Record<NonNullable<ButtonStyleProps["mobileSize"]>, string> = {
-  lg: "max-md:h-[52px] max-md:px-[26px] max-md:py-0 max-md:text-[15px]",
-  compact: "max-md:h-11 max-md:px-5 max-md:py-0 max-md:text-[14px]",
-  chip: "max-md:h-11 max-md:px-[18px] max-md:py-0 max-md:text-[14px]",
+  lg: "max-md:h-[52px] max-md:px-[26px] max-md:py-0",
+  compact: "max-md:h-11 max-md:px-5 max-md:py-0",
+  chip: "max-md:h-11 max-md:px-[18px] max-md:py-0",
 };
 
 /**

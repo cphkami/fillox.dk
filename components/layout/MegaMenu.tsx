@@ -22,10 +22,16 @@ type MegaMenuProps = {
  * Desktop "Behandlinger" panel (design 6menu): five treatment columns + promo card.
  *
  * Sized to its content, not to the canvas: the "Priser" dropdown's sibling (white, 20px radius,
- * 12px inset, a 228px sand card with a 20px text inset). The columns are as wide as their
- * longest link and sit 28px apart. From 1280px the promo is a card with a photo beside the
- * columns (panel ~1110px wide); below that (1024–1279) it is a sand strip without photo under
- * the columns, so the panel stays ~870px wide and fits the narrowest canvas.
+ * 12px inset, a 220px sand card with a 20px text inset). The columns are as wide as their
+ * longest link and sit 24px apart. From 1280px the promo is a card beside the columns (panel
+ * 1133px wide) whose photo fills the height the text leaves, so card and columns end on the same
+ * line; below that (1024–1279) it is a sand strip without photo under the columns, so the panel
+ * stays ~900px wide and fits the narrowest canvas.
+ *
+ * Menu type is fixed from 1024px up (title 16px/600, links 15px, promo text 14px, "→" link 15px),
+ * like the other dropdowns. Vertical rhythm: 28px above the titles (28 → 32px from 1280), 6px
+ * title → list, links on a 32px pitch (32 → 34px from 1280), 16px under the last link
+ * (20 → 24px from 1280): the panel is 291px high at 1280 and 310px at 1600.
  */
 export function MegaMenu({ columns, promo, open = true, showPromoPhoto = true, onNavigate }: MegaMenuProps) {
   const prefetch = open ? null : false;
@@ -34,11 +40,12 @@ export function MegaMenu({ columns, promo, open = true, showPromoPhoto = true, o
     <div className="flex flex-col gap-3 rounded-[20px] bg-white p-3 shadow-menu xl:flex-row">
       {/* `auto` columns = their max-content width while the panel is `w-max`; they would wrap
           rather than overflow if the panel ever hit its max width (DesktopNav). */}
-      <div className="grid grid-cols-[repeat(5,auto)] gap-x-7 px-4 pt-4 pb-1 xl:py-4">
+      <div className="grid grid-cols-[repeat(5,auto)] gap-x-6 px-4 pt-7 pb-4 xl:pt-fluid-28/32 xl:pb-fluid-20/24">
         {columns.map((col) => (
           <div key={col.title}>
-            <p className="mb-3 text-[15px] leading-5 font-semibold text-plum">{col.title}</p>
-            <ul className="flex flex-col gap-2 text-[14px] leading-5 text-ink">
+            <p className="mb-1.5 text-[16px] leading-[1.25] font-semibold text-plum">{col.title}</p>
+            {/* The line height is the pitch: each link is a full-row target with no gaps between them. */}
+            <ul className="flex flex-col text-[15px] leading-8 text-ink xl:leading-[clamp(32px,calc(24px+0.625vw),34px)]">
               {col.items.map((t) => (
                 <li key={t.slug}>
                   <Link
@@ -46,7 +53,7 @@ export function MegaMenu({ columns, promo, open = true, showPromoPhoto = true, o
                     prefetch={prefetch}
                     onClick={onNavigate}
                     aria-current={ariaCurrent(t.href)}
-                    className="transition-colors hover:text-plum"
+                    className="block whitespace-nowrap transition-colors hover:text-plum"
                   >
                     {t.name}
                   </Link>
@@ -56,23 +63,28 @@ export function MegaMenu({ columns, promo, open = true, showPromoPhoto = true, o
           </div>
         ))}
       </div>
-      <div className="overflow-hidden rounded-[16px] bg-sand xl:w-[228px] xl:shrink-0">
-        {/* Photo only on the card layout (≥1280px); a wide, short crop of the face. */}
+      <div className="overflow-hidden rounded-[16px] bg-sand xl:flex xl:w-[220px] xl:shrink-0 xl:flex-col">
+        {/* Photo only on the card layout (≥1280px): a wide crop of the face that fills the height left
+            by the text (at least 112px), so the card ends level with the columns. */}
         {showPromoPhoto ? (
-          <Photo image={promo.image} sizes="228px" className="hidden h-[112px] xl:block" />
+          <Photo image={promo.image} sizes="220px" className="hidden xl:block xl:min-h-[112px] xl:flex-1" />
         ) : (
-          <div className="hidden h-[112px] xl:block" />
+          <div className="hidden xl:block xl:min-h-[112px] xl:flex-1" />
         )}
-        <div className="flex items-center justify-between gap-6 px-4 py-4 xl:block xl:px-5 xl:pt-3.5 xl:pb-4">
-          <p className="text-[14px] leading-5 text-muted xl:mb-2.5 xl:text-[13px]">
-            <span className="text-[15px] font-semibold text-ink xl:mb-0.5 xl:block xl:text-balance">{promo.title}</span> {promo.text}
+        <div className="flex items-center justify-between gap-6 px-4 py-4 xl:block xl:px-5 xl:pt-4 xl:pb-[18px]">
+          <p className="text-[14px] leading-[1.45] text-muted xl:mb-2.5">
+            <span className="text-[16px] leading-[1.3] font-semibold text-ink xl:mb-1 xl:block xl:text-balance">
+              {promo.title}
+            </span>{" "}
+            {promo.text}
           </p>
           <ArrowLink
             href={promo.link.href}
             prefetch={prefetch}
             onClick={onNavigate}
             aria-current={ariaCurrent(promo.link.href)}
-            className="shrink-0 leading-5"
+            size="menu"
+            className="shrink-0 leading-[1.35]"
           >
             {promo.link.label}
           </ArrowLink>

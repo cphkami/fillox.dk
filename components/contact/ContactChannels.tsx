@@ -35,7 +35,7 @@ type ContactChannelsProps = {
  */
 export function ContactChannels({ channels, label }: ContactChannelsProps) {
   return (
-    <ul aria-label={label} className="flex flex-col gap-4 md:gap-3">
+    <ul aria-label={label} className="flex flex-col gap-4 md:gap-3 xl:gap-fluid-12">
       {channels.map((channel) => {
         const accent = channel.tone === "accent";
         const linked = !!channel.href;
@@ -44,7 +44,7 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
             <ChannelCard
               href={channel.href}
               className={cn(
-                "group relative flex items-center justify-between gap-4 rounded-[20px] px-5 py-[18px] transition-colors md:flex-wrap md:gap-y-1 md:px-7 md:py-[22px]",
+                "group relative flex items-center justify-between gap-4 rounded-[20px] px-5 py-[18px] transition-colors md:flex-wrap md:gap-y-1 md:px-7 md:py-[22px] xl:px-fluid-28 xl:py-fluid-22",
                 accent ? "bg-sand md:bg-plum md:text-cream" : "bg-white",
                 accent && linked && "md:hover:bg-plum-deep",
               )}
@@ -52,7 +52,7 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
               <span className="min-w-0">
                 <span
                   className={cn(
-                    "block text-[12px] font-semibold tracking-[1.5px] text-muted uppercase md:mb-1.5 md:font-bold md:tracking-[2px]",
+                    "block text-micro font-semibold tracking-[1.5px] text-muted uppercase md:mb-1.5 md:font-bold md:tracking-[2px]",
                     accent ? "md:text-powder" : "md:text-plum",
                   )}
                 >

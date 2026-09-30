@@ -29,7 +29,7 @@ export function TeamSection({ copy, members, titleId }: TeamSectionProps) {
         <Eyebrow className="mb-2.5 md:mb-3.5">{copy.eyebrow}</Eyebrow>
         <h2
           id={titleId}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:text-[40px] md:leading-normal xl:text-h2"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display md:py-[.2em] md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {copy.title}
         </h2>

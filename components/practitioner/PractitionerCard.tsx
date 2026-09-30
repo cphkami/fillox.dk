@@ -44,8 +44,13 @@ const FEATURED_PHOTO = "md:aspect-auto md:h-[420px] lg:h-auto lg:min-h-[520px] l
  *   grow with the canvas and every photo keeps its 6om proportions (see FEATURED_PHOTO).
  *   From 1280px the featured block splits 1:1 with the grid's column gap (--team-gap-x, set
  *   on the /behandlere list), so the photo lines up with the first two grid cards and the
- *   text with the last two, like the same block on /om-os; the bio measure widens from 50ch
- *   to 58ch there (still 16px) so it fills more of its wider cell.
+ *   text with the last two, like the same block on /om-os. The bio keeps its 50ch measure
+ *   (≈ 60 characters per line, 5 lines at 18px), never narrower than its 538px cell at 1280
+ *   (so 1280 stays as it is), and the gaps grow (name 6 → 10, title 24 → 32, bio 18 → 28px at
+ *   1600), so the text block keeps up with the photo (704×691 at 1600).
+ * - Type follows the fluid scale ("Wide layout" in ARCHITECTURE.md): the design sizes up to
+ *   1280px, then name 24 → 28 (featured 40 → 48), title 14 → 15, bio 16 → 18, link 14 → 16 at
+ *   1600px. ch measures grow with the font, so the bio keeps its characters per line.
  *
  * One image per card (see CropPhoto), and the whole card is clickable (stretched link).
  */
@@ -101,20 +106,20 @@ export function PractitionerCard({
           className={cn(
             "text-[22px] font-semibold tracking-display text-plum",
             featured
-              ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px] xl:text-h2"
-              : "md:mt-[22px] md:mb-1 md:text-[24px]",
+              ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px] xl:mb-fluid-6/10 xl:text-h2"
+              : "md:mt-[22px] md:mb-1 md:text-[24px] xl:text-h3-md",
           )}
         >
           {name}
         </Heading>
-        <p className={cn("text-[13px] text-muted md:text-[14px]", featured ? "md:mb-5 xl:mb-6" : "md:mb-3.5")}>
+        <p className={cn("text-[13px] text-muted md:text-small", featured ? "md:mb-5 xl:mb-fluid-24/32" : "md:mb-3.5")}>
           <ResponsiveText mobile={member.titleShort} desktop={member.title ?? member.role} />
         </p>
         {member.bio ? (
           <p
             className={cn(
-              "text-[15px] leading-[1.65] text-muted md:text-[16px] md:leading-[1.75]",
-              featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]",
+              "text-[15px] leading-[1.65] text-muted md:text-body md:leading-[1.75]",
+              featured && "md:mb-[18px] md:max-w-[50ch] xl:mb-fluid-18/28 xl:max-w-[max(50ch,538px)]",
             )}
           >
             <ResponsiveText mobile={member.bioShort} desktop={member.bio} />
@@ -126,7 +131,7 @@ export function PractitionerCard({
             className={cn(
               "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-plum transition-colors hover:text-plum-deep",
               "after:absolute after:inset-0 after:rounded-[24px]",
-              "md:h-auto md:border-b md:pb-[3px] md:text-[14px] md:font-normal",
+              "md:h-auto md:border-b md:pb-[3px] md:text-ui-sm md:font-normal",
               // 6om: the featured link is an ink inline-block; the grid cards use an inline plum link.
               featured ? "md:inline-block md:border-ink md:text-ink md:hover:text-plum" : "md:inline md:border-plum",
             )}

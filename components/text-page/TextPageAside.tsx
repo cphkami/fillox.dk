@@ -12,16 +12,17 @@ type TextPageAsideProps = {
  * CTA card beside the text (sand, radius 20, like the 6art / mar booking card).
  * The first action is the primary plum button, the rest are outline buttons (all the same
  * height). Buttons are full width on mobile and in the desktop side column, side by side
- * on tablet. Wide screens: the title grows 22 → 24px and the padding 28 → 32px.
+ * on tablet. Wide (≥1280px, type scale): the title grows 22 → 25px (`text-h3`), the text
+ * 15 → 16px (`text-body-sm`) and the padding 28 → 32px.
  */
 export function TextPageAside({ aside, titleId, className }: TextPageAsideProps) {
   return (
-    <aside aria-labelledby={titleId} className={cn("rounded-[20px] bg-sand p-5 md:p-7 2xl:p-8", className)}>
+    <aside aria-labelledby={titleId} className={cn("rounded-[20px] bg-sand p-5 md:p-7 xl:p-fluid-28/32", className)}>
       {aside.eyebrow ? <Eyebrow className="mb-1.5">{aside.eyebrow}</Eyebrow> : null}
-      <h2 id={titleId} className="text-[20px] leading-[1.25] font-semibold tracking-display text-balance md:text-[22px] xl:text-h3">
+      <h2 id={titleId} className="text-[20px] leading-[1.25] font-semibold tracking-display text-balance md:text-h3">
         {aside.title}
       </h2>
-      {aside.text ? <p className="mt-2 text-[15px] leading-[1.65] text-pretty text-muted">{aside.text}</p> : null}
+      {aside.text ? <p className="mt-2 text-body-sm leading-[1.65] text-pretty text-muted">{aside.text}</p> : null}
       <div className="mt-5 flex flex-col gap-2.5 md:mt-6 md:flex-row md:flex-wrap lg:flex-col">
         {aside.actions.map((action, i) => (
           <ButtonLink

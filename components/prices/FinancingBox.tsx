@@ -21,9 +21,11 @@ type FinancingBoxProps = {
  * Mobile (mp): sand card with heading, short text and a full-width plum button.
  *
  * Wide screens (≥1280px): the panel spans the fluid canvas on the surface margin; the
- * text column's padding follows the footer's plum block, the H2 uses the fluid token and
- * the photo grows in height with its column to keep its crop: 376px at 1280 (the
- * design's 1180 panel height, where the H2 wraps) → 460px at 1600.
+ * text column's padding follows the footer's plum block, the H2 and the text use the fluid
+ * tokens (48px and 18px at 1600px) and the photo grows in height: 376px at 1280 (the
+ * design's 1180 panel height, where the H2 wraps) → 424px at 1600. It grows less than its
+ * width so the text block (which only grows ~5%) still fills over half the panel height;
+ * the 768px-wide slot shows ~83% of the 3:2 photo's height, the wall logo stays whole.
  *
  * Asset note: the source photo is only 800×533. From ~1600px on a 2× screen the
  * 768px slot upscales it (softer letters on the wall logo); a ≥1600px-wide 3:2
@@ -44,7 +46,7 @@ export function FinancingBox({ id, eyebrow, title, text, textShort, cta, image }
           >
             {title}
           </h2>
-          <p className="text-[16px] leading-[1.7] text-muted md:mb-7 md:max-w-[40ch] md:text-blush">
+          <p className="text-body leading-[1.7] text-muted md:mb-7 md:max-w-[40ch] md:text-blush">
             <ResponsiveText mobile={textShort} desktop={text} />
           </p>
           <ButtonLink href={cta.href} size="lg" fullWidth className="md:hidden">
@@ -59,7 +61,7 @@ export function FinancingBox({ id, eyebrow, title, text, textShort, cta, image }
         <Photo
           image={image}
           sizes="(min-width: 1600px) 768px, (min-width: 1024px) 50vw, (min-width: 768px) 100vw, 1px"
-          className="max-md:hidden md:max-lg:aspect-[2/1] lg:min-h-[340px] xl:min-h-fluid-376/460"
+          className="max-md:hidden md:max-lg:aspect-[2/1] lg:min-h-[340px] xl:min-h-fluid-376/424"
         />
       </div>
     </section>

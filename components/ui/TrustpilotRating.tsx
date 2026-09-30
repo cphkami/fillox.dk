@@ -14,7 +14,7 @@ type TrustpilotRatingProps = {
   label?: string;
   /** Link the rating to the Trustpilot profile (site.trustpilot.url). */
   linked?: boolean;
-  /** Use for font-size / alignment, e.g. "text-[13px] justify-center". Default text 14px. */
+  /** Use for font-size / alignment, e.g. "max-md:text-[13px] justify-center". Default text 14px (`text-small`, 15 at 1600). */
   className?: string;
 };
 
@@ -30,7 +30,7 @@ export function TrustpilotRating({
   // Trustpilot shows stars in half steps (4.7 → 4.5 stars).
   const shown = Math.round(score * 2) / 2;
   const scoreText = formatDecimal(score);
-  const box = size === "md" ? "size-5 text-[14px]" : "size-[18px] text-[13px]";
+  const box = size === "md" ? "size-5 text-small" : "size-[18px] text-[13px]";
 
   const content = (
     <>
@@ -59,7 +59,7 @@ export function TrustpilotRating({
   );
 
   const classes = cn(
-    "flex items-center gap-2.5 text-[14px]",
+    "flex items-center gap-2.5 text-small",
     tone === "light" ? "text-cream" : "text-ink",
     className,
   );

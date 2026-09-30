@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { buttonClasses, forcedColorsSelected } from "@/components/ui/Button";
+import { Eyebrow } from "@/components/ui/Eyebrow";
 import { revealFocusedItem } from "@/components/ui/ScrollRow";
 import { cn } from "@/lib/cn";
 
@@ -19,12 +20,10 @@ export type PriceCategoryView = {
   /** Anchor id (#fillers); also the jump-chip target. */
   id: string;
   title: string;
-  /** Desktop card label, e.g. "HYALURONSYRE". */
+  /** Card label, e.g. "HYALURONSYRE". */
   eyebrow: string;
   /** Mobile jump-chip label, e.g. "Botox". */
   chipLabel: string;
-  /** Mobile accordion subtitle, e.g. "9 behandlinger". */
-  countLabel: string;
   rows: PriceRowView[];
 };
 
@@ -35,55 +34,35 @@ type PriceCategoriesProps = {
 };
 
 /**
- * The six price cards.
+ * The six price cards, always open: every price is visible (and server-rendered) at
+ * every width.
  *
- * - Desktop/tablet (≥768px, 6b): static white cards, two columns from 1024px (below
- *   1180px a few long labels put their note on a second line, as on mobile; one
- *   ~900px-wide column left the prices far from their labels). On wide
- *   screens the grid fills the fluid canvas on the content gutter and the cards grow
- *   with it. A third column only appears when the grid itself is ≥106rem (1696px)
- *   wide, i.e. when --canvas-max is raised to ~1860px or more: below that a third of
- *   the grid can't hold the longest card header on one line. From 1536px the rows
- *   go up a pixel (15px, notes 13px) so they don't look sparse in the wider cards.
- * - Mobile (mp): a row of jump chips, then each card is an accordion (closed by
- *   default) so the list doesn't get endless. A chip opens its card and scrolls to it.
- *
- * The rows are always in the DOM (hidden only by CSS on mobile), so every price is
- * server-rendered and crawlable. A URL hash (/priser#konsultation) opens its card.
- * Without JavaScript every list is shown, and before hydration a followed chip or
- * deep link opens its card through `:target`.
+ * - Desktop/tablet (≥768px, 6b): white cards, two columns from 1024px (below 1180px a
+ *   few long labels put their note on a second line, as on mobile; one ~900px-wide
+ *   column left the prices far from their labels). On wide screens the grid fills the
+ *   fluid canvas on the content gutter and the cards grow with it: rows 14 → 16px
+ *   (`text-ui-sm`), notes 12 → 14px (the design's note / row ratio), card label 12 → 13px
+ *   (`text-micro`), paddings 36/32 → 48/40px between 1280 and 1600px. A third column only appears when the grid itself
+ *   is ≥106rem (1696px) wide, i.e. when --canvas-max is raised to ~1860px or more: below
+ *   that a third of the grid can't hold the longest card header on one line.
+ * - Mobile (mp, unfolded at the owner's request): a row of jump chips, then the same
+ *   cards stacked, header (20px title, label under it) over the rows. No chip is current at
+ *   rest; a tapped chip, or a URL hash (/priser#konsultation), marks its chip plum.
  */
 export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps) {
-  const [open, setOpen] = useState<ReadonlySet<string>>(() => new Set());
   /** Category picked by a chip or the URL hash; undefined until the visitor picks one. */
   const [selected, setSelected] = useState<string | undefined>();
-  /** False until the URL hash has been read; until then CSS `:target` opens the linked card. */
-  const [hashSynced, setHashSynced] = useState(false);
-  const toggles = useRef(new Map<string, HTMLButtonElement>());
   const chipRow = useRef<HTMLUListElement>(null);
   const idKey = categories.map((c) => c.id).join(" ");
-  /** The design (mp) shows the first chip in plum before anything is picked. */
-  const highlighted = selected ?? categories[0]?.id;
 
-  /** Opens a card and marks its chip current (chip jumps and URL hashes). */
-  const openCategory = (id: string) => {
-    setOpen((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
-    setSelected(id);
-  };
-
-  // Open the card the URL hash points at, on load and on in-page hash changes.
+  // Mark the chip of the card the URL hash points at, on load and on in-page hash changes.
   useEffect(() => {
     const ids = idKey.split(" ");
     const syncFromHash = () => {
       const id = window.location.hash.slice(1);
-      if (!ids.includes(id)) return;
-      setOpen((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
-      setSelected(id);
+      if (ids.includes(id)) setSelected(id);
     };
-    const frame = requestAnimationFrame(() => {
-      syncFromHash();
-      setHashSynced(true);
-    });
+    const frame = requestAnimationFrame(syncFromHash);
     window.addEventListener("hashchange", syncFromHash);
     return () => {
       cancelAnimationFrame(frame);
@@ -105,23 +84,15 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
     }
   }, [selected]);
 
-  const toggle = (id: string) => {
-    setOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
+  /** Chip jump: scroll to the card (smoothly unless reduced motion), move focus there. */
   const jumpTo = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
     event.preventDefault();
-    openCategory(id);
+    setSelected(id);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    toggles.current.get(id)?.focus({ preventScroll: true });
+    target.focus({ preventScroll: true });
     window.history.replaceState(window.history.state, "", `#${id}`);
   };
 
@@ -135,84 +106,62 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
           onFocus={revealFocusedItem}
           className="-my-[5px] mx-auto flex w-fit max-w-full snap-x snap-mandatory scroll-px-gutter gap-2 overflow-x-auto px-gutter py-[5px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {categories.map((c) => (
-            <li key={c.id} className="shrink-0 snap-start">
-              <a
-                href={`#${c.id}`}
-                onClick={(e) => jumpTo(e, c.id)}
-                aria-current={selected === c.id ? "true" : undefined}
-                className={cn(
-                  buttonClasses({ variant: highlighted === c.id ? "primary" : "white", size: "chip" }),
-                  highlighted === c.id && forcedColorsSelected,
-                )}
-              >
-                {c.chipLabel}
-              </a>
-            </li>
-          ))}
+          {categories.map((c) => {
+            const current = selected === c.id;
+            return (
+              <li key={c.id} className="shrink-0 snap-start">
+                <a
+                  href={`#${c.id}`}
+                  onClick={(e) => jumpTo(e, c.id)}
+                  aria-current={current ? "true" : undefined}
+                  className={cn(
+                    buttonClasses({ variant: current ? "primary" : "white", size: "chip" }),
+                    current && forcedColorsSelected,
+                  )}
+                >
+                  {c.chipLabel}
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
       <div className="@container mx-auto w-full max-w-canvas px-surface md:px-gutter md:pt-fluid-64 md:pb-fluid-48">
-        <div className="flex flex-col gap-2.5 md:grid md:gap-fluid-24 lg:grid-cols-2 @min-[106rem]:grid-cols-3">
+        <div className="flex flex-col gap-3 md:grid md:gap-fluid-24 lg:grid-cols-2 @min-[106rem]:grid-cols-3">
           {categories.map((c) => {
-            const isOpen = open.has(c.id);
             const titleId = `${c.id}-title`;
-            const rowsId = `${c.id}-rows`;
             return (
               <section
                 key={c.id}
                 id={c.id}
                 aria-labelledby={titleId}
-                className="rounded-[22px] bg-white md:rounded-[20px] md:px-9 md:py-8 2xl:px-12 2xl:py-10"
+                // Focus target of the chip jumps (not in the tab order).
+                tabIndex={-1}
+                className="rounded-[22px] bg-white px-5 pt-[22px] pb-1.5 focus:outline-none md:rounded-[20px] md:px-9 md:py-8 xl:px-fluid-36/48 xl:py-fluid-32/40"
               >
-                <div className="md:mb-1.5 md:flex md:flex-wrap md:items-baseline md:justify-between md:gap-x-4 md:border-b md:border-ink md:pb-3.5">
-                  <h2 id={titleId} className="font-semibold">
-                    <button
-                      type="button"
-                      ref={(el) => {
-                        if (el) toggles.current.set(c.id, el);
-                        else toggles.current.delete(c.id);
-                      }}
-                      aria-expanded={isOpen}
-                      aria-controls={rowsId}
-                      onClick={() => toggle(c.id)}
-                      className="flex min-h-[68px] w-full items-center justify-between gap-4 rounded-[22px] px-5 text-left md:hidden"
-                    >
-                      <span>
-                        <span className="block text-[18px]">{c.title}</span>
-                        <span className="block text-[13px] font-normal text-muted">{c.countLabel}</span>
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="w-4 shrink-0 text-center text-[22px] font-normal text-muted [@media(scripting:none)]:hidden"
-                      >
-                        {isOpen ? "–" : "+"}
-                      </span>
-                    </button>
-                    <span className="text-h3 tracking-display max-md:hidden">{c.title}</span>
+                {/* Mobile: label always under the title (mp's header shape), so every card header
+                    has the same form whatever the title length; from 768px a baseline row (6b). */}
+                <div className="mb-0.5 flex flex-wrap items-baseline justify-between gap-x-4 border-b border-ink pb-3 max-md:flex-col max-md:items-start max-md:gap-y-1 md:mb-1.5 md:pb-3.5">
+                  <h2 id={titleId} className="text-[20px] font-semibold tracking-display md:text-h3">
+                    {c.title}
                   </h2>
-                  <p className="text-[12px] font-bold tracking-[2px] text-plum uppercase max-md:hidden">{c.eyebrow}</p>
+                  <Eyebrow>{c.eyebrow}</Eyebrow>
                 </div>
 
-                <dl
-                  id={rowsId}
-                  className={cn(
-                    "mx-5 mb-1.5 border-t border-powder md:mx-0 md:mb-0 md:block md:border-t-0",
-                    !isOpen && "max-md:hidden",
-                    // No JS (or not hydrated yet): the accordion can't toggle, so don't hide prices.
-                    "[@media(scripting:none)]:block!",
-                    !hashSynced && "[:target>&]:block",
-                  )}
-                >
+                <dl>
                   {c.rows.map((row) => (
                     <div
                       key={`${row.label} ${row.note ?? ""}`}
-                      className="flex justify-between gap-3 border-b border-powder py-[13px] text-[14px] last:border-b-0 2xl:text-[15px]"
+                      className="relative flex justify-between gap-3 border-b border-powder py-[13px] text-ui-sm last:border-b-0"
                     >
                       <dt>
                         {row.href ? (
-                          <Link href={row.href} className="decoration-1 underline-offset-[3px] hover:underline">
+                          // On touch screens the whole 48px row is the tap target (a 21px text line alone is too small).
+                          <Link
+                            href={row.href}
+                            className="decoration-1 underline-offset-[3px] hover:underline pointer-coarse:after:absolute pointer-coarse:after:inset-0"
+                          >
                             {row.label}
                           </Link>
                         ) : (
@@ -222,12 +171,14 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
                           <>
                             {" "}
                             {/* Never split a note; on mobile it gets its own line under the label. */}
-                            <span className="text-[12px] whitespace-nowrap text-taupe max-md:mt-0.5 max-md:block 2xl:text-[13px]">{row.note}</span>
+                            {/* 12px up to 1280, then 12 → 14px at 1600 so the note keeps the design's
+                                note / row ratio (12 / 14) next to the 14 → 16px row (no token has this step). */}
+                            <span className="text-micro whitespace-nowrap text-taupe max-md:mt-0.5 max-md:block xl:text-[clamp(12px,calc(4px+0.625vw),14px)]">
+                              {row.note}
+                            </span>
                           </>
                         ) : null}
                       </dt>
-                      {/* Taupe (#b39c89) is the design's price colour; its contrast on white
-                          (2.6:1) is below WCAG AA and awaits a design decision. */}
                       <dd className="font-bold whitespace-nowrap text-taupe uppercase">{row.price}</dd>
                     </div>
                   ))}

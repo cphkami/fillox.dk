@@ -35,10 +35,15 @@ type DesktopNavProps = Pick<HeaderData, "megaColumns" | "megaPromo" | "clinics" 
 const HOVER_CLOSE_DELAY = 150;
 const HOVER_SWITCH_DELAY = 120;
 
-/** Top-level label style: 14px muted; active/open = ink with a 1px plum underline. */
+/**
+ * Top-level label style: `text-ui` (15px at 1024–1279, 16 → 17px from 1280) muted; the current
+ * section / open menu = ink with a 1px plum underline (hover only darkens the text). The
+ * `before:` box is an invisible hit area (8px to the sides, 10px above and below: ≥ 44px high)
+ * that leaves the underline where it is; `after:` is taken by the mega menu's hover bridge.
+ */
 function itemClasses(highlight: boolean) {
   return cn(
-    "inline-block border-b pb-[3px] text-[14px] whitespace-nowrap transition-colors",
+    "relative inline-block border-b pb-[3px] text-ui whitespace-nowrap transition-colors before:absolute before:-inset-x-2 before:-inset-y-2.5",
     highlight ? "border-plum text-ink" : "border-transparent text-muted hover:text-ink",
   );
 }
@@ -260,9 +265,9 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
             itemClasses(active || isOpen),
             "cursor-pointer",
             // Hover bridge from the trigger down to the mega panel (only under the trigger, only while open,
-            // so it never covers the logo or "Book tid").
+            // so it never covers the logo or "Book tid"). The gap is 34–36px; the panel (z-40) covers the rest.
             placement === "mega" &&
-              "relative aria-expanded:after:absolute aria-expanded:after:inset-x-0 aria-expanded:after:top-full aria-expanded:after:h-9",
+              "aria-expanded:after:absolute aria-expanded:after:inset-x-0 aria-expanded:after:top-full aria-expanded:after:h-10",
           )}
         >
           {item.label}
@@ -281,7 +286,9 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
                 // padding, so it never covers the logo or "Book tid": the trigger's hover bridge spans it.
                 // The max width (the canvas minus the surface margins) is only a safety net.
                 "top-full left-1/2 mt-0.5 w-max max-w-[calc(100%-2*var(--gutter-surface))] -translate-x-1/2"
-              : "top-full left-1/2 -translate-x-1/2 pt-[33px]",
+              : // The padding bridges the gap under the header; it puts the dropdown 2px under the header,
+                // level with the mega panel (the header grows from 1280, so it grows too).
+                "top-full left-1/2 -translate-x-1/2 pt-[34px] xl:pt-fluid-35/36",
             // Visibility flips to visible at once on open (so focus can move in immediately) and
             // stays delayed on close (so the fade-out is visible).
             isOpen
@@ -297,7 +304,7 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
 
   return (
     <nav ref={navRef} aria-label={label} className="flex justify-center">
-      <ul className="flex items-center gap-8">
+      <ul className="flex items-center gap-8 xl:gap-fluid-36/40">
         {items.map((item) => {
           switch (item.kind) {
             case "treatments":

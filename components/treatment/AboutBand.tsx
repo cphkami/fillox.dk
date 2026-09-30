@@ -17,10 +17,10 @@ function Paragraphs({ items, className }: { items: string[]; className?: string 
  * a white "Godt til" box).
  */
 export function AboutBand({ about }: { about: TreatmentView["about"] }) {
-  // Body copy stays 16px; the ch cap keeps lines readable on the wide canvas: 56ch ≈ 565px ≈ 72
-  // characters of Poppins (1ch = the "0" glyph, wider than an average letter), the same measure
-  // as the other intros. No effect up to the 1180 design width (545px column).
-  const text = "grid gap-3.5 text-[16px] leading-[1.7] text-muted md:leading-[1.8] md:text-blush lg:max-w-[56ch]";
+  // Body copy 16px (`text-body`, 18 at 1600); the ch cap keeps lines readable on the wide canvas:
+  // 56ch ≈ 72 characters of Poppins (1ch = the "0" glyph, wider than an average letter) at any font
+  // size, the same measure as the other intros. No effect up to the 1180 design width (545px column).
+  const text = "grid gap-3.5 text-body leading-[1.7] text-muted md:leading-[1.8] md:text-blush lg:max-w-[56ch]";
   return (
     <Container as="section" gutter="surface" aria-labelledby={copy.sectionIds.about} className="md:mt-surface">
       <div
@@ -30,7 +30,7 @@ export function AboutBand({ about }: { about: TreatmentView["about"] }) {
         <div className="contents md:block">
           <h2
             id={copy.sectionIds.about}
-            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-5 md:text-[40px] md:leading-normal md:text-cream xl:text-h2"
+            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-5 md:py-[.2em] md:text-[40px] md:leading-[1.1] md:text-cream xl:text-h2"
           >
             {copy.about.title}
           </h2>
@@ -44,7 +44,8 @@ export function AboutBand({ about }: { about: TreatmentView["about"] }) {
           )}
         </div>
 
-        <div className="flex flex-col gap-2 rounded-[18px] bg-white px-5 py-[18px] text-[15px] md:block md:rounded-[20px] md:border md:border-[#f3ede4]/30 md:bg-transparent md:px-9 md:py-8 md:text-[16px] md:text-cream lg:self-start">
+        {/* "Godt til" list: body size at every width (mobile 16px, the design's 15 raised to the minimum). */}
+        <div className="flex flex-col gap-2 rounded-[18px] bg-white px-5 py-[18px] text-body md:block md:rounded-[20px] md:border md:border-[#f3ede4]/30 md:bg-transparent md:px-9 md:py-8 md:text-cream lg:self-start xl:px-fluid-36 xl:py-fluid-32">
           <Eyebrow className="md:mb-[18px] md:text-powder">
             {about.listLabel}
           </Eyebrow>

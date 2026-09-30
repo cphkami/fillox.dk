@@ -13,7 +13,7 @@ type RequiredField = "name" | "email";
 type FocusTarget = "name" | "email" | "toggle" | "success";
 
 const inputClasses =
-  "block w-full rounded-[16px] border border-line bg-cream px-5 py-4 text-[16px] text-ink transition-colors placeholder:text-placeholder hover:border-rule focus:border-plum aria-[invalid=true]:border-plum";
+  "block w-full rounded-[16px] border border-line bg-cream px-5 py-4 text-body text-ink transition-colors placeholder:text-placeholder hover:border-rule focus:border-plum aria-[invalid=true]:border-plum";
 
 type NotifyFormProps = {
   /** Netlify form name; field names must match public/__forms.html. */
@@ -69,8 +69,10 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
         data-notify-open=""
         className="rounded-[16px] bg-sand px-5 py-4 focus:outline-none"
       >
-        <p className="text-[15px] font-semibold text-ink">{copy.success.title}</p>
-        <p className="mt-1 text-[14px] leading-[1.6] text-muted">{copy.success.text}</p>
+        {/* From 1440px on the card's body scale (the note above is text-body), so the
+            confirmation doesn't read smaller than the paragraph it follows. */}
+        <p className="text-body-sm font-semibold text-ink min-[90rem]:text-body">{copy.success.title}</p>
+        <p className="mt-1 text-small leading-[1.6] text-muted min-[90rem]:text-body-sm">{copy.success.text}</p>
       </div>
     );
   }
@@ -211,15 +213,20 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
         />
       </Field>
 
-      <p id={ids.privacy} className="text-[13px] leading-[1.6] text-muted">
+      <p id={ids.privacy} className="text-fine leading-[1.6] text-muted">
         {copy.privacy.text}{" "}
-        <Link href={copy.privacy.link.href} className="text-ink underline underline-offset-2 hover:text-plum">
+        {/* An invisible ≥ 44px-high hit area (after:), within the 14px gaps above and below the
+            note, so the text, underline and focus ring stay where they are. */}
+        <Link
+          href={copy.privacy.link.href}
+          className="relative text-ink underline underline-offset-2 after:absolute after:-inset-x-1 after:-inset-y-3.5 hover:text-plum"
+        >
           {copy.privacy.link.label}
         </Link>
       </p>
 
       {submitFailed ? (
-        <p role="alert" className="text-[14px] leading-[1.6] font-semibold text-plum">
+        <p role="alert" className="text-small leading-[1.6] font-semibold text-plum">
           {copy.errors.submit.text}{" "}
           <a
             href={copy.errors.submit.phone.href}
@@ -247,7 +254,11 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
           onClick={cancel}
           aria-disabled={sending || undefined}
           className={cn(
-            "self-center text-[14px] text-muted underline underline-offset-2 max-md:h-11",
+            // From 768px text-ui, the size of the pill beside it (as the textLink button next to a
+            // pill on / and the practitioner pages); 14px with a 44px-high tap target on mobile.
+            "self-center text-ui-sm text-muted underline underline-offset-2 max-md:h-11 md:text-ui",
+            // From 768px: an invisible ≥ 44px-high hit area; the text and underline stay put.
+            "md:relative md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3",
             sending ? "cursor-not-allowed opacity-50" : "hover:text-plum",
           )}
         >
@@ -273,12 +284,12 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={id} className="mb-2 block text-[14px] font-semibold text-ink">
+      <label htmlFor={id} className="mb-2 block text-ui-sm font-semibold text-ink">
         {label}
       </label>
       {children}
       {error ? (
-        <p id={errorId} className="mt-1.5 text-[13px] leading-[1.5] font-semibold text-plum">
+        <p id={errorId} className="mt-1.5 text-fine leading-[1.5] font-semibold text-plum">
           {error}
         </p>
       ) : null}

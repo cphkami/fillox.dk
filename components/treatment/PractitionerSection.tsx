@@ -73,7 +73,7 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
           <ResponsiveText mobile={p.member.name} desktop={p.heading} />
         </h2>
         {p.mobileTitle ? <p className="-mt-2 text-[14px] text-muted md:hidden">{p.mobileTitle}</p> : null}
-        <p className="text-[16px] leading-[1.7] text-muted md:mb-[18px] md:max-w-[52ch] md:leading-[1.75]">
+        <p className="text-body leading-[1.7] text-muted md:mb-[18px] md:max-w-[52ch] md:leading-[1.75]">
           <ResponsiveText mobile={p.mobileText} desktop={p.text} />
         </p>
         {p.quote ? (
@@ -83,7 +83,8 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
         ) : null}
         <Link
           href={p.link.href}
-          className="inline-block border-b border-ink pb-[3px] text-[14px] text-ink transition-colors hover:border-plum hover:text-plum max-md:hidden"
+          // Invisible hit area (12px above and below) as on ArrowLink: a 44px target, the line doesn't move.
+          className="relative inline-block border-b border-ink pb-[3px] text-ui-sm text-ink transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:border-plum hover:text-plum max-md:hidden"
         >
           {p.link.label} <span aria-hidden="true">→</span>
         </Link>

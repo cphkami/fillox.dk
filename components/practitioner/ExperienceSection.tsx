@@ -21,7 +21,7 @@ export function ExperienceSection({ experience, titleId }: ExperienceSectionProp
           {experience.items.map((item) => (
             <div
               key={`${item.period}-${item.text}`}
-              className="flex gap-4 border-t border-cream/18 pt-3 text-[15px] md:grid md:grid-cols-[120px_minmax(0,1fr)] md:gap-6 md:border-cream/20 md:py-[18px] md:text-[16px] md:last:border-b"
+              className="flex gap-4 border-t border-cream/18 pt-3 text-[15px] md:grid md:grid-cols-[7.5em_minmax(0,1fr)] md:gap-6 md:border-cream/20 md:py-[18px] md:text-body md:last:border-b"
             >
               <dt className="w-[70px] flex-none font-semibold text-powder md:w-auto md:text-cream">
                 <ResponsiveText mobile={item.periodShort} desktop={item.period} />

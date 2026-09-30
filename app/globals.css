@@ -27,8 +27,11 @@
   --color-muted: #5e4f4d; /* secondary text */
   --color-line: #e3d6cc; /* hairlines on light */
   --color-rule: #d9bfb8; /* dividers in hero stats, legal text on plum */
-  --color-taupe: #b39c89; /* eyebrow on dark photos */
-  --color-placeholder: #8a7f7c; /* input placeholder text */
+  /* Taupe and placeholder are darkened versions of the design's #b39c89 / #8a7f7c (same hue) so
+     they pass WCAG AA (4.5:1) as body-size text: taupe 4.62 on sand, 5.11 on cream, 5.69 on white;
+     placeholder 4.71 on cream, 5.25 on white. */
+  --color-taupe: #7a624f; /* prices and price notes, the /priser hero eyebrow */
+  --color-placeholder: #746a67; /* input placeholder text (the only placeholder colour) */
 
   /* Trustpilot */
   --color-trustpilot: #00b67a;
@@ -141,29 +144,63 @@
 
 @theme {
   /*
-   * Fluid display type: the exact design size up to 1280px, then growing linearly
-   * with the viewport to the max at 1600px (and staying there). Font size only; set
-   * leading/tracking as before. Use the token at the breakpoint where the design size
-   * applies, e.g. "md:text-[52px] lg:text-h1" (was lg:text-[64px]).
+   * One fluid type scale. Every token is exactly the design size up to 1280px, then grows
+   * linearly with the viewport to its 1600px value (and stays there). Font size only; set
+   * leading / tracking as before. Use the token at the breakpoint where the design size
+   * applies, e.g. "md:text-[52px] lg:text-h1" (was lg:text-[64px]); because the tokens equal
+   * the design size below 1280px, "lg:text-[16px]" simply becomes "lg:text-body".
+   * Formula for a → b: clamp(a, (a − 4(b − a))px + ((b − a) / 3.2)vw, b).
+   * Map design size → token: ARCHITECTURE.md → "Wide layout" → "Type scale".
    */
-  --text-h1: clamp(64px, calc(16px + 3.75vw), 76px); /* page H1, 64 → 76 */
-  --text-h1-sm: clamp(52px, calc(20px + 2.5vw), 60px); /* smaller desktop H1 (blog, booking), 52 → 60 */
-  --text-h2: clamp(40px, calc(8px + 2.5vw), 48px); /* section H2, 40 → 48 */
-  --text-h3: clamp(22px, calc(14px + 0.625vw), 24px); /* card titles, 22 → 24 */
-  --text-lead: clamp(18px, calc(10px + 0.625vw), 20px); /* hero lead / intro, 18 → 20 */
-  --text-quote: clamp(28px, calc(12px + 1.25vw), 32px); /* large pull quote / testimonial, 28 → 32 */
-  --text-h1-xs: clamp(48px, calc(16px + 2.5vw), 56px); /* article H1 (blog post), 48 → 56 */
-  --text-h2-md: clamp(36px, calc(12px + 1.875vw), 42px); /* large card title (blog featured post), 36 → 42 */
-  --text-h2-sm: clamp(32px, calc(8px + 1.875vw), 38px); /* compact section H2 (blog lists, newsletter), 32 → 38 */
-  --text-h3-lg: clamp(28px, calc(12px + 1.25vw), 32px); /* large card title (clinic cards), 28 → 32 */
-  --text-h3-md: clamp(24px, calc(8px + 1.25vw), 28px); /* band / card title (Om os "Fagligt ansvarlig" name), 24 → 28 */
-  --text-h4: clamp(20px, calc(12px + 0.625vw), 22px); /* small card / column title (Kontakt "Besøg os" clinic name), 20 → 22 */
-  --text-small: clamp(14px, calc(10px + 0.3125vw), 15px); /* small print next to large type (card notes, addresses), 14 → 15 */
+  /* Small text */
+  --text-micro: clamp(12px, calc(8px + 0.3125vw), 13px); /* 12 → 13: eyebrows, uppercase labels, badges, price notes */
+  --text-fine: clamp(13px, calc(9px + 0.3125vw), 14px); /* 13 → 14: fine print (consent, form help / errors, newsletter note) */
+  --text-small: clamp(14px, calc(10px + 0.3125vw), 15px); /* 14 → 15: passive small text (addresses, captions, meta, footer body, legal, breadcrumbs) */
+  --text-ui-sm: clamp(14px, calc(6px + 0.625vw), 16px); /* 14 → 16: small text you act on (ArrowLink, price rows, form labels, footer nav links) */
+  /* Body */
+  --text-body-sm: clamp(15px, calc(11px + 0.3125vw), 16px); /* 15 → 16: the design's 15px copy, desktop newsletter input */
+  --text-body: clamp(16px, calc(8px + 0.625vw), 18px); /* 16 → 18: body, intros, card text, captions, FAQ answers, inputs */
+  --text-body-lg: clamp(17px, calc(9px + 0.625vw), 19px); /* 17 → 19: article and text-page body */
+  --text-lead: clamp(18px, calc(10px + 0.625vw), 20px); /* 18 → 20: hero lead / intro, FAQ questions, fact values */
+  --text-title: clamp(19px, calc(11px + 0.625vw), 21px); /* 19 → 21: blog card titles, article intro, text-page lead */
+  /* Titles */
+  --text-h4: clamp(20px, calc(12px + 0.625vw), 22px); /* 20 → 22: small card / column title */
+  --text-title-lg: clamp(21px, calc(13px + 0.625vw), 23px); /* 21 → 23: article H3, article blockquote */
+  --text-h3: clamp(22px, calc(10px + 0.9375vw), 25px); /* 22 → 25: card titles */
+  --text-h3-md: clamp(24px, calc(8px + 1.25vw), 28px); /* 24 → 28: band / card title (Om os "Fagligt ansvarlig" name) */
+  --text-stat: clamp(26px, calc(10px + 1.25vw), 30px); /* 26 → 30: hero stat numbers */
+  --text-h3-lg: clamp(28px, calc(12px + 1.25vw), 32px); /* 28 → 32: large card title (clinic cards), article H2 */
+  --text-quote: clamp(28px, calc(12px + 1.25vw), 32px); /* 28 → 32: large pull quote / testimonial */
+  /* Display */
+  --text-h2-sm: clamp(32px, calc(8px + 1.875vw), 38px); /* 32 → 38: compact section H2 (blog lists, newsletter, booking bands) */
+  --text-h2-md: clamp(36px, calc(12px + 1.875vw), 42px); /* 36 → 42: large card title (blog featured post) */
+  --text-h2: clamp(40px, calc(8px + 2.5vw), 48px); /* 40 → 48: section H2 */
+  --text-h1-xs: clamp(48px, calc(16px + 2.5vw), 56px); /* 48 → 56: article H1 (blog post) */
+  --text-h1-sm: clamp(52px, calc(20px + 2.5vw), 60px); /* 52 → 60: smaller desktop H1 (blog, booking) */
+  --text-h1: clamp(64px, calc(16px + 3.75vw), 76px); /* 64 → 76: page H1 */
+}
+
+/*
+ * UI text (utility `text-ui`): nav triggers, every pill button, chips, the textLink button.
+ * 15px below 1280px (the design's 14px buttons / nav, raised to 15 for legibility), then
+ * 16 → 17px between 1280 and 1600. A variable, not a clamp, because it steps at 1280.
+ */
+:root {
+  --font-ui: 15px;
+}
+@media (width >= 80rem) {
+  :root {
+    --font-ui: clamp(16px, calc(12px + 0.3125vw), 17px);
+  }
+}
+@theme inline {
+  --text-ui: var(--font-ui);
 }
 
 /*
  * Fluid spacing and heights: `*-fluid-N` is N px up to 1280px and grows linearly to
- * N × 1.2 at 1600px (section paddings, photo heights). `*-fluid-N/M` grows from N to
+ * N × 1.2 at 1600px (section paddings, card paddings, photo heights). Utilities: p-, px-,
+ * py-, pt-, pb-, mt-, mb-, gap-, h-, min-h-fluid-N. `*-fluid-N/M` grows from N to
  * M instead (e.g. lg:min-h-fluid-720/800 for a hero). Numbers are px, integers only.
  * Formula: clamp(N, N·(0.2px + 0.0625vw), 1.2N) — 0.0625vw = 20% of N per 320px.
  * The explicit /M form: clamp(N, (N − 4(M−N))px + (M−N)·0.3125vw, M).
@@ -171,6 +208,14 @@
 @utility py-fluid-* {
   padding-block: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
   padding-block: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility px-fluid-* {
+  padding-inline: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  padding-inline: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility p-fluid-* {
+  padding: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  padding: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
 }
 @utility pt-fluid-* {
   padding-top: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
@@ -207,9 +252,15 @@
     scroll-padding-top: 88px;
     -webkit-tap-highlight-color: transparent;
   }
+  /* The desktop header is 93px (1024–1279) and 95 → 98px from 1280: keep 13–15px clear of it. */
   @media (min-width: 64rem) {
     html {
-      scroll-padding-top: 104px;
+      scroll-padding-top: 106px;
+    }
+  }
+  @media (min-width: 80rem) {
+    html {
+      scroll-padding-top: clamp(108px, calc(88px + 1.5625vw), 113px);
     }
   }
   /* Keeps focused elements clear of the fixed mobile book bar on treatment pages

@@ -58,7 +58,8 @@ export function MobileBookBar({ name, price, cta, hideAtId }: MobileBookBarProps
       <div className="flex items-center justify-between gap-3 rounded-full bg-white py-2 pr-2 pl-[22px] shadow-float">
         <p className="min-w-0 text-[14px]">
           <span className="block truncate font-semibold">{name}</span>
-          {price ? <span className="block text-[13px] text-muted">{price}</span> : null}
+          {/* 14px (the design's 13, raised to the small-text minimum); the 48px button still sets the bar's height. */}
+          {price ? <span className="block text-[14px] text-muted">{price}</span> : null}
         </p>
         <ButtonLink href={cta.href} size="compact" className="h-12! px-6!">
           {cta.label}

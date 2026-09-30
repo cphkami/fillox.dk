@@ -42,7 +42,7 @@ export function AboutHero({ hero, titleId }: AboutHeroProps) {
             </ButtonLink>
             <Link
               href={hero.teamLink.href}
-              className="border-b border-ink pb-[3px] text-[14px] text-ink transition-colors hover:border-plum hover:text-plum max-md:hidden"
+              className="relative border-b border-ink pb-[3px] text-ui-sm text-ink transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:border-plum hover:text-plum max-md:hidden"
             >
               {hero.teamLink.label} <span aria-hidden="true">↓</span>
             </Link>

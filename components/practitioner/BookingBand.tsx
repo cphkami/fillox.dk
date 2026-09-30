@@ -16,7 +16,7 @@ export function BookingBand({ booking, titleId }: BookingBandProps) {
           <h2 id={titleId} className="mb-1.5 text-[32px] leading-[1.15] font-semibold tracking-display xl:text-h2-sm">
             {booking.title}
           </h2>
-          <p className="text-[16px] leading-[1.75] text-muted">{booking.text}</p>
+          <p className="text-body leading-[1.75] text-muted">{booking.text}</p>
         </div>
         <ButtonLink href={booking.cta.href} size="md">
           {booking.cta.label}

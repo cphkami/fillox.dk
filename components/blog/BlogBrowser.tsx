@@ -208,10 +208,10 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
         className={cn("pb-8 md:pb-6", showFeatured ? "pt-7 md:pt-fluid-72" : "pt-2 md:pt-6")}
       >
         <div className="mb-8 flex items-baseline justify-between gap-4 max-md:sr-only xl:mb-fluid-32">
-          <h2 id={LIST_HEADING_ID} className="text-[32px] font-semibold tracking-display xl:text-h2-sm">
+          <h2 id={LIST_HEADING_ID} className="py-[.2em] text-[32px] leading-[1.1] font-semibold tracking-display xl:text-h2-sm">
             {copy.list.title}
           </h2>
-          <p aria-live="polite" data-blog-count={plan ? "" : undefined} className="shrink-0 text-[14px] text-muted">
+          <p aria-live="polite" data-blog-count={plan ? "" : undefined} className="shrink-0 text-small text-muted">
             {copy.list.count(total)}
           </p>
         </div>
@@ -233,7 +233,7 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
           <p
             id={listItems.length ? undefined : LIST_ID}
             data-blog-empty={plan?.empty}
-            className={cn("text-[16px] leading-[1.7] text-muted md:text-center", shown.length > 0 && "hidden")}
+            className={cn("text-body leading-[1.7] text-muted md:text-center", shown.length > 0 && "hidden")}
           >
             {copy.list.empty}
           </p>
@@ -250,7 +250,7 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
               onClick={showMore}
               className={cn(
                 buttonClasses({ variant: "outline", size: "mdTight", mobileSize: "lg", fullWidth: "mobile" }),
-                "md:px-8!",
+                "md:px-8! xl:px-fluid-32/36!",
               )}
             >
               {copy.list.showMore}

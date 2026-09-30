@@ -63,10 +63,10 @@ function TimmaView({ clinics, copy, selected, onSelect }: ViewProps) {
   return (
     <div>
       <div className="px-3 pt-4 md:px-2 md:pt-2">
-        <h2 id={labelId} className="text-[20px] leading-[1.2] font-semibold tracking-display xl:text-h4">
+        <h2 id={labelId} className="text-h4 leading-[1.2] font-semibold tracking-display">
           {copy.label}
         </h2>
-        <p className="mt-1.5 text-[14px] leading-[1.6] text-muted">{copy.hint}</p>
+        <p className="mt-1.5 text-small leading-[1.6] text-muted">{copy.hint}</p>
         <div role="group" aria-labelledby={labelId} className="mt-4 flex flex-wrap gap-2 md:gap-2.5">
           {clinics.map((clinic) => {
             const isActive = clinic.slug === selected?.slug;
@@ -93,11 +93,12 @@ function TimmaView({ clinics, copy, selected, onSelect }: ViewProps) {
         <>
           <TimmaFrame key={selected.slug} clinic={selected} />
           <p className="px-3 pt-4 pb-2 md:px-2 md:pb-0">
+            {/* An invisible hit area (12px above and below) makes the link a 44px touch target. */}
             <a
               href={selected.src}
               target="_blank"
               rel="noopener"
-              className="text-[14px] font-medium text-plum underline decoration-plum/35 underline-offset-[3px] transition-colors hover:decoration-plum"
+              className="relative text-ui-sm font-medium text-plum underline decoration-plum/35 underline-offset-[3px] transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:decoration-plum"
             >
               {copy.openDirect}
             </a>

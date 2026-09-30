@@ -39,7 +39,7 @@ export function Clinics({
   /** Find klinik page; each open card links to `${clinicsHref}#${slug}`. */
   clinicsHref: string;
 }) {
-  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] lg:block lg:p-7 2xl:p-8";
+  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] lg:block lg:p-7 xl:p-fluid-28";
 
   return (
     <Container as="section" aria-labelledby="home-clinics-title" className="pt-14 pb-11 lg:py-fluid-84">
@@ -55,10 +55,10 @@ export function Clinics({
         {clinics.map((clinic) => {
           const open = clinic.status === "open";
           const body = (
-            <div className="text-[14px] leading-[1.55] text-muted lg:leading-[1.6]">
+            <div className="text-small leading-[1.55] text-muted lg:leading-[1.6]">
               <h3
                 className={cn(
-                  "text-[17px] font-semibold text-ink lg:mb-2 lg:text-[20px] lg:leading-[normal] lg:tracking-display",
+                  "text-[17px] font-semibold text-ink lg:mb-2 lg:py-[.15em] lg:text-h4 lg:leading-[1.2] lg:tracking-display",
                   open && "transition-colors group-hover:text-plum",
                 )}
               >
@@ -77,7 +77,7 @@ export function Clinics({
                   ) : null}
                 </>
               ) : (
-                <p className="font-semibold text-plum lg:mt-1.5 lg:text-[12px] lg:leading-[normal] lg:font-normal lg:tracking-[2px] lg:uppercase">
+                <p className="font-semibold text-plum lg:mt-1.5 lg:text-micro lg:leading-[normal] lg:font-normal lg:tracking-[2px] lg:uppercase">
                   {clinic.openingNote}
                 </p>
               )}

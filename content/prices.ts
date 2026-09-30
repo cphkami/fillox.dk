@@ -134,7 +134,7 @@ export const priceCards: PriceCard[] = [
       { label: "Fillers konsultation", note: "30 min, v. sygeplejerske", price: FREE },
       { label: "Lægekonsultation før første botox", note: "lovpligtig, 15 min", price: FREE },
       { label: "Kontrol efter behandling", price: FREE },
-      { label: "Specialist-tillæg (behandling v. læge)", price: { kind: "on-request", label: "efter aftale" } },
+      { label: "Specialist-tillæg (behandling v.\u00a0læge)", price: { kind: "on-request", label: "efter aftale" } },
     ],
   },
 ];
@@ -155,8 +155,6 @@ export const pricesPage = {
   introShort: "Alle priser er vejledende. Konsultation og kontrol er altid gratis.",
   /** Plum trust band under the hero (desktop). */
   trustChips: ["Gratis konsultation", "Kun læger & sygeplejersker", "Vagtlæge 24/7", "Finansiering mulig"],
-  /** Mobile accordion subtitle: `${rows.length} ${countSuffix}`, e.g. "9 behandlinger". */
-  countSuffix: "behandlinger",
   /** Accessible name of the mobile jump-chip row. */
   chipsLabel: "Hop til kategori",
   financing: {

@@ -23,6 +23,10 @@ export const jobsPage: TextPageContent = {
     intro:
       "Vi har ingen opslag lige nu – men vi hører altid gerne fra læger og sygeplejersker, der brænder for æstetisk medicin.",
     image: {
+      // TODO: asset (owner): replace with a larger original of this photo, at least 1800px wide
+      // (ideally 2400px), as on /om-os (content/pages/about.ts). This file is 800×533; from
+      // 1280px the hero photo covers a ≈ 864×576 half band, so it is upscaled ≈ 1.1× (≈ 2.2× on
+      // retina) and the letters look soft.
       src: "/images/results/behandling-3.jpg",
       alt: "Fillox-logoet i spejlblanke bogstaver på væggen i klinikken",
       position: "50% 50%",

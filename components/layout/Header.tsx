@@ -12,6 +12,8 @@ import { buildHeaderData } from "./menuData";
 /**
  * Sticky site header (design 6a / mf top). Desktop ≥1024px: logo · centered nav
  * with mega menu + dropdowns · "Book tid". Mobile: logo · "Book tid" · burger.
+ * Heights: 72px below 1024px, 93px at 1024–1279, 95 → 98px from 1280 to 1600 (the nav and
+ * "Book tid" use `text-ui`; the logo is 30 → 32px, smaller than the design's 40px).
  * Spans the fluid site canvas (max-w-canvas) with the content gutter, so the logo lines
  * up with the text of every page section.
  */
@@ -26,7 +28,7 @@ export function Header() {
         <Link
           href="/"
           aria-label={layoutCopy.header.homeLabel}
-          className="shrink-0 rounded-sm forced-colors:bg-white forced-colors:outline-[color:CanvasText] forced-colors:forced-color-adjust-none"
+          className="flex min-h-11 shrink-0 items-center rounded-sm forced-colors:bg-white forced-colors:outline-[color:CanvasText] forced-colors:forced-color-adjust-none"
         >
           <Image
             src={site.brand.logoDark}
@@ -37,7 +39,8 @@ export function Header() {
             // every eager <img> unless its fetchPriority is "low", and that link would compete with the hero's.
             loading="eager"
             fetchPriority="low"
-            className="h-[26px] w-auto lg:h-10"
+            // 22px mobile · 30px desktop · 30 → 32px from 1280 (the link is 44px high for touch).
+            className="h-[22px] w-auto lg:h-[30px] xl:h-[clamp(30px,calc(22px+0.625vw),32px)]"
           />
         </Link>
 

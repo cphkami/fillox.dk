@@ -14,11 +14,11 @@ export function BookingBand({ id, title, text, cta }: { id: string; title: strin
       >
         <h2
           id={`${id}-title`}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display text-cream md:mb-3.5 md:text-[40px] md:leading-normal xl:text-h2"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display text-cream md:mb-3.5 md:py-[.2em] md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {title}
         </h2>
-        <p className="text-[16px] leading-[1.7] text-blush md:mb-7 md:leading-normal">{text}</p>
+        <p className="text-body leading-[1.7] text-blush md:mb-7 md:leading-normal">{text}</p>
         <ButtonLink
           href={cta.href}
           variant="lightInk"

@@ -70,7 +70,7 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
 | `/om-os` | `6om` / `mo` |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example) |
-| `/priser` | `6b` / `mp` |
+| `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
 | `/behandlinger/[slug]` | template `6c`, Botox `6bx` / Lip filler `mb` |
 | `/klinikker` | `6kl` / `mk` |
@@ -124,9 +124,12 @@ type `ClinicBookingIds`).
 | `muted` | `#5E4F4D` | secondary text |
 | `line` | `#E3D6CC` | hairlines on light |
 | `rule` | `#D9BFB8` | dividers in hero stats |
+| `taupe` | `#7A624F` | prices and price notes, the /priser hero eyebrow (design `#B39C89`, darkened to pass WCAG AA: 4.62:1 on sand) |
+| `placeholder` | `#746A67` | input placeholders, the only placeholder colour (design `#8A7F7C`, darkened: 4.71:1 on cream) |
 
 - Typography (Poppins): desktop H1 64/1.02 SemiBold, -0.035em; H2 40/1.1 SemiBold, -0.03em;
   mobile H1 36/1.08, H2 28/1.15, body 16/1.7 (articles 17), eyebrow 12 Bold uppercase +2px.
+  From 1280px these grow with the type scale ("Wide layout" → "Type scale").
 - Shape: pill buttons (radius 100px; 52px high on mobile, secondary taps ≥ 44px),
   cards 18–24px radius, 12px margin on surfaces, 20px side margin on text (mobile).
 - Behaviour: sticky header, fullscreen mobile menu with accordions, horizontal scroll
@@ -138,46 +141,130 @@ type `ClinicBookingIds`).
 ## Wide layout
 
 The design was drawn on a 1180px canvas, which looks like a tablet view on a 1710px
-MacBook screen. The site therefore uses a fluid canvas. Every value lives in
-`app/globals.css`; to change the whole site's width, edit **one** value, `--canvas-max`
-(1440 / 1600 / 1920px).
+MacBook screen. The site therefore uses a fluid canvas **and one fluid type scale**. Every
+value lives in `app/globals.css`; to change the whole site's width, edit **one** value,
+`--canvas-max` (1440 / 1600 / 1920px).
 
 | Viewport | Behaviour |
 |---|---|
-| < 1024px (mobile 390, tablet 768) | exactly the design, nothing changes |
-| 1024–1280px | as the design (the canvas is the viewport; gutters 56px) |
-| ≥ 1280px (`xl`) | canvas grows with the viewport up to `--canvas-max`; gutters, display type and section spacing grow gently |
+| < 1024px (mobile 390, tablet 768) | the design, except the best-practice fixes listed under "Type and UI rules" |
+| 1024–1279px | as the design (the canvas is the viewport; gutters 56px); nav and buttons 15px |
+| ≥ 1280px (`xl`) | canvas, gutters, type, button paddings and section spacing grow linearly up to 1600px |
 | > `--canvas-max` | canvas is centred; nothing grows further |
 
-Tokens and utilities:
+### Layout tokens
 
 | Token (globals.css) | Value | Utility |
 |---|---|---|
 | `--canvas-max` | `1600px` | `max-w-canvas` (also `w-canvas`) |
 | `--gutter-content` | 20 · 40 (md) · 56 (lg) · 64 (xl) · 80px (2xl) | `px-gutter`, `-mx-gutter`, `scroll-px-gutter`, `pl-gutter` … |
 | `--gutter-surface` | 12 · 24 (md) · 32px (2xl) | `px-surface`, `p-surface`, `inset-x-surface` … |
-| `--text-h1` | `clamp(64px, 16px + 3.75vw, 76px)` | `text-h1` (page H1, 64 → 76) |
-| `--text-h1-sm` | `clamp(52px, 20px + 2.5vw, 60px)` | `text-h1-sm` (52px desktop H1s: blog, booking) |
-| `--text-h2` | `clamp(40px, 8px + 2.5vw, 48px)` | `text-h2` (section H2, 40 → 48; `SectionHeading` uses it) |
-| `--text-h3` | `clamp(22px, 14px + 0.625vw, 24px)` | `text-h3` (card titles, 22 → 24) |
-| `--text-lead` | `clamp(18px, 10px + 0.625vw, 20px)` | `text-lead` (hero lead / intro, 18 → 20) |
-| `--text-quote` | `clamp(28px, 12px + 1.25vw, 32px)` | `text-quote` (pull quote / testimonial, 28 → 32) |
-| `--text-h1-xs` | `clamp(48px, 16px + 2.5vw, 56px)` | `text-h1-xs` (blog article H1, 48 → 56) |
-| `--text-h2-md` | `clamp(36px, 12px + 1.875vw, 42px)` | `text-h2-md` (blog featured-post title, 36 → 42) |
-| `--text-h2-sm` | `clamp(32px, 8px + 1.875vw, 38px)` | `text-h2-sm` (compact section H2: blog lists, newsletter, booking bands, 32 → 38) |
-| `--text-h3-lg` | `clamp(28px, 12px + 1.25vw, 32px)` | `text-h3-lg` (large card title: clinic cards, 28 → 32) |
-| `--text-h3-md` | `clamp(24px, 8px + 1.25vw, 28px)` | `text-h3-md` (band / card title, 24 → 28) |
-| `--text-h4` | `clamp(20px, 12px + 0.625vw, 22px)` | `text-h4` (small column title, 20 → 22) |
-| `--text-small` | `clamp(14px, 10px + 0.3125vw, 15px)` | `text-small` (small print beside large type, 14 → 15) |
-| — | N px ≤ 1280 → N × 1.2 at 1600 | `py-fluid-N`, `pt-`, `pb-`, `mt-`, `mb-`, `gap-`, `h-`, `min-h-fluid-N` |
-| — | N px ≤ 1280 → M px at 1600 | same utilities with a modifier: `min-h-fluid-720/800` |
+| — | N px ≤ 1280 → N × 1.2 at 1600 | `p-fluid-N`, `px-`, `py-`, `pt-`, `pb-`, `mt-`, `mb-`, `gap-`, `h-`, `min-h-fluid-N` |
+| — | N px ≤ 1280 → M px at 1600 | the same utilities with a modifier: `min-h-fluid-720/800`, `xl:px-fluid-30/34` |
 
-The type tokens are font-size only and equal the design size up to 1280px, so they
-replace the design number at the same breakpoint (`md:text-[52px] lg:text-h1`). Body
-copy stays 16px; keep long text readable with a `ch` max width (`max-w-[56ch]`).
-Breakpoints are Tailwind's defaults: `md` 768, `lg` 1024, `xl` 1280, `2xl` 1536.
+### Type scale
 
-Rules for pages and components:
+Every size of the design maps to **one** token. A token is exactly the design size up to
+1280px, grows linearly to its 1600px value, then stops. Font size only: leading and
+tracking stay as they are. All tokens follow one formula, a → b:
+`clamp(a, calc((a − 4(b − a))px + ((b − a) / 3.2)vw), b)`.
+
+| Design size | Utility | 1600px | Role |
+|---|---|---|---|
+| 11, 12 | `text-micro` | 13 | eyebrows (`Eyebrow`), uppercase labels, badges, price notes (11 is raised to 12; the /priser card notes grow 12 → 14 instead, to keep the design's note / row ratio next to the 14 → 16 rows) |
+| 13 | `text-fine` | 14 | fine print: consent, form help / errors, newsletter note |
+| 14, passive | `text-small` | 15 | addresses, captions, meta, footer text, legal, breadcrumbs, Trustpilot label |
+| 14, actionable | `text-ui-sm` | 16 | text you act on: `ArrowLink`, price rows, form labels, footer nav links |
+| 13 / 14, pill or nav | `text-ui` | 17 | nav triggers, every `Button` size, chips, the textLink button (15px below 1280, 16 at 1280) |
+| 15 | `text-body-sm` | 16 | the design's 15px copy, desktop newsletter input |
+| 16 | `text-body` | 18 | body, intros (`SectionHeading`), card text, captions, FAQ answers, inputs |
+| 17 | `text-body-lg` | 19 | article and text-page body |
+| 18 | `text-lead` | 20 | hero lead / intro, FAQ questions, fact values, author / booking-card names |
+| 19 | `text-title` | 21 | blog card titles, article intro, text-page lead |
+| 20 | `text-h4` | 22 | small card / column titles |
+| 21 | `text-title-lg` | 23 | article H3, article blockquote |
+| 22 | `text-h3` | 25 | card titles |
+| 24 | `text-h3-md` | 28 | band / card titles |
+| 26 | `text-stat` | 30 | hero stat numbers |
+| 28 | `text-h3-lg` / `text-quote` | 32 | large card titles, article H2 / pull quotes, testimonials |
+| 32 | `text-h2-sm` | 38 | compact section H2 (blog lists, newsletter, booking bands) |
+| 36 | `text-h2-md` | 42 | blog featured-post title |
+| 40 | `text-h2` | 48 | section H2 (`SectionHeading`) |
+| 48 | `text-h1-xs` | 56 | article H1 |
+| 52 | `text-h1-sm` | 60 | smaller desktop H1 (blog, booking) |
+| 64 | `text-h1` | 76 | page H1 |
+
+`text-ui` is the variable `--font-ui`, not a clamp: 15px below 1280px, then
+`clamp(16px, 12px + 0.3125vw, 17px)`. The main ladder at 1600px is 18 → 22 → 28 → 38 → 48 →
+76 (steps of 1.22–1.36×); body at 18px keeps the design's H1 / body and H2 / body ratios.
+
+**Recipe (pages and components):**
+
+- Replace the class at the breakpoint where the design size applies:
+  `lg:text-[16px]` → `lg:text-body`, `md:text-[52px] lg:text-[64px]` → `md:text-[52px] lg:text-h1`.
+  Because the tokens equal the design size below 1280, `md:text-[20px] xl:text-h4` and
+  `md:text-h4` render the same.
+- Mobile-only sizes (`text-[28px]` below `md`) are not changed.
+- No `2xl:` steps: `text-[14px] 2xl:text-[15px]` → `text-small` (or `text-ui-sm`).
+- Don't give a `Button` a font size: all sizes use `text-ui`. A one-off horizontal padding
+  needs its fluid twin: `px-8!` → `px-8! xl:px-fluid-32/36!`.
+- Token utilities are emitted **after** arbitrary ones (`text-micro` beats `text-[11px]`
+  on the same element without a variant). Override a primitive's size with a breakpoint
+  variant (`md:text-small`) or `!`, never an unprefixed arbitrary size.
+- Headings the design sets with `line-height: normal` use `leading-[1.1] py-[.2em]` (single
+  line identical, a wrapped heading keeps a 1.1 gap); `SectionHeading leading="normal"` does
+  this.
+- Line length: body copy stays ≤ ~75 characters. `ch` max widths scale with the font
+  (`max-w-[56ch]`); article and text-page prose uses `md:max-w-[58ch]`.
+- Card paddings grow at `xl` with `xl:p-fluid-N` / `xl:px-fluid-N`.
+
+### Site chrome (components/layout)
+
+| Element | < 1024 | 1024–1279 | 1280 → 1600 |
+|---|---|---|---|
+| Header height | 72px | 93px | 95 → 98px |
+| Header logo | 22px | 30px | 30 → 32px (link ≥ 44px high) |
+| Nav triggers | — | `text-ui` 15px, gap 32px | 16 → 17px, gap 36 → 40px (`xl:gap-fluid-36/40`) |
+| "Book tid" (Button `sm`) | compact 44px, 15px | 119 × 49px | 123 × 51 → 135 × 54px |
+| Mobile-menu logo | 22px | — | — |
+| Footer logo | 24px | 28px | 28 → 30px |
+| `scroll-padding-top` | 88px | 106px | 108 → 113px |
+
+- Nav triggers have an invisible `before:` hit area (≥ 44px high) that leaves the underline
+  in place; the underline marks the current section / open menu, not hover.
+- **Menus do not scale.** From 1024px every header panel (mega menu, Priser, Find klinik,
+  Om os) uses fixed sizes: titles 16px/600, links 15px, secondary text 14px, uppercase micro
+  labels 12px, "Se alle →" 15px/600 (`ArrowLink size="menu"`). Frame: white, 20px radius,
+  12px inset (`p-3`), `shadow-menu`; footer row `border-t` + `pt-3.5 pb-1.5`. Every panel
+  sits 2px under the header (dropdowns: `pt-[34px] xl:pt-fluid-35/36`).
+- Mega menu (1133px wide from 1280, centred on the canvas): 28px above the column titles
+  (28 → 32 from 1280), title → list 6px, links on a 32px pitch (32 → 34, the line height;
+  no gaps), 16px under the last link (20 → 24 from 1280), columns 24px apart; the 220px promo
+  card's photo fills the height the text leaves (≥ 112px), so card and columns end on one
+  line. Panel height: 351px at 1024 (promo as a strip, no photo), 291px at 1280, 310px at 1600.
+- Dropdowns: Priser 760px, Find klinik 360px, Om os ≥ 240px.
+
+### Buttons (components/ui/Button.tsx)
+
+All sizes use `text-ui` (15px below 1280). Heights below 1280 → at 1600 (without border):
+xs 44.5 → 47.5, sm 48.5 → 53.5, mdTight 50.5 → 55.5, md / xl 54.5 → 59.5, chip 44.5 → 47.5;
+lg 52 and compact 44 are fixed. Paddings grow with `xl:px-fluid-* xl:py-fluid-*`.
+
+### Type and UI rules (best practice; the only changes allowed below 1280)
+
+- Body text ≥ 16px (18 at 1600), line-height 1.5–1.75; headings 1.05–1.2.
+- Small text ≥ 14px where possible, never < 12px (uppercase eyebrows 12px with tracking).
+- Nav 15–17px; button text ≥ 15px; buttons and chips ≥ 44px high (mobile primary 52px).
+- Form inputs 16px on mobile (no iOS zoom on focus).
+- Touch targets ≥ 44 × 44px: use `min-h-11` rows, or an invisible `after:` / `before:` hit
+  area where the text must not move (`ArrowLink` has one built in: 12px above and below).
+- Contrast WCAG AA: 4.5:1 for text (3:1 from 24px, or 18.66px bold). `taupe` and
+  `placeholder` were darkened for this.
+- Hover states are hover states: an element the design shows highlighted once in a list (the
+  Skinbooster bestseller row, an underlined nav item) is a hover / current state, never a
+  permanent highlight. Tailwind's `hover:` only applies on devices that can hover.
+
+### Rules for pages and components
 
 - **Never** write `max-w-[1180px]`. Use `<Container>` (content gutter) /
   `<Container gutter="surface">` (rounded bands), or `containerClasses("content" |
@@ -199,6 +286,7 @@ Rules for pages and components:
   (min-width: 1024px) 50vw, 100vw"`; a 3-column content grid with 24px gaps →
   `(1440 − 48) / 3 = 464px` → `"(min-width: 1600px) 464px, (min-width: 1024px) 30vw, …"`.
   Source files are limited (hero JPGs are 1200 × 1500): don't upscale files.
+- Breakpoints are Tailwind's defaults: `md` 768, `lg` 1024, `xl` 1280, `2xl` 1536.
 
 ## Verifying against the design
 

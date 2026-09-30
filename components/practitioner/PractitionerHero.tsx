@@ -13,6 +13,14 @@ type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
  *   fact cards in a 3-column row underneath.
  * - Mobile: portrait card on top, then breadcrumb, title as eyebrow, H1, short intro,
  *   full-width CTA and the facts as label/value rows.
+ * - From 1280px the type grows with the fluid scale (breadcrumb 14 → 15, fact labels 12 → 13,
+ *   fact values 22 → 25, H1 64 → 76 at 1600px) and so do the fact card paddings. The text
+ *   column's gaps grow too (breadcrumb 18 → 26, H1 8 → 14, title 22 → 32, intro 30 → 44px), so
+ *   the text keeps its share of the panel as the portrait grows from 620 to 800px high.
+ * - H1 leading: the design's 1.02 as a box, so a single line sits exactly as designed, but
+ *   6px more between lines when a name wraps ("Dr. Tom Haugland": 1.1 at 76px, 1.14 at 52px):
+ *   line-height 1.02em + 6px with −3px margins. Whole px, not em, so the line box stays on
+ *   Chrome's 1/64px layout grid and a single line renders pixel-identical.
  */
 export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
   const { breadcrumb } = practitionerPage;
@@ -44,12 +52,16 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
         />
 
         <div className="flex flex-col gap-4 px-2 pt-7 md:justify-center md:gap-0 md:px-10 md:py-14 lg:px-14 lg:py-fluid-72 xl:px-16 2xl:px-20">
-          <nav aria-label={breadcrumb.label} className="text-[13px] text-muted md:mb-[18px] md:text-[14px]">
+          <nav aria-label={breadcrumb.label} className="text-[13px] text-muted md:mb-[18px] md:text-small xl:mb-fluid-18/26">
             <ol>
               {breadcrumb.items.map((item, i) => (
                 <li key={item.href} className="inline">
                   {i > 0 ? <span aria-hidden="true">{" → "}</span> : null}
-                  <Link href={item.href} className="transition-colors hover:text-plum">
+                  {/* Invisible 44px hit area (14px above and below) around the small link text. */}
+                  <Link
+                    href={item.href}
+                    className="relative transition-colors after:absolute after:-inset-x-1 after:-inset-y-3.5 hover:text-plum"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -69,15 +81,15 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
 
           <h1
             id={titleId}
-            className="text-[36px] leading-[1.08] font-semibold tracking-display text-plum md:mb-2 md:text-[52px] md:leading-[1.02] lg:text-h1"
+            className="text-[36px] leading-[1.08] font-semibold tracking-display text-plum md:-my-[3px] md:text-[52px] md:leading-[calc(1.02em+6px)] lg:text-h1"
           >
             {profile.displayName}
           </h1>
 
-          <p className="text-lead text-muted max-md:hidden md:mb-[22px]">{profile.title}</p>
+          <p className="text-lead text-muted max-md:hidden md:mt-2 md:mb-[22px] xl:mt-fluid-8/14 xl:mb-fluid-22/32">{profile.title}</p>
 
           {profile.intro ? (
-            <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-lead md:leading-[1.75]">
+            <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-lead md:leading-[1.75] xl:mb-fluid-30/44">
               <ResponsiveText mobile={profile.introShort} desktop={profile.intro} />
             </p>
           ) : null}
@@ -87,7 +99,12 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
               {profile.primaryCta.label}
             </ButtonLink>
             {profile.secondaryCta ? (
-              <ButtonLink href={profile.secondaryCta.href} variant="textLink" className="max-md:hidden">
+              // The text link is ~25px tall: an invisible hit area makes it a 44px target (tablets).
+              <ButtonLink
+                href={profile.secondaryCta.href}
+                variant="textLink"
+                className="relative after:absolute after:-inset-x-1 after:-inset-y-2.5 max-md:hidden"
+              >
                 {profile.secondaryCta.label}
                 <span aria-hidden="true" className="-ml-1">
                   ↓
@@ -103,12 +120,12 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
           {profile.facts.map((fact) => (
             <div
               key={fact.label}
-              className="flex justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5 text-[15px] md:flex-col md:justify-start md:gap-0 md:rounded-[24px] md:px-6 md:py-6 lg:px-[30px] lg:py-7"
+              className="flex justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5 text-[15px] md:flex-col md:justify-start md:gap-0 md:rounded-[24px] md:px-6 md:py-6 lg:px-[30px] lg:py-7 xl:px-fluid-30 xl:py-fluid-28"
             >
-              <dt className="text-muted md:mb-2 md:text-[12px] md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
+              <dt className="text-muted md:mb-2 md:text-micro md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
                 {fact.label}
               </dt>
-              <dd className="text-right font-semibold md:text-left md:text-[20px] md:tracking-display lg:text-h3">
+              <dd className="text-right font-semibold md:py-[.2em] md:text-left md:text-h4 md:leading-[1.1] md:tracking-display lg:text-h3">
                 {fact.value}
               </dd>
             </div>

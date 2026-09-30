@@ -44,7 +44,7 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
                 aria-controls={panelId}
                 onClick={() => toggle(i)}
                 className={cn(
-                  "flex min-h-11 w-full items-center justify-between gap-3 pt-4 text-left text-[16px] font-semibold md:pt-[22px] md:text-[18px] md:tracking-display",
+                  "flex min-h-11 w-full items-center justify-between gap-3 pt-4 text-left text-[16px] font-semibold md:pt-[22px] md:text-lead md:tracking-display",
                   isOpen ? "pb-2 md:pb-3" : "pb-4 md:pb-[22px]",
                   cssOpenOnMobile && "max-md:pb-2",
                 )}
@@ -80,10 +80,11 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
               )}
             >
               <div className="overflow-hidden">
-                {/* 70ch (incl. the 56px right padding) = the design's measure, ≈ 82 Poppins
-                    characters; from 2xl, beside the heading, 62ch ≈ 570px of text ≈ 72 characters,
-                    the measure of the other intros. */}
-                <p className="pb-4 text-[15px] leading-[1.65] text-muted md:max-w-[70ch] md:pr-14 md:pb-[22px] md:text-[16px] md:leading-[1.75] 2xl:max-w-[62ch]">
+                {/* 58ch ≈ 72 Poppins characters at any font size (the design's 70ch column ran
+                    ≈ 82, over the 75-character best practice); it also keeps the text clear of
+                    the 38px toggle. Body size on mobile too (16px: the design's 15 raised to the
+                    body-text minimum). */}
+                <p className="pb-4 text-body leading-[1.65] text-muted md:max-w-[58ch] md:pb-[22px] md:leading-[1.75]">
                   {item.answer}
                 </p>
               </div>

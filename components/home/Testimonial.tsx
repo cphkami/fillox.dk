@@ -11,7 +11,7 @@ export function Testimonial({ testimonial }: { testimonial: HomePage["testimonia
     <Container as="section" gutter="surface" aria-label={testimonial.label} className="lg:mt-surface">
       <div className="grid overflow-hidden rounded-[24px] bg-white lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:bg-plum">
         <figure className="flex flex-col justify-center gap-3 px-[22px] py-8 text-center lg:gap-0 lg:px-16 lg:py-fluid-84 lg:text-left 2xl:px-20">
-          <p className="text-plum lg:mb-[22px] lg:text-[16px] lg:text-powder">
+          <p className="text-plum lg:mb-[22px] lg:text-body lg:text-powder">
             <span className="sr-only">{testimonial.ratingLabel}</span>
             <span aria-hidden="true" className="tracking-[4px] lg:hidden">
               {stars.join("")}
@@ -23,7 +23,7 @@ export function Testimonial({ testimonial }: { testimonial: HomePage["testimonia
           <blockquote className="text-[18px] leading-[1.55] font-medium lg:mb-[18px] lg:text-quote lg:leading-[1.35] lg:font-semibold lg:tracking-display lg:text-cream">
             <p>{testimonial.quote}</p>
           </blockquote>
-          <figcaption className="text-[13px] text-muted lg:text-[14px] lg:tracking-[2px] lg:text-blush lg:uppercase">
+          <figcaption className="text-[13px] text-muted lg:text-small lg:tracking-[2px] lg:text-blush lg:uppercase">
             {testimonial.author} · {testimonial.source}
           </figcaption>
         </figure>

@@ -31,7 +31,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
         className="h-[240px] md:h-[360px] lg:h-auto lg:min-h-fluid-420/520"
       />
 
-      <div className="flex flex-col gap-2.5 px-5 pt-[22px] pb-6 md:justify-center md:gap-4 md:p-10 lg:p-14 xl:px-16 2xl:px-20">
+      <div className="flex flex-col gap-2.5 px-5 pt-[22px] pb-6 md:justify-center md:gap-4 md:p-10 lg:p-14 xl:px-fluid-64/80">
         <Eyebrow>
           <Responsive
             mobile={joinMeta(post.category, post.kind, shortReadingTime(post))}
@@ -45,7 +45,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
           </Link>
         </h2>
 
-        <p className="text-[16px] leading-[1.7] text-muted md:leading-[1.75]">
+        <p className="text-body leading-[1.7] text-muted md:leading-[1.75]">
           <Responsive mobile={post.excerptShort} desktop={post.excerpt} />
         </p>
 
@@ -57,7 +57,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
               radius="50%"
               className="size-9 shrink-0 md:size-11"
             />
-            <p className="text-[13px] md:text-[14px]">
+            <p className="text-[13px] md:text-small">
               <span className="font-semibold">{author.name}</span>
               <span className="text-muted md:hidden">
                 {copy.separator}

@@ -37,7 +37,7 @@ export function TextPageHero({ hero, titleId }: TextPageHeroProps) {
           {hero.intro ? (
             <p
               className={cn(
-                "mt-4 text-[16px] leading-[1.7] text-pretty text-muted md:mt-5 md:max-w-[52ch] md:text-[18px] md:leading-[1.75] xl:text-lead",
+                "mt-4 text-[16px] leading-[1.7] text-pretty text-muted md:mt-5 md:max-w-[52ch] md:text-lead md:leading-[1.75]",
                 image ? "lg:mt-[22px]" : "md:mx-auto",
               )}
             >
