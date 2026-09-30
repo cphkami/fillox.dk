@@ -18,46 +18,62 @@ type MegaMenuProps = {
   onNavigate?: () => void;
 };
 
-/** Desktop "Behandlinger" panel (design 6menu): five treatment columns + promo card. */
+/**
+ * Desktop "Behandlinger" panel (design 6menu): five treatment columns + promo card.
+ *
+ * Sized to its content, not to the canvas: the "Priser" dropdown's sibling (white, 20px radius,
+ * 12px inset, a 228px sand card with a 20px text inset). The columns are as wide as their
+ * longest link and sit 28px apart. From 1280px the promo is a card with a photo beside the
+ * columns (panel ~1110px wide); below that (1024–1279) it is a sand strip without photo under
+ * the columns, so the panel stays ~870px wide and fits the narrowest canvas.
+ */
 export function MegaMenu({ columns, promo, open = true, showPromoPhoto = true, onNavigate }: MegaMenuProps) {
   const prefetch = open ? null : false;
   const ariaCurrent = useAriaCurrent();
   return (
-    // Side padding + the panel's surface inset = the content gutter (56 · 64 · 80px), so the
-    // first column lines up with the logo at every width. The design's grid (wider promo,
-    // 32px gaps) from its 1180px canvas up; narrower, it would make the column labels wrap.
-    <div className="grid grid-cols-[repeat(5,minmax(0,1fr))_minmax(0,1fr)] gap-6 rounded-[24px] bg-white px-8 py-10 shadow-menu min-[73.75rem]:grid-cols-[repeat(5,minmax(0,1fr))_minmax(0,1.3fr)] min-[73.75rem]:gap-8 xl:px-10 2xl:px-12">
-      {columns.map((col) => (
-        <div key={col.title}>
-          <p className="mb-3.5 text-[15px] font-semibold text-plum">{col.title}</p>
-          <ul className="flex flex-col gap-[11px] text-[14px] text-ink">
-            {col.items.map((t) => (
-              <li key={t.slug}>
-                <Link
-                  href={t.href}
-                  prefetch={prefetch}
-                  onClick={onNavigate}
-                  aria-current={ariaCurrent(t.href)}
-                  className="transition-colors hover:text-plum"
-                >
-                  {t.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-      <div className="flex flex-col overflow-hidden rounded-[20px] bg-sand">
-        {/* Promo column is ≤ 270px wide on the 1600px canvas; the photo grows modestly with it. */}
+    <div className="flex flex-col gap-3 rounded-[20px] bg-white p-3 shadow-menu xl:flex-row">
+      {/* `auto` columns = their max-content width while the panel is `w-max`; they would wrap
+          rather than overflow if the panel ever hit its max width (DesktopNav). */}
+      <div className="grid grid-cols-[repeat(5,auto)] gap-x-7 px-4 pt-4 pb-1 xl:py-4">
+        {columns.map((col) => (
+          <div key={col.title}>
+            <p className="mb-3 text-[15px] leading-5 font-semibold text-plum">{col.title}</p>
+            <ul className="flex flex-col gap-2 text-[14px] leading-5 text-ink">
+              {col.items.map((t) => (
+                <li key={t.slug}>
+                  <Link
+                    href={t.href}
+                    prefetch={prefetch}
+                    onClick={onNavigate}
+                    aria-current={ariaCurrent(t.href)}
+                    className="transition-colors hover:text-plum"
+                  >
+                    {t.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div className="overflow-hidden rounded-[16px] bg-sand xl:w-[228px] xl:shrink-0">
+        {/* Photo only on the card layout (≥1280px); a wide, short crop of the face. */}
         {showPromoPhoto ? (
-          <Photo image={promo.image} sizes="(min-width: 1280px) 270px, 220px" className="h-[170px] shrink-0 xl:h-fluid-170" />
+          <Photo image={promo.image} sizes="228px" className="hidden h-[112px] xl:block" />
         ) : (
-          <div className="h-[170px] shrink-0 bg-sand xl:h-fluid-170" />
+          <div className="hidden h-[112px] xl:block" />
         )}
-        <div className="px-4 py-5 min-[73.75rem]:px-[22px]">
-          <p className="mb-1 text-[15px] font-semibold">{promo.title}</p>
-          <p className="mb-3.5 text-[14px] text-muted">{promo.text}</p>
-          <ArrowLink href={promo.link.href} prefetch={prefetch} onClick={onNavigate} aria-current={ariaCurrent(promo.link.href)}>
+        <div className="flex items-center justify-between gap-6 px-4 py-4 xl:block xl:px-5 xl:pt-3.5 xl:pb-4">
+          <p className="text-[14px] leading-5 text-muted xl:mb-2.5 xl:text-[13px]">
+            <span className="text-[15px] font-semibold text-ink xl:mb-0.5 xl:block xl:text-balance">{promo.title}</span> {promo.text}
+          </p>
+          <ArrowLink
+            href={promo.link.href}
+            prefetch={prefetch}
+            onClick={onNavigate}
+            aria-current={ariaCurrent(promo.link.href)}
+            className="shrink-0 leading-5"
+          >
             {promo.link.label}
           </ArrowLink>
         </div>

@@ -38,7 +38,7 @@ export const site: SiteConfig = {
   },
 
   social: {
-    instagram: "https://www.instagram.com/fillox.dk/",
+    instagram: "https://www.instagram.com/fillox_dk/",
   },
 
   trustpilot: {

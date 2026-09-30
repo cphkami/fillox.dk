@@ -25,7 +25,15 @@ type DesktopNavProps = Pick<HeaderData, "megaColumns" | "megaPromo" | "clinics" 
   label: string;
 };
 
+/**
+ * Hover timing. A hover-opened menu closes HOVER_CLOSE_DELAY after the pointer leaves it; while it
+ * is open, another trigger takes over only after HOVER_SWITCH_DELAY on it (hover intent). Both wait
+ * longer while the pointer is still on its way down to the open panel ("menu aim"): the wide mega
+ * panel is reached on long diagonals from its trigger, across the gap under the nav and past the
+ * neighbouring triggers, and that path must neither close nor swap the menu.
+ */
 const HOVER_CLOSE_DELAY = 150;
+const HOVER_SWITCH_DELAY = 120;
 
 /** Top-level label style: 14px muted; active/open = ink with a 1px plum underline. */
 function itemClasses(highlight: boolean) {
@@ -47,6 +55,9 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
   const navRef = useRef<HTMLElement>(null);
   const hoverOpened = useRef(false);
   const closeTimer = useRef<number | undefined>(undefined);
+  const switchTimer = useRef<number | undefined>(undefined);
+  /** Last mouse position while a menu is open (for the "menu aim" check). */
+  const pointer = useRef({ x: 0, y: 0 });
   const baseId = useId();
 
   // Close on route change (adjusting state during render, per React docs).
@@ -61,15 +72,23 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
   const [megaOpened, setMegaOpened] = useState(false);
   if (open === "treatments" && !megaOpened) setMegaOpened(true);
 
-  const close = useCallback(() => {
+  const clearTimers = useCallback(() => {
     window.clearTimeout(closeTimer.current);
-    hoverOpened.current = false;
-    setOpen(null);
+    window.clearTimeout(switchTimer.current);
   }, []);
 
-  // Outside click + Escape while a menu is open.
+  const close = useCallback(() => {
+    clearTimers();
+    hoverOpened.current = false;
+    setOpen(null);
+  }, [clearTimers]);
+
+  // Outside click + Escape while a menu is open; the pointer position is tracked for the menu aim.
   useEffect(() => {
     if (!open) return;
+    const onPointerMove = (e: PointerEvent) => {
+      pointer.current = { x: e.clientX, y: e.clientY };
+    };
     const onPointerDown = (e: PointerEvent) => {
       if (!navRef.current?.contains(e.target as Node)) close();
     };
@@ -80,17 +99,41 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
       close();
       if (hadFocus) item?.querySelector<HTMLButtonElement>("button[aria-expanded]")?.focus();
     };
+    document.addEventListener("pointermove", onPointerMove, { passive: true });
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
     return () => {
+      document.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open, close]);
 
-  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+  useEffect(() => clearTimers, [clearTimers]);
 
   const itemEl = (id: string) => navRef.current?.querySelector<HTMLElement>(`[data-menu-id="${id}"]`);
+
+  /** Menu aim: the pointer is above menu `id`'s panel, within its width, and lower than at `sinceY`. */
+  const headingToPanel = (id: string, sinceY: number) => {
+    const { x, y } = pointer.current;
+    const panel = itemEl(id)?.querySelector("[data-menu-panel]")?.firstElementChild?.getBoundingClientRect();
+    return !!panel && x >= panel.left && x <= panel.right && y < panel.top && y > sinceY;
+  };
+
+  /** Runs `action` after `delay`, postponed again for as long as the pointer keeps heading to menu `id`'s panel. */
+  const afterAim = (timer: typeof closeTimer, id: string, startY: number, delay: number, action: () => void) => {
+    let lastY = startY;
+    const wait = () => {
+      timer.current = window.setTimeout(() => {
+        if (headingToPanel(id, lastY)) {
+          lastY = pointer.current.y;
+          wait();
+        } else action();
+      }, delay);
+    };
+    window.clearTimeout(timer.current);
+    wait();
+  };
 
   const focusPanelLink = (id: string, which: "first" | "last") => {
     const links = itemEl(id)?.querySelectorAll<HTMLElement>("[data-menu-panel] a");
@@ -125,22 +168,36 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
   const handlers = (id: string) => ({
     onPointerEnter: (e: ReactPointerEvent) => {
       if (e.pointerType !== "mouse") return;
-      window.clearTimeout(closeTimer.current);
-      if (open !== id) {
+      // Entering the open item (its trigger, bridge or panel) keeps it open and cancels a pending switch.
+      clearTimers();
+      if (open === id) return;
+      const replaced = open;
+      const openThis = () => {
         // Keyboard focus inside the panel being replaced goes back to its trigger, not to <body>.
-        if (open) rescueFocus(open);
+        if (replaced) rescueFocus(replaced);
         hoverOpened.current = true;
         setOpen(id);
-      }
+      };
+      pointer.current = { x: e.clientX, y: e.clientY };
+      if (replaced && hoverOpened.current) afterAim(switchTimer, replaced, e.clientY, HOVER_SWITCH_DELAY, openThis);
+      else openThis();
     },
     onPointerLeave: (e: ReactPointerEvent) => {
-      if (e.pointerType !== "mouse" || !hoverOpened.current) return;
-      window.clearTimeout(closeTimer.current);
-      closeTimer.current = window.setTimeout(() => {
+      if (e.pointerType !== "mouse") return;
+      window.clearTimeout(switchTimer.current);
+      if (!hoverOpened.current) return;
+      // The hover-opened menu: this item's own, or the one kept open while the switch to this item was pending.
+      const target = open;
+      if (!target) {
         hoverOpened.current = false;
-        rescueFocus(id);
-        setOpen((cur) => (cur === id ? null : cur));
-      }, HOVER_CLOSE_DELAY);
+        return;
+      }
+      pointer.current = { x: e.clientX, y: e.clientY };
+      afterAim(closeTimer, target, e.clientY, HOVER_CLOSE_DELAY, () => {
+        hoverOpened.current = false;
+        rescueFocus(target);
+        setOpen((cur) => (cur === target ? null : cur));
+      });
     },
     onBlur: (e: ReactFocusEvent<HTMLLIElement>) => {
       const next = e.relatedTarget as Node | null;
@@ -150,7 +207,7 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
   });
 
   const onTriggerClick = (id: string) => {
-    window.clearTimeout(closeTimer.current);
+    clearTimers();
     if (open === id && hoverOpened.current) {
       // Opened by hover: a click "pins" it open instead of closing it.
       hoverOpened.current = false;
@@ -163,7 +220,7 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
   const onTriggerKeyDown = (id: string) => (e: ReactKeyboardEvent<HTMLButtonElement>) => {
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      window.clearTimeout(closeTimer.current);
+      clearTimers();
       hoverOpened.current = false;
       const which = e.key === "ArrowDown" ? "first" : "last";
       if (open === id) {
@@ -218,8 +275,12 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
           className={cn(
             "absolute z-40 duration-200 ease-out",
             placement === "mega"
-              ? // Spans the site canvas minus the surface margin (24px, 32px from 1536px), directly under the header.
-                "inset-x-surface top-full"
+              ? // Positioned against the header's canvas box (the <li> and <ul> are static): centred on the
+                // canvas, not on the nav (the logo and "Book tid" differ in width, so the nav sits off-centre),
+                // as wide as its content, level with the other dropdowns. The gap above is a margin, not
+                // padding, so it never covers the logo or "Book tid": the trigger's hover bridge spans it.
+                // The max width (the canvas minus the surface margins) is only a safety net.
+                "top-full left-1/2 mt-0.5 w-max max-w-[calc(100%-2*var(--gutter-surface))] -translate-x-1/2"
               : "top-full left-1/2 -translate-x-1/2 pt-[33px]",
             // Visibility flips to visible at once on open (so focus can move in immediately) and
             // stays delayed on close (so the fade-out is visible).

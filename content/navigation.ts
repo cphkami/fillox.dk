@@ -77,7 +77,8 @@ export const megaMenuPromo = {
   title: "Usikker på, hvad du skal vælge?",
   text: "Book en gratis konsultation.",
   link: { label: "Se alle behandlinger", href: routes.treatments } satisfies Link,
-  image: { src: "/images/hero/hero-1.jpg", alt: "" },
+  // Shown as a wide, short crop (228 × 112px): eyes to lips.
+  image: { src: "/images/hero/hero-1.jpg", alt: "", position: "50% 60%" },
 };
 
 /** Footer link rows (design 6a footer). */
