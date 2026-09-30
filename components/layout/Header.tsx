@@ -48,8 +48,7 @@ export function Header() {
           <DesktopNav
             items={desktopItems}
             label={layoutCopy.header.navLabel}
-            megaColumns={data.megaColumns}
-            megaPromo={data.megaPromo}
+            megaMenu={data.megaMenu}
             clinics={data.clinics}
             clinicsHref={data.clinicsHref}
             prices={data.prices}

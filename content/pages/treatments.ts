@@ -1,6 +1,5 @@
 import type { FaqItem, ImageRef, Link } from "../types";
 import { site } from "@/config/site";
-import { megaMenuPromo } from "../navigation";
 import { pricesPage } from "../prices";
 import { routes } from "../routes";
 import { blogPage } from "./blog";
@@ -322,9 +321,9 @@ export const treatmentsOverview = {
   } as Record<string, string>,
   /** Link from a category to its card on /priser. */
   seePrices: "Se priser",
-  /** Closing band (same copy as the mega-menu promo). */
+  /** Closing band. */
   cta: {
-    title: megaMenuPromo.title,
-    text: megaMenuPromo.text,
+    title: "Usikker på, hvad du skal vælge?",
+    text: "Book en gratis konsultation.",
   },
 };

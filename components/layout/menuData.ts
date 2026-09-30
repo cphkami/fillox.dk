@@ -5,18 +5,18 @@
  */
 import { clinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
-import { mainNav, megaMenuColumns, megaMenuPromo, treatmentCategories } from "@/content/navigation";
+import { mainNav, megaMenu, treatmentCategories } from "@/content/navigation";
 import { priceCards, pricesPage, type PriceCard } from "@/content/prices";
 import { routes } from "@/content/routes";
 import { getTreatment, treatmentHref } from "@/content/treatments";
-import type { Clinic, ImageRef, NavItem } from "@/content/types";
+import type { Clinic, Link, MegaMenuContent, NavItem } from "@/content/types";
 import { ui } from "@/content/ui";
 import { site } from "@/config/site";
 import { formatPriceFrom } from "@/lib/content";
 
 export type MenuTreatment = {
   slug: string;
-  /** Name in the desktop mega menu (design 6menu). */
+  /** Name in the desktop mega menu. */
   name: string;
   /** Name in the mobile menu level 2 (design mm3): Treatment.mobileMenuName ?? name. */
   mobileName: string;
@@ -24,9 +24,12 @@ export type MenuTreatment = {
   price?: string;
 };
 
-export type MegaColumn = { title: string; items: MenuTreatment[] };
-
-export type MegaPromo = { title: string; text: string; link: { label: string; href: string }; image: ImageRef };
+/** Desktop "Behandlinger" mega menu: content/navigation.ts → megaMenu with the treatments resolved. */
+export type MegaMenuData = {
+  columns: { eyebrow: string; items: MenuTreatment[]; allLink?: Link }[];
+  tag: MegaMenuContent["tag"];
+  promo: MegaMenuContent["promo"];
+};
 
 export type MenuCategory = {
   slug: string;
@@ -77,8 +80,7 @@ export type MenuPrices = {
 
 export type HeaderData = {
   nav: NavItem[];
-  megaColumns: MegaColumn[];
-  megaPromo: MegaPromo;
+  megaMenu: MegaMenuData;
   categories: MenuCategory[];
   clinics: MenuClinic[];
   clinicsHref: string;
@@ -133,13 +135,15 @@ export function buildHeaderData(): HeaderData {
 
   return {
     nav: mainNav,
-    megaColumns: megaMenuColumns.map((col) => ({
-      title: col.title,
-      items: resolveTreatments(
-        col.categorySlugs.flatMap((slug) => treatmentCategories.find((c) => c.slug === slug)?.treatments ?? []),
-      ),
-    })),
-    megaPromo: megaMenuPromo,
+    megaMenu: {
+      columns: megaMenu.columns.map((col) => ({
+        eyebrow: col.eyebrow,
+        items: resolveTreatments(col.treatmentSlugs),
+        allLink: col.allLink,
+      })),
+      tag: megaMenu.tag,
+      promo: megaMenu.promo,
+    },
     categories: treatmentCategories.map((c) => ({
       slug: c.slug,
       name: c.name,

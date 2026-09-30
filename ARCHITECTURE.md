@@ -66,7 +66,7 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | Route | Design section (desktop / mobile) |
 |---|---|
 | `/` | `6a` / `mf` |
-| (header mega menu, mobile menu) | `6menu` / `mm1`, `mm2`, `mm3` |
+| (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
 | `/om-os` | `6om` / `mo` |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example) |
@@ -232,16 +232,21 @@ tracking stay as they are. All tokens follow one formula, a → b:
 
 - Nav triggers have an invisible `before:` hit area (≥ 44px high) that leaves the underline
   in place; the underline marks the current section / open menu, not hover.
-- **Menus do not scale.** From 1024px every header panel (mega menu, Priser, Find klinik,
-  Om os) uses fixed sizes: titles 16px/600, links 15px, secondary text 14px, uppercase micro
+- **The dropdowns do not scale.** From 1024px the Priser, Find klinik and Om os panels use
+  fixed sizes: titles 16px/600, links 15px, secondary text 14px, uppercase micro
   labels 12px, "Se alle →" 15px/600 (`ArrowLink size="menu"`). Frame: white, 20px radius,
   12px inset (`p-3`), `shadow-menu`; footer row `border-t` + `pt-3.5 pb-1.5`. Every panel
   sits 2px under the header (dropdowns: `pt-[34px] xl:pt-fluid-35/36`).
-- Mega menu (1133px wide from 1280, centred on the canvas): 28px above the column titles
-  (28 → 32 from 1280), title → list 6px, links on a 32px pitch (32 → 34, the line height;
-  no gaps), 16px under the last link (20 → 24 from 1280), columns 24px apart; the 220px promo
-  card's photo fills the height the text leaves (≥ 112px), so card and columns end on one
-  line. Panel height: 351px at 1024 (promo as a strip, no photo), 291px at 1280, 310px at 1600.
+- Mega menu (the owner's design v2, `design-reference/mega-menu-v2.webp`, drawn on the 1180px
+  canvas; copy in `content/navigation.ts` → `megaMenu`): four columns (uppercase eyebrow,
+  4 treatments, "Alle … →"), a hairline, the "For mænd" pill tag + note, and a plum panel
+  (26.5% of the width, ≥ 272px; eyebrow, heading, text, powder button pinned to the bottom)
+  flush right. It follows the type scale like the page text: links + "Alle" `text-ui-sm`
+  (always smaller than the nav), eyebrows `text-micro` +.2em, heading `text-h3`, plum text
+  `text-body-sm`, note `text-small`; links on a 2.35em pitch (the line height). Paddings
+  40 / 32px, 36px top and bottom, columns 32px apart (×1.2 at 1600, `*-fluid-*`). Width: the
+  surface band (as in the design) up to 1280px, centred on the canvas (a full 1536px band at
+  1600 left the columns half empty). Panel height: 343px at 1024–1280, 368 at 1440, 393 at 1600.
 - Dropdowns: Priser 760px, Find klinik 360px, Om os ≥ 240px.
 
 ### Buttons (components/ui/Button.tsx)

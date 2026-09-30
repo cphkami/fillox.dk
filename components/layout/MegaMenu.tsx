@@ -1,93 +1,126 @@
 import Link from "next/link";
+import { useId } from "react";
 import { ArrowLink } from "@/components/ui/ArrowLink";
-import { Photo } from "@/components/ui/Photo";
-import type { MegaColumn, MegaPromo } from "./menuData";
+import { ButtonLink } from "@/components/ui/Button";
+import type { MegaMenuData } from "./menuData";
 import { useAriaCurrent } from "./NavLink";
 
 type MegaMenuProps = {
-  columns: MegaColumn[];
-  promo: MegaPromo;
+  menu: MegaMenuData;
   /**
    * Whether the panel is open. The closed panel stays in the layout (invisible), so its links
    * are prefetched only while it is open, not on every page view.
    */
   open?: boolean;
-  /** Mount the promo photo (DesktopNav: once the menu has been opened), else only its sand box. */
-  showPromoPhoto?: boolean;
   /** Called when a link is chosen (closes the menu). */
   onNavigate?: () => void;
 };
 
+/** Uppercase column / panel label: 12px bold (`text-micro`, 13 at 1600), +.2em. */
+const eyebrowClasses = "text-micro leading-[1.25] font-bold tracking-[.2em] uppercase";
+
 /**
- * Desktop "Behandlinger" panel (design 6menu): five treatment columns + promo card.
+ * Desktop "Behandlinger" panel (the owner's design v2, design-reference/mega-menu-v2.webp, drawn
+ * on the 1180px design canvas): four treatment columns with an "Alle … →" link, a hairline and
+ * the "For mænd" tag with its note on the white side; a plum panel (≈ 26.5% of the width, at
+ * least 272px so its text and button fit at 1024) flush right, with the button pinned to the
+ * bottom, level with the tag.
  *
- * Sized to its content, not to the canvas: the "Priser" dropdown's sibling (white, 20px radius,
- * 12px inset, a 220px sand card with a 20px text inset). The columns are as wide as their
- * longest link and sit 24px apart. From 1280px the promo is a card beside the columns (panel
- * 1133px wide) whose photo fills the height the text leaves, so card and columns end on the same
- * line; below that (1024–1279) it is a sand strip without photo under the columns, so the panel
- * stays ~900px wide and fits the narrowest canvas.
- *
- * Menu type is fixed from 1024px up (title 16px/600, links 15px, promo text 14px, "→" link 15px),
- * like the other dropdowns. Vertical rhythm: 28px above the titles (28 → 32px from 1280), 6px
- * title → list, links on a 32px pitch (32 → 34px from 1280), 16px under the last link
- * (20 → 24px from 1280): the panel is 291px high at 1280 and 310px at 1600.
+ * Width (DesktopNav): the canvas's surface band, as in the design, up to 1280px (from 1328px
+ * viewport), centred. Type follows the site's type scale like the page text: links and "Alle"
+ * links `text-ui-sm` (14 → 16px, always smaller than the 15 → 17px nav), eyebrows `text-micro`,
+ * the heading `text-h3`, the plum text `text-body-sm`, the tag note `text-small`. Links sit on a
+ * pitch of 2.35 × their size (33 → 38px; the line height, so each row is a full-width target
+ * with no gaps). Paddings and gaps are the design's at ≤ 1280 and grow ×1.2 to 1600.
  */
-export function MegaMenu({ columns, promo, open = true, showPromoPhoto = true, onNavigate }: MegaMenuProps) {
+export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
   const prefetch = open ? null : false;
   const ariaCurrent = useAriaCurrent();
+  const id = useId();
+  const { columns, tag, promo } = menu;
   return (
-    <div className="flex flex-col gap-3 rounded-[20px] bg-white p-3 shadow-menu xl:flex-row">
-      {/* `auto` columns = their max-content width while the panel is `w-max`; they would wrap
-          rather than overflow if the panel ever hit its max width (DesktopNav). */}
-      <div className="grid grid-cols-[repeat(5,auto)] gap-x-6 px-4 pt-7 pb-4 xl:pt-fluid-28/32 xl:pb-fluid-20/24">
-        {columns.map((col) => (
-          <div key={col.title}>
-            <p className="mb-1.5 text-[16px] leading-[1.25] font-semibold text-plum">{col.title}</p>
-            {/* The line height is the pitch: each link is a full-row target with no gaps between them. */}
-            <ul className="flex flex-col text-[15px] leading-8 text-ink xl:leading-[clamp(32px,calc(24px+0.625vw),34px)]">
-              {col.items.map((t) => (
-                <li key={t.slug}>
-                  <Link
-                    href={t.href}
+    <div className="flex overflow-hidden rounded-[20px] bg-white shadow-menu">
+      <div className="flex min-w-0 flex-1 flex-col px-10 py-9 xl:px-fluid-40/48 xl:py-fluid-36/42">
+        <div className="grid grid-cols-4 gap-8 xl:gap-fluid-32/38">
+          {columns.map((col, i) => (
+            <div key={col.eyebrow}>
+              <p id={`${id}-${i}`} className={`${eyebrowClasses} mb-[11px] text-plum xl:mb-fluid-11/13`}>
+                {col.eyebrow}
+              </p>
+              <ul aria-labelledby={`${id}-${i}`} className="text-ui-sm leading-[2.35] text-ink">
+                {col.items.map((t) => (
+                  <li key={t.slug}>
+                    <Link
+                      href={t.href}
+                      prefetch={prefetch}
+                      onClick={onNavigate}
+                      aria-current={ariaCurrent(t.href)}
+                      className="block whitespace-nowrap transition-colors hover:text-plum"
+                    >
+                      {t.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {col.allLink ? (
+                // Same pitch as the rows above; the row is the target, so ArrowLink's extra hit area
+                // (which would cover the last treatment) is switched off.
+                <p className="text-ui-sm leading-[2.35]">
+                  <ArrowLink
+                    href={col.allLink.href}
                     prefetch={prefetch}
                     onClick={onNavigate}
-                    aria-current={ariaCurrent(t.href)}
-                    className="block whitespace-nowrap transition-colors hover:text-plum"
+                    aria-current={ariaCurrent(col.allLink.href)}
+                    className="whitespace-nowrap after:hidden"
                   >
-                    {t.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    {col.allLink.label}
+                  </ArrowLink>
+                </p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+        {/* Pinned to the bottom: level with the plum panel's button when that side is the taller one. */}
+        <div className="mt-auto pt-6 xl:pt-fluid-24">
+          <div className="flex items-center gap-3.5 border-t border-line pt-5 xl:pt-fluid-20">
+            {/* A 36px pill; the invisible `after:` box (6px above and below the padding box) makes it a
+                ≥ 44px target without moving it. */}
+            <Link
+              href={tag.href}
+              prefetch={prefetch}
+              onClick={onNavigate}
+              aria-current={ariaCurrent(tag.href)}
+              aria-describedby={`${id}-tag`}
+              className="relative shrink-0 rounded-full border-[1.5px] border-plum px-4 py-2 text-ui-sm leading-[1.25] font-semibold whitespace-nowrap text-plum transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-plum hover:text-cream xl:px-fluid-16/18"
+            >
+              {tag.label}
+            </Link>
+            <p id={`${id}-tag`} className="text-small leading-[1.5] text-muted">
+              {tag.text}
+            </p>
           </div>
-        ))}
+        </div>
       </div>
-      <div className="overflow-hidden rounded-[16px] bg-sand xl:flex xl:w-[220px] xl:shrink-0 xl:flex-col">
-        {/* Photo only on the card layout (≥1280px): a wide crop of the face that fills the height left
-            by the text (at least 112px), so the card ends level with the columns. */}
-        {showPromoPhoto ? (
-          <Photo image={promo.image} sizes="220px" className="hidden xl:block xl:min-h-[112px] xl:flex-1" />
-        ) : (
-          <div className="hidden xl:block xl:min-h-[112px] xl:flex-1" />
-        )}
-        <div className="flex items-center justify-between gap-6 px-4 py-4 xl:block xl:px-5 xl:pt-4 xl:pb-[18px]">
-          <p className="text-[14px] leading-[1.45] text-muted xl:mb-2.5">
-            <span className="text-[16px] leading-[1.3] font-semibold text-ink xl:mb-1 xl:block xl:text-balance">
-              {promo.title}
-            </span>{" "}
-            {promo.text}
-          </p>
-          <ArrowLink
-            href={promo.link.href}
+
+      <div
+        data-surface="plum"
+        className="flex w-[26.5%] min-w-68 shrink-0 flex-col bg-plum px-8 py-9 xl:px-fluid-32/40 xl:py-fluid-36/42"
+      >
+        <p className={`${eyebrowClasses} mb-3.5 text-powder xl:mb-fluid-14/16`}>{promo.eyebrow}</p>
+        <p className="text-h3 leading-[1.2] font-semibold tracking-[-0.01em] text-balance text-cream">{promo.title}</p>
+        <p className="mt-3 text-body-sm leading-[1.6] text-blush xl:mt-fluid-12/14">{promo.text}</p>
+        <div className="mt-auto pt-6 xl:pt-fluid-24">
+          <ButtonLink
+            href={promo.cta.href}
             prefetch={prefetch}
             onClick={onNavigate}
-            aria-current={ariaCurrent(promo.link.href)}
-            size="menu"
-            className="shrink-0 leading-[1.35]"
+            aria-current={ariaCurrent(promo.cta.href)}
+            variant="light"
+            size="sm"
+            fullWidth
           >
-            {promo.link.label}
-          </ArrowLink>
+            {promo.cta.label}
+          </ButtonLink>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
-import type { Link, NavItem, TreatmentCategory } from "./types";
+import type { Link, MegaMenuContent, NavItem, TreatmentCategory } from "./types";
 import { routes } from "./routes";
+import { site } from "@/config/site";
 
 /** Main navigation (desktop header + mobile fullscreen menu). */
 export const mainNav: NavItem[] = [
@@ -26,9 +27,8 @@ export const mainNav: NavItem[] = [
 export const desktopHiddenNav: string[] = [routes.blog];
 
 /**
- * Treatment categories. Order = mega-menu column order.
- * Desktop mega menu merges "laser-harfjerning" + "hartab" into one "Laser & hår"
- * column (see megaMenuColumns); the mobile menu lists all six categories.
+ * Treatment categories: the sections of /behandlinger (in this order) and the mobile menu's
+ * level 2. The desktop mega menu picks its own short columns (megaMenu below).
  */
 export const treatmentCategories: TreatmentCategory[] = [
   {
@@ -64,21 +64,48 @@ export const treatmentCategories: TreatmentCategory[] = [
   },
 ];
 
-/** Desktop mega-menu columns (design 6menu). */
-export const megaMenuColumns: { title: string; categorySlugs: string[] }[] = [
-  { title: "Fillers", categorySlugs: ["fillers"] },
-  { title: "Rynkebehandling", categorySlugs: ["rynkebehandling"] },
-  { title: "Hudforbedring", categorySlugs: ["hudforbedring"] },
-  { title: "Laser & hår", categorySlugs: ["laser-harfjerning", "hartab"] },
-  { title: "For mænd", categorySlugs: ["for-maend"] },
-];
+/** A treatment category on the /behandlinger overview (each category section has id="<slug>"). */
+const categoryHref = (slug: TreatmentCategory["slug"]) => `${routes.treatments}#${slug}`;
 
-export const megaMenuPromo = {
-  title: "Usikker på, hvad du skal vælge?",
-  text: "Book en gratis konsultation.",
-  link: { label: "Se alle behandlinger", href: routes.treatments } satisfies Link,
-  // Shown as a wide, short crop (228 × 112px): eyes to lips.
-  image: { src: "/images/hero/hero-1.jpg", alt: "", position: "50% 60%" },
+/**
+ * Desktop "Behandlinger" mega menu (the owner's design v2, design-reference/mega-menu-v2.webp):
+ * four short columns with the most booked treatments of a category, "For mænd" as a tag under
+ * them, and a plum panel for visitors who are unsure what to choose. The mobile menu lists every
+ * category instead (treatmentCategories).
+ */
+export const megaMenu: MegaMenuContent = {
+  columns: [
+    {
+      eyebrow: "Fillers",
+      treatmentSlugs: ["lip-filler", "kindben", "kaebelinje", "tear-trough"],
+      allLink: { label: "Alle fillers", href: categoryHref("fillers") },
+    },
+    {
+      eyebrow: "Rynker",
+      treatmentSlugs: ["botox", "lip-flip", "hyperhidrose", "traptox"],
+      allLink: { label: "Alle rynker", href: categoryHref("rynkebehandling") },
+    },
+    {
+      eyebrow: "Hud",
+      treatmentSlugs: ["skinbooster", "profhilo", "microneedling", "prf-hud"],
+      allLink: { label: "Alle hud", href: categoryHref("hudforbedring") },
+    },
+    {
+      eyebrow: "Laser & hår",
+      treatmentSlugs: ["laser-harfjerning", "prf-har", "polyphil-hair"],
+    },
+  ],
+  tag: {
+    label: "For mænd",
+    href: categoryHref("for-maend"),
+    text: "Botox, kæbelinje, hårtab og laser, tilpasset mænd",
+  },
+  promo: {
+    eyebrow: "Gratis konsultation",
+    title: "I tvivl om, hvad du skal vælge?",
+    text: "Vores behandlere hjælper dig med at finde den rigtige behandling. Helt uforpligtende.",
+    cta: { label: "Book konsultation", href: site.booking.href },
+  },
 };
 
 /** Footer link rows (design 6a footer). */

@@ -10,6 +10,7 @@
 @source not "../AGENTS.md";
 @source not "../CLAUDE.md";
 @source not "../README.md";
+@source not "../integrations";
 
 /*
  * Fillox design tokens (design "Fillox Signature v2", mobile spec + brand kit).

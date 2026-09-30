@@ -388,6 +388,23 @@ export type NavItem =
   | { kind: "prices"; label: string; href: string }
   | { kind: "menu"; label: string; href: string; items: Link[] };
 
+/** Desktop "Behandlinger" mega menu (content/navigation.ts → megaMenu; design-reference/mega-menu-v2.webp). */
+export type MegaMenuContent = {
+  /** Treatment columns, left to right. */
+  columns: {
+    /** Column title, shown as an uppercase eyebrow (write it in normal case: screen readers read the text). */
+    eyebrow: string;
+    /** Treatments in menu order; names and links come from content/treatments.ts. */
+    treatmentSlugs: string[];
+    /** "Alle fillers →" under the list, e.g. to the category on /behandlinger. */
+    allLink?: Link;
+  }[];
+  /** Outline pill under the columns (a category that doesn't get its own column), with a note beside it. */
+  tag: Link & { text: string };
+  /** Plum side panel: eyebrow, heading, text and a button pinned to the bottom. */
+  promo: { eyebrow: string; title: string; text: string; cta: Link };
+};
+
 /* --------------------------------------------------------------- Text pages */
 
 /**

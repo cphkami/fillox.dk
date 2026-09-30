@@ -1,0 +1,2275 @@
+/* Fillox theme for Gecko Booking (fillox.dk/booking). Paste into Gecko, see README.md. */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+/* =============================================================================
+   FILLOX THEME FOR GECKO BOOKING
+   -----------------------------------------------------------------------------
+   Where it goes: Gecko admin, Indstillinger, Tekster og skabeloner, tab
+   "Generelle skabeloner", text "Booking - Alle sider - Header", "Kilde" (source)
+   view, wrapped in a style element. Step by step in README.md (Danish).
+
+   What it styles (Gecko class names, checked against the live booking, 2026-10):
+     1. Base: Poppins, colours, links, focus ring
+     2. Top: site menu (Book ny tid / Log ind / ...), progress steps
+     3. Step 1: clinic picker, service groups + rows, selected service, Videre
+     4. Add-ons page (tillaegsydelser)
+     5. Buttons (primary, secondary, week/month switch)
+     6. Week view: week bar, practitioner cards, day columns, time chips
+        (stacked day list on narrow screens)
+     7. Month view: calendar card, date chips
+     8. Day view: a day's time slots per practitioner
+     9. Waiting list box
+    10. Forms: details step, login, waiting list, Ny kunde (inputs, selects,
+        checkboxes, radios, field + button, number stepper, errors), fold-out
+        bars, cards, alerts
+    11. Dialogs, dropdowns, date picker, loading overlay
+    12. Reduced motion
+
+   Rules of this file
+   - Colours are the fillox.dk design tokens (app/globals.css), repeated here as
+     literal values because the site's CSS cannot reach into Gecko's iframe.
+   - Gecko's own colour settings are generated into booking_specific_css.css,
+     which uses !important and ID-weighted selectors, and some elements carry
+     inline style attributes, and Gecko removes all focus outlines with
+     !important. !important is used ONLY where one of those forces it (plus the
+     reduced-motion switch, which must reach Gecko's own transitions); each such
+     block says so. Everything else wins on order (this style block loads after
+     Gecko's style sheets) and specificity.
+   - Where Gecko already exposes a CSS variable (calendar and progress colours),
+     the theme sets the variable instead of fighting the rule.
+   - No child combinators and no nth-child: selectors use Gecko's class names,
+     so a changed nesting level in Gecko does not break them.
+   - The iframe body stays transparent: the card around the embed on
+     fillox.dk/booking (white) is the background.
+   - Type follows fillox.dk: 16px body text and fields, 15px on buttons, menus
+     and chips. Smaller on purpose: labels (step names, weekday and week-number
+     letters, durations and practitioner titles), error lines under fields
+     (14px, semibold), and the date chips on a phone and in the date picker and
+     the time slots on a phone (14px, so a full row fits the 280-350px embed).
+   ========================================================================== */
+
+
+/* -----------------------------------------------------------------------------
+   0. Tokens
+   -------------------------------------------------------------------------- */
+:root {
+  --fx-plum: #6B3840;        /* primary: buttons, selected states, links */
+  --fx-plum-deep: #572D34;   /* hover on plum */
+  --fx-cream: #F7F2EA;       /* page base, text on plum */
+  --fx-sand: #EFE6DC;        /* surfaces: headers, bars, cards */
+  --fx-powder: #E8D3CE;      /* secondary surface, hover on sand */
+  --fx-blush: #EFE2DE;       /* soft highlight (selected service, waiting list) */
+  --fx-ink: #242724;         /* text */
+  --fx-muted: #5E4F4D;       /* secondary text */
+  --fx-line: #E3D6CC;        /* hairlines, chip and field borders */
+  --fx-rule: #D9BFB8;        /* field border on hover */
+  --fx-taupe: #7A624F;       /* prices (4.6:1 on sand, 5.2:1 on cream) */
+  --fx-placeholder: #746A67; /* placeholders (5.3:1 on white) */
+  --fx-white: #FFFFFF;
+  --fx-font: "Poppins", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --fx-shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1);
+  --fx-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236B3840' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+  /* Gecko's own variables (booking_specific_css.css): progress steps */
+  --geckoLineColor: #E3D6CC;
+  --style-breadcrumb-visited-bg: #6B3840;
+  --style-breadcrumb-visited-color: #F7F2EA;
+  --style-breadcrumb-next-bg: #EFE6DC;
+  --style-breadcrumb-next-color: #5E4F4D;
+
+  /* Gecko's own variables: calendar states. Gecko applies them with
+     !important to week chips, month dates and day time slots. */
+  --style-calendar-green-bg: #FFFFFF;   /* available: white chip */
+  --style-calendar-green-color: #242724;
+  --style-calendar-yellow-bg: #EFE2DE;  /* waiting list: blush chip */
+  --style-calendar-yellow-color: #242724;
+  --style-calendar-red-bg: #F7F2EA;     /* booked / unavailable: quiet */
+  --style-calendar-red-color: #5E4F4D;
+  --style-calendar-grey-bg: #EFE6DC;    /* closed */
+  --style-calendar-grey-color: #5E4F4D;
+  --style-calendar-previous: "\2190";   /* arrow left */
+  --style-calendar-next: "\2192";       /* arrow right */
+}
+
+
+/* -----------------------------------------------------------------------------
+   1. Base
+   -------------------------------------------------------------------------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--fx-font);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fx-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Gecko sets 14px and its own green-grey on these. */
+p, td, th, table {
+  font-size: inherit;
+  color: inherit;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.btn, button, input, select, textarea,
+.year__text, .modal, .popover, .tooltip, .dropdown-menu {
+  font-family: var(--fx-font);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: var(--fx-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+strong, b, .font-bold {
+  font-weight: 600;
+}
+
+/* Text links (link-styled buttons keep their own colours). */
+a:not(.btn), a:not(.btn):link, a:not(.btn):visited {
+  color: var(--fx-plum);
+}
+
+a:not(.btn):hover, a:not(.btn):active, a:not(.btn):focus {
+  color: var(--fx-plum-deep);
+}
+
+.text-muted, .help-block {
+  color: var(--fx-muted);
+}
+
+.text-danger, .sysMsgColor {
+  color: var(--fx-plum);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--fx-line);
+  margin: 20px 0;
+}
+
+/* Visible focus ring in plum, as on fillox.dk (keyboard focus only).
+   Gecko removes every focus outline with "outline: none !important" on all
+   elements, so the ring needs !important to come back. */
+:is(a, button, input, select, textarea, summary, [tabindex]):focus-visible,
+.btn.btn:focus-visible {
+  outline: 2px solid var(--fx-plum) !important;
+  outline-offset: 3px;
+}
+
+/* Gecko's focus glows (grey drop shadows) are replaced by the ring above. */
+.btn:focus, .btn:active:focus, .form-control:focus,
+.cal-time__cell:focus-within, .cal-time__cell input:focus,
+.cal-day__body a:focus, .control__bar a:focus, .mcp-cell a:focus,
+.radio input[type=radio]:focus + label::before,
+.checkbox input[type=checkbox]:focus + label::before {
+  box-shadow: none;
+  filter: none;
+}
+
+/* Step headings: "Book en ny tid", "Vaelg en dato", "Vaelg en tid" ... are the
+   element right before Gecko's (hidden) .headlineHrLine. */
+#contentdiv h1.h4,
+#contentdiv :is(h1, h2, h3, strong, p):has(+ .headlineHrLine) {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--fx-ink);
+}
+
+#contentdiv .headlineHrLine + p {
+  margin: 0 0 20px;
+  color: var(--fx-muted);
+}
+
+/* Page headings without that hidden line: "Log ind - Fillox" and "Tilmelding til
+   ventelisten" (a bold paragraph right after the site menu, sometimes with a
+   script in between; above Gecko's centred form card, so they line up with the
+   card), and "Bestil en kode" (Ny kunde?, the first bold paragraph in the card).
+   On the booking steps the site menu is followed by the progress steps, so
+   these rules don't reach the step headings. */
+:is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong),
+:is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) + p {
+  max-width: 480px;
+  margin: 0 auto 12px;
+}
+
+:is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) {
+  margin-bottom: 6px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--fx-ink);
+}
+
+:is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) + p {
+  margin-bottom: 20px;
+  color: var(--fx-muted);
+}
+
+.gc-code-signup-form p:first-child:has(strong) {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--fx-ink);
+}
+
+.gc-code-signup-form p:first-child:has(strong) + p {
+  margin: 0 0 20px;
+  color: var(--fx-muted);
+}
+
+@media (min-width: 1024px) {
+  #contentdiv h1.h4,
+  #contentdiv :is(h1, h2, h3, strong, p):has(+ .headlineHrLine),
+  :is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) {
+    font-size: 24px;
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   2. Top: site menu and progress steps
+   -------------------------------------------------------------------------- */
+
+/* "Book ny tid / Log ind / Dine oplysninger / Dine reservationer": a segmented
+   pill control. Gecko's padding and radius are !important, hence ours. */
+.sitemenuWrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 4px 0 28px;
+  padding: 4px;
+  background: var(--fx-cream);
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+  box-shadow: none;
+}
+
+.sitemenuWrap .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 18px !important;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--fx-ink);
+  background: transparent;
+  border: 0;
+  border-radius: 100px !important;
+  box-shadow: none;
+}
+
+.sitemenuWrap .btn.sitemenu_selected {
+  color: var(--fx-cream) !important;
+  background-color: var(--fx-plum);
+}
+
+.sitemenuWrap .btn:hover:not(.sitemenu_selected) {
+  color: var(--fx-plum) !important;
+  background-color: var(--fx-sand);
+  border-color: transparent;
+}
+
+.sitemenuWrap .btn.sitemenu_inactive {
+  color: var(--fx-muted);
+  opacity: 0.6;
+}
+
+@media (max-width: 560px) {
+  /* Four items don't fit one row: a 2 x 2 grid instead of a ragged wrap. */
+  .sitemenuWrap {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    border-radius: 26px;
+  }
+
+  .sitemenuWrap .btn {
+    padding: 10px 8px !important;
+    white-space: normal;
+  }
+}
+
+/* Progress steps (1 Vaelg ydelse, 2 Dato & tid, 3 Detaljer, 4 Faerdig).
+   Colours come from the Gecko variables in section 0. */
+.gecko_breadcrumb_nav {
+  margin: 0 0 28px;
+}
+
+ol.gecko_breadcrumb {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--fx-muted);
+}
+
+ol.gecko_breadcrumb li {
+  font-weight: 500;
+  color: var(--fx-muted);
+}
+
+ol.gecko_breadcrumb li.visited,
+ol.gecko_breadcrumb li.current {
+  color: var(--fx-ink);
+}
+
+ol.gecko_breadcrumb li.current {
+  font-weight: 600;
+}
+
+.gecko_breadcrumb li::before {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 8px;
+  line-height: 28px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gecko_breadcrumb li.current::before {
+  box-shadow: 0 0 0 4px var(--fx-powder);
+}
+
+.gecko_breadcrumb li::after {
+  top: 15px;
+  left: calc(50% + 24px);
+  width: calc(100% - 48px);
+  height: 2px;
+  border-radius: 2px;
+}
+
+
+/* -----------------------------------------------------------------------------
+   3. Step 1: clinic, service, selected service
+   -------------------------------------------------------------------------- */
+
+/* "Dit behandlingssted": the clinic radios become chips; the chosen clinic is
+   plum, like the clinic picker on fillox.no. */
+.gc-company-picker-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 28px;
+}
+
+.gc-company-picker-group strong {
+  flex: 0 0 100%;
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fx-ink);
+}
+
+.gc-company-picker-group #resultSection:empty {
+  display: none;
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* The real radio covers the whole chip (invisible), so the chip is the target. */
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 20px 10px 46px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--fx-ink);
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+}
+
+/* Gecko sets the radio circle's border with !important. */
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio-label::before {
+  left: 16px;
+  top: calc(50% - 10px);
+  margin-left: 0;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: 1.5px solid var(--fx-plum) !important;
+  border-radius: 50%;
+  outline: none;
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio + .gc-company-picker-radio-label::after {
+  left: 21px;
+  top: calc(50% - 5px);
+  margin-left: 0;
+  width: 10px;
+  height: 10px;
+  background-color: var(--fx-cream);
+  border-radius: 50%;
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:hover + .gc-company-picker-radio-label {
+  color: var(--fx-plum);
+  border-color: var(--fx-plum);
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:checked + .gc-company-picker-radio-label {
+  color: var(--fx-cream);
+  background: var(--fx-plum);
+  border-color: var(--fx-plum);
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:checked + .gc-company-picker-radio-label::before {
+  border-color: var(--fx-cream) !important;
+}
+
+.gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:focus-visible + .gc-company-picker-radio-label {
+  outline: 2px solid var(--fx-plum) !important;
+  outline-offset: 3px;
+}
+
+/* "Vaelg en ydelse" */
+.gc-service-picker-group label[for="bookingBehandlingSubType"] {
+  display: block;
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fx-ink);
+}
+
+/* Service groups: a sand header per group; an open group is a cream card
+   with its services listed under the header. */
+.gecko-list-dropdown .gecko-list-dropdown__group {
+  margin: 0 0 10px;
+  background: var(--fx-cream);
+  border: 0;
+  border-radius: 20px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+/* After a choice Gecko shows only the chosen service: frame that group. */
+.gecko-list-dropdown .gecko-list-dropdown__group:has(.gecko-list-dropdown__row.checked) {
+  border: 1px solid var(--fx-line);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__group .gecko-list-dropdown__group-name {
+  padding: 18px 60px 18px 22px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fx-ink);
+  background-color: var(--fx-sand);
+  border-radius: 0;
+  cursor: pointer;
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__group .gecko-list-dropdown__group-name:hover {
+  background-color: var(--fx-powder);
+}
+
+/* Chevron drawn in CSS (replaces Gecko's icon-font glyph). */
+.gecko-list-dropdown .gecko-list-dropdown__group .gecko-list-dropdown__group-name.icon::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 26px;
+  width: 9px;
+  height: 9px;
+  margin: -7px 0 0;
+  font-family: inherit;
+  border-right: 2px solid var(--fx-plum);
+  border-bottom: 2px solid var(--fx-plum);
+  transform: rotate(45deg);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__group.group-show .gecko-list-dropdown__group-name.icon::before {
+  margin-top: -2px;
+  transform: rotate(-135deg);
+}
+
+/* Service rows */
+.gecko-list-dropdown .gecko-list-dropdown__row {
+  background: transparent;
+  border-top: 1px solid var(--fx-line);
+  border-bottom: 0;
+  cursor: pointer;
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__row:hover,
+.gecko-list-dropdown .gecko-list-dropdown__row.checked {
+  background: var(--fx-white);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__row.checked {
+  border-top: 1px solid var(--fx-line);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__checkbox {
+  width: 54px;
+  padding: 17px 4px 16px 22px;
+  vertical-align: top;
+}
+
+/* Radio circle drawn in CSS (replaces Gecko's icon-font glyph). */
+.gecko-list-dropdown .gecko-list-dropdown__checkbox::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  background: var(--fx-white);
+  border: 1.5px solid var(--fx-plum);
+  border-radius: 50%;
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__row.checked .gecko-list-dropdown__checkbox::before {
+  content: "";
+  padding: 0;
+  background: var(--fx-plum);
+  box-shadow: inset 0 0 0 4px var(--fx-white);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__option {
+  padding: 16px 20px 16px 8px;
+}
+
+/* Name + price on the first line, duration under the name. */
+.gecko-list-dropdown .gecko-list-dropdown__option-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: start;
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__option-name {
+  width: auto;
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__option-name p {
+  float: none;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--fx-ink);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__option-desc p {
+  float: none;
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.5;
+  color: var(--fx-muted);
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__option-price p {
+  float: none;
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--fx-taupe);
+  white-space: nowrap;
+}
+
+.gecko-list-dropdown .gecko-list-dropdown__option-price {
+  margin-right: 34px;
+}
+
+/* The info icon ("i") opens Gecko's description of the service. */
+.gecko-list-dropdown .gecko-list-dropdown__option-name .gecko-list-dropdown__infolink {
+  top: 1px;
+  right: 0;
+  width: 24px;
+  padding: 0;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--fx-plum);
+}
+
+@media (min-width: 1024px) {
+  .gecko-list-dropdown .gecko-list-dropdown__option-name p,
+  .gecko-list-dropdown .gecko-list-dropdown__option-price p {
+    font-size: 16px;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option-desc p {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Phone: the name gets the full width; duration and price share the line
+     under it. */
+  .gecko-list-dropdown .gecko-list-dropdown__checkbox {
+    width: 46px;
+    padding-left: 16px;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option {
+    padding-right: 16px;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option-name {
+    grid-column: 1 / -1;
+    padding-right: 30px;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option-desc {
+    grid-row: 2;
+    grid-column: 1;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option-price {
+    grid-row: 2;
+    grid-column: 2;
+    margin-right: 0;
+    text-align: left;
+  }
+
+  .gecko-list-dropdown .gecko-list-dropdown__option-price p {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* "Du har valgt [service] [x]" */
+#nextWrapperBtn,
+.nextWrapper {
+  margin-top: 16px;
+  color: var(--fx-muted);
+}
+
+.serviceSelectedWrap {
+  margin: 6px 0 0;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.serviceSelected {
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--fx-ink);
+  background-color: var(--fx-blush);
+  border-radius: 20px;
+}
+
+.serviceSelected.no-right-radius {
+  border-radius: 20px 0 0 20px;
+}
+
+.serviceSelected.serviceSelectedDelete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: 0 14px;
+  font-weight: 600;
+  color: var(--fx-plum);
+  background-color: var(--fx-powder);
+  border-radius: 0 20px 20px 0;
+  cursor: pointer;
+}
+
+.serviceSelected.serviceSelectedDelete:hover {
+  color: var(--fx-cream);
+  background-color: var(--fx-plum);
+}
+
+/* The "X" has an inline 9px font size. */
+.serviceSelectedDelete span {
+  font-size: 13px !important;
+}
+
+#nextBtnWrapper {
+  margin-top: 24px;
+}
+
+
+/* -----------------------------------------------------------------------------
+   4. Add-ons page ("Vaelg evt. tillaegsydelser")
+   -------------------------------------------------------------------------- */
+#contentdiv .serviceAdditionGroup:not(.group-remove-tabs) {
+  position: relative;
+  margin: 0 0 8px;
+  padding: 16px 56px 16px 20px;
+  background-color: var(--fx-sand);
+  border: 0;
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+#contentdiv .serviceAdditionGroup:not(.group-remove-tabs):hover {
+  background-color: var(--fx-powder);
+}
+
+#contentdiv .serviceAdditionGroup .serviceAdditionGroup-name {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fx-ink);
+}
+
+#contentdiv .serviceAdditionGroup .serviceAdditionGroup-icon {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  margin: -7px 0 0;
+}
+
+#contentdiv .serviceAdditionGroup .serviceAdditionGroup-icon::before {
+  content: "";
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--fx-plum);
+  border-bottom: 2px solid var(--fx-plum);
+  transform: rotate(45deg);
+}
+
+#contentdiv .serviceAdditionGroup.group-open .serviceAdditionGroup-icon::before {
+  margin-top: 5px;
+  transform: rotate(-135deg);
+}
+
+.serviceAdditionLine {
+  margin: 0 0 4px;
+  padding: 4px 8px;
+}
+
+.serviceAdditionLine .serviceAdditionLine-name span {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fx-ink);
+}
+
+.serviceAdditionLine .serviceAdditionLine-name .text-muted {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--fx-muted);
+}
+
+/* Gecko gives this checkbox 25px of room (!important), so the box sits in it. */
+.serviceAdditionLine .checkbox label::before,
+.serviceAdditionLine .checkbox label::after,
+.serviceAdditionLine .checkbox input[type="checkbox"] {
+  margin-left: -25px;
+}
+
+
+/* -----------------------------------------------------------------------------
+   5. Buttons
+   Gecko's colour settings style buttons with !important (and, for the white
+   buttons, an ID-weighted selector), so colours, borders and radius here are
+   !important too.
+   -------------------------------------------------------------------------- */
+
+/* Primary: Videre, Bekraeft, Log ind, OK in dialogs */
+.btn.btn-success,
+.btn.btn-primary:not(.gc-view-btn):not(.gb__login--small):not(.gb__logout--small) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 30px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-transform: none;
+  color: var(--fx-cream) !important;
+  background-color: var(--fx-plum) !important;
+  border: 1px solid var(--fx-plum) !important;
+  border-radius: 100px !important;
+  box-shadow: none;
+}
+
+.btn.btn-success:hover,
+.btn.btn-success:active,
+.btn.btn-primary:not(.gc-view-btn):not(.gb__login--small):not(.gb__logout--small):hover,
+.btn.btn-primary:not(.gc-view-btn):not(.gb__login--small):not(.gb__logout--small):active {
+  background-color: var(--fx-plum-deep) !important;
+  border-color: var(--fx-plum-deep) !important;
+}
+
+/* Secondary: Tilbage, Tilmeld venteliste, Annuller in dialogs (white pill, as on
+   fillox.dk). Gecko's dialogs sit outside #siteContentContainer, hence .modal;
+   :is() keeps the ID weight needed to beat Gecko's white-button rule. */
+:is(#siteContentContainer, .modal) .btn.btn-white:not(.dropdown-toggle, .gc-view-btn, .input-group-btn .btn, .gecko_number_plus_minus_wrapper .btn),
+:is(#siteContentContainer, .modal) .btn.btn-default:not(.dropdown-toggle, .input-group-btn .btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--fx-ink) !important;
+  background-color: var(--fx-white) !important;
+  border: 1px solid var(--fx-line) !important;
+  border-radius: 100px !important;
+  box-shadow: none;
+}
+
+:is(#siteContentContainer, .modal) .btn.btn-white:not(.dropdown-toggle, .gc-view-btn, .input-group-btn .btn, .gecko_number_plus_minus_wrapper .btn):hover,
+:is(#siteContentContainer, .modal) .btn.btn-default:not(.dropdown-toggle, .input-group-btn .btn):hover {
+  color: var(--fx-plum) !important;
+  border-color: var(--fx-plum) !important;
+}
+
+/* Rarely shown "LAES MERE" etc. */
+.btn.btn-danger:not(:has(.fa-minus)) {
+  color: var(--fx-plum) !important;
+  background-color: var(--fx-powder) !important;
+  border-color: var(--fx-powder) !important;
+  border-radius: 100px !important;
+}
+
+/* Text buttons ("Glemt kode?", "Ny kunde?"): Gecko's 12px on a 28px target
+   becomes 15px on a 44px target. */
+.btn.btn-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 8px;
+  font-size: 15px;
+  font-weight: 500;
+  vertical-align: middle;
+  color: var(--fx-plum);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn[disabled], .btn.disabled {
+  opacity: 0.5;
+}
+
+@media (max-width: 767px) {
+  .btn.btn-success,
+  .btn.btn-primary:not(.gc-view-btn):not(.gb__login--small):not(.gb__logout--small) {
+    min-height: 52px;
+  }
+
+  #nextBtnWrapper .btn.btn-success {
+    width: 100%;
+  }
+}
+
+/* Logged-in bar (log ind / log ud) */
+.gb__login--small, .gb__logout--small {
+  color: var(--fx-ink) !important;
+  border-color: var(--fx-line) !important;
+  border-radius: 100px !important;
+}
+
+/* Ugevisning / Maanedsvisning: a small segmented control. */
+.btn-group:has(.gc-view-btn) {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  background: var(--fx-cream);
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+}
+
+.btn.gc-view-btn {
+  float: none;
+  min-height: 40px;
+  margin: 0;
+  padding: 9px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-transform: none;
+  pointer-events: auto;
+  color: var(--fx-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 100px !important;
+}
+
+.btn.gc-view-btn:hover {
+  color: var(--fx-plum) !important;
+  background: var(--fx-sand) !important;
+}
+
+.btn.gc-view-btn.gc-view-btn-selected,
+.btn.gc-view-btn.gc-view-btn-selected:hover {
+  pointer-events: none;
+  color: var(--fx-cream) !important;
+  background: var(--fx-plum) !important;
+}
+
+@media (max-width: 560px) {
+  /* Phone: the switch spans the width, two equal halves (Gecko floats it to
+     the right, where it would run off a 280px embed; at full width the float
+     no longer matters). */
+  .btn-group:has(.gc-view-btn) {
+    display: flex;
+    width: 100%;
+  }
+
+  .btn.gc-view-btn {
+    flex: 1 1 0;
+    padding: 9px 10px;
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   6. Week view (Ugevisning)
+   -------------------------------------------------------------------------- */
+
+/* Week bar: "7 Dage tilbage | Uge 40 - 2026 | 7 Dage frem" */
+#calWrapper .control__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 20px;
+  padding: 8px;
+  background: var(--fx-sand);
+  border: 0;
+  border-radius: 20px;
+}
+
+#calWrapper .control__bar .uge__minus,
+#calWrapper .control__bar .uge__center,
+#calWrapper .control__bar .uge__plus {
+  float: none;
+}
+
+#calWrapper .uge__center .year__text {
+  margin: 0;
+  padding: 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-transform: none;
+  color: var(--fx-ink);
+}
+
+/* The disabled "7 Dage tilbage" carries an inline red background. */
+#calWrapper .control__bar .minus__text,
+#calWrapper .control__bar .plus__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  color: var(--fx-ink) !important;
+  background: var(--fx-white) !important;
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+#calWrapper .control__bar .minus__text:hover,
+#calWrapper .control__bar .plus__text:hover {
+  color: var(--fx-plum) !important;
+  border-color: var(--fx-plum);
+}
+
+#calWrapper .control__bar .uge__minus {
+  text-align: left;
+}
+
+#calWrapper .control__bar .uge__plus {
+  text-align: right;
+}
+
+#calWrapper .control__bar .minus__text::before,
+#calWrapper .control__bar .plus__text::after {
+  position: static;
+  margin: 0;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1;
+}
+
+@media (max-width: 560px) {
+  /* Title on its own row, the week buttons under it: side by side and equally
+     wide when both fit, otherwise two full-width rows (the embed on a phone is
+     only 280-350px wide). Gecko sets their widths to 100% with !important. */
+  #calWrapper .control__bar {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #calWrapper .control__bar .uge__center {
+    flex: 0 0 100%;
+    order: -1;
+    padding: 6px 0 2px;
+    text-align: center;
+  }
+
+  #calWrapper .control__bar .uge__minus,
+  #calWrapper .control__bar .uge__plus {
+    flex: 1 1 140px;
+    width: auto !important;
+    text-align: center;
+  }
+
+  #calWrapper .control__bar .minus__text,
+  #calWrapper .control__bar .plus__text {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 14px;
+  }
+
+  /* The first week has no "back": drop the empty slot. */
+  #calWrapper .control__bar .uge__minus:not(:has(a[href])) {
+    display: none;
+  }
+}
+
+/* One card per practitioner: header (photo, name, title) + the week. */
+#calWrapper form {
+  margin: 0 0 16px;
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+#calWrapper .control__bar--cal-title {
+  margin: 0;
+}
+
+#calWrapper .control__bar--cal-table {
+  background: var(--fx-cream);
+  border: 0;
+}
+
+.control__bar--cal-cell {
+  padding: 14px 16px;
+}
+
+img.cal-info__image--small {
+  display: block;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 0;
+  border-radius: 50%;
+}
+
+.control__bar--cal-cell p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fx-ink);
+}
+
+.control__bar--cal-cell span {
+  font-size: 14px;
+  color: var(--fx-muted);
+}
+
+#calWrapper .block__uge {
+  margin: 0;
+  background: var(--fx-white);
+  border: 0;
+}
+
+.uge__cal .cal__day {
+  background: var(--fx-white);
+  border-left: 1px solid var(--fx-line);
+}
+
+.uge__cal .cal__info + .cal__day {
+  border-left: 0;
+}
+
+.uge__cal .cal-day__header {
+  padding: 12px 6px 10px;
+  background: var(--fx-white);
+  border-bottom: 1px solid var(--fx-line);
+}
+
+.uge__cal .cal-day__header .header__text {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--fx-ink);
+}
+
+.uge__cal .cal-day__header .header__text.wdt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fx-muted);
+}
+
+.uge__cal .cal-day__body {
+  padding: 8px 6px 10px;
+}
+
+/* Time chips. Background and text colour come from the --style-calendar-*
+   variables (section 0), which Gecko applies with !important. */
+.uge__cal .cal-day__body a {
+  display: block;
+  width: auto;
+  margin: 0 0 6px;
+  padding: 9px 6px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+  filter: none;
+}
+
+.uge__cal .cal-day__body a:hover {
+  --style-calendar-green-color: #6B3840;
+  --style-calendar-yellow-color: #6B3840;
+  border-color: var(--fx-plum);
+  filter: none;
+}
+
+.uge__cal .cal-day__body a:active {
+  --style-calendar-green-bg: #6B3840;
+  --style-calendar-green-color: #F7F2EA;
+  border-color: var(--fx-plum);
+}
+
+.uge__cal .cal-day__body a.body__timeRow--red,
+.uge__cal .cal-day__body a.body__timeRow--gray {
+  border-color: transparent;
+  text-decoration: line-through;
+  cursor: default;
+}
+
+/* An empty day shows a quiet dash instead of a blank column. */
+.uge__cal .cal-day__body:not(:has(a))::before {
+  content: "\2013";
+  content: "\2013" / "";
+  display: block;
+  padding: 10px 0;
+  text-align: center;
+  color: var(--fx-rule);
+}
+
+@media (max-width: 640px) {
+  /* Seven columns are too narrow on a phone: each day becomes a row (day on
+     the left, its times as wrapping chips), and days without times are hidden
+     when the practitioner has times on other days. */
+  #calWrapper .block__uge,
+  .uge__cal {
+    display: block;
+  }
+
+  .uge__cal .cal__day {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    width: auto;
+    border-left: 0;
+    border-top: 1px solid var(--fx-line);
+  }
+
+  .uge__cal .cal__info + .cal__day {
+    border-top: 0;
+  }
+
+  .uge__cal .cal-day__header {
+    padding: 14px 0 14px 16px;
+    text-align: left;
+    background: transparent;
+    border-bottom: 0;
+  }
+
+  .uge__cal .cal-day__body {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 8px;
+    padding: 12px 14px 12px 4px;
+  }
+
+  .uge__cal .cal-day__body::after,
+  .uge__cal .cal-day__body:has(a)::before {
+    display: none;
+  }
+
+  .uge__cal .cal-day__body:not(:has(a))::before {
+    padding: 0;
+    text-align: left;
+  }
+
+  .uge__cal .cal-day__body a {
+    flex: 0 0 auto;
+    min-width: 76px;
+    min-height: 44px;
+    margin: 0;
+    padding: 11px 14px;
+  }
+
+  .uge__cal:has(.cal-day__body a) .cal__day:not(:has(.cal-day__body a)) {
+    display: none;
+  }
+}
+
+@media (max-width: 340px) {
+  /* 280px embed: slightly narrower chips, so two fit next to each day. */
+  .uge__cal .cal-day__body a {
+    min-width: 70px;
+    padding: 11px 10px;
+  }
+}
+
+.gc-empty-week-heading {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#nextFreeTimeTextDiv {
+  margin: 16px 0 0;
+}
+
+
+/* -----------------------------------------------------------------------------
+   7. Month view (Maanedsvisning)
+   -------------------------------------------------------------------------- */
+.mcp-wrapper .mcp {
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.mcp .mcp-row {
+  padding: 0 8px;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.mcp .mcp-cell {
+  padding: 4px;
+  background: transparent;
+  border-right: 0;
+}
+
+/* Month + arrows */
+.mcp .mcp-row.mcp-row-header {
+  align-items: center;
+  padding: 8px;
+  background: var(--fx-sand);
+}
+
+.mcp .mcp-cell.mcp-header-month,
+.mcp .mcp-cell.mcp-header-month-selector {
+  padding: 10px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fx-ink);
+}
+
+#dateHeadline, #dateHeadlineMonth {
+  font-weight: 600;
+  text-transform: none;
+}
+
+.mcp .mcp-cell.mcp-header-nav,
+.mcp .mcp-cell.mcp-header-nav:hover,
+.mcp .mcp-cell.mcp-header-month-selector:hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--fx-ink);
+  background: transparent;
+}
+
+.mcp .mcp-cell.mcp-header-nav .fa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  font: 500 18px/1 var(--fx-font);
+  color: var(--fx-ink);
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 50%;
+}
+
+.mcp .mcp-cell.mcp-header-nav:hover .fa {
+  color: var(--fx-cream);
+  background: var(--fx-plum);
+  border-color: var(--fx-plum);
+}
+
+/* Weekday letters (row after the header) */
+.mcp .mcp-row-header + .mcp-row p {
+  padding: 12px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fx-muted);
+  background: transparent;
+}
+
+/* Plain numbers: week numbers, other months, days without times. */
+.mcp .mcp-cell p {
+  margin: 0;
+  padding: 9px 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--fx-muted);
+  background: transparent;
+}
+
+/* Week numbers: Gecko forces bold black with !important. */
+.mcp .mcp-row .mcp-cell:first-child p {
+  font-size: 12px;
+  font-weight: 500 !important;
+  color: var(--fx-muted) !important;
+}
+
+/* Gecko: !important backgrounds on other months' days. */
+.mcp .mcp-cell .mcp-prev-month-cell,
+.mcp .mcp-cell .mcp-next-month-cell {
+  background: transparent !important;
+}
+
+/* A day without free times (Gecko shows an alert on tap): muted and struck
+   through. The black text is an inline style, hence !important. */
+.mcp .mcp-cell p[onclick] {
+  color: var(--fx-muted) !important;
+  opacity: 1;
+  text-decoration: line-through;
+}
+
+.mcp .mcp-cell p strong {
+  font-weight: 400;
+}
+
+/* Date chips with free times: colours from the calendar variables. */
+.mcp .mcp-cell a {
+  display: block;
+  margin: 0;
+  padding: 9px 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+  filter: none;
+}
+
+.mcp .mcp-cell a:hover {
+  --style-calendar-green-color: #6B3840;
+  --style-calendar-yellow-color: #6B3840;
+  border-color: var(--fx-plum);
+  filter: none;
+}
+
+/* Today: plum ring. Gecko turns its hover slate grey with !important. */
+.mcp .mcp-cell a.curDayColor {
+  font-weight: 700;
+  border-color: var(--fx-plum);
+  box-shadow: inset 0 0 0 1px var(--fx-plum);
+}
+
+.mcp .mcp-cell a.curDayColor:hover:not(.curDayWaitingList):not(.curDayInactive) {
+  background-color: var(--fx-white) !important;
+}
+
+.mcp .mcp-cell a.curDayInactive {
+  border-color: transparent;
+  text-decoration: line-through;
+}
+
+@media (max-width: 560px) {
+  .mcp .mcp-row {
+    padding: 0 4px;
+  }
+
+  .mcp .mcp-cell {
+    padding: 3px 2px;
+  }
+
+  .mcp .mcp-cell a,
+  .mcp .mcp-cell p {
+    padding: 10px 0;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 340px) {
+  /* 280px embed: the month arrows' cell is narrower than the 44px circle. */
+  .mcp .mcp-cell.mcp-header-nav .fa {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   8. Day view: a day's free times ("Vaelg en tid")
+   -------------------------------------------------------------------------- */
+div.font-bold.text-center {
+  margin: 4px 0 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--fx-ink);
+}
+
+/* Practitioner header */
+form .control__bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 720px;
+  margin: 16px auto 0;
+  padding: 4px 8px;
+  background: var(--fx-cream);
+  border: 0;
+  border-radius: 20px;
+}
+
+form .control__bar .control__bar--cal-cell {
+  display: block;
+}
+
+/* "Ledige tider: name of the practitioner" */
+form .control__bar .control__bar--cal-cell span:first-child {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--fx-ink);
+}
+
+form .control__bar .control__bar--cal-cell span:first-child .font-bold {
+  font-weight: 500;
+  color: var(--fx-muted);
+}
+
+/* Time slots: the cells carry inline green backgrounds/borders; Gecko's
+   variable rules (section 0) recolour the background, the border needs
+   !important (Gecko sets it to none with !important). */
+.cal-time__body {
+  gap: 8px;
+  width: 100%;
+  max-width: 720px;
+  margin: 12px auto 28px;
+}
+
+/* Gecko lays each slot out as a collapsed table, where corners can't round. */
+.cal-time__body .cal-time__row {
+  display: block;
+  margin: 0 0 8px;
+  cursor: pointer;
+}
+
+.cal-time__body .cal-time__row .cal-time__cell {
+  display: block;
+  padding: 11px 8px;
+  text-align: center;
+  border: 1px solid var(--fx-line) !important;
+  border-radius: 100px;
+  filter: none;
+}
+
+.cal-time__body .cal-time__row .cal-time__text {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.cal-time__body .cal-time__row:hover .cal-time__cell {
+  --style-calendar-green-color: #6B3840;
+  --style-calendar-yellow-color: #6B3840;
+  border-color: var(--fx-plum) !important;
+}
+
+/* Selected time (if Gecko keeps the choice on the page) */
+.cal-time__body .cal-time__row .cal-time__cell:has(input:checked),
+.cal-time__body .cal-time__row:active .cal-time__cell {
+  --style-calendar-green-bg: #6B3840;
+  --style-calendar-green-color: #F7F2EA;
+  border-color: var(--fx-plum) !important;
+}
+
+.cal-time__body .cal-time__row .cal-time__cell.red--hover {
+  text-decoration: line-through;
+}
+
+@media (max-width: 480px) {
+  .cal-time__body .cal-time__row .cal-time__cell {
+    padding: 11px 4px;
+  }
+
+  .cal-time__body .cal-time__row .cal-time__text {
+    font-size: 14px;
+  }
+}
+
+/* The embed on a 320px phone is only 280px wide: three "10:00 - 10:35" slots
+   don't fit on one line there, so the text may wrap (Gecko keeps 3 columns)
+   and the two-line slot becomes a rounded chip instead of an oval. */
+@media (max-width: 340px) {
+  .cal-time__body .cal-time__row .cal-time__cell {
+    border-radius: 20px;
+  }
+
+  .cal-time__body .cal-time__row .cal-time__text {
+    white-space: normal;
+  }
+}
+
+
+/* -----------------------------------------------------------------------------
+   9. Waiting list box ("Fandt du ikke, hvad du soegte?")
+   -------------------------------------------------------------------------- */
+#waitinglistTxtDiv {
+  padding: 24px 28px;
+  text-align: left;
+  background-color: var(--fx-sand);
+  border-radius: 20px;
+}
+
+#waitinglistTxtDiv .waitinglistTxt {
+  margin-bottom: 4px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--fx-ink);
+}
+
+#waitinglistTxtDiv p {
+  margin: 0 0 16px;
+  color: var(--fx-muted);
+}
+
+#backButtonWrapperDiv {
+  margin-top: 8px;
+}
+
+
+/* -----------------------------------------------------------------------------
+   10. Forms: details step (Detaljer), login, waiting list
+   -------------------------------------------------------------------------- */
+
+/* Gecko's centred form card */
+.wrapper-page {
+  width: 480px;
+  max-width: 100%;
+  margin: 12px auto 24px;
+}
+
+.wrapper-page .card-box {
+  padding: 28px;
+  background-color: var(--fx-cream);
+  border-radius: 20px;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .wrapper-page .card-box {
+    padding: 20px 16px;
+  }
+}
+
+.card-box h4, .card-box .h4 {
+  font-size: 18px;
+}
+
+.card-box h5, .card-box .h5 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label,
+.control-label {
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fx-ink);
+}
+
+.form-control-static {
+  min-height: 0;
+  padding: 0;
+  font-size: 15px;
+  color: var(--fx-ink);
+}
+
+/* Inputs: 16px text (no zoom on iPhone), at least 48px high, plum focus. */
+.form-control {
+  height: auto;
+  min-height: 52px;
+  padding: 13px 18px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--fx-ink);
+  background-color: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.form-control:hover {
+  border-color: var(--fx-rule);
+}
+
+.form-control:focus {
+  border-color: var(--fx-plum);
+  outline: 2px solid var(--fx-plum) !important;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.form-control::placeholder {
+  color: var(--fx-placeholder);
+  opacity: 1;
+}
+
+.form-control[disabled],
+.form-control[readonly] {
+  color: var(--fx-muted);
+  background-color: var(--fx-sand);
+}
+
+select.form-control {
+  height: 52px;
+  padding: 0 46px 0 18px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: var(--fx-chevron);
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 12px 8px;
+}
+
+textarea.form-control {
+  min-height: 128px;
+  resize: vertical;
+}
+
+/* Date fields on the waiting list have an inline 100px max width. */
+.form-control.hasDatepicker {
+  max-width: 180px !important;
+}
+
+/* A field joined with a button (e.g. a discount code + its button). Gecko gives
+   the button a 2px grey border, square corners and 44px height, border with
+   !important. The field keeps its left corners, the button gets the right. */
+.input-group .form-control:first-child:not(:last-child) {
+  border-radius: 16px 0 0 16px;
+}
+
+.input-group .input-group-btn .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  min-height: 52px;
+  padding: 0 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--fx-plum) !important;
+  background-color: var(--fx-sand) !important;
+  border: 1px solid var(--fx-line) !important;
+  border-left: 0 !important;
+  border-radius: 0 16px 16px 0 !important;
+  box-shadow: none;
+}
+
+.input-group .input-group-btn .btn:hover {
+  background-color: var(--fx-powder) !important;
+}
+
+/* Number stepper ("Antal pladser"): [ - | 1 | + ] with the field's height and
+   corners. Gecko: 2px grey borders with !important, and an inline width,
+   max-width and square corners on the number. */
+.gecko_number_plus_minus_wrapper {
+  display: inline-flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.gecko_number_plus_minus_wrapper .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  float: none;
+  width: 52px;
+  height: 52px;
+  min-height: 52px;
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  color: var(--fx-plum) !important;
+  background-color: var(--fx-white) !important;
+  border: 1px solid var(--fx-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none;
+}
+
+.gecko_number_plus_minus_wrapper .btn:hover {
+  background-color: var(--fx-sand) !important;
+}
+
+.gecko_number_plus_minus_wrapper .btn.gecko_number_minus {
+  border-right: 0 !important;
+  border-radius: 16px 0 0 16px !important;
+}
+
+.gecko_number_plus_minus_wrapper .btn.gecko_number_plus {
+  border-left: 0 !important;
+  border-radius: 0 16px 16px 0 !important;
+}
+
+.gecko_number_plus_minus_wrapper .form-control.gecko_number_plus_minus {
+  float: none;
+  width: 56px !important;
+  max-width: 56px !important;
+  height: 52px;
+  padding: 0 4px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 0 !important;
+}
+
+/* Validation (parsley): Gecko paints errors red with !important. */
+.form-control.parsley-error,
+.has-error .form-control {
+  border-color: var(--fx-plum) !important;
+  box-shadow: inset 0 0 0 1px var(--fx-plum);
+}
+
+.parsley-errors-list li,
+.has-error .help-block,
+.has-error .control-label {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--fx-plum);
+}
+
+/* Checkboxes (terms, newsletter, add-ons). Gecko: border !important. */
+.checkbox {
+  min-height: 24px;
+  padding-left: 34px;
+}
+
+.checkbox label,
+.form-group .checkbox label {
+  min-height: 24px;
+  padding-left: 0;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.checkbox input[type="checkbox"] {
+  top: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0 0 0 -34px;
+}
+
+.checkbox label::before {
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: -34px;
+  background-color: var(--fx-white);
+  border: 1.5px solid var(--fx-plum) !important;
+  border-radius: 6px;
+  outline: none;
+}
+
+.checkbox label::after {
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: -34px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+  color: var(--fx-cream);
+}
+
+.checkbox input[type="checkbox"]:checked + label::before {
+  background-color: var(--fx-plum);
+}
+
+.checkbox input[type="checkbox"]:checked + label::after {
+  color: var(--fx-cream);
+}
+
+/* Keyboard focus on the drawn box. Gecko: "outline: none !important" on it. */
+.checkbox input[type="checkbox"]:focus-visible + label::before {
+  outline: 2px solid var(--fx-plum) !important;
+  outline-offset: 2px;
+}
+
+.checkbox.parsley-error label::before {
+  background-color: var(--fx-blush);
+}
+
+/* Radios outside the clinic chips */
+.radio {
+  padding-left: 34px;
+}
+
+.radio input[type="radio"] {
+  width: 22px;
+  height: 22px;
+  margin: 0 0 0 -34px;
+}
+
+.radio label::before {
+  top: 0;
+  width: 22px;
+  height: 22px;
+  margin-left: -34px;
+  background-color: var(--fx-white);
+  border: 1.5px solid var(--fx-plum) !important;
+  border-radius: 50%;
+  outline: none;
+}
+
+.radio label::after {
+  top: 6px;
+  left: 6px;
+  width: 10px;
+  height: 10px;
+  margin-left: -34px;
+  background-color: var(--fx-plum);
+  border-radius: 50%;
+}
+
+.radio input[type="radio"]:checked + label::after {
+  background-color: var(--fx-plum);
+}
+
+.radio input[type="radio"]:focus-visible + label::before {
+  outline: 2px solid var(--fx-plum) !important;
+  outline-offset: 2px;
+}
+
+/* "Log ind eller opret dig som ny kunde" */
+.gb-btn-group {
+  gap: 8px;
+}
+
+.gb-btn-group-label {
+  font-size: 15px;
+  color: var(--fx-ink);
+}
+
+/* Gecko's fold-out bars ("Opret ny bruger" on the Ny kunde? page): a sand bar
+   like the service groups. Gecko's chevron glyph stays, in plum. The bars on
+   the logged-in pages (.geckoTabWrapper) keep Gecko's own layout and take the
+   font and colours. */
+.geckoTab {
+  margin: 0 0 16px;
+  padding: 14px 48px 14px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: normal;
+  color: var(--fx-ink);
+  background-color: var(--fx-sand);
+  border: 0;
+  border-radius: 16px;
+}
+
+.geckoTab:hover,
+.geckoTab:active,
+.geckoTab:focus {
+  background-color: var(--fx-powder);
+}
+
+.geckoTab.geckoTabOpen,
+.geckoTab.geckoTabClosed {
+  font-weight: 600;
+  color: var(--fx-ink);
+}
+
+.geckoTab::after {
+  right: 20px;
+  font-size: 14px;
+  color: var(--fx-plum);
+}
+
+/* Login provider list, info lists */
+.list-group-item {
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+}
+
+.list-group-item:first-child {
+  border-radius: 16px 16px 0 0;
+}
+
+.list-group-item:last-child {
+  border-radius: 0 0 16px 16px;
+}
+
+/* Messages */
+.alert {
+  padding: 14px 18px;
+  font-size: 15px;
+  border: 0;
+  border-radius: 16px;
+}
+
+.alert-danger {
+  color: var(--fx-plum);
+  background-color: var(--fx-blush);
+}
+
+.alert-success {
+  color: var(--fx-ink);
+  background-color: var(--fx-sand);
+}
+
+.alert-info,
+.alert-warning {
+  color: var(--fx-ink);
+  background-color: var(--fx-cream);
+  border: 1px solid var(--fx-line);
+}
+
+
+/* -----------------------------------------------------------------------------
+   11. Dialogs, dropdowns, date picker, loading overlay
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  background-color: var(--fx-ink);
+}
+
+.modal-backdrop.in {
+  opacity: 0.4;
+}
+
+.modal .modal-dialog .modal-content {
+  padding: 28px;
+  color: var(--fx-ink);
+  border: 0;
+  border-radius: 20px;
+  box-shadow: var(--fx-shadow-menu);
+}
+
+.modal .modal-dialog .modal-content .modal-body {
+  font-size: 16px;
+}
+
+/* Service descriptions (the "i" on a service) carry Times New Roman as an
+   inline style, pasted in by Gecko's text editor. */
+.modal-body,
+.modal-body [style*="font-family"] {
+  font-family: var(--fx-font) !important;
+}
+
+.modal .modal-dialog .modal-content .modal-footer {
+  border-top: 0;
+}
+
+.modal .close {
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--fx-ink);
+  text-shadow: none;
+  opacity: 0.7;
+}
+
+.dropdown-menu {
+  padding: 6px;
+  border: 1px solid var(--fx-line);
+  border-radius: 12px;
+  box-shadow: var(--fx-shadow-menu);
+}
+
+.dropdown-menu li a {
+  border-radius: 8px;
+}
+
+/* Date picker (jQuery UI): opens from the waiting list's "Mellem d." / "og d."
+   fields. A white card like the menus; days as chips; today with a plum ring,
+   the chosen day plum. Selectors carry two classes to beat jQuery UI's own. */
+.ui-datepicker.ui-widget {
+  width: 296px;
+  max-width: calc(100vw - 32px);
+  padding: 10px;
+  font-family: var(--fx-font);
+  font-size: 15px;
+  color: var(--fx-ink);
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 16px;
+  box-shadow: var(--fx-shadow-menu);
+}
+
+.ui-datepicker .ui-datepicker-header.ui-widget-header {
+  margin: 0 0 4px;
+  padding: 4px 0;
+  font-weight: 600;
+  color: var(--fx-ink);
+  background: var(--fx-sand);
+  border: 0;
+  border-radius: 12px;
+}
+
+.ui-datepicker .ui-datepicker-title {
+  margin: 0 48px;
+  font-size: 16px;
+  line-height: 40px;
+}
+
+/* Month arrows: white circles like the month view's, arrows as text. */
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next,
+.ui-datepicker .ui-datepicker-prev.ui-datepicker-prev-hover,
+.ui-datepicker .ui-datepicker-next.ui-datepicker-next-hover {
+  top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--fx-ink);
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-prev.ui-datepicker-prev-hover {
+  left: 4px;
+}
+
+.ui-datepicker .ui-datepicker-next,
+.ui-datepicker .ui-datepicker-next.ui-datepicker-next-hover {
+  right: 4px;
+}
+
+.ui-datepicker .ui-datepicker-prev::before {
+  content: "\2190";
+  content: "\2190" / "";
+}
+
+.ui-datepicker .ui-datepicker-next::before {
+  content: "\2192";
+  content: "\2192" / "";
+}
+
+.ui-datepicker .ui-datepicker-prev:hover,
+.ui-datepicker .ui-datepicker-next:hover {
+  color: var(--fx-cream);
+  background: var(--fx-plum);
+  border-color: var(--fx-plum);
+}
+
+.ui-datepicker .ui-datepicker-prev .ui-icon,
+.ui-datepicker .ui-datepicker-next .ui-icon {
+  display: none;
+}
+
+.ui-datepicker table.ui-datepicker-calendar {
+  margin: 0;
+  font-size: 14px;
+  border-collapse: separate;
+  border-spacing: 2px;
+}
+
+.ui-datepicker .ui-datepicker-calendar th {
+  padding: 8px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fx-muted);
+}
+
+.ui-datepicker .ui-datepicker-calendar td {
+  padding: 0;
+}
+
+/* Week numbers */
+.ui-datepicker .ui-datepicker-calendar td.ui-datepicker-week-col {
+  font-size: 12px;
+  text-align: center;
+  color: var(--fx-muted);
+}
+
+.ui-datepicker .ui-datepicker-calendar td a.ui-state-default,
+.ui-datepicker .ui-datepicker-calendar td span.ui-state-default {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: var(--fx-ink);
+  background: var(--fx-white);
+  border: 1px solid var(--fx-line);
+  border-radius: 100px;
+}
+
+.ui-datepicker .ui-datepicker-calendar td a.ui-state-default:hover,
+.ui-datepicker .ui-datepicker-calendar td a.ui-state-default.ui-state-hover {
+  color: var(--fx-plum);
+  background: var(--fx-sand);
+  border-color: var(--fx-plum);
+}
+
+/* Today */
+.ui-datepicker .ui-datepicker-calendar td a.ui-state-default.ui-state-highlight {
+  font-weight: 700;
+  color: var(--fx-ink);
+  border-color: var(--fx-plum);
+  box-shadow: inset 0 0 0 1px var(--fx-plum);
+}
+
+/* The chosen day */
+.ui-datepicker .ui-datepicker-calendar td a.ui-state-default.ui-state-active {
+  color: var(--fx-cream);
+  background: var(--fx-plum);
+  border-color: var(--fx-plum);
+  box-shadow: none;
+}
+
+/* Days that can't be chosen: quiet and struck through, as in the month view. */
+.ui-datepicker .ui-datepicker-calendar td.ui-state-disabled {
+  opacity: 1;
+}
+
+.ui-datepicker .ui-datepicker-calendar td span.ui-state-default {
+  color: var(--fx-muted);
+  background: transparent;
+  border-color: transparent;
+  text-decoration: line-through;
+}
+
+/* Gecko's full-page spinner: inline grey backdrop and icon. */
+#worldSpinner {
+  background-color: rgba(247, 242, 234, 0.6) !important;
+}
+
+#worldSpinner .fa {
+  color: var(--fx-plum) !important;
+}
+
+
+/* -----------------------------------------------------------------------------
+   12. Motion: short colour transitions only, and none when the visitor asks
+   for reduced motion (this also stops Gecko's ripple and fades, which need
+   !important to reach).
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .sitemenuWrap .btn,
+  .btn,
+  .gc-company-picker-radio-label,
+  .gecko-list-dropdown__group-name,
+  .gecko-list-dropdown__row,
+  .uge__cal .cal-day__body a,
+  .mcp .mcp-cell a,
+  .cal-time__cell,
+  .form-control {
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .gecko-list-dropdown__group-name.icon::before,
+  .serviceAdditionGroup-icon::before {
+    transition: transform 0.2s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .waves-ripple {
+    display: none !important;
+  }
+}

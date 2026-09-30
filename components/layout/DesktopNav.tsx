@@ -20,7 +20,7 @@ import { MegaMenu } from "./MegaMenu";
 import type { HeaderData } from "./menuData";
 import { isNavItemActive } from "./navActive";
 
-type DesktopNavProps = Pick<HeaderData, "megaColumns" | "megaPromo" | "clinics" | "clinicsHref" | "prices"> & {
+type DesktopNavProps = Pick<HeaderData, "megaMenu" | "clinics" | "clinicsHref" | "prices"> & {
   items: NavItem[];
   label: string;
 };
@@ -53,7 +53,7 @@ function itemClasses(highlight: boolean) {
  * click / Enter / Space / ArrowDown; close on Escape, outside click, focus leaving
  * and route change.
  */
-export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clinicsHref, prices }: DesktopNavProps) {
+export function DesktopNav({ items, label, megaMenu, clinics, clinicsHref, prices }: DesktopNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState<string | null>(null);
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -71,11 +71,8 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
     setOpen(null);
   }
 
-  // Closed panels stay in the layout (invisible), so their contents would load on every page view:
-  // panel links are prefetched only while their panel is open (the routes still load before the
-  // click), and the mega menu's promo photo is mounted once that menu has been opened.
-  const [megaOpened, setMegaOpened] = useState(false);
-  if (open === "treatments" && !megaOpened) setMegaOpened(true);
+  // Closed panels stay in the layout (invisible), so their links would be prefetched on every page
+  // view: each panel prefetches its links only while it is open (the routes still load before the click).
 
   const clearTimers = useCallback(() => {
     window.clearTimeout(closeTimer.current);
@@ -280,12 +277,12 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
           className={cn(
             "absolute z-40 duration-200 ease-out",
             placement === "mega"
-              ? // Positioned against the header's canvas box (the <li> and <ul> are static): centred on the
-                // canvas, not on the nav (the logo and "Book tid" differ in width, so the nav sits off-centre),
-                // as wide as its content, level with the other dropdowns. The gap above is a margin, not
+              ? // Positioned against the header's canvas box (the <li> and <ul> are static): the canvas's
+                // surface band (the rounded bands' margins, as in the design), at most 1280px wide and
+                // centred on the canvas, not on the nav (the logo and "Book tid" differ in width, so the
+                // nav sits off-centre); level with the other dropdowns. The gap above is a margin, not
                 // padding, so it never covers the logo or "Book tid": the trigger's hover bridge spans it.
-                // The max width (the canvas minus the surface margins) is only a safety net.
-                "top-full left-1/2 mt-0.5 w-max max-w-[calc(100%-2*var(--gutter-surface))] -translate-x-1/2"
+                "inset-x-surface top-full mx-auto mt-0.5 max-w-[1280px]"
               : // The padding bridges the gap under the header; it puts the dropdown 2px under the header,
                 // level with the mega panel (the header grows from 1280, so it grows too).
                 "top-full left-1/2 -translate-x-1/2 pt-[34px] xl:pt-fluid-35/36",
@@ -311,13 +308,7 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
               return renderDropdown(
                 item,
                 "treatments",
-                <MegaMenu
-                  columns={megaColumns}
-                  promo={megaPromo}
-                  open={open === "treatments"}
-                  showPromoPhoto={megaOpened}
-                  onNavigate={close}
-                />,
+                <MegaMenu menu={megaMenu} open={open === "treatments"} onNavigate={close} />,
                 "mega",
               );
             case "prices":

@@ -31,7 +31,8 @@ export const metadata: Metadata = pageMetadata(
  * growing with its text), so longer help copy (other markets) wraps instead of squeezing the
  * intro.
  * The white booking card spans the band too; BookingEmbed sizes it and the embed inside it
- * per provider. Card and Gecko calendar are both white, so no edge shows.
+ * per provider. Gecko's page is transparent, so the white card is its background; the Fillox
+ * theme pasted into Gecko (integrations/gecko) keeps it that way and styles the calendar inside.
  */
 export default function BookingPage() {
   return (
