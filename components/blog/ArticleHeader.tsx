@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { Eyebrow, Photo } from "@/components/ui";
+import { Eyebrow, Photo, containerClasses } from "@/components/ui";
 import { blogArticle as copy, blogPage } from "@/content/pages/blog";
+import { cn } from "@/lib/cn";
 import type { ArticleView } from "./articleView";
 import { joinMeta } from "./postView";
 import { Responsive } from "./Responsive";
 
-/** Width of the reading column (720px from 800px up, side gutters below). */
+/**
+ * Width of the reading column (720px from 800px up, side gutters below). A reading
+ * measure (17px body, ~75 characters a line), so it stays 720px on the wide canvas too.
+ */
 export const readingColumn = "mx-auto w-full max-w-[800px] px-5 md:px-10";
 
 /**
@@ -17,7 +21,7 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
 
   return (
     <header>
-      <div className={`${readingColumn} flex flex-col gap-4 pt-4 pb-5 md:gap-[18px] md:pt-14 md:pb-10`}>
+      <div className={`${readingColumn} flex flex-col gap-4 pt-4 pb-5 md:gap-[18px] md:pt-fluid-56 md:pb-fluid-40`}>
         <nav aria-label={copy.breadcrumbLabel} className="text-[14px] text-muted max-md:hidden">
           <ol className="flex flex-wrap items-center gap-x-1">
             <li>
@@ -44,7 +48,7 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
 
         <Eyebrow>{joinMeta(post.category, post.kind)}</Eyebrow>
 
-        <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display md:text-[48px]">{post.title}</h1>
+        <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display md:text-[48px] xl:text-h1-xs">{post.title}</h1>
 
         <div className="flex items-center gap-2.5 md:gap-3">
           {author ? (
@@ -74,14 +78,16 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-[1180px] px-3 md:px-6 lg:px-12">
+      {/* 6art: 48px inset on the 1180px canvas. From 1280px the photo sits on the content
+          gutter, in line with the logo and the "Læs også" cards. */}
+      <div className={cn(containerClasses("surface"), "lg:px-12 xl:px-gutter")}>
         <div className="overflow-hidden rounded-[22px] md:rounded-[24px]">
           <Photo
             image={post.image}
             position={post.blogImagePosition}
-            sizes="(min-width: 1180px) 1084px, 100vw"
+            sizes="(min-width: 1600px) 1440px, 100vw"
             priority
-            className="h-[260px] md:h-[400px] lg:h-[480px]"
+            className="h-[260px] md:h-[400px] lg:h-fluid-480/620"
           />
         </div>
       </div>

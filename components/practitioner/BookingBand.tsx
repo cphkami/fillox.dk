@@ -11,9 +11,9 @@ type BookingBandProps = { booking: NonNullable<TeamProfile["booking"]>; titleId:
 export function BookingBand({ booking, titleId }: BookingBandProps) {
   return (
     <Container as="section" gutter="surface" aria-labelledby={titleId} className="max-md:hidden">
-      <div className="flex flex-wrap items-center justify-between gap-6 rounded-[24px] bg-powder px-10 py-12 lg:px-14">
+      <div className="flex flex-wrap items-center justify-between gap-6 rounded-[24px] bg-powder px-10 py-fluid-48 lg:px-14 xl:px-16 2xl:px-20">
         <div>
-          <h2 id={titleId} className="mb-1.5 text-[32px] leading-[1.15] font-semibold tracking-display">
+          <h2 id={titleId} className="mb-1.5 text-[32px] leading-[1.15] font-semibold tracking-display xl:text-h2-sm">
             {booking.title}
           </h2>
           <p className="text-[16px] leading-[1.75] text-muted">{booking.text}</p>

@@ -385,6 +385,8 @@ export type NavItem =
   | { kind: "link"; label: string; href: string }
   | { kind: "treatments"; label: string; href: string }
   | { kind: "clinics"; label: string; href: string }
+  /** Desktop: dropdown with the price categories (content/prices.ts). Mobile menu: a plain link. */
+  | { kind: "prices"; label: string; href: string }
   | { kind: "menu"; label: string; href: string; items: Link[] };
 
 /* --------------------------------------------------------------- Text pages */

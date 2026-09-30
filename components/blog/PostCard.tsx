@@ -21,8 +21,8 @@ type PostCardProps = {
 
 /**
  * Blog post teaser. Below 768px a compact row (88px thumbnail, "Filler · 4 min",
- * title); from 768px a white card (220px photo, "FILLER · 4 MIN LÆSNING", title,
- * "Læs artiklen →"). The whole card is clickable through the title link.
+ * title); from 768px a white card (220px photo, growing on wide screens, "FILLER · 4 MIN
+ * LÆSNING", title, "Læs artiklen →"). The whole card is clickable through the title link.
  */
 export function PostCard({ post, variant = "list", headingLevel: Heading = "h3", className }: PostCardProps) {
   return (
@@ -35,16 +35,18 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
         className,
       )}
     >
-      <div className="size-[88px] shrink-0 overflow-hidden rounded-[14px] md:h-[220px] md:w-full md:rounded-none">
+      {/* Photo 220px high; from 1024px it keeps the design's 340 × 220 shape (1.55:1) as the
+          card grows with the canvas (220px at 1180, ~300px at 1600), never below 220px. */}
+      <div className="size-[88px] shrink-0 overflow-hidden rounded-[14px] md:h-[220px] md:w-full md:rounded-none lg:aspect-[340/220] lg:h-auto lg:min-h-[220px]">
         <Photo
           image={{ ...post.image, alt: "" }}
           position={post.blogImagePosition}
-          sizes="(min-width: 1180px) 360px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 88px"
+          sizes="(min-width: 1600px) 464px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 88px"
           className="size-full"
         />
       </div>
 
-      <div className="min-w-0 md:flex md:flex-1 md:flex-col md:gap-2.5 md:px-[26px] md:pt-6 md:pb-7">
+      <div className="min-w-0 md:flex md:flex-1 md:flex-col md:gap-2.5 md:px-[26px] md:pt-6 md:pb-7 2xl:px-8">
         <p className="text-[12px] text-muted md:hidden">{joinMeta(post.category, shortReadingTime(post))}</p>
         <p className="text-[12px] font-bold tracking-[2px] text-plum uppercase max-md:hidden">
           {post.category}
@@ -61,7 +63,9 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
           </Link>
         </Heading>
 
-        <span aria-hidden="true" className="mt-1 text-[14px] font-semibold text-plum max-md:hidden">
+        {/* mt-auto pins the link to the card bottom when a neighbour's longer title makes the
+            row taller; pt-1 keeps the design's 4px extra gap. */}
+        <span aria-hidden="true" className="text-[14px] font-semibold text-plum max-md:hidden md:mt-auto md:pt-1">
           {copy.list.readArticle}{" "}
           <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
         </span>

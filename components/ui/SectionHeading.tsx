@@ -46,7 +46,10 @@ const leadings = {
 
 const introGaps = { 12: "mt-3", 16: "mt-4" } as const;
 
-/** Section title: Poppins 600, -0.03em, 28px mobile / 40px desktop, with optional intro. */
+/**
+ * Section title: Poppins 600, -0.03em, 28px mobile / 40px desktop (768–1280px), then the
+ * fluid --text-h2 token (40 → 48px at 1600px) on wide screens; with optional intro.
+ */
 export function SectionHeading({
   title,
   intro,
@@ -72,7 +75,7 @@ export function SectionHeading({
       <Tag
         id={id}
         className={cn(
-          "text-[28px] font-semibold tracking-display md:text-[40px]",
+          "text-[28px] font-semibold tracking-display md:text-[40px] xl:text-h2",
           leadings[leading],
           tone === "light" ? "text-cream" : "text-ink",
           titleClassName,

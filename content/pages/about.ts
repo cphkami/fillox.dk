@@ -31,6 +31,9 @@ export const aboutPage = {
     introShort:
       "Hos Fillox behandler kun læger og sygeplejersker, og vi lægger lige så meget vægt på den ærlige vurdering som på selve behandlingen.",
     image: {
+      // TODO: asset (owner): replace with a larger original of this photo, at least 2200×1470
+      // (ideally 2400px wide). This file is 800×533; on wide screens it covers a ≈ 1080×720 cell,
+      // so it is upscaled ≈ 1.35× (≈ 2.7× on retina) and the letters look soft.
       src: "/images/results/behandling-3.jpg",
       // TODO: copy review (alt text)
       alt: "Fillox-logoet i spejlblanke bogstaver på væggen i klinikken",

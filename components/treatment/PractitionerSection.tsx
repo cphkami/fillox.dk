@@ -7,25 +7,38 @@ import { Swap } from "./Swap";
 /**
  * "Din behandler" (6c/6bx: photo left, heading + text + quote + "Mød hele teamet →";
  * mb: photo, name in plum, title, short text and a full-width "Book hos …" button).
+ * Wide screens: the 1 : 1.4 split fills the canvas and the photo grows 520 → 640px tall
+ * (≈ the design's 418 × 520 portrait proportion at every width).
  */
+/**
+ * Photo `sizes`: the slot is 574px wide on the 1600px canvas (1 : 1.4 split of the 1440px
+ * content width), ~36vw from 768px, the column width below. From 1024px a design crop's
+ * zoom (`image.zoom`, which paints the photo that much wider) is included so the photo
+ * stays sharp on wide screens; below 1024 the request is left as it was.
+ */
+function photoSizes(zoom = 1): string {
+  const z = Math.max(1, zoom);
+  return `(min-width: 1600px) ${Math.ceil(574 * z)}px, (min-width: 1024px) ${Math.ceil(36 * z)}vw, (min-width: 768px) 36vw, calc(100vw - 40px)`;
+}
+
 export function PractitionerSection({ practitioner: p }: { practitioner: NonNullable<TreatmentView["practitioner"]> }) {
   return (
     <Container
       as="section"
       aria-labelledby="din-behandler"
-      className="flex flex-col gap-4 pt-2 pb-14 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-10 md:pt-0 md:pb-[84px] lg:gap-16"
+      className="flex flex-col gap-4 pt-2 pb-14 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-10 md:pt-0 md:pb-fluid-84 lg:gap-fluid-64"
     >
       <Photo
         image={p.image}
-        sizes="(min-width: 1180px) 418px, (min-width: 768px) 36vw, calc(100vw - 40px)"
+        sizes={photoSizes(p.image.zoom)}
         radius={24}
-        className="h-[400px] shrink-0 md:h-[440px] lg:h-[520px]"
+        className="h-[400px] shrink-0 md:h-[440px] lg:h-fluid-520/640"
       />
       <div className="flex flex-col gap-4 md:block">
         <Eyebrow className="md:mb-[18px]">{copy.practitioner.eyebrow}</Eyebrow>
         <h2
           id="din-behandler"
-          className="text-[28px] font-semibold tracking-display text-plum md:mb-4 md:text-[40px] md:leading-[1.1] md:text-ink"
+          className="text-[28px] font-semibold tracking-display text-plum md:mb-4 md:text-[40px] md:leading-[1.1] md:text-ink xl:text-h2"
         >
           <Swap mobile={p.member.name} desktop={p.heading} />
         </h2>
@@ -34,7 +47,7 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
           <Swap mobile={p.mobileText} desktop={p.text} />
         </p>
         {p.quote ? (
-          <blockquote className="mb-[22px] text-[22px] leading-[1.4] font-semibold tracking-display text-plum max-md:hidden">
+          <blockquote className="mb-[22px] text-h3 leading-[1.4] font-semibold tracking-display text-plum max-md:hidden">
             <p>{copy.practitioner.quote(p.quote)}</p>
           </blockquote>
         ) : null}

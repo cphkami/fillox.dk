@@ -15,12 +15,12 @@ import {
 } from "react";
 import type { NavItem } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { ClinicsDropdown, LinksDropdown } from "./DropdownMenu";
+import { ClinicsDropdown, LinksDropdown, PricesDropdown } from "./DropdownMenu";
 import { MegaMenu } from "./MegaMenu";
 import type { HeaderData } from "./menuData";
 import { isNavItemActive } from "./navActive";
 
-type DesktopNavProps = Pick<HeaderData, "megaColumns" | "megaPromo" | "clinics" | "clinicsHref"> & {
+type DesktopNavProps = Pick<HeaderData, "megaColumns" | "megaPromo" | "clinics" | "clinicsHref" | "prices"> & {
   items: NavItem[];
   label: string;
 };
@@ -40,7 +40,7 @@ function itemClasses(highlight: boolean) {
  * click / Enter / Space / ArrowDown; close on Escape, outside click, focus leaving
  * and route change.
  */
-export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clinicsHref }: DesktopNavProps) {
+export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clinicsHref, prices }: DesktopNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState<string | null>(null);
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -210,8 +210,8 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
           className={cn(
             "absolute z-40 duration-200 ease-out",
             placement === "mega"
-              ? // Spans the 1180px canvas minus the 24px surface margin, directly under the header.
-                "top-full right-6 left-6"
+              ? // Spans the site canvas minus the surface margin (24px, 32px from 1536px), directly under the header.
+                "inset-x-surface top-full"
               : "top-full left-1/2 -translate-x-1/2 pt-[33px]",
             // Visibility flips to visible at once on open (so focus can move in immediately) and
             // stays delayed on close (so the fade-out is visible).
@@ -237,6 +237,13 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
                 "treatments",
                 <MegaMenu columns={megaColumns} promo={megaPromo} onNavigate={close} />,
                 "mega",
+              );
+            case "prices":
+              return renderDropdown(
+                item,
+                "prices",
+                <PricesDropdown prices={prices} onNavigate={close} />,
+                "below",
               );
             case "clinics":
               return renderDropdown(

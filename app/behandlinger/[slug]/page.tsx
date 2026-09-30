@@ -54,7 +54,7 @@ export default async function TreatmentPage({ params }: Props) {
       <AboutBand about={view.about} />
 
       {hasPlainSections ? (
-        <div className="pt-12 md:pt-[84px]">
+        <div className="pt-12 md:pt-fluid-84">
           {view.practitioner ? <PractitionerSection practitioner={view.practitioner} /> : null}
           {view.results ? <ResultsSection results={view.results} /> : null}
           {view.prices ? <PriceSection prices={view.prices} /> : null}

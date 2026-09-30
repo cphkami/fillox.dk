@@ -10,11 +10,11 @@ export function ExperienceSection({ experience, titleId }: ExperienceSectionProp
     <Container as="section" gutter="surface" aria-labelledby={titleId}>
       <div
         data-surface="plum"
-        className="flex flex-col gap-3.5 rounded-[24px] bg-plum px-[22px] py-8 md:gap-8 md:px-10 md:py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-14 lg:px-14 lg:py-[72px]"
+        className="flex flex-col gap-3.5 rounded-[24px] bg-plum px-[22px] py-8 md:gap-8 md:px-10 md:py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-fluid-56 lg:px-14 lg:py-fluid-72 xl:px-16 2xl:px-20"
       >
         <h2
           id={titleId}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display text-cream md:text-[40px] md:leading-[1.1]"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display text-cream md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {experience.title}
         </h2>

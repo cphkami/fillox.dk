@@ -58,7 +58,7 @@ export default async function BlogArticlePage({ params }: Props) {
       <ArticleJsonLd view={view} />
       <article>
         <ArticleHeader view={view} />
-        <div className={`${readingColumn} flex flex-col gap-4 pt-7 pb-8 md:gap-[18px] md:pt-14 md:pb-6`}>
+        <div className={`${readingColumn} flex flex-col gap-4 pt-7 pb-8 md:gap-[18px] md:pt-fluid-56 md:pb-6`}>
           <ArticleBody blocks={view.blocks} />
           {view.author ? <AuthorBox author={view.author} /> : null}
         </div>

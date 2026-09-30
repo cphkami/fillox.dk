@@ -71,15 +71,15 @@ export function NewsletterSignup() {
   }
 
   return (
-    <Container gutter="surface" className="md:mt-12">
+    <Container gutter="surface" className="md:mt-fluid-48">
       <section
         aria-labelledby={ids.title}
-        className="flex flex-col gap-3 rounded-[24px] bg-powder px-5 py-7 md:gap-8 md:p-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-12 lg:p-14"
+        className="flex flex-col gap-3 rounded-[24px] bg-powder px-5 py-7 md:gap-8 md:p-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-fluid-48 lg:px-14 lg:py-fluid-56 xl:px-16 2xl:px-20"
       >
         <div className="flex flex-col gap-3">
           <h2
             id={ids.title}
-            className="text-[28px] leading-[1.15] font-semibold tracking-display text-plum md:text-[32px]"
+            className="text-[28px] leading-[1.15] font-semibold tracking-display text-plum md:text-[32px] xl:text-h2-sm"
           >
             <Responsive mobile={copy.titleShort} desktop={copy.title} />
           </h2>
@@ -158,7 +158,10 @@ export function NewsletterSignup() {
               className="text-[13px] leading-[1.6] text-muted md:px-6 lg:absolute lg:inset-x-0 lg:top-full lg:mt-2.5"
             >
               {copy.privacy.text}{" "}
-              <Link href={copy.privacy.link.href} className="text-ink underline underline-offset-2 hover:text-plum">
+              <Link
+                href={copy.privacy.link.href}
+                className="text-ink underline underline-offset-2 hover:text-plum xl:whitespace-nowrap"
+              >
                 {copy.privacy.link.label}
               </Link>
             </p>

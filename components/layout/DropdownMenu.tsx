@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import type { Link as LinkItem } from "@/content/types";
 import { ui } from "@/content/ui";
-import type { MenuClinic } from "./menuData";
+import type { MenuClinic, MenuPrices } from "./menuData";
 
 /** Desktop "Find klinik" dropdown: open clinics with address + hours, coming-soon clinics with their note. */
 export function ClinicsDropdown({
@@ -65,6 +65,73 @@ export function LinksDropdown({ items, onNavigate }: { items: LinkItem[]; onNavi
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Desktop "Priser" dropdown: the price categories (eyebrow, title, lowest price) linking to
+ * their card on the prices page, "Se alle priser →", and a sand side card (the mega menu's
+ * promo-card style) with the trust points and a financing teaser linking to the financing box.
+ */
+export function PricesDropdown({ prices, onNavigate }: { prices: MenuPrices; onNavigate?: () => void }) {
+  return (
+    <div className="flex w-[720px] gap-3 rounded-[20px] bg-white p-3 shadow-menu">
+      <div className="min-w-0 flex-1">
+        <ul className="grid grid-cols-2">
+          {prices.categories.map((c) => (
+            <li key={c.id}>
+              <Link
+                href={c.href}
+                onClick={onNavigate}
+                className="group flex h-full flex-col rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
+              >
+                {/* Title first in the DOM so the link's name starts with it; the eyebrow is shown on top. */}
+                <span className="mt-1 text-[15px] font-semibold text-ink transition-colors group-hover:text-plum">
+                  {c.title}
+                </span>{" "}
+                {c.price ? <span className="mt-0.5 text-[14px] text-plum">{c.price}</span> : null}{" "}
+                <span className="order-first text-[11px] font-semibold tracking-[.12em] text-muted uppercase">
+                  {c.eyebrow}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="mx-1 mt-2 border-t border-line px-3 pt-3.5 pb-1.5">
+          <ArrowLink href={prices.href} onClick={onNavigate}>
+            {ui.seeAllPrices}
+          </ArrowLink>
+        </div>
+      </div>
+      <div className="flex w-[228px] shrink-0 flex-col rounded-[16px] bg-sand p-5">
+        <ul className="flex flex-col gap-3 text-[14px] leading-[1.4] text-ink">
+          {prices.trust.map((point) => (
+            <li key={point} className="flex items-start gap-2.5">
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="mt-0.5 size-4 shrink-0 text-plum">
+                <path
+                  d="M3.5 8.5l3 3 6-7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              {point}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-auto pt-5">
+          <div className="border-t border-line pt-4">
+            <p className="mb-1 text-[15px] leading-[1.4] font-semibold text-ink">{prices.financing.title}</p>
+            <p className="mb-3 text-[14px] leading-[1.5] text-muted">{prices.financing.text}</p>
+            <ArrowLink href={prices.financing.href} onClick={onNavigate}>
+              {prices.financing.cta}
+            </ArrowLink>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

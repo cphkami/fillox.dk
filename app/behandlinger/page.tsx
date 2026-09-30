@@ -30,13 +30,13 @@ export default function TreatmentsOverviewPage() {
 
   return (
     <>
-      <Container gutter="none" className="md:px-6">
+      <Container gutter="none" className="md:px-surface">
         <div className="flex flex-col gap-4 px-5 pt-5 pb-4 md:grid md:grid-cols-1 md:gap-0 md:overflow-hidden md:rounded-[24px] md:bg-sand md:p-0 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-4 md:justify-center md:gap-0 md:px-10 md:py-14 lg:px-14 lg:py-[72px]">
-            <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-[22px] md:text-[64px] md:leading-[1.02]">
+          <div className="flex flex-col gap-4 md:justify-center md:gap-0 md:px-10 md:py-14 lg:px-14 lg:py-fluid-72 xl:px-16 2xl:px-20">
+            <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-[22px] md:text-h1 md:leading-[1.02]">
               {copy.title}
             </h1>
-            <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[48ch] md:text-[18px] md:leading-[1.75]">
+            <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[48ch] md:text-lead md:leading-[1.75]">
               {copy.intro}
             </p>
             <nav aria-label={copy.jumpLabel}>
@@ -51,17 +51,19 @@ export default function TreatmentsOverviewPage() {
               </ul>
             </nav>
           </div>
+          {/* Height grows with the column (440 → 600px from 1280 to 1600) so the portrait keeps
+              the design's ≈ 1.1 : 1 crop (face, chin and neck) on wide screens. */}
           <Photo
             image={copy.heroImage}
-            sizes="(min-width: 1180px) 470px, (min-width: 1024px) 40vw, 1px"
+            sizes="(min-width: 1600px) 668px, (min-width: 1024px) 44vw, 1px"
             priority
-            className="min-h-[440px] max-lg:hidden"
+            className="min-h-fluid-440/600 max-lg:hidden"
           />
         </div>
       </Container>
 
-      <Container className="pt-8 pb-9 md:pt-[84px] md:pb-[60px]">
-        <div className="flex flex-col gap-14 md:gap-24">
+      <Container className="pt-8 pb-9 md:pt-fluid-84 md:pb-fluid-60">
+        <div className="flex flex-col gap-14 md:gap-fluid-96">
           {categories.map(({ category, items }) => {
             const card = priceCards.find((c) => c.categorySlug === category.slug);
             const categoryIntro = copy.categoryIntros[category.slug];
@@ -73,7 +75,7 @@ export default function TreatmentsOverviewPage() {
                   <div>
                     <h2
                       id={`${category.slug}-title`}
-                      className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1]"
+                      className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
                     >
                       {category.name}
                     </h2>

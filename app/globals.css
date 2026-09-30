@@ -80,6 +80,116 @@
   --font-sans: "Fillox Arrows", var(--font-poppins), sans-serif;
 }
 
+/*
+ * ------------------------------------------------------------------ Wide layout
+ * See ARCHITECTURE.md → "Wide layout". The design canvas (1180px) is the reference;
+ * the SITE canvas is fluid: 100% wide up to --canvas-max, centred. Below 1024px
+ * nothing differs from the design; from 1280px the layout grows with the viewport.
+ *
+ * Tune the whole site's maximum width by changing ONE value: --canvas-max
+ * (1440px / 1600px / 1920px). Gutters are tuned here too.
+ */
+:root {
+  /* Max width of the site canvas (header, sections, footer). Utility: max-w-canvas. */
+  --canvas-max: 1600px;
+  /* Content gutter (text, headings, grids): 20 · 40 (md) · 56 (lg) · 64 (xl) · 80 (2xl). Utility: px-gutter. */
+  --gutter-content: 20px;
+  /* Surface margin (rounded bands/cards inset from the canvas edge): 12 · 24 (md) · 32 (2xl). Utility: px-surface. */
+  --gutter-surface: 12px;
+}
+@media (width >= 48rem) {
+  :root {
+    --gutter-content: 40px;
+    --gutter-surface: 24px;
+  }
+}
+@media (width >= 64rem) {
+  :root {
+    --gutter-content: 56px;
+  }
+}
+@media (width >= 80rem) {
+  :root {
+    --gutter-content: 64px;
+  }
+}
+@media (width >= 96rem) {
+  :root {
+    --gutter-content: 80px;
+    --gutter-surface: 32px;
+  }
+}
+
+@theme inline {
+  /* max-w-canvas, w-canvas … */
+  --container-canvas: var(--canvas-max);
+  /* px-gutter, -mx-gutter, scroll-px-gutter, px-surface, inset-x-surface, p-surface … */
+  --spacing-gutter: var(--gutter-content);
+  --spacing-surface: var(--gutter-surface);
+}
+
+@theme {
+  /*
+   * Fluid display type: the exact design size up to 1280px, then growing linearly
+   * with the viewport to the max at 1600px (and staying there). Font size only; set
+   * leading/tracking as before. Use the token at the breakpoint where the design size
+   * applies, e.g. "md:text-[52px] lg:text-h1" (was lg:text-[64px]).
+   */
+  --text-h1: clamp(64px, calc(16px + 3.75vw), 76px); /* page H1, 64 → 76 */
+  --text-h1-sm: clamp(52px, calc(20px + 2.5vw), 60px); /* smaller desktop H1 (blog, booking), 52 → 60 */
+  --text-h2: clamp(40px, calc(8px + 2.5vw), 48px); /* section H2, 40 → 48 */
+  --text-h3: clamp(22px, calc(14px + 0.625vw), 24px); /* card titles, 22 → 24 */
+  --text-lead: clamp(18px, calc(10px + 0.625vw), 20px); /* hero lead / intro, 18 → 20 */
+  --text-quote: clamp(28px, calc(12px + 1.25vw), 32px); /* large pull quote / testimonial, 28 → 32 */
+  --text-h1-xs: clamp(48px, calc(16px + 2.5vw), 56px); /* article H1 (blog post), 48 → 56 */
+  --text-h2-md: clamp(36px, calc(12px + 1.875vw), 42px); /* large card title (blog featured post), 36 → 42 */
+  --text-h2-sm: clamp(32px, calc(8px + 1.875vw), 38px); /* compact section H2 (blog lists, newsletter), 32 → 38 */
+  --text-h3-lg: clamp(28px, calc(12px + 1.25vw), 32px); /* large card title (clinic cards), 28 → 32 */
+  --text-h3-md: clamp(24px, calc(8px + 1.25vw), 28px); /* band / card title (Om os "Fagligt ansvarlig" name), 24 → 28 */
+  --text-h4: clamp(20px, calc(12px + 0.625vw), 22px); /* small card / column title (Kontakt "Besøg os" clinic name), 20 → 22 */
+  --text-small: clamp(14px, calc(10px + 0.3125vw), 15px); /* small print next to large type (card notes, addresses), 14 → 15 */
+}
+
+/*
+ * Fluid spacing and heights: `*-fluid-N` is N px up to 1280px and grows linearly to
+ * N × 1.2 at 1600px (section paddings, photo heights). `*-fluid-N/M` grows from N to
+ * M instead (e.g. lg:min-h-fluid-720/800 for a hero). Numbers are px, integers only.
+ * Formula: clamp(N, N·(0.2px + 0.0625vw), 1.2N) — 0.0625vw = 20% of N per 320px.
+ * The explicit /M form: clamp(N, (N − 4(M−N))px + (M−N)·0.3125vw, M).
+ */
+@utility py-fluid-* {
+  padding-block: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  padding-block: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility pt-fluid-* {
+  padding-top: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  padding-top: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility pb-fluid-* {
+  padding-bottom: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  padding-bottom: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility mt-fluid-* {
+  margin-top: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  margin-top: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility mb-fluid-* {
+  margin-bottom: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  margin-bottom: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility gap-fluid-* {
+  gap: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  gap: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility h-fluid-* {
+  height: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  height: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+@utility min-h-fluid-* {
+  min-height: clamp(calc(--value(integer) * 1px), calc(--value(integer) * (0.2px + 0.0625vw)), calc(--value(integer) * 1.2px));
+  min-height: clamp(calc(--value(integer) * 1px), calc((--value(integer) - 4 * (--modifier(integer) - --value(integer))) * 1px + (--modifier(integer) - --value(integer)) * 0.3125vw), calc(--modifier(integer) * 1px));
+}
+
 @layer base {
   html {
     /* Keeps anchor targets clear of the sticky header. */

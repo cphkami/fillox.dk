@@ -15,14 +15,14 @@ export function RelatedArticles({ entries }: { entries: RelatedEntry[] }) {
   const desktopSlugs = entries.filter((e) => e.show !== "mobile").map((e) => e.post.slug);
 
   return (
-    <Container as="section" aria-labelledby={HEADING_ID} className="pb-10 md:pt-14 md:pb-6">
+    <Container as="section" aria-labelledby={HEADING_ID} className="pb-10 md:pt-fluid-56 md:pb-6">
       <h2
         id={HEADING_ID}
-        className="mb-4 text-[28px] leading-[1.15] font-semibold tracking-display md:mb-7 md:text-center md:text-[32px] md:leading-normal"
+        className="mb-4 text-[28px] leading-[1.15] font-semibold tracking-display md:mb-7 md:text-center md:text-[32px] md:leading-normal xl:mb-fluid-28 xl:text-h2-sm"
       >
         {copy.related.title}
       </h2>
-      <ul className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+      <ul className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-fluid-24 lg:grid-cols-3">
         {entries.map(({ post, show }) => {
           const index = desktopSlugs.indexOf(post.slug);
           return (

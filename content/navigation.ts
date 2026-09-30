@@ -3,7 +3,8 @@ import type { Link, NavItem, TreatmentCategory } from "./types";
 /** Main navigation (desktop header + mobile fullscreen menu). */
 export const mainNav: NavItem[] = [
   { kind: "treatments", label: "Behandlinger", href: "/behandlinger" },
-  { kind: "link", label: "Priser", href: "/priser" },
+  /** Desktop dropdown built from content/prices.ts (categories, trust points); a plain link in the mobile menu. */
+  { kind: "prices", label: "Priser", href: "/priser" },
   { kind: "clinics", label: "Find klinik", href: "/klinikker" },
   {
     kind: "menu",

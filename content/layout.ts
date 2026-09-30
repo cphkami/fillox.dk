@@ -45,6 +45,11 @@ export const layoutCopy = {
       [routes.clinics]: [routes.clinics],
       [routes.about]: [routes.about, routes.practitioners, routes.contact, routes.jobs, routes.creator],
     } as Record<string, string[]>,
+    /** Desktop "Priser" dropdown (categories, trust points and financing copy come from content/prices.ts). */
+    pricesMenu: {
+      // TODO: copy review (not in the design)
+      financingCta: "Læs om finansiering",
+    },
   },
 
   mobileMenu: {

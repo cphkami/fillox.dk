@@ -6,6 +6,7 @@
 import { clinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
 import { mainNav, megaMenuColumns, megaMenuPromo, treatmentCategories } from "@/content/navigation";
+import { priceCards, pricesPage, type PriceCard } from "@/content/prices";
 import { getTreatment, treatmentHref } from "@/content/treatments";
 import type { Clinic, ImageRef, NavItem } from "@/content/types";
 import { ui } from "@/content/ui";
@@ -51,6 +52,28 @@ export type MenuClinic = {
   openingNote?: string;
 };
 
+/** One price category in the desktop "Priser" dropdown. */
+export type MenuPriceCategory = {
+  id: string;
+  title: string;
+  /** Card label from the price list, e.g. "HYALURONSYRE". */
+  eyebrow: string;
+  /** Lowest price in the category, e.g. "fra 799 kr", or "Gratis" for a free category. */
+  price?: string;
+  /** Anchor on the prices page, e.g. "/priser#fillers". */
+  href: string;
+};
+
+export type MenuPrices = {
+  categories: MenuPriceCategory[];
+  /** The prices page ("Se alle priser →"). */
+  href: string;
+  /** Trust points in the side card ("Gratis konsultation", "Finansiering mulig" …). */
+  trust: string[];
+  /** Financing teaser in the side card, linking to the financing box on the prices page. */
+  financing: { title: string; text: string; cta: string; href: string };
+};
+
 export type HeaderData = {
   nav: NavItem[];
   megaColumns: MegaColumn[];
@@ -58,6 +81,7 @@ export type HeaderData = {
   categories: MenuCategory[];
   clinics: MenuClinic[];
   clinicsHref: string;
+  prices: MenuPrices;
 };
 
 function toMenuTreatment(slug: string): MenuTreatment | undefined {
@@ -76,6 +100,25 @@ function resolveTreatments(slugs: string[]): MenuTreatment[] {
   return slugs.map(toMenuTreatment).filter((t): t is MenuTreatment => Boolean(t));
 }
 
+/**
+ * "fra 799 kr" for a price card: the lowest Treatment.priceFrom in the card's category (the same
+ * "fra" price the front page, /behandlinger and the treatment pages show; add-on rows such as
+ * "Opløsning af filler" are not a filler treatment), else the lowest amount in the card's rows;
+ * "Gratis" when the card only has free rows.
+ */
+function lowestPrice(card: PriceCard): string | undefined {
+  const category = treatmentCategories.find((c) => c.slug === card.categorySlug);
+  const fromPrices = (category?.treatments ?? []).flatMap((slug) => {
+    const from = getTreatment(slug)?.priceFrom;
+    return from == null ? [] : [from];
+  });
+  if (fromPrices.length) return `${ui.from} ${formatPrice(Math.min(...fromPrices))}`;
+  const amounts = card.rows.flatMap((r) => (r.price.kind === "amount" ? [r.price.amount] : []));
+  if (amounts.length) return `${ui.from} ${formatPrice(Math.min(...amounts))}`;
+  if (card.rows.some((r) => r.price.kind === "free")) return ui.free;
+  return undefined;
+}
+
 /** Link to a clinic on the clinics page, e.g. "/klinikker#city2". */
 export function clinicAnchor(clinic: Clinic, clinicsHref: string): string {
   return `${clinicsHref}#${clinic.slug}`;
@@ -84,6 +127,7 @@ export function clinicAnchor(clinic: Clinic, clinicsHref: string): string {
 export function buildHeaderData(): HeaderData {
   const clinicsHref = mainNav.find((n) => n.kind === "clinics")?.href ?? "/klinikker";
   const treatmentsHref = mainNav.find((n) => n.kind === "treatments")?.href ?? "/behandlinger";
+  const pricesHref = mainNav.find((n) => n.kind === "prices")?.href ?? "/priser";
 
   return {
     nav: mainNav,
@@ -113,5 +157,22 @@ export function buildHeaderData(): HeaderData {
       openingNote: c.openingNote,
     })),
     clinicsHref,
+    prices: {
+      categories: priceCards.map((card) => ({
+        id: card.id,
+        title: card.title,
+        eyebrow: card.eyebrow,
+        price: lowestPrice(card),
+        href: `${pricesHref}#${card.id}`,
+      })),
+      href: pricesHref,
+      trust: [...pricesPage.trustChips],
+      financing: {
+        title: pricesPage.financing.title,
+        text: pricesPage.financing.textShort,
+        cta: layoutCopy.header.pricesMenu.financingCta,
+        href: `${pricesHref}#${pricesPage.financing.id}`,
+      },
+    },
   };
 }

@@ -8,18 +8,18 @@ export function PriceSection({ prices }: { prices: NonNullable<TreatmentView["pr
     <Container
       as="section"
       aria-labelledby="priser"
-      className="flex flex-col gap-4 pt-2 pb-12 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start md:gap-10 md:pt-0 md:pb-24 lg:gap-16"
+      className="flex flex-col gap-4 pt-2 pb-12 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start md:gap-10 md:pt-0 md:pb-fluid-96 lg:gap-fluid-64"
     >
       <div className="flex flex-col gap-4 md:block">
         <Eyebrow className="md:mb-3.5">{prices.eyebrow}</Eyebrow>
         <h2
           id="priser"
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-4 md:text-[40px] md:leading-[1.1]"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-4 md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {prices.title}
         </h2>
         {prices.intro ? (
-          <p className="text-[16px] leading-[1.7] text-muted md:leading-[1.75]">
+          <p className="text-[16px] leading-[1.7] text-muted md:max-w-[52ch] md:leading-[1.75]">
             <Swap mobile={prices.mobileIntro} desktop={prices.intro} />
           </p>
         ) : null}

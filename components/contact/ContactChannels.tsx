@@ -70,7 +70,7 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
                 </span>
                 <span
                   className={cn(
-                    "mt-0.5 block text-[19px] font-semibold break-words text-plum md:mt-0 md:text-[22px] md:tracking-display",
+                    "mt-0.5 block text-[19px] font-semibold break-words text-plum md:mt-0 md:text-h3 md:tracking-display",
                     accent ? "md:text-cream" : "md:text-ink",
                     !accent && linked && "md:group-hover:text-plum",
                   )}
@@ -78,8 +78,9 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
                   <Variant mobile={channel.valueShort} desktop={channel.value} />
                 </span>
               </span>
-              {/* Mobile shows an arrow instead of the note; screen readers still get the note. */}
-              <span className={cn("shrink-0 text-right text-[14px] max-md:sr-only", accent ? "text-blush" : "text-muted")}>
+              {/* Mobile shows an arrow instead of the note; screen readers still get the note.
+                  text-small: 14px as in the design, 15px at 1600+ where the card is wide. */}
+              <span className={cn("shrink-0 text-right text-small max-md:sr-only", accent ? "text-blush" : "text-muted")}>
                 {channel.note}
               </span>
               {linked ? (

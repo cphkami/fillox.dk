@@ -39,11 +39,15 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
       aria-labelledby={titleId}
       className="flex h-full flex-col overflow-hidden rounded-[22px] bg-white md:rounded-[24px]"
     >
-      <div className="relative h-[200px] shrink-0 lg:h-[260px] max-md:hidden">
+      {/* 200px (md) / 260px (lg) as in 6kl; from 1280px the photo keeps its 7:3 shape as the card
+          grows with the canvas (604 × 259 at 1280 → 752 × 322 on the 1600px canvas). */}
+      <div className="relative h-[200px] shrink-0 lg:h-[260px] xl:aspect-[7/3] xl:h-auto max-md:hidden">
         <Photo
-          image={copy.photo}
-          // Hidden below 768px: the 1px slot makes phones fetch the tiniest variant.
-          sizes="(min-width: 1180px) 554px, (min-width: 768px) calc(50vw - 36px), 1px"
+          image={copy.photos[clinic.slug] ?? copy.photo}
+          // Card = (band − gap) / 2; band and gap follow the surface margin (24 · 32px at 2xl):
+          // 752px on the 1600px canvas. Hidden below 768px: the 1px slot makes phones fetch
+          // the tiniest variant.
+          sizes="(min-width: 1600px) 752px, (min-width: 1536px) calc(50vw - 48px), (min-width: 768px) calc(50vw - 36px), 1px"
           priority={priorityPhoto}
           className="h-full"
         />
@@ -54,11 +58,11 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-3 px-5 py-[22px] md:gap-0 md:px-7 md:pt-7 md:pb-8 lg:px-9 lg:pt-8 lg:pb-9">
+      <div className="flex flex-1 flex-col gap-3 px-5 py-[22px] md:gap-0 md:px-7 md:pt-7 md:pb-8 lg:px-9 lg:pt-8 lg:pb-9 xl:px-10 xl:pt-fluid-32 xl:pb-fluid-36 2xl:px-12">
         <div className="flex items-center justify-between gap-3 md:mb-2.5">
           <h2
             id={titleId}
-            className="text-[20px] font-semibold text-plum md:text-[24px] md:tracking-display lg:text-[28px] md:text-ink"
+            className="text-[20px] font-semibold text-plum md:text-[24px] md:tracking-display lg:text-h3-lg md:text-ink"
           >
             {clinic.fullName}
           </h2>
@@ -71,7 +75,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
 
         {soon ? (
           <>
-            <p className="text-[15px] leading-[1.6] text-muted md:mb-[22px] md:text-[16px] md:leading-[1.75]">
+            <p className="text-[15px] leading-[1.6] text-muted md:mb-[22px] md:text-[16px] md:leading-[1.75] xl:max-w-[56ch] xl:text-pretty">
               {comingSoon?.noteShort ? (
                 <>
                   <span className="md:hidden">{comingSoon.noteShort}</span>
@@ -82,39 +86,53 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
               )}
             </p>
             {comingSoon?.formName ? (
-              <div className="md:mt-auto">
+              <div className="md:mt-auto xl:max-w-[640px]">
                 <NotifyForm formName={comingSoon.formName} copy={notifyCopy} />
               </div>
             ) : null}
           </>
         ) : (
           <>
-            <address className="text-[15px] leading-[1.6] text-muted not-italic md:text-[16px] md:leading-[1.75]">
-              {clinic.address.map((line, i) => (
-                <span key={i} className="block">
-                  {line}
-                </span>
-              ))}
-            </address>
-
-            <div className="md:mt-[18px] md:mb-[22px]">
-              <h3 className="sr-only">{copy.hoursLabel}</h3>
-              <dl className="rounded-[14px] bg-sand px-4 py-3 text-[14px] leading-[1.7] md:grid md:grid-cols-[auto_auto] md:gap-x-6 md:gap-y-1 md:rounded-none md:bg-transparent md:p-0 md:leading-normal md:text-muted">
-                {clinic.hours.map((h) => (
-                  <div key={h.days} className="flex justify-between gap-4 md:contents">
-                    <dt>
-                      <span className="md:hidden">{copy.daysLong[h.days] ?? h.days}</span>
-                      <span className="max-md:hidden">{h.days}</span>
-                    </dt>
-                    <dd className="font-semibold md:text-ink">{h.hours}</dd>
-                  </div>
+            {/* Address, then hours (6kl). From 1440px (a common laptop width) the card body is
+                ≥ 604px wide, so the two sit side by side (hours on 28px lines, level with the
+                address lines) instead of leaving the right half of every card empty. Below 1440px
+                the wrapper is display: contents and changes nothing (1280 keeps the design).
+                The breakpoint is written min-[90rem] (= 1440px): in rem, like md/lg/xl, so Tailwind
+                orders it after them; a px value would sort first and lose to md:mt-[18px] etc. */}
+            <div className="contents min-[90rem]:mb-[22px] min-[90rem]:grid min-[90rem]:grid-cols-2 min-[90rem]:gap-x-6">
+              <address className="text-[15px] leading-[1.6] text-muted not-italic md:text-[16px] md:leading-[1.75]">
+                {clinic.address.map((line, i) => (
+                  <span key={i} className="block">
+                    {line}
+                  </span>
                 ))}
-              </dl>
+              </address>
+
+              <div className="md:mt-[18px] md:mb-[22px] min-[90rem]:my-0">
+                <h3 className="sr-only">{copy.hoursLabel}</h3>
+                {/* The two auto columns share the width (6kl); from 1280px the list stops at the
+                    design's 480px text width, so the hours don't drift to the middle of a wide card,
+                    and from 1440px (next to the address) the columns hug their content. */}
+                <dl className="rounded-[14px] bg-sand px-4 py-3 text-[14px] leading-[1.7] md:grid md:grid-cols-[auto_auto] md:gap-x-6 md:gap-y-1 md:rounded-none md:bg-transparent md:p-0 md:leading-normal md:text-muted xl:max-w-[480px] min-[90rem]:justify-start min-[90rem]:gap-x-10 min-[90rem]:gap-y-0 min-[90rem]:leading-[28px]">
+                  {clinic.hours.map((h) => (
+                    <div key={h.days} className="flex justify-between gap-4 md:contents">
+                      <dt>
+                        <span className="md:hidden">{copy.daysLong[h.days] ?? h.days}</span>
+                        <span className="max-md:hidden">{h.days}</span>
+                      </dt>
+                      <dd className="font-semibold md:text-ink">{h.hours}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
             </div>
 
             {/* Transport / parking note. Not drawn in mk, shown on mobile too: it is what people
-                heading to a clinic need. */}
-            {clinic.note ? <p className="text-[14px] leading-[1.6] text-pretty text-muted md:mb-6">{clinic.note}</p> : null}
+                heading to a clinic need. From 1280px capped at 64ch (≈ 563px at 14px, the same
+                width as the Østerbro note's 56ch at 16px), so a longer note stays readable. */}
+            {clinic.note ? (
+              <p className="text-[14px] leading-[1.6] text-pretty text-muted md:mb-6 xl:max-w-[64ch]">{clinic.note}</p>
+            ) : null}
 
             {/* As in mk: 1fr 1fr (not minmax(0,1fr)), so the longer label gets the wider pill. Both
                 pills are 52px high (border-box), per the mobile spec. */}

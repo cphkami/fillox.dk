@@ -24,13 +24,28 @@ type PractitionerCardProps = {
 const MOBILE_SIZES = "(min-width: 640px) calc(50vw - 38px), calc(100vw - 60px)";
 
 /**
+ * Featured photo slot: 420px high on tablets, then the 6om shape (530×520 at 1180px), at
+ * least 520px high, so it grows with its column on wide screens (≈704×691 on the 1600px
+ * canvas). The ratio matters: Dr. Tom's wide photo has blurred side bars outside its
+ * central ~42%, which a slot wider than ~1.03:1 would bring into view at the 6om zoom.
+ * w-full: a grid item with a ratio is not stretched, so without it the 520px min-height
+ * would set a 530px width through the ratio (wider than the column below 1180px).
+ */
+const FEATURED_PHOTO = "md:aspect-auto md:h-[420px] lg:h-auto lg:min-h-[520px] lg:w-full lg:aspect-[530/520]";
+
+/**
  * Practitioner card linking to /behandlere/<slug>, styled like the /om-os team cards (6om / mo):
  *
  * - Mobile (mo): a white card with the portrait (top of the photo kept), name, short title,
  *   short bio and a 44px arrow link.
  * - Desktop (6om): borderless grid cards whose photo slot keeps the 6om shape (246×340), so
  *   the stored `crops.about` crops land exactly as designed at every width; the featured
- *   member is a wide two-column block with its (wide) 6om crop.
+ *   member is a wide two-column block with its (wide) 6om crop. On wide screens the columns
+ *   grow with the canvas and every photo keeps its 6om proportions (see FEATURED_PHOTO).
+ *   From 1280px the featured block splits 1:1 with the grid's column gap (--team-gap-x, set
+ *   on the /behandlere list), so the photo lines up with the first two grid cards and the
+ *   text with the last two, like the same block on /om-os; the bio measure widens from 50ch
+ *   to 58ch there (still 16px) so it fills more of its wider cell.
  *
  * One image per card (see CropPhoto), and the whole card is clickable (stretched link).
  */
@@ -51,19 +66,23 @@ export function PractitionerCard({
   const desktop = about && (featured || about.src === member.image.src) ? about : portrait;
 
   const zoom = desktop.zoom ?? 1;
+  // Slot widths on the 1600px canvas (content 1440px): featured photo column
+  // (1440 − 32) / 2 = 704px (under 52vw below); grid card (1440 − 3 × 32) / 4 = 336px
+  // (about 21vw from 1024px). Each × the crop's zoom.
   const desktopSizes = featured
     ? desktop.src !== member.image.src
-      ? // A landscape photo fills the ~530×520 slot by height (≈1.5× the slot width), then zooms.
-        "(min-width: 1024px) 1280px, (min-width: 768px) 1030px"
-      : `(min-width: 1180px) ${Math.ceil(530 * zoom)}px, (min-width: 768px) ${Math.ceil(52 * zoom)}vw`
-    : // Grid slot 246px at 1180px (4 columns), ~half the width on tablets; × the crop's zoom.
-      "(min-width: 1180px) 340px, (min-width: 1024px) 30vw, (min-width: 768px) 60vw";
+      ? // A landscape photo fills the slot by height (≈1.5× the slot height wide), then zooms:
+        // ≈1270px wide at 520px high, ≈1690px at 691px (the source is the limit).
+        "(min-width: 1280px) 1700px, (min-width: 1024px) 1280px, (min-width: 768px) 1030px"
+      : `(min-width: 1600px) ${Math.ceil(704 * zoom)}px, (min-width: 768px) ${Math.ceil(52 * zoom)}vw`
+    : `(min-width: 1600px) ${Math.ceil(340 * zoom)}px, (min-width: 1024px) ${Math.ceil(22 * zoom)}vw, (min-width: 768px) 60vw`;
 
   return (
     <article
       className={cn(
         "relative flex w-full flex-col rounded-[24px] bg-white px-2.5 pt-2.5 pb-5 md:bg-transparent md:p-0",
-        featured && "md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-center md:gap-10 lg:gap-14",
+        featured &&
+          "md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:items-center md:gap-10 lg:gap-14 xl:grid-cols-2 xl:gap-x-[var(--team-gap-x,56px)]",
       )}
     >
       <CropPhoto
@@ -73,29 +92,29 @@ export function PractitionerCard({
         priority={priority}
         className={cn(
           "aspect-[33/34] rounded-[18px] md:rounded-[24px]",
-          featured ? "md:aspect-auto md:h-[420px] lg:h-[520px]" : "md:aspect-[246/340]",
+          featured ? FEATURED_PHOTO : "md:aspect-[246/340]",
         )}
       />
 
-      <div className={cn("flex flex-1 flex-col gap-1.5 px-2.5 pt-4 md:p-0", featured ? "md:block" : "md:gap-0")}>
+      <div className={cn("flex flex-1 flex-col gap-1.5 px-2.5 pt-4 md:p-0", featured ? "md:block xl:pl-6" : "md:gap-0")}>
         <Heading
           className={cn(
             "text-[22px] font-semibold tracking-display text-plum",
             featured
-              ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px]"
+              ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px] xl:text-h2"
               : "md:mt-[22px] md:mb-1 md:text-[24px]",
           )}
         >
           {name}
         </Heading>
-        <p className={cn("text-[13px] text-muted md:text-[14px]", featured ? "md:mb-5" : "md:mb-3.5")}>
+        <p className={cn("text-[13px] text-muted md:text-[14px]", featured ? "md:mb-5 xl:mb-6" : "md:mb-3.5")}>
           <Responsive mobile={member.titleShort} desktop={member.title ?? member.role} />
         </p>
         {member.bio ? (
           <p
             className={cn(
               "text-[15px] leading-[1.65] text-muted md:text-[16px] md:leading-[1.75]",
-              featured && "md:mb-[18px] md:max-w-[50ch]",
+              featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]",
             )}
           >
             <Responsive mobile={member.bioShort} desktop={member.bio} />

@@ -13,7 +13,7 @@ export function ReviewSection({ reviews }: { reviews: Review[] }) {
 
   return (
     <Container gutter="surface">
-      <div className="flex flex-col gap-3 rounded-[24px] bg-white px-[22px] py-7 text-center md:gap-16 md:bg-transparent md:px-8 md:py-[72px]">
+      <div className="flex flex-col gap-3 rounded-[24px] bg-white px-[22px] py-7 text-center md:gap-16 md:bg-transparent md:px-8 md:py-fluid-72">
         {reviews.map((review) => {
           const rating = Math.max(0, Math.min(5, Math.round(review.rating)));
           return (
@@ -25,7 +25,7 @@ export function ReviewSection({ reviews }: { reviews: Review[] }) {
               >
                 {"★".repeat(rating)}
               </p>
-              <blockquote className="text-[17px] leading-[1.55] font-medium md:mx-auto md:mb-4 md:max-w-[30em] md:text-[24px] md:leading-[1.4] md:font-semibold md:tracking-display lg:text-[28px]">
+              <blockquote className="text-[17px] leading-[1.55] font-medium md:mx-auto md:mb-4 md:max-w-[30em] md:text-[24px] md:leading-[1.4] md:font-semibold md:tracking-display lg:text-quote">
                 <p>
                   {quoteOpen}
                   <Responsive mobile={review.quoteShort} desktop={review.quote} />

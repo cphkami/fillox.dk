@@ -3,7 +3,7 @@ import { ContactChannels } from "@/components/contact/ContactChannels";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactJsonLd } from "@/components/contact/ContactJsonLd";
 import { VisitClinics } from "@/components/contact/VisitClinics";
-import { Eyebrow } from "@/components/ui";
+import { Container, Eyebrow } from "@/components/ui";
 import { site } from "@/config/site";
 import { clinics, openClinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
@@ -37,17 +37,18 @@ export default function ContactPage() {
     <>
       <ContactJsonLd path={PATH} title={meta.title} />
 
-      <section aria-labelledby="kontakt-title" className="mx-auto w-full max-w-[1180px] md:px-6">
-        <div className="md:rounded-[24px] md:bg-sand md:px-10 md:py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-10 lg:px-10 lg:py-20 min-[73.75rem]:gap-14 min-[73.75rem]:px-14">
+      {/* Mobile (mc) has no sand panel: the section is full-bleed and the text sets its own gutter. */}
+      <Container as="section" gutter="none" aria-labelledby="kontakt-title" className="md:px-surface">
+        <div className="md:rounded-[24px] md:bg-sand md:px-10 md:py-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-10 lg:px-10 lg:py-fluid-80 min-[73.75rem]:gap-fluid-56 min-[73.75rem]:px-14 xl:px-16 2xl:px-20">
           <div className="flex flex-col gap-4 px-5 pt-6 pb-8 md:block md:p-0">
             <Eyebrow className="mb-[18px] max-md:hidden">{hero.eyebrow}</Eyebrow>
             <h1
               id="kontakt-title"
-              className="text-[36px] leading-[1.08] font-semibold tracking-display text-ink md:mb-[22px] md:text-[52px] md:leading-[1.02] lg:text-[64px]"
+              className="text-[36px] leading-[1.08] font-semibold tracking-display text-ink md:mb-[22px] md:text-[52px] md:leading-[1.02] lg:text-h1"
             >
               {hero.title}
             </h1>
-            <p className="text-[16px] leading-[1.7] text-muted md:mb-9 md:max-w-[42ch] md:text-[18px] md:leading-[1.75]">
+            <p className="text-[16px] leading-[1.7] text-muted md:mb-9 md:max-w-[42ch] md:text-lead md:leading-[1.75]">
               <span className="md:hidden">{hero.introShort}</span>
               <span className="max-md:hidden">{hero.intro}</span>
             </p>
@@ -61,7 +62,7 @@ export default function ContactPage() {
             className="mx-3 md:mx-0 md:mt-10 lg:mt-0"
           />
         </div>
-      </section>
+      </Container>
 
       <VisitClinics
         title={contactPage.visit.title}

@@ -232,7 +232,8 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
             >
               <ul>
                 {items.map((item) => {
-                  if (item.kind === "link") {
+                  // Priser has a desktop dropdown but is a plain row in the mobile menu (design mm1).
+                  if (item.kind === "link" || item.kind === "prices") {
                     return (
                       <li key={item.href}>
                         <Link href={item.href} onClick={onNavigate} className={rowClasses()}>

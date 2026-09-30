@@ -49,19 +49,19 @@ export function Clinics({
   /** Find klinik page; each open card links to `${clinicsHref}#${slug}`. */
   clinicsHref: string;
 }) {
-  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] lg:block lg:p-7";
+  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] lg:block lg:p-7 2xl:p-8";
 
   return (
-    <Container as="section" aria-labelledby="home-clinics-title" className="pt-14 pb-11 lg:py-[84px]">
+    <Container as="section" aria-labelledby="home-clinics-title" className="pt-14 pb-11 lg:py-fluid-84">
       <SectionHeading
         id="home-clinics-title"
         title={copy.title}
         align="left"
         leading="normal"
-        className="mb-4 lg:mb-10 lg:text-center"
+        className="mb-4 lg:mb-fluid-40 lg:text-center"
       />
 
-      <ul className="flex flex-col gap-2.5 md:grid md:grid-cols-2 lg:grid-cols-4 lg:gap-[18px]">
+      <ul className="flex flex-col gap-2.5 md:grid md:grid-cols-2 lg:grid-cols-4 lg:gap-fluid-18">
         {clinics.map((clinic) => {
           const open = clinic.status === "open";
           const body = (

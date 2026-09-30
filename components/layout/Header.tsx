@@ -12,6 +12,8 @@ import { buildHeaderData } from "./menuData";
 /**
  * Sticky site header (design 6a / mf top). Desktop ≥1024px: logo · centered nav
  * with mega menu + dropdowns · "Book tid". Mobile: logo · "Book tid" · burger.
+ * Spans the fluid site canvas (max-w-canvas) with the content gutter, so the logo lines
+ * up with the text of every page section.
  */
 export function Header() {
   const data = buildHeaderData();
@@ -19,7 +21,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-cream">
-      <div className="relative mx-auto flex w-full max-w-[1180px] items-center justify-between gap-4 px-5 py-3.5 md:px-10 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-8 lg:px-14 lg:py-[22px]">
+      <div className="relative mx-auto flex w-full max-w-canvas items-center justify-between gap-4 px-gutter py-3.5 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-8 lg:py-[22px]">
         <Link href="/" aria-label={layoutCopy.header.homeLabel} className="shrink-0 rounded-sm">
           <Image
             src={site.brand.logoDark}
@@ -39,6 +41,7 @@ export function Header() {
             megaPromo={data.megaPromo}
             clinics={data.clinics}
             clinicsHref={data.clinicsHref}
+            prices={data.prices}
           />
         </div>
 

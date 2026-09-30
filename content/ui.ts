@@ -18,6 +18,8 @@ export const ui = {
   seeAll: "Se alle",
   seeAllTreatments: "Se alle behandlinger",
   seeAllClinics: "Se alle klinikker",
+  /** Link at the bottom of the desktop "Priser" dropdown ("Se alle priser →"). */
+  seeAllPrices: "Se alle priser",
   notifyMe: "Få besked",
   directions: "Rutevejledning",
 

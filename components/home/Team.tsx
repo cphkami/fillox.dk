@@ -29,7 +29,7 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
 export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamMember[] }) {
   return (
     <Container as="section" gutter="surface" aria-labelledby="home-team-title">
-      <div className="flex flex-col gap-4 px-2 py-14 md:px-4 lg:gap-0 lg:rounded-[24px] lg:bg-powder lg:px-14 lg:py-[84px]">
+      <div className="flex flex-col gap-4 px-2 py-14 md:px-4 lg:gap-0 lg:rounded-[24px] lg:bg-powder lg:px-14 lg:py-fluid-84 xl:px-16 2xl:px-20">
         <SectionHeading
           id="home-team-title"
           title={copy.title}
@@ -38,22 +38,25 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
           className="lg:mb-3.5 lg:text-center"
         />
 
-        <TeamLink link={copy.link} className="mb-12 text-center text-[14px] leading-[normal] max-lg:hidden" />
+        <TeamLink link={copy.link} className="mb-fluid-48 text-center text-[14px] leading-[normal] max-lg:hidden" />
 
         <ScrollRow
           aria-label={copy.listLabel}
-          className="-mr-5 scroll-pr-5 pr-5 md:-mr-10 md:scroll-pr-10 md:pr-10 lg:mr-0 lg:grid lg:grid-cols-5 lg:items-start lg:gap-5 lg:pr-0"
+          className="-mr-5 scroll-pr-5 pr-5 md:-mr-10 md:scroll-pr-10 md:pr-10 lg:mr-0 lg:grid lg:grid-cols-5 lg:items-start lg:gap-fluid-20 lg:pr-0"
         >
           {members.map((member) => (
             <li key={member.slug} className="w-[150px] flex-none snap-start lg:w-auto">
               <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] lg:rounded-[20px]">
                 {/* The visible name and role label the link, so the portrait is decorative here.
-                    `sizes` allows for the cover crop: a 0.83 portrait in the 188 × 268 box renders ~224px wide. */}
+                    From lg the box is 268px tall (the design); from 1280px the height grows with
+                    the column width to 360px on the 1600 canvas, keeping the ~0.7 portrait ratio.
+                    `sizes` allows for the cover crop: a 0.83 portrait in the 188 × 268 box renders
+                    ~224px wide, in the 256 × 360 box on the 1600 canvas ~300px. */}
                 <Photo
                   image={{ ...member.image, alt: "" }}
-                  sizes="(min-width: 1024px) 230px, 160px"
+                  sizes="(min-width: 1600px) 300px, (min-width: 1280px) 19vw, (min-width: 1024px) 230px, 160px"
                   radius="var(--photo-radius)"
-                  className="h-[190px] [--photo-radius:18px] lg:h-[268px] lg:[--photo-radius:20px]"
+                  className="h-[190px] [--photo-radius:18px] lg:h-fluid-268/360 lg:[--photo-radius:20px]"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                 />
                 <h3

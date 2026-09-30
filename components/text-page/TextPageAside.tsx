@@ -12,13 +12,13 @@ type TextPageAsideProps = {
  * CTA card beside the text (sand, radius 20, like the 6art / mar booking card).
  * The first action is the primary plum button, the rest are outline buttons (all the same
  * height). Buttons are full width on mobile and in the desktop side column, side by side
- * on tablet.
+ * on tablet. Wide screens: the title grows 22 → 24px and the padding 28 → 32px.
  */
 export function TextPageAside({ aside, titleId, className }: TextPageAsideProps) {
   return (
-    <aside aria-labelledby={titleId} className={cn("rounded-[20px] bg-sand p-5 md:p-7", className)}>
+    <aside aria-labelledby={titleId} className={cn("rounded-[20px] bg-sand p-5 md:p-7 2xl:p-8", className)}>
       {aside.eyebrow ? <Eyebrow className="mb-1.5">{aside.eyebrow}</Eyebrow> : null}
-      <h2 id={titleId} className="text-[20px] leading-[1.25] font-semibold tracking-display text-balance md:text-[22px]">
+      <h2 id={titleId} className="text-[20px] leading-[1.25] font-semibold tracking-display text-balance md:text-[22px] xl:text-h3">
         {aside.title}
       </h2>
       {aside.text ? <p className="mt-2 text-[15px] leading-[1.65] text-pretty text-muted">{aside.text}</p> : null}

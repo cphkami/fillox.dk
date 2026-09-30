@@ -23,12 +23,12 @@ type OffersSectionProps = {
  */
 export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectionProps) {
   return (
-    <Container as="section" id={id} aria-labelledby={titleId} className="py-11 md:py-[72px]">
-      <div className="mb-4 md:mb-12 md:text-center">
+    <Container as="section" id={id} aria-labelledby={titleId} className="py-11 md:py-fluid-72">
+      <div className="mb-4 md:mb-fluid-48 md:text-center">
         <Eyebrow className="mb-3.5 max-md:hidden">{offers.eyebrow}</Eyebrow>
         <h2
           id={titleId}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:text-[40px] md:leading-[1.1]"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {offers.title}
         </h2>
@@ -42,10 +42,10 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
           return (
             <li
               key={offer.name}
-              className="flex items-center justify-between gap-2.5 rounded-[18px] bg-white py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7"
+              className="flex items-center justify-between gap-2.5 rounded-[18px] bg-white py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7 2xl:px-9 2xl:pt-9 2xl:pb-8"
             >
               <div className="min-w-0">
-                <h3 className="text-[16px] font-semibold md:mb-2 md:text-[22px] md:tracking-display">
+                <h3 className="text-[16px] font-semibold md:mb-2 md:text-h3 md:tracking-display">
                   {treatment ? (
                     <Link href={treatmentHref(treatment.slug)} className="transition-colors hover:text-plum">
                       {offer.name}

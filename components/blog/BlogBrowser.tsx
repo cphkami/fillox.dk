@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
-import { Container, buttonClasses } from "@/components/ui";
+import { Container, buttonClasses, containerClasses } from "@/components/ui";
 import { blogPage as copy } from "@/content/pages/blog";
 import type { BlogFilter } from "@/content/types";
 import { cn } from "@/lib/cn";
@@ -154,7 +154,7 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
 
   return (
     <>
-      <div className="px-5 pt-6 pb-[22px] md:px-10 md:pt-[72px] md:pb-12 md:text-center lg:px-14">
+      <div className={cn(containerClasses("content"), "pt-6 pb-[22px] md:pt-fluid-72 md:pb-fluid-48 md:text-center")}>
         {hero}
         <div
           ref={rowRef}
@@ -201,10 +201,10 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
         as="section"
         aria-labelledby={LIST_HEADING_ID}
         data-blog-list={plan ? "" : undefined}
-        className={cn("pb-8 md:pb-6", showFeatured ? "pt-7 md:pt-[72px]" : "pt-2 md:pt-6")}
+        className={cn("pb-8 md:pb-6", showFeatured ? "pt-7 md:pt-fluid-72" : "pt-2 md:pt-6")}
       >
-        <div className="mb-8 flex items-baseline justify-between gap-4 max-md:sr-only">
-          <h2 id={LIST_HEADING_ID} className="text-[32px] font-semibold tracking-display">
+        <div className="mb-8 flex items-baseline justify-between gap-4 max-md:sr-only xl:mb-fluid-32">
+          <h2 id={LIST_HEADING_ID} className="text-[32px] font-semibold tracking-display xl:text-h2-sm">
             {copy.list.title}
           </h2>
           <p aria-live="polite" data-blog-count={plan ? "" : undefined} className="shrink-0 text-[14px] text-muted">
@@ -213,7 +213,7 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
         </div>
 
         {listItems.length ? (
-          <ul ref={listRef} id={LIST_ID} className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+          <ul ref={listRef} id={LIST_ID} className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-fluid-24 lg:grid-cols-3">
             {listItems.map((entry) => (
               <li
                 key={entry.slug}

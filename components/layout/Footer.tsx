@@ -25,17 +25,18 @@ function MobileJoined({ parts, separator }: { parts: string[]; separator: string
 /**
  * Plum footer block (design 6a bottom / mf bottom): contact band with phone,
  * e-mail and "Book tid"; logo + tagline; one column per clinic; footer links;
- * copyright + legal links.
+ * copyright + legal links. Spans the fluid site canvas with the surface margin (like
+ * every rounded band), its fr-based grids spread with the width.
  */
 export function Footer() {
   const clinicsHref = mainNav.find((n) => n.kind === "clinics")?.href ?? "/klinikker";
   const copyright = `© ${site.name} · ${site.company.registrationLabel} ${site.company.registrationNumber}`;
 
   return (
-    <footer className="mx-auto w-full max-w-[1180px] p-3 md:p-6">
+    <footer className="mx-auto w-full max-w-canvas p-surface">
       <div
         data-surface="plum"
-        className="flex flex-col gap-[22px] rounded-[24px] bg-plum px-[22px] pt-9 pb-7 text-blush md:px-10 lg:block lg:px-14 lg:pt-16 lg:pb-8"
+        className="flex flex-col gap-[22px] rounded-[24px] bg-plum px-[22px] pt-9 pb-7 text-blush md:px-10 lg:block lg:px-14 lg:pt-fluid-64 lg:pb-8 xl:px-16 2xl:px-20"
       >
         {/* Contact band */}
         <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 lg:mb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:border-b lg:border-cream/18 lg:pb-10">

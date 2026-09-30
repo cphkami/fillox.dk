@@ -7,14 +7,14 @@ import type { Link } from "@/content/types";
  */
 export function BookingBand({ id, title, text, cta }: { id: string; title: string; text: string; cta: Link }) {
   return (
-    <Container as="section" id={id} gutter="surface" aria-labelledby={`${id}-title`} className="mt-3 md:mt-6">
+    <Container as="section" id={id} gutter="surface" aria-labelledby={`${id}-title`} className="mt-surface">
       <div
         data-surface="plum"
-        className="flex flex-col gap-3.5 rounded-[24px] bg-plum px-[22px] py-9 text-center md:block md:px-10 md:py-[84px] lg:px-14"
+        className="flex flex-col gap-3.5 rounded-[24px] bg-plum px-[22px] py-9 text-center md:block md:px-10 md:py-fluid-84 lg:px-14"
       >
         <h2
           id={`${id}-title`}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display text-cream md:mb-3.5 md:text-[40px] md:leading-normal"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display text-cream md:mb-3.5 md:text-[40px] md:leading-normal xl:text-h2"
         >
           {title}
         </h2>

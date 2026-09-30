@@ -18,10 +18,10 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
 
   return (
     <Container as="section" gutter="surface" aria-labelledby={titleId}>
-      <div className="flex flex-col gap-4 px-2 pt-4 pb-14 md:gap-0 md:rounded-[24px] md:bg-powder md:px-10 md:py-16 lg:px-14 lg:py-[84px]">
+      <div className="flex flex-col gap-4 px-2 pt-4 pb-14 md:gap-0 md:rounded-[24px] md:bg-powder md:px-10 md:py-16 lg:px-14 lg:py-fluid-84 xl:px-16 2xl:px-20">
         <h2
           id={titleId}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-12 md:text-center md:text-[40px] md:leading-[1.1]"
+          className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-fluid-48 md:text-center md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {copy.title}
         </h2>
@@ -29,14 +29,15 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
         {/* Below 768px: scroll row bleeding to the right edge; the 6px padding keeps focus rings unclipped. */}
         <ul
           aria-label={copy.listLabel}
-          className="-my-1.5 -mr-5 -ml-1.5 flex snap-x snap-mandatory scroll-pl-1.5 gap-3 overflow-x-auto overscroll-x-contain py-1.5 pr-5 pl-1.5 [scrollbar-width:none] md:m-0 md:grid md:snap-none md:grid-cols-4 md:gap-5 md:overflow-visible md:p-0 [&::-webkit-scrollbar]:hidden"
+          className="-my-1.5 -mr-5 -ml-1.5 flex snap-x snap-mandatory scroll-pl-1.5 gap-3 overflow-x-auto overscroll-x-contain py-1.5 pr-5 pl-1.5 [scrollbar-width:none] md:m-0 md:grid md:snap-none md:grid-cols-4 md:gap-5 md:overflow-visible 2xl:gap-6 md:p-0 [&::-webkit-scrollbar]:hidden"
         >
           {members.map((member) => (
             <li key={member.slug} className="w-[150px] flex-none snap-start md:w-auto">
               <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] md:rounded-[20px]">
                 <Photo
                   image={{ ...member.image, position: PORTRAIT_TOP_POSITION, zoom: undefined }}
-                  sizes="(min-width: 1180px) 240px, (min-width: 768px) 22vw, 150px"
+                  // 4 columns in the powder panel: (1536 − 2 × 80 − 3 × 24) / 4 ≈ 326px on the 1600px canvas.
+                  sizes="(min-width: 1600px) 330px, (min-width: 768px) 22vw, 150px"
                   radius="var(--photo-radius)"
                   className="h-[190px] [--photo-radius:18px] md:aspect-[190/268] md:h-auto md:[--photo-radius:20px]"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
@@ -52,7 +53,7 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
           ))}
         </ul>
 
-        <p className="text-[15px] leading-[44px] md:mt-12 md:text-center md:text-[14px] md:leading-normal">
+        <p className="text-[15px] leading-[44px] md:mt-fluid-48 md:text-center md:text-[14px] md:leading-normal">
           <ArrowLink href={copy.link.href} className="max-md:text-[15px]">
             {copy.link.label}
           </ArrowLink>

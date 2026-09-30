@@ -5,11 +5,16 @@ import { treatmentPage as copy } from "@/content/pages/treatments";
 import { cn } from "@/lib/cn";
 import type { TreatmentView } from "./treatmentView";
 
-/** Desktop grid + card image `sizes` by number of posts (one post: a wide card, photo left). */
+/**
+ * Desktop grid, photo height and card image `sizes` by number of posts (one post: a wide
+ * card, photo left). Photos are 220px tall up to 1280px and grow to 300px at the 1600px
+ * canvas, so they keep the design's proportion as the columns widen. `sizes` = the widest
+ * slot on the 1600px canvas (1440px content width, 24px gaps).
+ */
 const layouts = {
-  1: { grid: "md:grid-cols-1", card: "md:grid md:grid-cols-2", photo: "md:h-full md:min-h-[300px]", sizes: "(min-width: 1180px) 534px, 50vw" },
-  2: { grid: "md:grid-cols-2", card: "", photo: "", sizes: "(min-width: 1180px) 522px, 50vw" },
-  3: { grid: "md:grid-cols-3", card: "", photo: "", sizes: "(min-width: 1180px) 340px, 30vw" },
+  1: { grid: "md:grid-cols-1", card: "md:grid md:grid-cols-2", photo: "md:h-full md:min-h-fluid-300/380", sizes: "(min-width: 1600px) 720px, 50vw" },
+  2: { grid: "md:grid-cols-2", card: "", photo: "h-fluid-220/300", sizes: "(min-width: 1600px) 708px, 50vw" },
+  3: { grid: "md:grid-cols-3", card: "", photo: "h-fluid-220/300", sizes: "(min-width: 1600px) 464px, 30vw" },
 } as const;
 
 /**
@@ -20,13 +25,13 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
   const layout = layouts[Math.min(posts.items.length, 3) as 1 | 2 | 3];
   const single = posts.items.length === 1;
   return (
-    <Container as="section" aria-labelledby="fra-bloggen" className="pt-2 pb-12 md:pt-0 md:pb-24">
+    <Container as="section" aria-labelledby="fra-bloggen" className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
       <div className="mb-4 md:mb-9 md:flex md:items-end md:justify-between md:gap-6">
         <div>
           <Eyebrow className="mb-3.5 max-md:hidden">{posts.eyebrow}</Eyebrow>
           <h2
             id="fra-bloggen"
-            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1]"
+            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
           >
             {posts.title}
           </h2>
@@ -55,7 +60,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                 <Photo
                   image={{ ...post.image, alt: "" }}
                   sizes={layout.sizes}
-                  className={cn("h-[220px] shrink-0 max-md:hidden", layout.photo)}
+                  className={cn("shrink-0 max-md:hidden", layout.photo)}
                 />
                 <div
                   className={cn(

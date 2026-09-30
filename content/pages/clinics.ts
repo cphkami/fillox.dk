@@ -87,16 +87,32 @@ export const clinicsPage = {
 
   card: {
     /**
-     * Desktop photo on every clinic card (design placeholder until real clinic photos exist).
-     * The same generic photo on all four cards adds nothing for screen readers, so it is
-     * decorative (alt=""). Give each clinic its own photo + alt text when they exist.
+     * Desktop card photo for every clinic without its own entry in `photos` (design
+     * placeholder until real clinic photos exist). The same generic photo on all four cards
+     * adds nothing for screen readers, so it is decorative (alt="").
+     *
+     * The placeholder file is only 800 × 533 (so is the design's upload), while the card
+     * photo is up to 752 CSS px wide (1504 device px on a retina MacBook): it looks soft on
+     * wide screens. Don't upscale it; replace it with real clinic photos (see `photos`).
      */
-    // TODO: replace with a photo of each clinic (with its own alt text).
     photo: {
       src: "/images/results/behandling-3.jpg",
       alt: "",
       position: "50% 50%",
     } satisfies ImageRef,
+    /**
+     * One photo per clinic, keyed by clinic slug (content/clinics.ts); replaces the
+     * placeholder on that clinic's card. Needs, per clinic:
+     *  - a landscape photo at least 1600px wide (the card slot is up to 752 CSS px),
+     *    ideally framed for a 7:3 strip (e.g. 1600 × 686 or larger): the card crops it to
+     *    7:3 from 1280px and to about 1.75:1–2.4:1 on tablets and small laptops;
+     *  - its own alt text describing that clinic (e.g. "Venteværelset i Fillox City2");
+     *  - `position` (CSS object-position) when the subject isn't centred, so it survives
+     *    the 7:3 crop.
+     * Also point that clinic's `seoImage` (content/clinics.ts) at the same file.
+     */
+    // TODO: real photo + alt text per clinic (city2, amager-centret, frederiksberg, osterbro).
+    photos: {} as Partial<Record<string, ImageRef>>,
     /** Desktop booking button: "Book i City2". */
     bookLabel: (clinicName: string) => `${ui.bookAt} ${clinicName}`,
     /** Mobile booking button (mk). */

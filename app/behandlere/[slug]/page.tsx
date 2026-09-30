@@ -96,7 +96,7 @@ export default async function PractitionerPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
-      <div className="flex flex-col gap-3 md:gap-6">
+      <div className="flex flex-col gap-surface">
         <PractitionerHero profile={profile} titleId={id("name")} />
         {profile.approach ? <ApproachSection approach={profile.approach} titleId={id("approach")} /> : null}
         {profile.offers ? (

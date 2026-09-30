@@ -6,13 +6,37 @@ import { ScrollRegion } from "./ScrollRegion";
 import type { TreatmentView } from "./treatmentView";
 import { Swap } from "./Swap";
 
-/** One half of a pair: 170px at 1180+, ~14% of the viewport in the 768–1179 grid, 137px in the mobile card. */
-const halfSizes = "(min-width: 1180px) 170px, (min-width: 768px) 15vw, 140px";
+/** Aspect assumed for a photo without `width`/`height`: landscape 5 : 3, the widest current pair photo (2000 × 1228). */
+const DEFAULT_ASPECT = 5 / 3;
+/** Width : height of the half slot from 1024px (≈ 143 × 400 … 231 × 520); narrower photos are painted slot-wide. */
+const SLOT_ASPECT = 0.45;
+
+/**
+ * `sizes` of one half of a pair. The half is a tall, narrow slot (≈ 231 × 520px on the
+ * 1600px canvas, 170 × 400 at the 1180 design width), so object-cover crops the photo
+ * from the sides and paints it slot-HEIGHT × the photo's aspect wide (a 5 : 3 photo in a
+ * 520px slot: ≈ 867px). From 1024px the value is that painted width: height 400px up to
+ * 1280, 400 → 520px (h-fluid-400/520 = 0.375vw − 80px) up to 1600, then 520px; times the
+ * aspect (from `width`/`height`, else DEFAULT_ASPECT: over-asking is capped by the file's own
+ * size, under-asking makes landscape photos soft on 1x screens) and `image.zoom`.
+ * Below 1024: ~14% of the viewport in the 768–1023 grid, 137px in the mobile card.
+ */
+function halfSizes(image: ImageRef): string {
+  const aspect = image.width && image.height ? image.width / image.height : DEFAULT_ASPECT;
+  const k = Math.max(aspect, SLOT_ASPECT) * Math.max(1, image.zoom ?? 1);
+  return [
+    `(min-width: 1600px) ${Math.ceil(520 * k)}px`,
+    `(min-width: 1280px) calc(${(37.5 * k).toFixed(2)}vw - ${Math.floor(80 * k)}px)`,
+    `(min-width: 1024px) ${Math.ceil(400 * k)}px`,
+    "(min-width: 768px) 15vw",
+    "140px",
+  ].join(", ");
+}
 
 function Half({ image, label, tone }: { image: ImageRef; label: string; tone: "before" | "after" }) {
   return (
     <div className="relative min-w-0">
-      <Photo image={image} sizes={halfSizes} className="h-[200px] rounded-[14px]! md:h-full md:rounded-none!" />
+      <Photo image={image} sizes={halfSizes(image)} className="h-[200px] rounded-[14px]! md:h-full md:rounded-none!" />
       <span
         aria-hidden="true"
         className={cn(
@@ -28,17 +52,19 @@ function Half({ image, label, tone }: { image: ImageRef; label: string; tone: "b
 
 /**
  * "Resultater med …" before/after pairs (6c/6bx: three 400px pairs in a grid; mb: white
- * 300px cards in a horizontal scroll-snap row that bleeds off the right edge).
+ * 300px cards in a horizontal scroll-snap row that bleeds off the right edge). On wide
+ * screens the three columns fill the canvas and the pairs grow 400 → 520px tall, keeping
+ * roughly the design's 340 × 400 proportion.
  */
 export function ResultsSection({ results }: { results: NonNullable<TreatmentView["results"]> }) {
   return (
-    <Container as="section" aria-labelledby="resultater" className="pt-2 pb-12 md:pt-0 md:pb-24">
+    <Container as="section" aria-labelledby="resultater" className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
       <SectionHeading
         id="resultater"
         title={results.title}
         intro={results.intro}
         leading="normal"
-        className="mb-4 max-md:text-left md:mb-12"
+        className="mb-4 max-md:text-left md:mb-fluid-48"
         introClassName="max-md:hidden"
       />
       <ScrollRegion
@@ -49,7 +75,7 @@ export function ResultsSection({ results }: { results: NonNullable<TreatmentView
           {results.items.map((item, i) => (
             <li key={i} className="w-[300px] flex-none snap-start md:w-auto">
               <figure className="rounded-[20px] bg-white p-2.5 md:rounded-none md:bg-transparent md:p-0">
-                <div className="grid grid-cols-2 gap-1.5 md:h-[300px] md:gap-[3px] md:overflow-hidden md:rounded-[24px] md:bg-cream lg:h-[400px]">
+                <div className="grid grid-cols-2 gap-1.5 md:h-[300px] md:gap-[3px] md:overflow-hidden md:rounded-[24px] md:bg-cream lg:h-fluid-400/520">
                   <Half image={item.before} label={copy.results.before} tone="before" />
                   <Half image={item.after} label={copy.results.after} tone="after" />
                 </div>

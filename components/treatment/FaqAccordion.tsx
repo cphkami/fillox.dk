@@ -89,7 +89,10 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
               )}
             >
               <div className="overflow-hidden">
-                <p className="pb-4 text-[15px] leading-[1.65] text-muted md:max-w-[70ch] md:pr-14 md:pb-[22px] md:text-[16px] md:leading-[1.75]">
+                {/* 70ch (incl. the 56px right padding) = the design's measure, ≈ 82 Poppins
+                    characters; from 2xl, beside the heading, 62ch ≈ 570px of text ≈ 72 characters,
+                    the measure of the other intros. */}
+                <p className="pb-4 text-[15px] leading-[1.65] text-muted md:max-w-[70ch] md:pr-14 md:pb-[22px] md:text-[16px] md:leading-[1.75] 2xl:max-w-[62ch]">
                   {item.answer}
                 </p>
               </div>

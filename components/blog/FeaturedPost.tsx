@@ -25,12 +25,13 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
       <Photo
         image={{ ...post.image, alt: "" }}
         position={post.blogImagePosition}
-        sizes="(min-width: 1180px) 610px, (min-width: 1024px) 52vw, 100vw"
+        // Photo column = 1.15 / 2.15 of the surface band: 822px on the 1600px canvas (1536px band).
+        sizes="(min-width: 1600px) 822px, (min-width: 1024px) 52vw, 100vw"
         priority
-        className="h-[240px] md:h-[360px] lg:h-auto lg:min-h-[420px]"
+        className="h-[240px] md:h-[360px] lg:h-auto lg:min-h-fluid-420/520"
       />
 
-      <div className="flex flex-col gap-2.5 px-5 pt-[22px] pb-6 md:justify-center md:gap-4 md:p-10 lg:p-14">
+      <div className="flex flex-col gap-2.5 px-5 pt-[22px] pb-6 md:justify-center md:gap-4 md:p-10 lg:p-14 xl:px-16 2xl:px-20">
         <Eyebrow>
           <Responsive
             mobile={joinMeta(post.category, post.kind, shortReadingTime(post))}
@@ -38,7 +39,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
           />
         </Eyebrow>
 
-        <h2 className="text-[24px] leading-[1.2] font-semibold tracking-display md:text-[36px] md:leading-[1.12]">
+        <h2 className="text-[24px] leading-[1.2] font-semibold tracking-display md:text-[36px] md:leading-[1.12] xl:text-h2-md">
           <Link href={blogPostHref(post.slug)} className={stretchedLink}>
             {post.title}
           </Link>
