@@ -43,10 +43,16 @@ export type ButtonStyleProps = {
 const base =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap text-center transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50";
 
+/**
+ * Filled pills have no border, and Windows high contrast (forced colors) drops their fill, so
+ * they would read as plain text there. Give them a system-colour border in that mode only.
+ */
+const forcedColorsBorder = "forced-colors:border forced-colors:border-[color:ButtonText]";
+
 const variants: Record<ButtonVariant, string> = {
-  primary: "rounded-full bg-plum text-cream hover:bg-plum-deep",
-  light: "rounded-full bg-powder font-semibold text-plum hover:bg-cream",
-  lightInk: "rounded-full bg-powder font-semibold text-ink hover:bg-cream",
+  primary: `rounded-full bg-plum text-cream hover:bg-plum-deep ${forcedColorsBorder}`,
+  light: `rounded-full bg-powder font-semibold text-plum hover:bg-cream ${forcedColorsBorder}`,
+  lightInk: `rounded-full bg-powder font-semibold text-ink hover:bg-cream ${forcedColorsBorder}`,
   outline: "rounded-full border border-plum text-plum hover:bg-plum hover:text-cream",
   outlineInk: "rounded-full border border-ink text-ink hover:bg-ink hover:text-cream",
   white: "rounded-full border border-line bg-white text-ink hover:border-plum hover:text-plum",
@@ -69,6 +75,14 @@ const mobileSizes: Record<NonNullable<ButtonStyleProps["mobileSize"]>, string> =
   compact: "max-md:h-11 max-md:px-5 max-md:py-0 max-md:text-[14px]",
   chip: "max-md:h-11 max-md:px-[18px] max-md:py-0 max-md:text-[14px]",
 };
+
+/**
+ * The pressed / current chip in Windows high contrast (forced colors): that mode replaces the
+ * plum fill that marks the state, so paint the chip in the system Highlight colours instead.
+ * No effect outside forced-colors mode. Add it to the selected chip's classes.
+ */
+export const forcedColorsSelected =
+  "forced-colors:forced-color-adjust-none forced-colors:border-[color:Highlight]! forced-colors:bg-[color:Highlight]! forced-colors:text-[color:HighlightText]! forced-colors:outline-[color:CanvasText]";
 
 /** Class string for a pill button — use when you need button styling on another element. */
 export function buttonClasses({

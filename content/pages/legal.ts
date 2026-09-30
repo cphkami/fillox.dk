@@ -1,5 +1,6 @@
 import type { Link, TextBlock, TextPageContent } from "../types";
 import { site } from "@/config/site";
+import { routes } from "../routes";
 
 /**
  * Copy for /handelsbetingelser and /privatlivspolitik (no design; rendered by
@@ -17,7 +18,13 @@ import { site } from "@/config/site";
 const companyLines: TextBlock = {
   type: "lines",
   card: true,
-  lines: [[{ text: "Fillox Danmark ApS", strong: true }], "CVR-nr: 43944207", "Cityringen 20 242, 2630 Taastrup"],
+  // Company name and CVR number from config/site.ts (same text as the live page).
+  // TODO: Fillox to confirm the registered address (the City2 clinic is at Cityringen 2, content/clinics.ts).
+  lines: [
+    [{ text: site.legalName, strong: true }],
+    `CVR-nr: ${site.company.registrationNumber}`,
+    "Cityringen 20 242, 2630 Taastrup",
+  ],
 };
 
 /** CTA card beside the legal text (verbatim from the live pages' "Book din konsultation" box). */
@@ -26,7 +33,7 @@ const legalAside: TextPageContent["aside"] = {
   text: "Hos Fillox vil du altid møde meget dedikerede og dygtige behandlere.",
   actions: [
     { label: "Online booking", href: site.booking.href },
-    { label: "Kontakt os", href: "/kontakt" },
+    { label: "Kontakt os", href: routes.contact },
   ] satisfies Link[],
 };
 
@@ -162,11 +169,14 @@ export const privacyPage: TextPageContent = {
       type: "lines",
       card: true,
       lines: [
-        [{ text: "Fillox Danmark ApS", strong: true }],
-        "CVR-nr.: 43944207",
+        // Company name, CVR number and phone from config/site.ts (same text as the live page).
+        // TODO: Fillox to confirm the registered address and the data-protection mailbox
+        // (info@ here, kontakt@ in config/site.ts → contact.email).
+        [{ text: site.legalName, strong: true }],
+        `CVR-nr.: ${site.company.registrationNumber}`,
         "Adresse: Cityringen 20, 242, 2630 Taastrup",
         ["E-mail: ", { text: "info@fillox.dk", href: "mailto:info@fillox.dk" }],
-        ["Telefon: ", { text: "35 10 00 50", href: "tel:+4535100050" }],
+        ["Telefon: ", { text: site.contact.phone, href: site.contact.phoneHref }],
       ],
     },
     { type: "paragraph", text: "Fillox Danmark ApS er dataansvarlig for behandlingen af dine personoplysninger." },

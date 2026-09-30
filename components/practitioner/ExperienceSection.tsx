@@ -1,6 +1,5 @@
-import { Container } from "@/components/ui";
+import { Container, ResponsiveText } from "@/components/ui";
 import type { TeamProfile } from "@/content/types";
-import { Responsive } from "./Responsive";
 
 type ExperienceSectionProps = { experience: NonNullable<TeamProfile["experience"]>; titleId: string };
 
@@ -25,10 +24,10 @@ export function ExperienceSection({ experience, titleId }: ExperienceSectionProp
               className="flex gap-4 border-t border-cream/18 pt-3 text-[15px] md:grid md:grid-cols-[120px_minmax(0,1fr)] md:gap-6 md:border-cream/20 md:py-[18px] md:text-[16px] md:last:border-b"
             >
               <dt className="w-[70px] flex-none font-semibold text-powder md:w-auto md:text-cream">
-                <Responsive mobile={item.periodShort} desktop={item.period} />
+                <ResponsiveText mobile={item.periodShort} desktop={item.period} />
               </dt>
               <dd className="text-cream md:text-blush">
-                <Responsive mobile={item.textShort} desktop={item.text} />
+                <ResponsiveText mobile={item.textShort} desktop={item.text} />
               </dd>
             </div>
           ))}

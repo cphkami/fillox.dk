@@ -1,19 +1,9 @@
 import Link from "next/link";
-import { Container, SectionHeading } from "@/components/ui";
+import { Container, JoinedLines, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import type { Clinic } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { ArrowCircle } from "./ArrowCircle";
-
-/** Joins address lines with ", " on mobile; each line is its own row from lg. */
-function AddressLines({ lines }: { lines: string[] }) {
-  return lines.map((line, i) => (
-    <span key={line} className="lg:block">
-      {i > 0 ? <span className="lg:hidden">, </span> : null}
-      {line}
-    </span>
-  ));
-}
 
 /**
  * "Hverdage 10–20 · Weekend 10–18". The parts never break inside, and when the second
@@ -77,7 +67,7 @@ export function Clinics({
               {open ? (
                 <>
                   <p>
-                    <AddressLines lines={clinic.address} />
+                    <JoinedLines parts={clinic.address} separator=", " />
                   </p>
                   {clinic.hoursSummary ? (
                     <HoursSummary

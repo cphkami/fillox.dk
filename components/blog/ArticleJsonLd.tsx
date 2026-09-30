@@ -1,9 +1,10 @@
-import { ORGANIZATION_ID, WEBSITE_ID } from "@/components/seo";
+import { JsonLd, ORGANIZATION_ID, WEBSITE_ID, absoluteUrl, breadcrumbList } from "@/components/seo";
 import { site } from "@/config/site";
 import { blogArticle } from "@/content/pages/blog";
 import { teamMemberHref } from "@/content/team";
 import { getTreatment } from "@/content/treatments";
-import { absoluteUrl, type ArticleView } from "./articleView";
+import type { Treatment } from "@/content/types";
+import type { ArticleView } from "./articleView";
 
 /**
  * schema.org BlogPosting + BreadcrumbList for an article page (all data from /content).
@@ -16,8 +17,8 @@ export function ArticleJsonLd({ view }: { view: ArticleView }) {
 
   const about = (post.treatmentSlugs ?? [])
     .map((slug) => getTreatment(slug))
-    .filter((t) => Boolean(t))
-    .map((t) => ({ "@type": "Thing", name: t!.detail?.title ?? t!.name }));
+    .filter((t): t is Treatment => Boolean(t))
+    .map((t) => ({ "@type": "Thing", name: t.detail?.title ?? t.name }));
 
   const article: Record<string, unknown> = {
     "@type": "BlogPosting",
@@ -31,7 +32,8 @@ export function ArticleJsonLd({ view }: { view: ArticleView }) {
     url,
     mainEntityOfPage: { "@type": "WebPage", "@id": url, isPartOf: { "@id": WEBSITE_ID } },
     articleSection: post.category,
-    ...(post.readingMinutes ? { timeRequired: `PT${post.readingMinutes}M` } : {}),
+    // An excerpt-only post (no written body yet) claims no reading time.
+    ...(view.hasBody && post.readingMinutes ? { timeRequired: `PT${post.readingMinutes}M` } : {}),
     ...(about.length ? { about } : {}),
     author: author
       ? {
@@ -51,19 +53,5 @@ export function ArticleJsonLd({ view }: { view: ArticleView }) {
   // Blog → article. The category crumb is left out: its /blog?kategori= URL canonicalises
   // to /blog (same as TreatmentJsonLd); articleSection already carries the category.
   const crumbs = [blogArticle.blogCrumb, { label: post.title, href: view.path }];
-  const breadcrumbs = {
-    "@type": "BreadcrumbList",
-    itemListElement: crumbs.map((c, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: c.label,
-      item: absoluteUrl(c.href),
-    })),
-  };
-
-  const json = JSON.stringify({ "@context": "https://schema.org", "@graph": [article, breadcrumbs] }).replace(
-    /</g,
-    "\\u003c",
-  );
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />;
+  return <JsonLd data={{ "@context": "https://schema.org", "@graph": [article, breadcrumbList(crumbs)] }} />;
 }

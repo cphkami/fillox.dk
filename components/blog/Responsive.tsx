@@ -7,7 +7,8 @@ type ResponsiveProps = {
 };
 
 /**
- * Renders the mobile copy below 768px and the desktop copy from 768px.
+ * Renders the mobile copy below 768px and the desktop copy from 768px: the blog's variant of
+ * the shared `ResponsiveText` (components/ui), with two extras for the blog copy.
  *
  * - Same text: rendered once.
  * - Mobile text = desktop text with one passage left out ("Få tips og tilbud" /

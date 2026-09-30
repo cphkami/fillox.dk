@@ -10,10 +10,10 @@ import { RelatedPosts } from "@/components/treatment/RelatedPosts";
 import { ResultsSection } from "@/components/treatment/ResultsSection";
 import { TreatmentHero } from "@/components/treatment/TreatmentHero";
 import { TreatmentJsonLd } from "@/components/treatment/TreatmentJsonLd";
-import { treatmentsMetadata } from "@/components/treatment/metadata";
 import { buildTreatmentView } from "@/components/treatment/treatmentView";
 import { getTreatment, treatments } from "@/content/treatments";
 import { ui } from "@/content/ui";
+import { pageMetadata } from "@/lib/metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -29,12 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const treatment = getTreatment(slug);
   if (!treatment) return {};
   const view = buildTreatmentView(treatment);
-  return treatmentsMetadata({
-    title: view.metaTitle,
-    description: view.description,
-    path: view.path,
-    image: view.hero.image,
-  });
+  return pageMetadata({ title: view.metaTitle, description: view.description }, view.path, view.hero.image);
 }
 
 const BOOKING_BAND_ID = "book";

@@ -2,6 +2,7 @@ import type { FaqItem, ImageRef, Link } from "../types";
 import { site } from "@/config/site";
 import { megaMenuPromo } from "../navigation";
 import { pricesPage } from "../prices";
+import { routes } from "../routes";
 import { blogPage } from "./blog";
 
 /**
@@ -18,6 +19,18 @@ import { blogPage } from "./blog";
 const withName = (prefix: string) => (name: string) => `${prefix} ${name}`;
 
 export const treatmentPage = {
+  /**
+   * Ids of the section headings (aria-labelledby targets; linkable as /behandlinger/botox#priser).
+   * Market words, so they live here with the copy.
+   */
+  sectionIds: {
+    about: "om-behandlingen",
+    practitioner: "din-behandler",
+    results: "resultater",
+    prices: "priser",
+    posts: "fra-bloggen",
+  },
+
   /** Accessible name of the breadcrumb <nav>. */
   breadcrumbLabel: "Brødkrumme", // TODO: copy review (accessible name, not in the design)
 
@@ -33,7 +46,7 @@ export const treatmentPage = {
 
   practitioner: {
     eyebrow: "Din behandler",
-    teamLink: { label: "Mød hele teamet", href: "/om-os#behandlere" } satisfies Link,
+    teamLink: { label: "Mød hele teamet", href: routes.aboutTeam } satisfies Link,
     /** Mobile CTA when `detail.mobile.practitionerCta` is missing, e.g. "Book hos Alberte". */
     bookWith: withName("Book hos"),
     /** Wraps the practitioner quote, e.g. “Jeg er først tilfreds …”. */
@@ -42,7 +55,7 @@ export const treatmentPage = {
      * Section heading when `detail.practitionerHeading` is missing, built from the team
      * member's name and title: "Alberte, kosmetisk behandler".
      */
-    heading: (name: string, title: string) => `${name}, ${title.charAt(0).toLocaleLowerCase("da")}${title.slice(1)}`,
+    heading: (name: string, title: string) => `${name}, ${title.charAt(0).toLocaleLowerCase(site.locale)}${title.slice(1)}`,
   },
 
   results: {
@@ -61,7 +74,7 @@ export const treatmentPage = {
     fallbackTitle: "Vejledende priser",
     fallbackIntro: "Den endelige pris fastlægges altid ved din konsultation. Konsultation og kontrol er altid gratis.",
     /** Link under the fallback price list (to the matching card on /priser). */
-    allPricesLink: { label: "Se alle priser", href: "/priser" } satisfies Link,
+    allPricesLink: { label: "Se alle priser", href: routes.prices } satisfies Link,
     /**
      * Rows from the /priser "Konsultation & kontrol" card appended to the fallback price
      * list, by category slug (`default` for the rest). Labels must match content/prices.ts.

@@ -3,17 +3,29 @@ import { ArrowLink } from "@/components/ui/ArrowLink";
 import type { Link as LinkItem } from "@/content/types";
 import { ui } from "@/content/ui";
 import type { MenuClinic, MenuPrices } from "./menuData";
+import { useAriaCurrent } from "./NavLink";
+
+/**
+ * `prefetch` of a dropdown's links. Closed dropdowns stay in the layout (invisible), so the
+ * viewport prefetch would fetch every linked route on every page view; they are prefetched
+ * only while their dropdown is open (still before the click).
+ */
+const panelPrefetch = (open: boolean) => (open ? null : false);
 
 /** Desktop "Find klinik" dropdown: open clinics with address + hours, coming-soon clinics with their note. */
 export function ClinicsDropdown({
   clinics,
   allHref,
+  open = true,
   onNavigate,
 }: {
   clinics: MenuClinic[];
   allHref: string;
+  open?: boolean;
   onNavigate?: () => void;
 }) {
+  const prefetch = panelPrefetch(open);
+  const ariaCurrent = useAriaCurrent();
   return (
     <div className="w-[340px] rounded-[20px] bg-white p-3 shadow-menu">
       <ul className="flex flex-col">
@@ -21,7 +33,9 @@ export function ClinicsDropdown({
           <li key={c.slug}>
             <Link
               href={c.href}
+              prefetch={prefetch}
               onClick={onNavigate}
+              aria-current={ariaCurrent(c.href)}
               className="group block rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
             >
               <span className="block text-[15px] font-semibold text-ink transition-colors group-hover:text-plum">
@@ -40,7 +54,7 @@ export function ClinicsDropdown({
         ))}
       </ul>
       <div className="mx-1 mt-2 border-t border-line px-3 pt-3.5 pb-1.5">
-        <ArrowLink href={allHref} onClick={onNavigate}>
+        <ArrowLink href={allHref} prefetch={prefetch} onClick={onNavigate} aria-current={ariaCurrent(allHref)}>
           {ui.seeAllClinics}
         </ArrowLink>
       </div>
@@ -49,7 +63,17 @@ export function ClinicsDropdown({
 }
 
 /** Small desktop dropdown with a list of links (e.g. "Om os"). */
-export function LinksDropdown({ items, onNavigate }: { items: LinkItem[]; onNavigate?: () => void }) {
+export function LinksDropdown({
+  items,
+  open = true,
+  onNavigate,
+}: {
+  items: LinkItem[];
+  open?: boolean;
+  onNavigate?: () => void;
+}) {
+  const prefetch = panelPrefetch(open);
+  const ariaCurrent = useAriaCurrent();
   return (
     <div className="min-w-[230px] rounded-[20px] bg-white p-2 shadow-menu">
       <ul className="flex flex-col">
@@ -57,7 +81,9 @@ export function LinksDropdown({ items, onNavigate }: { items: LinkItem[]; onNavi
           <li key={item.href}>
             <Link
               href={item.href}
+              prefetch={prefetch}
               onClick={onNavigate}
+              aria-current={ariaCurrent(item.href)}
               className="block rounded-[12px] px-4 py-2.5 text-[14px] whitespace-nowrap text-ink transition-colors hover:bg-cream hover:text-plum"
             >
               {item.label}
@@ -74,7 +100,17 @@ export function LinksDropdown({ items, onNavigate }: { items: LinkItem[]; onNavi
  * their card on the prices page, "Se alle priser →", and a sand side card (the mega menu's
  * promo-card style) with the trust points and a financing teaser linking to the financing box.
  */
-export function PricesDropdown({ prices, onNavigate }: { prices: MenuPrices; onNavigate?: () => void }) {
+export function PricesDropdown({
+  prices,
+  open = true,
+  onNavigate,
+}: {
+  prices: MenuPrices;
+  open?: boolean;
+  onNavigate?: () => void;
+}) {
+  const prefetch = panelPrefetch(open);
+  const ariaCurrent = useAriaCurrent();
   return (
     <div className="flex w-[720px] gap-3 rounded-[20px] bg-white p-3 shadow-menu">
       <div className="min-w-0 flex-1">
@@ -83,6 +119,7 @@ export function PricesDropdown({ prices, onNavigate }: { prices: MenuPrices; onN
             <li key={c.id}>
               <Link
                 href={c.href}
+                prefetch={prefetch}
                 onClick={onNavigate}
                 className="group flex h-full flex-col rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
               >
@@ -99,7 +136,7 @@ export function PricesDropdown({ prices, onNavigate }: { prices: MenuPrices; onN
           ))}
         </ul>
         <div className="mx-1 mt-2 border-t border-line px-3 pt-3.5 pb-1.5">
-          <ArrowLink href={prices.href} onClick={onNavigate}>
+          <ArrowLink href={prices.href} prefetch={prefetch} onClick={onNavigate} aria-current={ariaCurrent(prices.href)}>
             {ui.seeAllPrices}
           </ArrowLink>
         </div>
@@ -126,7 +163,7 @@ export function PricesDropdown({ prices, onNavigate }: { prices: MenuPrices; onN
           <div className="border-t border-line pt-4">
             <p className="mb-1 text-[15px] leading-[1.4] font-semibold text-ink">{prices.financing.title}</p>
             <p className="mb-3 text-[14px] leading-[1.5] text-muted">{prices.financing.text}</p>
-            <ArrowLink href={prices.financing.href} onClick={onNavigate}>
+            <ArrowLink href={prices.financing.href} prefetch={prefetch} onClick={onNavigate}>
               {prices.financing.cta}
             </ArrowLink>
           </div>

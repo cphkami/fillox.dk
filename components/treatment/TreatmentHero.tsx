@@ -1,18 +1,10 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { ButtonLink, Container, Photo } from "@/components/ui";
+import { ButtonLink, Container, Photo, ResponsiveText } from "@/components/ui";
 import { treatmentPage as copy } from "@/content/pages/treatments";
 import type { ImageRef } from "@/content/types";
 import type { TreatmentView } from "./treatmentView";
-import { Swap } from "./Swap";
 
-/**
- * Treatment hero (6c/6bx top, mb top).
- * Desktop ≥1024: sand panel, text left (breadcrumb, H1, lead, 4 fact cards, CTAs) and photo right;
- * from 1280 the panel follows the wide canvas (50/50 split, padding and min-height grow).
- * 768–1023: same panel, photo below the text. Mobile: no panel; the photo sits between
- * lead and fact cards (the text column dissolves with `display: contents`).
- */
 /** Average glyph width of a title word in em (Poppins 600, display tracking), with a margin. */
 const EM_PER_CHAR = 0.58;
 
@@ -24,24 +16,40 @@ const crumbLink = "hover:text-plum max-md:-mx-1 max-md:px-1 max-md:py-[13px] md:
  * 1024–1280 the narrower text column makes the panel about as tall (≈ 660–720px).
  */
 const SLOT_MAX_H = 720;
+/** Photo slot below 768px: (100vw − 40px) × 300px. */
+const MOBILE_SLOT_H = 300;
 
 /**
  * Photo `sizes`. The slot is ≈ square from 1024px (488–768px wide, 640–720 tall), so a
  * landscape photo (known `width`/`height`) is cropped from the sides and painted
  * slot-height × aspect wide (e.g. 2000 × 1228 → ≈ 1173px), wider than the slot. Its size
  * is that painted width, so it stays sharp on 1x screens. Other photos keep the slot width
- * (50/50 split of the panel: 768px on the 1600px canvas). The `image.zoom` scale is included
- * from 1024px. Below 1024 the photo is full width, as before.
+ * (50/50 split of the panel: 768px on the 1600px canvas). The `image.zoom` scale is included.
+ * 768–1023: the photo spans the panel (420px tall, wide enough for photos up to ≈ 1.7 : 1).
+ * Below 768 the 300px-tall slot paints a landscape photo 300px × aspect wide (2000 × 1228 →
+ * 489px) until the viewport is wide enough for the slot to be wider than that.
  */
 function heroSizes(image: ImageRef): string {
-  const below = "(min-width: 768px) 100vw, calc(100vw - 40px)";
   const zoom = Math.max(1, image.zoom ?? 1);
   const aspect = image.width && image.height ? image.width / image.height : 0;
+  const box = zoom > 1 ? `calc((100vw - 40px) * ${zoom})` : "calc(100vw - 40px)";
+  const coverFrom = Math.ceil(MOBILE_SLOT_H * aspect) + 40; // viewport from which the slot is the wider
+  const coverPx = `${Math.ceil(MOBILE_SLOT_H * aspect * zoom)}px`;
+  const mobile =
+    coverFrom <= 320 ? box : coverFrom >= 768 ? coverPx : `(min-width: ${coverFrom}px) ${box}, ${coverPx}`;
+  const below = `(min-width: 768px) ${zoom > 1 ? `${Math.ceil(100 * zoom)}vw` : "100vw"}, ${mobile}`;
   const painted = Math.ceil(SLOT_MAX_H * aspect * zoom);
   if (painted > 768 * zoom) return `(min-width: 1024px) ${painted}px, ${below}`;
   return `(min-width: 1600px) ${Math.ceil(768 * zoom)}px, (min-width: 1024px) ${Math.ceil(50 * zoom)}vw, ${below}`;
 }
 
+/**
+ * Treatment hero (6c/6bx top, mb top).
+ * Desktop ≥1024: sand panel, text left (breadcrumb, H1, lead, 4 fact cards, CTAs) and photo right;
+ * from 1280 the panel follows the wide canvas (50/50 split, padding and min-height grow).
+ * 768–1023: same panel, photo below the text. Mobile: no panel; the photo sits between
+ * lead and fact cards (the text column dissolves with `display: contents`).
+ */
 export function TreatmentHero({ view }: { view: TreatmentView }) {
   const { hero } = view;
   // The H1 keeps the design size (36px / 64px, growing to 76px on wide screens via --text-h1)
@@ -85,7 +93,7 @@ export function TreatmentHero({ view }: { view: TreatmentView }) {
           </h1>
 
           <p className="order-3 text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-lead md:leading-[1.75]">
-            <Swap mobile={hero.mobileLead} desktop={hero.lead} />
+            <ResponsiveText mobile={hero.mobileLead} desktop={hero.lead} />
           </p>
 
           <dl className="order-5 grid grid-cols-2 gap-2 md:mb-[30px] md:gap-2.5">

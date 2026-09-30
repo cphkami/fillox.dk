@@ -1,27 +1,28 @@
 import type { Metadata } from "next";
 import { BookingBand } from "@/components/treatment/BookingBand";
-import { treatmentsMetadata } from "@/components/treatment/metadata";
 import { TreatmentCard } from "@/components/treatment/TreatmentCard";
-import { ArrowLink, ButtonLink, Container, Photo } from "@/components/ui";
+import { ArrowLink, ButtonLink, Container, Photo, ScrollRow } from "@/components/ui";
 import { site } from "@/config/site";
-import { mainNav, treatmentCategories } from "@/content/navigation";
+import { treatmentCategories } from "@/content/navigation";
 import { treatmentPage, treatmentsOverview as copy } from "@/content/pages/treatments";
 import { priceCards } from "@/content/prices";
+import { routes } from "@/content/routes";
 import { ui } from "@/content/ui";
+import { cn } from "@/lib/cn";
 import { treatmentsInCategory } from "@/lib/content";
+import { pageMetadata } from "@/lib/metadata";
 
-const PATH = mainNav.find((n) => n.kind === "treatments")?.href ?? "/behandlinger";
+const PATH = routes.treatments;
 
-export const metadata: Metadata = treatmentsMetadata({
-  title: copy.meta.title,
-  description: copy.meta.description,
-  path: PATH,
-});
+export const metadata: Metadata = pageMetadata(copy.meta, PATH);
 
 /**
  * /behandlinger — every treatment, grouped by category (no dedicated design; built from
  * the 6c hero panel, the blog-card style and the closing plum band). Each category
  * section has id="<categorySlug>" for the menu links (/behandlinger#fillers …).
+ * Cards: 1 column (mobile), 2 (tablet; an odd last card spans both), 3 from lg. A category
+ * with 1, 2 or 4 treatments would leave a 3-column row half empty, so from lg its heading
+ * moves into the first column(s) of the same grid and the cards fill the rest.
  */
 export default function TreatmentsOverviewPage() {
   const categories = treatmentCategories
@@ -40,7 +41,12 @@ export default function TreatmentsOverviewPage() {
               {copy.intro}
             </p>
             <nav aria-label={copy.jumpLabel}>
-              <ul className="-mr-5 flex snap-x gap-2 overflow-x-auto pr-5 [scrollbar-width:none] md:mr-0 md:flex-wrap md:overflow-visible md:pr-0 [&::-webkit-scrollbar]:hidden">
+              {/* Below 768px a scroll row bleeding to the right edge; the 6px padding (cancelled by
+                  the negative margin) keeps the chips' focus rings unclipped. */}
+              <ScrollRow
+                unstyled
+                className="-my-1.5 -mr-5 -ml-1.5 flex snap-x scroll-pr-5 scroll-pl-1.5 gap-2 overflow-x-auto py-1.5 pr-5 pl-1.5 [scrollbar-width:none] md:m-0 md:flex-wrap md:overflow-visible md:p-0 [&::-webkit-scrollbar]:hidden"
+              >
                 {categories.map(({ category }) => (
                   <li key={category.slug} className="shrink-0 snap-start">
                     <ButtonLink href={`#${category.slug}`} variant="white" size="chip">
@@ -48,7 +54,7 @@ export default function TreatmentsOverviewPage() {
                     </ButtonLink>
                   </li>
                 ))}
-              </ul>
+              </ScrollRow>
             </nav>
           </div>
           {/* Height grows with the column (440 → 600px from 1280 to 1600) so the portrait keeps
@@ -69,9 +75,22 @@ export default function TreatmentsOverviewPage() {
             const categoryIntro = copy.categoryIntros[category.slug];
             // Never repeat a card's one-liner right above it.
             const intro = items.some((t) => t.short === categoryIntro) ? undefined : categoryIntro;
+            const count = items.length;
+            const side = count === 1 || count === 2 || count === 4;
             return (
-              <section key={category.slug} id={category.slug} aria-labelledby={`${category.slug}-title`}>
-                <div className="mb-4 flex flex-col gap-2 md:mb-9 md:flex-row md:items-end md:justify-between md:gap-6">
+              <section
+                key={category.slug}
+                id={category.slug}
+                aria-labelledby={`${category.slug}-title`}
+                className={cn(side && "lg:grid lg:grid-cols-3 lg:items-start lg:gap-6")}
+              >
+                <div
+                  className={cn(
+                    "mb-4 flex flex-col gap-2 md:mb-9 md:flex-row md:items-end md:justify-between md:gap-6",
+                    side && "lg:mb-0 lg:flex-col lg:items-start lg:justify-start lg:gap-5",
+                    count === 1 && "lg:col-span-2",
+                  )}
+                >
                   <div>
                     <h2
                       id={`${category.slug}-title`}
@@ -89,9 +108,16 @@ export default function TreatmentsOverviewPage() {
                     </ArrowLink>
                   ) : null}
                 </div>
-                <ul className="grid gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-                  {items.map((t) => (
-                    <li key={t.slug}>
+                <ul
+                  className={cn(
+                    "grid gap-3 md:grid-cols-2 md:gap-6",
+                    !side && "lg:grid-cols-3",
+                    side && count === 1 && "lg:grid-cols-1",
+                    side && count > 1 && "lg:col-span-2 lg:grid-cols-2",
+                  )}
+                >
+                  {items.map((t, i) => (
+                    <li key={t.slug} className={cn(count % 2 === 1 && i === count - 1 && "md:max-lg:col-span-2")}>
                       <TreatmentCard treatment={t} />
                     </li>
                   ))}

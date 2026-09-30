@@ -46,6 +46,9 @@ export function MobileBookBar({ name, price, cta, hideAtId }: MobileBookBarProps
 
   return (
     <div
+      // Marker for app/globals.css: while the bar is shown (not inert), the page reserves its
+      // height as scroll padding so a focused element never ends up hidden under it.
+      data-mobile-book-bar=""
       inert={hidden}
       className={cn(
         "fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 transition-[translate,opacity] duration-300 md:hidden",

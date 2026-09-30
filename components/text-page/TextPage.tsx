@@ -7,7 +7,7 @@ import { TextPageHero } from "./TextPageHero";
 
 type TextPageProps = {
   content: TextPageContent;
-  /** Prefix for element ids (aria-labelledby), e.g. "handelsbetingelser". */
+  /** Prefix for element ids (aria-labelledby): the route key, e.g. "terms" (language-neutral). */
   id: string;
 };
 

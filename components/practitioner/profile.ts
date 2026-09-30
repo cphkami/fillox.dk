@@ -41,6 +41,7 @@ export type ResolvedProfile = {
  */
 export const PORTRAIT_TOP_POSITION = "50% 5%";
 
+/** The profile page of `member`: its `profile` content, completed with the fallbacks. */
 export function resolveProfile(member: TeamMember): ResolvedProfile {
   const p = member.profile;
   const copy = practitionerPage.fallback;

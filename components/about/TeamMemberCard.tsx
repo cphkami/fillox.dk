@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Photo } from "@/components/ui";
+import { Photo, ResponsiveText } from "@/components/ui";
 import { teamMemberHref } from "@/content/team";
 import type { TeamMember } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { Responsive } from "./Responsive";
 
 /**
  * One practitioner on /om-os.
@@ -115,7 +114,7 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
           )}
         </h3>
         <p className={cn("text-[13px] text-muted md:text-[14px]", featured ? "md:mb-5 xl:mb-6" : "md:mb-3.5")}>
-          <Responsive mobile={member.titleShort} desktop={member.title ?? member.role} />
+          <ResponsiveText mobile={member.titleShort} desktop={member.title ?? member.role} />
         </p>
         {member.bio ? (
           <p
@@ -124,7 +123,7 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
               featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]",
             )}
           >
-            <Responsive mobile={member.bioShort} desktop={member.bio} />
+            <ResponsiveText mobile={member.bioShort} desktop={member.bio} />
           </p>
         ) : null}
         {member.quote ? (

@@ -3,32 +3,16 @@ import { FinancingBox } from "@/components/prices/FinancingBox";
 import { PriceCategories, type PriceCategoryView } from "@/components/prices/PriceCategories";
 import { PricesHero } from "@/components/prices/PricesHero";
 import { TrustBand } from "@/components/prices/TrustBand";
-import { site } from "@/config/site";
-import { layoutCopy } from "@/content/layout";
 import { priceCards, pricesPage } from "@/content/pages/prices";
+import { routes } from "@/content/routes";
 import { getTreatment, treatmentHref } from "@/content/treatments";
 import { formatPriceValue } from "@/lib/content";
+import { pageMetadata } from "@/lib/metadata";
 
-const PATH = "/priser";
+const PATH = routes.prices;
 const { meta } = pricesPage;
-const { ogImage, titleTemplate } = layoutCopy.meta;
 
-export const metadata: Metadata = {
-  title: meta.title,
-  description: meta.description,
-  alternates: { canonical: PATH },
-  // Nested objects replace the root layout's, so repeat the shared Open Graph fields.
-  // Twitter title/description/image fall back to these (the layout sets the card type).
-  openGraph: {
-    type: "website",
-    siteName: site.name,
-    locale: site.locale.replace("-", "_"),
-    url: PATH,
-    title: titleTemplate.replace("%s", meta.title),
-    description: meta.description,
-    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }],
-  },
-};
+export const metadata: Metadata = pageMetadata(meta, PATH);
 
 /** Treatment page for a price row, when the row names one that has a page. */
 const rowHref = (slug: string | undefined) => (slug && getTreatment(slug) ? treatmentHref(slug) : undefined);
@@ -39,7 +23,7 @@ const categories: PriceCategoryView[] = priceCards.map((card) => ({
   title: card.title,
   eyebrow: card.eyebrow,
   chipLabel: card.chipLabel,
-  countLabel: `${card.rows.length} ${card.rows.length === 1 ? pricesPage.countSuffixOne : pricesPage.countSuffix}`,
+  countLabel: pricesPage.count(card.rows.length),
   rows: card.rows.map((row) => ({
     label: row.label,
     note: row.note,

@@ -11,7 +11,10 @@
  * - gecko: ONE Gecko Booking calendar for every clinic (fillox.dk). Gecko's iframe.js
  *   preselects a clinic from `?geckoCalendarId=` in the page URL (Clinic.booking.geckoCalendarId).
  * - timma: one TIMMA reservation page PER CLINIC (fillox.no). /booking shows a clinic picker and
- *   embeds `${timmaBaseUrl}${clinic.booking.timmaId}` for the chosen clinic.
+ *   embeds `${timmaBaseUrl}${clinic.booking.timmaId}` for the chosen clinic (preselected by
+ *   `?klinik=<slug>`). The iframe grows to the page's height through the iframe-resizer
+ *   postMessage protocol that TIMMA's page speaks (components/booking/TimmaEmbed.tsx), so no
+ *   third-party script is loaded on our side.
  */
 export type BookingConfig =
   | {

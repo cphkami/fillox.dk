@@ -7,11 +7,13 @@ import { site } from "@/config/site";
 import { treatmentCategories, mainNav } from "@/content/navigation";
 import { treatmentPage as copy } from "@/content/pages/treatments";
 import { priceCards } from "@/content/prices";
+import { routes } from "@/content/routes";
 import { team } from "@/content/team";
+import { getTreatment } from "@/content/treatments";
 import type { BeforeAfter, BlogPost, FaqItem, ImageRef, Link, TeamMember, Treatment } from "@/content/types";
 import { ui } from "@/content/ui";
 import { formatPrice } from "@/lib/format";
-import { formatPriceFrom, formatPriceValue, getTreatment, relatedPostsForTreatment } from "@/lib/content";
+import { formatPriceFrom, formatPriceValue, relatedPostsForTreatment } from "@/lib/content";
 
 export type Fact = { label: string; value: string };
 
@@ -80,7 +82,7 @@ export type TreatmentView = {
   metaTitle: string;
 };
 
-const overviewHref = mainNav.find((n) => n.kind === "treatments")?.href ?? "/behandlinger";
+const overviewHref = routes.treatments;
 const overviewLabel = mainNav.find((n) => n.kind === "treatments")?.label ?? "";
 
 /** The treatment a "for mænd" variant borrows prices and practitioner from (see priceAliases). */
@@ -116,7 +118,7 @@ function nameInSentence(treatment: Treatment, name: string): string {
  * its slug (or its alias's), or untagged rows in its category card that name it, narrowed
  * to `priceRowLabels` when set. The konsultation rows from `extraRows` are appended.
  */
-export function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem[]; cardId?: string } {
+function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem[]; cardId?: string } {
   const slug = copy.priceAliases[treatment.slug] ?? treatment.slug;
   const target = getTreatment(slug) ?? treatment;
   const name = target.name.toLocaleLowerCase(site.locale);
@@ -147,6 +149,7 @@ export function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem
   return { items, cardId };
 }
 
+/** Everything /behandlinger/[slug] renders for `treatment`, with the fallbacks applied. */
 export function buildTreatmentView(treatment: Treatment): TreatmentView {
   const d = treatment.detail;
   const title = d?.title ?? treatment.name;

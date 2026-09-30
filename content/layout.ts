@@ -102,6 +102,12 @@ export const layoutCopy = {
      */
     params: { clinic: "klinik", practitioner: "behandler" },
     /**
+     * Accessible name of the booking calendar's iframe (Gecko, fillox.dk). Gecko's script
+     * injects the iframe with its own marketing title, which the embed replaces with this.
+     */
+    // TODO: copy review (not in the design)
+    iframeTitle: "Online booking hos Fillox",
+    /**
      * Clinic picker above the calendar. Only used with a per-clinic booking provider
      * (config/site.ts → booking.provider "timma", as on fillox.no); the Gecko calendar
      * (fillox.dk) has its own clinic selector.

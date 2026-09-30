@@ -1,7 +1,8 @@
 import type { Link } from "../types";
 import { site } from "@/config/site";
 import type { FormName } from "@/lib/forms";
-import { legalNav } from "../navigation";
+import { forms } from "../forms";
+import { routes } from "../routes";
 
 /**
  * Copy for the blog:
@@ -16,7 +17,7 @@ import { legalNav } from "../navigation";
  */
 
 /** Route of the blog overview (the article route is `blogPostHref()` in content/blog.ts). */
-const BLOG_PATH = "/blog";
+const BLOG_PATH = routes.blog;
 
 /** Query parameter that preselects a filter chip, e.g. /blog?kategori=botox. */
 const FILTER_PARAM = "kategori";
@@ -25,9 +26,10 @@ const FILTER_PARAM = "kategori";
 const ALL_FILTER = "alle";
 
 /** Netlify form of the newsletter signup (declared in public/__forms.html). */
-const NEWSLETTER_FORM: FormName = "nyhedsbrev";
+const NEWSLETTER_FORM: FormName = forms.newsletter;
 
-const privacyHref = (legalNav.find((l) => l.href.includes("privat")) ?? legalNav[legalNav.length - 1]).href;
+/** The newsletter note links to the privacy policy. */
+const privacyHref = routes.privacy;
 
 /** Dates are ISO days ("2026-09-12"); format them as UTC so the day never shifts. */
 const longDate = new Intl.DateTimeFormat(site.locale, {

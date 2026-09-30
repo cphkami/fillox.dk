@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import { buttonClasses } from "@/components/ui/Button";
+import { buttonClasses, forcedColorsSelected } from "@/components/ui/Button";
+import { revealFocusedItem } from "@/components/ui/ScrollRow";
 import { cn } from "@/lib/cn";
 
 /** A price row with its price already formatted on the server ("1.199 kr", "gratis"). */
@@ -36,8 +37,9 @@ type PriceCategoriesProps = {
 /**
  * The six price cards.
  *
- * - Desktop/tablet (≥768px, 6b): static white cards, two columns from 1180px (the
- *   design canvas; narrower columns would wrap the longest card label). On wide
+ * - Desktop/tablet (≥768px, 6b): static white cards, two columns from 1024px (below
+ *   1180px a few long labels put their note on a second line, as on mobile; one
+ *   ~900px-wide column left the prices far from their labels). On wide
  *   screens the grid fills the fluid canvas on the content gutter and the cards grow
  *   with it. A third column only appears when the grid itself is ≥106rem (1696px)
  *   wide, i.e. when --canvas-max is raised to ~1860px or more: below that a third of
@@ -129,6 +131,8 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
         {/* Centred while the chips fit; scrolls (left-aligned) once they overflow. */}
         <ul
           ref={chipRow}
+          // Brings a keyboard-focused chip fully into view once the row scrolls.
+          onFocus={revealFocusedItem}
           className="-my-[5px] mx-auto flex w-fit max-w-full snap-x snap-mandatory scroll-px-gutter gap-2 overflow-x-auto px-gutter py-[5px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {categories.map((c) => (
@@ -137,7 +141,10 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
                 href={`#${c.id}`}
                 onClick={(e) => jumpTo(e, c.id)}
                 aria-current={selected === c.id ? "true" : undefined}
-                className={buttonClasses({ variant: highlighted === c.id ? "primary" : "white", size: "chip" })}
+                className={cn(
+                  buttonClasses({ variant: highlighted === c.id ? "primary" : "white", size: "chip" }),
+                  highlighted === c.id && forcedColorsSelected,
+                )}
               >
                 {c.chipLabel}
               </a>
@@ -147,7 +154,7 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
       </nav>
 
       <div className="@container mx-auto w-full max-w-canvas px-surface md:px-gutter md:pt-fluid-64 md:pb-fluid-48">
-        <div className="flex flex-col gap-2.5 md:grid md:gap-fluid-24 min-[73.75rem]:grid-cols-2 @min-[106rem]:grid-cols-3">
+        <div className="flex flex-col gap-2.5 md:grid md:gap-fluid-24 lg:grid-cols-2 @min-[106rem]:grid-cols-3">
           {categories.map((c) => {
             const isOpen = open.has(c.id);
             const titleId = `${c.id}-title`;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Photo } from "@/components/ui";
+import { Photo, ResponsiveText } from "@/components/ui";
 import { buttonClasses } from "@/components/ui/Button";
 import { site } from "@/config/site";
 import type { ClinicsPageCopy } from "@/content/pages/clinics";
@@ -76,14 +76,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
         {soon ? (
           <>
             <p className="text-[15px] leading-[1.6] text-muted md:mb-[22px] md:text-[16px] md:leading-[1.75] xl:max-w-[56ch] xl:text-pretty">
-              {comingSoon?.noteShort ? (
-                <>
-                  <span className="md:hidden">{comingSoon.noteShort}</span>
-                  <span className="max-md:hidden">{clinic.note}</span>
-                </>
-              ) : (
-                clinic.note
-              )}
+              <ResponsiveText mobile={comingSoon?.noteShort} desktop={clinic.note} />
             </p>
             {comingSoon?.formName ? (
               <div className="md:mt-auto xl:max-w-[640px]">
@@ -117,8 +110,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
                   {clinic.hours.map((h) => (
                     <div key={h.days} className="flex justify-between gap-4 md:contents">
                       <dt>
-                        <span className="md:hidden">{copy.daysLong[h.days] ?? h.days}</span>
-                        <span className="max-md:hidden">{h.days}</span>
+                        <ResponsiveText mobile={copy.daysLong[h.days]} desktop={h.days} />
                       </dt>
                       <dd className="font-semibold md:text-ink">{h.hours}</dd>
                     </div>

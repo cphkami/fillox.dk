@@ -1,5 +1,7 @@
 import type { Bestseller, ImageRef, PriceRow, Treatment } from "./types";
-import { treatmentCategories } from "./navigation";
+import { routes } from "./routes";
+import { blogPage } from "./pages/blog";
+import { practitionerBookingHref } from "@/lib/booking";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/config/site";
 
@@ -24,20 +26,37 @@ const row = (label: string, amount: number, extra: Omit<PriceRow, "label" | "pri
   ...extra,
 });
 
-const bookWith = (slug: string) => `${site.booking.href}?behandler=${slug}`;
+/** Booking link that preselects a practitioner: /booking?behandler=<slug> (lib/booking.ts). */
+const bookWith = practitionerBookingHref;
 
-/** The design's before/after pairs are placeholders: both halves crop the same photo. */
-const pair = (src: string, beforeAlt: string, afterAlt: string): { before: ImageRef; after: ImageRef } => ({
-  before: { src, alt: beforeAlt, position: "50% 50%" },
-  after: { src, alt: afterAlt, position: "50% 50%" },
-});
+/** Photos with their intrinsic size (the results section sizes each half from its aspect). */
+type Img = Required<Pick<ImageRef, "src" | "width" | "height">>;
 
 const IMG = {
-  duoPink: "/images/results/duo-pink.jpg",
-  duoColor: "/images/results/duo-color.jpg",
-  lipsA: "/images/results/before-after-2.jpg", // design: ba-1654374504608.jpg
-  lipsB: "/images/results/before-after-1.jpg", // design: ba-1643630661247.jpg
+  duoPink: { src: "/images/results/duo-pink.jpg", width: 2000, height: 1228 },
+  duoColor: { src: "/images/results/duo-color.jpg", width: 1600, height: 1096 },
+  lipsA: { src: "/images/results/before-after-2.jpg", width: 900, height: 1125 }, // design: ba-1654374504608.jpg
+  lipsB: { src: "/images/results/before-after-1.jpg", width: 900, height: 638 }, // design: ba-1643630661247.jpg
+} satisfies Record<string, Img>;
+
+/** What each placeholder photo actually shows (same wording as its other uses in /content). */
+const placeholderAlt: Record<string, string> = {
+  [IMG.duoPink.src]: "To smilende kvinder foran en rosa baggrund",
+  [IMG.duoColor.src]: "To smilende kvinder foran en beige og rosa baggrund",
+  [IMG.lipsA.src]: "Nærbillede af læber",
+  [IMG.lipsB.src]: "Nærbillede af læber og hage",
 };
+
+/**
+ * The design's before/after pairs are placeholders: both halves crop the same stock photo.
+ * Their alt text describes that photo, not a treatment result it does not show.
+ * TODO: real before/after photos (shared with the patient's consent) from Fillox; then give
+ * each half its own alt, e.g. "Læber før behandling med lip filler, 0,5 ml".
+ */
+const pair = (img: Img): { before: ImageRef; after: ImageRef } => ({
+  before: { ...img, alt: placeholderAlt[img.src] ?? "", position: "50% 50%" },
+  after: { ...img, alt: placeholderAlt[img.src] ?? "", position: "50% 50%" },
+});
 
 const resultsIntro =
   "Rigtige kunder, samme lys og samme vinkel før og efter. Alle billeder er delt med samtykke og uden filtre.";
@@ -58,7 +77,7 @@ export const treatments: Treatment[] = [
       title: "Lip Filler",
       lead: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, du kan altid bygge på senere.",
       heroImage: {
-        src: IMG.duoPink,
+        src: IMG.duoPink.src,
         alt: "To smilende kvinder foran en rosa baggrund",
         position: "50% 50%",
         width: 2000,
@@ -91,18 +110,18 @@ export const treatments: Treatment[] = [
       resultsIntro,
       results: [
         {
-          ...pair(IMG.lipsA, "Læber før behandling med lip filler, 0,5 ml", "Læber efter behandling med lip filler, 0,5 ml"),
+          ...pair(IMG.lipsA),
           caption: "Lip filler · 0,5 ml · 2026",
           mobileCaption: "0,5 ml · 2026",
         },
         {
-          ...pair(IMG.lipsB, "Læber før behandling med lip filler, 1,0 ml", "Læber efter behandling med lip filler, 1,0 ml"),
+          ...pair(IMG.lipsB),
           caption: "Lip filler · 1,0 ml · 2026",
           // The mobile design (mb) labels this pair "0,5 ml · 2026"; kept consistent with desktop.
           mobileCaption: "1,0 ml · 2026",
         },
         {
-          ...pair(IMG.lipsA, "Læber før behandling med lip filler, 0,7 ml", "Læber efter behandling med lip filler, 0,7 ml"),
+          ...pair(IMG.lipsA),
           caption: "Lip filler · 0,7 ml · 2025",
           mobileCaption: "0,7 ml · 2025",
         },
@@ -143,7 +162,7 @@ export const treatments: Treatment[] = [
       ],
       relatedPostsTitle: "Læs mere om lip filler",
       relatedPostsIntro,
-      relatedPostsLink: { label: "Alle artikler om lip filler", href: "/blog?kategori=filler" },
+      relatedPostsLink: { label: "Alle artikler om lip filler", href: blogPage.filterHref("filler") },
       relatedPostSlugs: [
         "lip-filler-for-foerste-gang",
         "lip-filler-0-5-eller-1-ml",
@@ -208,7 +227,7 @@ export const treatments: Treatment[] = [
     detail: {
       lead: "Blødere linjer i panden, mellem brynene og omkring øjnene, uden at du mister din mimik. Du ser udhvilet ud, ikke behandlet.",
       heroImage: {
-        src: IMG.duoColor,
+        src: IMG.duoColor.src,
         alt: "To smilende kvinder foran en beige og rosa baggrund",
         position: "50% 50%",
         width: 1600,
@@ -235,15 +254,15 @@ export const treatments: Treatment[] = [
       resultsIntro,
       results: [
         {
-          ...pair(IMG.duoPink, "Før rynkebehandling af panden", "Efter rynkebehandling af panden"),
+          ...pair(IMG.duoPink),
           caption: "Pande · 2026",
         },
         {
-          ...pair(IMG.duoColor, "Før rynkebehandling af kragetæer", "Efter rynkebehandling af kragetæer"),
+          ...pair(IMG.duoColor),
           caption: "Kragetæer · 2026",
         },
         {
-          ...pair(IMG.duoPink, "Før rynkebehandling af bekymringsrynken", "Efter rynkebehandling af bekymringsrynken"),
+          ...pair(IMG.duoPink),
           caption: "Bekymringsrynke · 2025",
         },
       ],
@@ -286,7 +305,7 @@ export const treatments: Treatment[] = [
       ],
       relatedPostsTitle: "Læs mere om botox",
       relatedPostsIntro,
-      relatedPostsLink: { label: "Alle artikler om botox", href: "/blog?kategori=botox" },
+      relatedPostsLink: { label: "Alle artikler om botox", href: blogPage.filterHref("botox") },
       relatedPostSlugs: [
         "botox-for-foerste-gang",
         "hvornaar-giver-det-mening-at-starte-med-botox",
@@ -435,7 +454,7 @@ function bestsellerCategory(categorySlug: string): Pick<Bestseller, "priceFrom" 
     .filter((t) => t.categorySlug === categorySlug)
     .flatMap((t) => (t.priceFrom === undefined ? [] : [t.priceFrom]));
   if (!prices.length) throw new Error(`bestsellers: empty category "${categorySlug}"`);
-  return { priceFrom: Math.min(...prices), href: `/behandlinger#${categorySlug}` };
+  return { priceFrom: Math.min(...prices), href: `${routes.treatments}#${categorySlug}` };
 }
 
 /** Home page "Vores bestsellers" (design 6a desktop, mf mobile). */
@@ -486,10 +505,6 @@ export function getTreatment(slug: string): Treatment | undefined {
   return treatments.find((t) => t.slug === slug);
 }
 
-export function getCategory(slug: string) {
-  return treatmentCategories.find((c) => c.slug === slug);
-}
-
 export function treatmentHref(slug: string): string {
-  return `/behandlinger/${slug}`;
+  return `${routes.treatments}/${slug}`;
 }

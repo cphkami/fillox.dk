@@ -22,14 +22,14 @@ export function AboutBand({ about }: { about: TreatmentView["about"] }) {
   // as the other intros. No effect up to the 1180 design width (545px column).
   const text = "grid gap-3.5 text-[16px] leading-[1.7] text-muted md:leading-[1.8] md:text-blush lg:max-w-[56ch]";
   return (
-    <Container as="section" gutter="surface" aria-labelledby="om-behandlingen" className="md:mt-surface">
+    <Container as="section" gutter="surface" aria-labelledby={copy.sectionIds.about} className="md:mt-surface">
       <div
         data-surface="plum"
         className="flex flex-col gap-3.5 rounded-[24px] bg-sand px-5 py-9 md:gap-8 md:bg-plum md:px-10 md:py-14 lg:grid lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-fluid-56 lg:px-14 lg:py-fluid-72 xl:px-16 2xl:px-20"
       >
         <div className="contents md:block">
           <h2
-            id="om-behandlingen"
+            id={copy.sectionIds.about}
             className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-5 md:text-[40px] md:leading-normal md:text-cream xl:text-h2"
           >
             {copy.about.title}

@@ -1,38 +1,28 @@
 import type { Metadata } from "next";
-import { GeckoEmbed } from "@/components/booking/GeckoEmbed";
+import { BookingEmbed } from "@/components/booking/BookingEmbed";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
 import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
+import { pageMetadata } from "@/lib/metadata";
 
 const copy = layoutCopy.booking;
-const { ogImage, titleTemplate } = layoutCopy.meta;
 
-export const metadata: Metadata = {
-  title: copy.metaTitle,
-  description: copy.metaDescription,
-  alternates: { canonical: site.booking.href },
-  // Nested objects replace the root layout's, so repeat the shared Open Graph fields.
-  openGraph: {
-    type: "website",
-    siteName: site.name,
-    locale: site.locale.replace("-", "_"),
-    url: site.booking.href,
-    title: titleTemplate.replace("%s", copy.metaTitle),
-    description: copy.metaDescription,
-    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }],
-  },
-};
+export const metadata: Metadata = pageMetadata(
+  { title: copy.metaTitle, description: copy.metaDescription },
+  site.booking.href,
+);
 
 /**
- * /booking — intro + Gecko Booking calendar (mirrors the live fillox.dk/booking).
+ * /booking — intro + the online booking of the market's provider (components/booking/BookingEmbed:
+ * the Gecko Booking calendar on fillox.dk, mirroring the live fillox.dk/booking; a clinic picker +
+ * TIMMA reservation page on fillox.no).
  * Wide (≥1280px): the intro band spans the surface band with the help block beside the
  * intro (hairline on its left) instead of under it; type and padding grow with the viewport.
  * The band's side padding matches the other heroes (64px at 1280, 80px from 1536px), so its
  * text lines up with the footer. The help block is capped at 440px, so longer help copy
  * (other markets) wraps instead of squeezing the intro.
- * The calendar card spans the band too, but Gecko's fluid calendar keeps its 1280px width
- * (1184px) and is centred in the card: wider, its rows (service ↔ price) and progress bar
- * spread too far apart to read. Card and calendar are both white, so no edge shows.
+ * The white booking card spans the band too; BookingEmbed sizes it and the embed inside it
+ * per provider. Card and Gecko calendar are both white, so no edge shows.
  */
 export default function BookingPage() {
   return (
@@ -67,16 +57,7 @@ export default function BookingPage() {
       </Container>
 
       <Container gutter="surface" className="mt-surface">
-        <div className="min-h-[640px] overflow-hidden rounded-[24px] bg-white p-2 md:p-6 2xl:p-8">
-          {/* TODO(timma): render the TIMMA clinic picker when booking.provider === "timma" (fillox.no). */}
-          {site.booking.provider === "gecko" && (
-            <GeckoEmbed
-              host={site.booking.geckoHost}
-              icCode={site.booking.geckoIcCode}
-              className="mx-auto xl:max-w-[1184px]"
-            />
-          )}
-        </div>
+        <BookingEmbed className="overflow-hidden rounded-[24px] bg-white p-2 md:p-6 2xl:p-8" />
       </Container>
     </>
   );

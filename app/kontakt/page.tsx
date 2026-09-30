@@ -3,33 +3,17 @@ import { ContactChannels } from "@/components/contact/ContactChannels";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ContactJsonLd } from "@/components/contact/ContactJsonLd";
 import { VisitClinics } from "@/components/contact/VisitClinics";
-import { Container, Eyebrow } from "@/components/ui";
-import { site } from "@/config/site";
+import { Container, Eyebrow, ResponsiveText } from "@/components/ui";
 import { clinics, openClinics } from "@/content/clinics";
-import { layoutCopy } from "@/content/layout";
-import { mainNav } from "@/content/navigation";
 import { contactPage } from "@/content/pages/contact";
+import { routes } from "@/content/routes";
+import { pageMetadata } from "@/lib/metadata";
 
-const PATH = "/kontakt";
+const PATH = routes.contact;
 const { meta, hero } = contactPage;
-const { ogImage, titleTemplate } = layoutCopy.meta;
-const clinicsHref = mainNav.find((n) => n.kind === "clinics")?.href ?? "/klinikker";
+const clinicsHref = routes.clinics;
 
-export const metadata: Metadata = {
-  title: meta.title,
-  description: meta.description,
-  alternates: { canonical: PATH },
-  // Nested objects replace the root layout's, so repeat the shared Open Graph fields.
-  openGraph: {
-    type: "website",
-    siteName: site.name,
-    locale: site.locale.replace("-", "_"),
-    url: PATH,
-    title: titleTemplate.replace("%s", meta.title),
-    description: meta.description,
-    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }],
-  },
-};
+export const metadata: Metadata = pageMetadata(meta, PATH);
 
 /** /kontakt — Kontakt (design 6ko desktop, mc mobile). */
 export default function ContactPage() {
@@ -49,8 +33,7 @@ export default function ContactPage() {
               {hero.title}
             </h1>
             <p className="text-[16px] leading-[1.7] text-muted md:mb-9 md:max-w-[42ch] md:text-lead md:leading-[1.75]">
-              <span className="md:hidden">{hero.introShort}</span>
-              <span className="max-md:hidden">{hero.intro}</span>
+              <ResponsiveText mobile={hero.introShort} desktop={hero.intro} />
             </p>
             <ContactChannels channels={contactPage.channels} label={contactPage.channelsLabel} />
           </div>

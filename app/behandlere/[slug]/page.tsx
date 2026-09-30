@@ -8,11 +8,10 @@ import { PractitionerHero } from "@/components/practitioner/PractitionerHero";
 import { resolveProfile } from "@/components/practitioner/profile";
 import { ReviewSection } from "@/components/practitioner/ReviewSection";
 import { TeamRow } from "@/components/practitioner/TeamRow";
-import { ORGANIZATION_ID } from "@/components/seo";
-import { site } from "@/config/site";
-import { layoutCopy } from "@/content/layout";
+import { JsonLd, ORGANIZATION_ID, absoluteUrl, breadcrumbList } from "@/components/seo";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { getTeamMember, team, teamMemberHref } from "@/content/team";
+import { sharedOpenGraph, shareImage, shareTitle } from "@/lib/metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -43,19 +42,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: href },
     openGraph: {
       type: "profile",
-      siteName: site.name,
-      locale: site.locale.replace("-", "_"),
+      ...sharedOpenGraph,
       url: href,
-      title: layoutCopy.meta.titleTemplate.replace("%s", title),
+      title: shareTitle(title),
       description,
-      images: [
-        {
-          url: profile.desktopImage.src,
-          width: profile.desktopImage.width,
-          height: profile.desktopImage.height,
-          alt: profile.desktopImage.alt,
-        },
-      ],
+      images: [shareImage(profile.desktopImage)],
     },
   };
 }
@@ -76,26 +67,30 @@ export default async function PractitionerPage({ params }: Props) {
     profile.approach || profile.offers || profile.experience || profile.reviews.length > 0,
   );
 
-  const url = new URL(teamMemberHref(member.slug), site.url).toString();
+  const url = absoluteUrl(teamMemberHref(member.slug));
+  // The visible breadcrumb ("Om os → Behandlere → Alberte") as a BreadcrumbList.
+  const crumbs = [...practitionerPage.breadcrumb.items, { label: profile.name, href: teamMemberHref(member.slug) }];
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    // Same @id as the blog author node, so a profile and its articles are one entity.
-    "@id": `${url}#person`,
-    name: profile.displayName,
-    jobTitle: profile.title,
-    description: profile.intro,
-    image: new URL(profile.desktopImage.src, site.url).toString(),
-    url,
-    worksFor: { "@id": ORGANIZATION_ID },
+    "@graph": [
+      {
+        "@type": "Person",
+        // Same @id as the blog author node, so a profile and its articles are one entity.
+        "@id": `${url}#person`,
+        name: profile.displayName,
+        jobTitle: profile.title,
+        description: profile.intro,
+        image: absoluteUrl(profile.desktopImage.src),
+        url,
+        worksFor: { "@id": ORGANIZATION_ID },
+      },
+      breadcrumbList(crumbs),
+    ],
   };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
-      />
+      <JsonLd data={jsonLd} />
       <div className="flex flex-col gap-surface">
         <PractitionerHero profile={profile} titleId={id("name")} />
         {profile.approach ? <ApproachSection approach={profile.approach} titleId={id("approach")} /> : null}

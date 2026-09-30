@@ -1,8 +1,7 @@
-import { Container } from "@/components/ui";
+import { Container, ResponsiveText } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
 import type { Review } from "@/content/types";
 import { ui } from "@/content/ui";
-import { Responsive } from "./Responsive";
 
 /**
  * Customer quote(s) with stars (6alb: large centred quote on the page background;
@@ -28,7 +27,7 @@ export function ReviewSection({ reviews }: { reviews: Review[] }) {
               <blockquote className="text-[17px] leading-[1.55] font-medium md:mx-auto md:mb-4 md:max-w-[30em] md:text-[24px] md:leading-[1.4] md:font-semibold md:tracking-display lg:text-quote">
                 <p>
                   {quoteOpen}
-                  <Responsive mobile={review.quoteShort} desktop={review.quote} />
+                  <ResponsiveText mobile={review.quoteShort} desktop={review.quote} />
                   {quoteClose}
                 </p>
               </blockquote>

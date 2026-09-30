@@ -1,8 +1,6 @@
 import Link from "next/link";
-import { Container, Photo, SectionHeading } from "@/components/ui";
+import { Container, Photo, ResponsiveText, ScrollRow, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
-import { ResponsiveText } from "./ResponsiveText";
-import { ScrollRow } from "./ScrollRow";
 
 /**
  * Rendered width of the result photos. The landscape photos are cover-cropped into
@@ -37,7 +35,7 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
         <SectionHeading
           id="home-results-title"
           title={copy.title}
-          intro={<ResponsiveText short={copy.introShort} long={copy.intro} />}
+          intro={<ResponsiveText mobile={copy.introShort} desktop={copy.intro} />}
           align="left"
           leading="normal"
           className="mb-4 lg:mb-fluid-50 lg:text-center"

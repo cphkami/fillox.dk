@@ -6,8 +6,10 @@ import { ArticleJsonLd } from "@/components/blog/ArticleJsonLd";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { buildArticleView } from "@/components/blog/articleView";
-import { sharedOpenGraph, shareImage, shareTitle } from "@/components/blog/metadata";
+import { absoluteUrl } from "@/components/seo";
 import { getPost, posts } from "@/content/blog";
+import { teamMemberHref } from "@/content/team";
+import { sharedOpenGraph, shareImage, shareTitle } from "@/lib/metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -23,13 +25,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPost(slug);
   if (!post) return {};
   const view = buildArticleView(post);
-  const author = view.author ? [view.author.fullName ?? view.author.name] : undefined;
+  // The author's profile page: article:author expects a profile URL, and `authors` with a
+  // url also emits <link rel="author">.
+  const author = view.author
+    ? { name: view.author.fullName ?? view.author.name, url: absoluteUrl(teamMemberHref(view.author.slug)) }
+    : undefined;
   return {
     title: post.title,
     description: post.excerpt,
     alternates: { canonical: view.path },
-    authors: author?.map((name) => ({ name })),
-    // Replaces the root layout's openGraph as a whole (see components/blog/metadata.ts).
+    // An excerpt-only post (no written body yet) stays out of the index until its text exists.
+    ...(view.hasBody ? {} : { robots: { index: false, follow: true } }),
+    authors: author ? [author] : undefined,
+    // Replaces the root layout's openGraph as a whole (see lib/metadata.ts).
     openGraph: {
       type: "article",
       ...sharedOpenGraph,
@@ -37,9 +45,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt,
       url: view.path,
       publishedTime: post.date,
-      authors: author,
+      authors: author ? [author.url] : undefined,
       section: post.category,
-      tags: [post.category, post.kind].filter((t): t is string => Boolean(t)),
+      // Category and kind can be the same ("Efterpleje"): one tag each.
+      tags: Array.from(new Set([post.category, post.kind].filter((t): t is string => Boolean(t)))),
       images: [shareImage(post.image)],
     },
   };

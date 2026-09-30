@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLink, Container, Photo } from "@/components/ui";
+import { ArrowLink, Container, Photo, ScrollRow } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { teamMemberHref } from "@/content/team";
 import type { TeamMember } from "@/content/types";
@@ -26,10 +26,12 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
           {copy.title}
         </h2>
 
-        {/* Below 768px: scroll row bleeding to the right edge; the 6px padding keeps focus rings unclipped. */}
-        <ul
+        {/* Below 768px: scroll row bleeding to the right edge; the 6px padding keeps focus rings
+            unclipped, and ScrollRow brings a keyboard-focused card fully into view. */}
+        <ScrollRow
+          unstyled
           aria-label={copy.listLabel}
-          className="-my-1.5 -mr-5 -ml-1.5 flex snap-x snap-mandatory scroll-pl-1.5 gap-3 overflow-x-auto overscroll-x-contain py-1.5 pr-5 pl-1.5 [scrollbar-width:none] md:m-0 md:grid md:snap-none md:grid-cols-4 md:gap-5 md:overflow-visible 2xl:gap-6 md:p-0 [&::-webkit-scrollbar]:hidden"
+          className="-my-1.5 -mr-5 -ml-1.5 flex snap-x snap-mandatory scroll-pr-5 scroll-pl-1.5 gap-3 overflow-x-auto overscroll-x-contain py-1.5 pr-5 pl-1.5 [scrollbar-width:none] md:m-0 md:grid md:snap-none md:grid-cols-4 md:gap-5 md:overflow-visible 2xl:gap-6 md:p-0 [&::-webkit-scrollbar]:hidden"
         >
           {members.map((member) => (
             <li key={member.slug} className="w-[150px] flex-none snap-start md:w-auto">
@@ -51,7 +53,7 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
               </Link>
             </li>
           ))}
-        </ul>
+        </ScrollRow>
 
         <p className="text-[15px] leading-[44px] md:mt-fluid-48 md:text-center md:text-[14px] md:leading-normal">
           <ArrowLink href={copy.link.href} className="max-md:text-[15px]">

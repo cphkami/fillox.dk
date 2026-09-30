@@ -11,6 +11,6 @@ export { priceCards };
 
 export const pricesPage = {
   ...pricesPageBase,
-  /** Singular of `countSuffix` for a card with a single row ("1 behandling"). */
-  countSuffixOne: "behandling",
+  /** Mobile accordion subtitle: "9 behandlinger" / "1 behandling". */
+  count: (n: number) => `${n} ${n === 1 ? "behandling" : pricesPageBase.countSuffix}`,
 };

@@ -1,5 +1,6 @@
 import { site } from "@/config/site";
 import type { FormName } from "@/lib/forms";
+import { forms } from "../forms";
 import { ui } from "../ui";
 
 /**
@@ -123,7 +124,7 @@ export const contactPage = {
   ] satisfies ContactChannel[],
 
   form: {
-    formName: "kontakt",
+    formName: forms.contact,
     noJsAction: "/__kontakt-sendt.html",
     title: "Send en besked",
     fields: {

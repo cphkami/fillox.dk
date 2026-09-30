@@ -2,32 +2,17 @@ import type { Metadata } from "next";
 import { ClinicCard } from "@/components/clinics/ClinicCard";
 import { ClinicMap } from "@/components/clinics/ClinicMap";
 import { UspStrip } from "@/components/clinics/UspStrip";
-import { containerClasses, Eyebrow } from "@/components/ui";
-import { site } from "@/config/site";
+import { containerClasses, Eyebrow, ResponsiveText } from "@/components/ui";
 import { clinics } from "@/content/clinics";
-import { layoutCopy } from "@/content/layout";
 import { clinicsPage } from "@/content/pages/clinics";
+import { routes } from "@/content/routes";
 import { cn } from "@/lib/cn";
+import { pageMetadata } from "@/lib/metadata";
 
-const PATH = "/klinikker";
+const PATH = routes.clinics;
 const { hero, map, meta } = clinicsPage;
-const { ogImage, titleTemplate } = layoutCopy.meta;
 
-export const metadata: Metadata = {
-  title: meta.title,
-  description: meta.description,
-  alternates: { canonical: PATH },
-  // Nested objects replace the root layout's, so repeat the shared Open Graph fields.
-  openGraph: {
-    type: "website",
-    siteName: site.name,
-    locale: site.locale.replace("-", "_"),
-    url: PATH,
-    title: titleTemplate.replace("%s", meta.title),
-    description: meta.description,
-    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }],
-  },
-};
+export const metadata: Metadata = pageMetadata(meta, PATH);
 
 /** /klinikker — "Find klinik" (design 6kl desktop, mk mobile). */
 export default function ClinicsPage() {
@@ -43,8 +28,7 @@ export default function ClinicsPage() {
             {hero.title}
           </h1>
           <p className="text-[16px] leading-[1.7] text-muted md:mx-auto md:max-w-[52ch] md:text-[18px] md:leading-[1.75] xl:text-lead">
-            <span className="md:hidden">{hero.introShort}</span>
-            <span className="max-md:hidden">{hero.intro}</span>
+            <ResponsiveText mobile={hero.introShort} desktop={hero.intro} />
           </p>
           <ClinicMap label={map.label} image={map.image} pins={map.pins} clinics={clinics} className="md:hidden" />
         </div>

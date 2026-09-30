@@ -2,6 +2,8 @@ import type { ImageRef, Link } from "../types";
 import { site } from "@/config/site";
 import { formatDecimal } from "@/lib/format";
 import { ui } from "../ui";
+import { routes } from "../routes";
+import { treatmentHref } from "../treatments";
 
 /**
  * Front page copy (design 6a desktop, mf mobile). Copy is verbatim from the design.
@@ -34,7 +36,7 @@ export const homePage = {
     lead: "Hos Fillox får du trygge, professionelle behandlinger, udført af læger og sygeplejersker og tilpasset din egen anatomi.",
     leadShort: "Trygge, professionelle behandlinger, udført af læger og sygeplejersker og tilpasset din egen anatomi.",
     primaryCta: { label: ui.bookCta, href: site.booking.href } satisfies Link,
-    secondaryCta: { label: ui.seePrices, href: "/priser" } satisfies Link,
+    secondaryCta: { label: ui.seePrices, href: routes.prices } satisfies Link,
     image: {
       src: "/images/hero/hero-1.jpg",
       // TODO: copy review (alt text)
@@ -61,7 +63,7 @@ export const homePage = {
     intro:
       "Du starter altid med en konsultation. Din behandler vurderer din anatomi og lægger en plan sammen med dig, og vi behandler kun, når det giver mening.",
     introShort: "Du starter altid med en konsultation, og vi behandler kun, når det giver mening.",
-    cta: { label: ui.seeAllTreatments, href: "/behandlinger" } satisfies Link,
+    cta: { label: ui.seeAllTreatments, href: routes.treatments } satisfies Link,
   },
 
   results: {
@@ -80,7 +82,7 @@ export const homePage = {
           position: "50% 50%",
         },
         caption: "lip filler, 2026",
-        href: "/behandlinger/lip-filler",
+        href: treatmentHref("lip-filler"),
       },
       {
         image: {
@@ -89,7 +91,7 @@ export const homePage = {
           position: "50% 50%",
         },
         caption: "botox, 2026",
-        href: "/behandlinger/botox",
+        href: treatmentHref("botox"),
       },
       {
         image: {
@@ -98,14 +100,14 @@ export const homePage = {
           position: "50% 50%",
         },
         caption: "skinbooster, 2025",
-        href: "/behandlinger/skinbooster",
+        href: treatmentHref("skinbooster"),
       },
     ] satisfies ResultPhoto[],
   },
 
   team: {
     title: "Mød dem, der behandler dig",
-    link: { label: "Mød hele teamet", href: "/om-os#behandlere" } satisfies Link,
+    link: { label: "Mød hele teamet", href: routes.aboutTeam } satisfies Link,
     // TODO: copy review (accessible name of the mobile scroll row, not in the design)
     listLabel: "Vores behandlere",
   },

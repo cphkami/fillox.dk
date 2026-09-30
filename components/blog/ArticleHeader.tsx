@@ -48,7 +48,7 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
 
         <Eyebrow>{joinMeta(post.category, post.kind)}</Eyebrow>
 
-        <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display md:text-[48px] xl:text-h1-xs">{post.title}</h1>
+        <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display text-pretty md:text-[48px] xl:text-h1-xs">{post.title}</h1>
 
         <div className="flex items-center gap-2.5 md:gap-3">
           {author ? (
@@ -69,11 +69,16 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
             <time dateTime={post.date}>
               <Responsive mobile={copy.formatDateShort(post.date)} desktop={copy.formatDate(post.date)} />
             </time>
-            <span className="md:hidden">
-              <br />
-            </span>
-            <span className="max-md:hidden">{blogPage.separator}</span>
-            {post.readingTime}
+            {/* An excerpt-only post (no written body yet) claims no reading time. */}
+            {view.hasBody ? (
+              <>
+                <span className="md:hidden">
+                  <br />
+                </span>
+                <span className="max-md:hidden">{blogPage.separator}</span>
+                {post.readingTime}
+              </>
+            ) : null}
           </p>
         </div>
       </div>

@@ -55,6 +55,12 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
     setOpen(null);
   }
 
+  // Closed panels stay in the layout (invisible), so their contents would load on every page view:
+  // panel links are prefetched only while their panel is open (the routes still load before the
+  // click), and the mega menu's promo photo is mounted once that menu has been opened.
+  const [megaOpened, setMegaOpened] = useState(false);
+  if (open === "treatments" && !megaOpened) setMegaOpened(true);
+
   const close = useCallback(() => {
     window.clearTimeout(closeTimer.current);
     hoverOpened.current = false;
@@ -189,6 +195,8 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
           type="button"
           aria-expanded={isOpen}
           aria-controls={panelId}
+          // The underline marks the current section; say so to screen readers too.
+          aria-current={active ? "true" : undefined}
           onClick={() => onTriggerClick(id)}
           onKeyDown={onTriggerKeyDown(id)}
           className={cn(
@@ -235,28 +243,34 @@ export function DesktopNav({ items, label, megaColumns, megaPromo, clinics, clin
               return renderDropdown(
                 item,
                 "treatments",
-                <MegaMenu columns={megaColumns} promo={megaPromo} onNavigate={close} />,
+                <MegaMenu
+                  columns={megaColumns}
+                  promo={megaPromo}
+                  open={open === "treatments"}
+                  showPromoPhoto={megaOpened}
+                  onNavigate={close}
+                />,
                 "mega",
               );
             case "prices":
               return renderDropdown(
                 item,
                 "prices",
-                <PricesDropdown prices={prices} onNavigate={close} />,
+                <PricesDropdown prices={prices} open={open === "prices"} onNavigate={close} />,
                 "below",
               );
             case "clinics":
               return renderDropdown(
                 item,
                 "clinics",
-                <ClinicsDropdown clinics={clinics} allHref={clinicsHref} onNavigate={close} />,
+                <ClinicsDropdown clinics={clinics} allHref={clinicsHref} open={open === "clinics"} onNavigate={close} />,
                 "below",
               );
             case "menu":
               return renderDropdown(
                 item,
                 `menu-${item.href}`,
-                <LinksDropdown items={item.items} onNavigate={close} />,
+                <LinksDropdown items={item.items} open={open === `menu-${item.href}`} onNavigate={close} />,
                 "below",
               );
             default: {

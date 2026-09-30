@@ -9,11 +9,6 @@ import { getPost, sortedPosts } from "@/content/blog";
 import { ui } from "@/content/ui";
 import { formatPrice } from "@/lib/format";
 
-export { getTreatment, getCategory, treatmentHref } from "@/content/treatments";
-export { getTeamMember, teamMemberHref } from "@/content/team";
-export { getPost, getPostsByCategory, getFeaturedPost, sortedPosts, blogPostHref } from "@/content/blog";
-export { getPriceCard } from "@/content/prices";
-
 /** "fra 999 kr" */
 export function formatPriceFrom(amount: number): string {
   return `${ui.from} ${formatPrice(amount)}`;

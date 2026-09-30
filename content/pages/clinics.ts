@@ -3,6 +3,7 @@ import { site } from "@/config/site";
 import { legalNav } from "../navigation";
 import { ui } from "../ui";
 import type { FormName } from "@/lib/forms";
+import { forms } from "../forms";
 
 /**
  * Copy for /klinikker — "Find klinik" (design 6kl desktop, mk mobile). The clinics
@@ -138,7 +139,7 @@ export const clinicsPage = {
       openingNoteShort: "Åbner 1. nov",
       noteShort: "Vi åbner på Østerbro 1. november. Skriv dig op, så får du besked.",
       /** Netlify form the "Få besked" signup posts to (see public/__forms.html). */
-      formName: "osterbro-besked",
+      formName: forms.notifyOsterbro,
     },
   } as Record<string, { openingNoteShort?: string; noteShort?: string; formName?: FormName }>,
 

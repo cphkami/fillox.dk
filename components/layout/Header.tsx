@@ -22,13 +22,21 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-cream">
       <div className="relative mx-auto flex w-full max-w-canvas items-center justify-between gap-4 px-gutter py-3.5 lg:grid lg:grid-cols-[auto_1fr_auto] lg:gap-8 lg:py-[22px]">
-        <Link href="/" aria-label={layoutCopy.header.homeLabel} className="shrink-0 rounded-sm">
+        {/* The dark logo would vanish on a dark Windows high-contrast canvas: keep a white plate behind it there. */}
+        <Link
+          href="/"
+          aria-label={layoutCopy.header.homeLabel}
+          className="shrink-0 rounded-sm forced-colors:bg-white forced-colors:outline-[color:CanvasText] forced-colors:forced-color-adjust-none"
+        >
           <Image
             src={site.brand.logoDark}
             alt=""
             width={site.brand.logoWidth}
             height={site.brand.logoHeight}
-            preload
+            // Eager + low priority, not `preload`: the logo is never the LCP. React emits a preload link for
+            // every eager <img> unless its fetchPriority is "low", and that link would compete with the hero's.
+            loading="eager"
+            fetchPriority="low"
             className="h-[26px] w-auto lg:h-10"
           />
         </Link>

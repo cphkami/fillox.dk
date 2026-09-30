@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 import { ContactChannels } from "@/components/contact/ContactChannels";
 import { ButtonLink, Container, Eyebrow } from "@/components/ui";
 import { contactPage } from "@/content/pages/contact";
+import { routes } from "@/content/routes";
+import { pageMetadata } from "@/lib/metadata";
 
-const CONTACT_PATH = "/kontakt";
 const { hero, form } = contactPage;
 
 export const metadata: Metadata = {
-  title: form.success.title,
-  description: form.success.text,
-  alternates: { canonical: `${CONTACT_PATH}/tak` },
+  ...pageMetadata({ title: form.success.title, description: form.success.text }, routes.contactThanks),
   robots: { index: false, follow: true },
 };
 
@@ -19,7 +18,8 @@ export const metadata: Metadata = {
  * that file, which forwards here. With JavaScript the form shows the same text in place.
  * Not in the design; styled like the /kontakt hero panel. From lg the panel is two columns
  * like /kontakt: the text on the left, the contact cards on the right (as with JavaScript,
- * where the success text replaces the form next to the cards). Below lg only the text.
+ * where the success text replaces the form next to the cards). Below lg the cards stack
+ * under the text, as on /kontakt (mc).
  * Not in the sitemap (noindex).
  */
 export default function ContactThanksPage() {
@@ -30,18 +30,18 @@ export default function ContactThanksPage() {
           <Eyebrow className="mb-[18px] max-md:hidden">{hero.eyebrow}</Eyebrow>
           <h1
             id="kontakt-tak-title"
-            className="text-[36px] leading-[1.08] font-semibold tracking-display text-ink md:mb-[22px] md:text-[52px] md:leading-[1.02] lg:text-h1"
+            className="text-[36px] leading-[1.08] font-semibold tracking-display text-balance text-ink md:mb-[22px] md:text-[52px] md:leading-[1.02] lg:text-h1"
           >
             {form.success.title}
           </h1>
           <p className="mt-4 text-[16px] leading-[1.7] text-muted md:mt-0 md:max-w-[42ch] md:text-lead md:leading-[1.75]">
             {form.success.text}
           </p>
-          <ButtonLink href={CONTACT_PATH} size="md" mobileSize="lg" fullWidth="mobile" className="mt-8 md:mt-9">
+          <ButtonLink href={routes.contact} size="md" mobileSize="lg" fullWidth="mobile" className="mt-8 md:mt-9">
             {form.success.again}
           </ButtonLink>
         </div>
-        <div className="max-lg:hidden">
+        <div className="mt-10 lg:mt-0">
           <ContactChannels channels={contactPage.channels} label={contactPage.channelsLabel} />
         </div>
       </div>

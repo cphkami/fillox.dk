@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ArrowLink, Container, Photo, SectionHeading } from "@/components/ui";
+import { ArrowLink, Container, Photo, ScrollRow, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import type { TeamMember } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { teamMemberHref } from "@/lib/content";
-import { ScrollRow } from "./ScrollRow";
+import { teamMemberHref } from "@/content/team";
 
 /**
  * "Mød hele teamet →". It sits under the heading on desktop and under the row on

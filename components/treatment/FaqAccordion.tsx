@@ -1,16 +1,11 @@
 "use client";
 
-import { useId, useState, useSyncExternalStore } from "react";
+import { useId, useState } from "react";
 import type { FaqItem } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 
 const MOBILE_QUERY = "(max-width: 767.98px)";
-
-function subscribe(onChange: () => void) {
-  const mql = window.matchMedia(MOBILE_QUERY);
-  mql.addEventListener("change", onChange);
-  return () => mql.removeEventListener("change", onChange);
-}
 
 /**
  * FAQ accordion. Desktop (6c/6bx) starts with every item closed; mobile (mb) shows the
@@ -19,11 +14,7 @@ function subscribe(onChange: () => void) {
  */
 export function FaqAccordion({ items }: { items: FaqItem[] }) {
   const baseId = useId();
-  const isMobile = useSyncExternalStore(
-    subscribe,
-    () => window.matchMedia(MOBILE_QUERY).matches,
-    () => false,
-  );
+  const isMobile = useMediaQuery(MOBILE_QUERY);
   // `undefined` = untouched: follow the per-breakpoint default.
   const [openState, setOpenState] = useState<Set<number> | undefined>(undefined);
   const open = openState ?? new Set(isMobile ? [0] : []);

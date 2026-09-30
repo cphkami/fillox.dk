@@ -3,8 +3,7 @@
  * (with the excerpt-only fallback), breadcrumb links and "Læs også" entries.
  * Pure data — no React, no copy of its own (labels come from content/pages/blog.ts).
  */
-import { site } from "@/config/site";
-import { blogFilters, blogPostHref } from "@/content/blog";
+import { blogFilters, blogPostHref, hasArticleBody } from "@/content/blog";
 import { blogArticle, blogPage } from "@/content/pages/blog";
 import { getTeamMember } from "@/content/team";
 import type { BlogBlock, BlogPost, TeamMember } from "@/content/types";
@@ -17,6 +16,11 @@ export type ArticleView = {
   /** Filter chip of the post's category, for the breadcrumb ("Blog → Botox"). */
   category: { label: string; href: string };
   blocks: BlogBlock[];
+  /**
+   * False for an excerpt-only post (no written `body` yet): the page is noindex and shows
+   * no reading time (content/blog.ts → hasArticleBody).
+   */
+  hasBody: boolean;
   related: RelatedEntry[];
 };
 
@@ -34,6 +38,7 @@ function fallbackBlocks(post: BlogPost): BlogBlock[] {
   ];
 }
 
+/** Everything /blog/[slug] renders for `post`, with the fallbacks applied. */
 export function buildArticleView(post: BlogPost): ArticleView {
   const filter = blogFilters.find((f) => f.slug === post.categorySlug);
   return {
@@ -45,11 +50,7 @@ export function buildArticleView(post: BlogPost): ArticleView {
       href: filter ? blogPage.filterHref(filter.slug) : blogPage.path,
     },
     blocks: post.body?.length ? post.body : fallbackBlocks(post),
+    hasBody: hasArticleBody(post),
     related: relatedEntries(post, blogArticle.related.count, blogArticle.related.countMobile),
   };
-}
-
-/** Absolute URL for a site path. */
-export function absoluteUrl(path: string): string {
-  return new URL(path, site.url).toString();
 }

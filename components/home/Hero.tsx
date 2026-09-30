@@ -1,8 +1,7 @@
 import { Fragment } from "react";
-import { ButtonLink, Container, Eyebrow, Photo, TrustpilotRating } from "@/components/ui";
+import { ButtonLink, Container, Eyebrow, Photo, ResponsiveText, TrustpilotRating } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import { cn } from "@/lib/cn";
-import { ResponsiveText } from "./ResponsiveText";
 
 /**
  * Front page hero (6a / mf): sand panel with eyebrow, H1, lead, CTAs, Trustpilot and
@@ -39,7 +38,7 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
           </h1>
 
           <p className="text-[16px] leading-[1.7] text-muted md:mb-[34px] md:max-w-[40ch] md:text-lead md:leading-[1.75]">
-            <ResponsiveText short={hero.leadShort} long={hero.lead} />
+            <ResponsiveText mobile={hero.leadShort} desktop={hero.lead} />
           </p>
 
           <div className="flex items-center gap-4 md:mb-[22px] md:gap-[18px]">

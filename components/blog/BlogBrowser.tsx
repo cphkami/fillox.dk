@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
-import { Container, buttonClasses, containerClasses } from "@/components/ui";
+import { Container, buttonClasses, containerClasses, forcedColorsSelected, revealFocusedItem } from "@/components/ui";
 import { blogPage as copy } from "@/content/pages/blog";
 import type { BlogFilter } from "@/content/types";
 import { cn } from "@/lib/cn";
@@ -160,10 +160,12 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
           ref={rowRef}
           role="group"
           aria-label={copy.filters.label}
+          // Brings a keyboard-focused chip fully into view in the scrolling mobile row.
+          onFocus={revealFocusedItem}
           className={cn(
             "relative mt-[10px] flex gap-2 md:mt-8 md:flex-wrap md:justify-center md:gap-2.5",
             // Mobile: horizontal scroll row bleeding off the right edge (focus rings stay unclipped).
-            "max-md:-mr-5 max-md:-mb-1.5 max-md:-ml-1.5 max-md:snap-x max-md:snap-mandatory max-md:scroll-pl-1.5 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:py-1.5 max-md:pr-5 max-md:pl-1.5 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden",
+            "max-md:-mr-5 max-md:-mb-1.5 max-md:-ml-1.5 max-md:snap-x max-md:snap-mandatory max-md:scroll-pr-5 max-md:scroll-pl-1.5 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:py-1.5 max-md:pr-5 max-md:pl-1.5 max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden",
           )}
         >
           {filters.map((filter) => {
@@ -180,6 +182,8 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
                   buttonClasses({ variant: isActive ? "primary" : "white", size: "chip" }),
                   // Same 1px border as the inactive chips, so switching filters never shifts the row.
                   isActive && "border border-plum hover:border-plum-deep",
+                  // Windows high contrast replaces the plum fill: mark the pressed chip in system colours.
+                  isActive && forcedColorsSelected,
                   "shrink-0 snap-start",
                   filter.desktopOnly && !isActive && "max-md:hidden",
                 )}

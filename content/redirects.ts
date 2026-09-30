@@ -81,6 +81,9 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/author/:slug", destination: "/blog", note: "WordPress forfatterarkiver" },
   { source: "/wp-sitemap.xml", destination: "/sitemap.xml", note: "WordPress sitemap" },
   { source: "/sitemap_index.xml", destination: "/sitemap.xml", note: "Yoast sitemap-sti" },
+  { source: "/feed", destination: "/blog", note: "WordPress RSS-feed (standard-sti)" },
+  { source: "/comments/feed", destination: "/blog", note: "WordPress kommentar-feed" },
+  { source: "/blog/feed", destination: "/blog", note: "RSS-feed under /blog" },
 
   /* ------------------ Norske stier, som det gamle danske site linkede til */
   { source: "/filler/leppefiller", destination: "/behandlinger/lip-filler" },

@@ -12,7 +12,9 @@ lives in two places:
 
 **Rule: components and pages never contain market copy.** No Danish strings, prices,
 phone numbers or addresses in `components/` or `app/`. They import from `content/`
-and `config/`. Rebranding to NO = swap `config/site.ts` + `content/**` (+ images).
+and `config/`. Rebranding to NO = swap `config/site.ts` + `content/**` (+ images); the
+step-by-step list (route folders, `public/` form files, TIMMA ids, what to watch out for) is
+in `README.md` → "Rebranding til fillox.no".
 
 ## Stack
 
@@ -40,10 +42,20 @@ content/
   ui.ts                        shared UI strings ("Book tid", "Se priser", "Læs mere" …)
   pages/<page>.ts              page-specific copy (home, about, prices, clinics, contact, blog …)
   redirects.ts                 legacy fillox.dk URLs → new routes
-lib/                           helpers (formatPrice, cn, …)
+  routes.ts                    every route path; code, canonicals and the sitemap link through it
+lib/                           helpers (formatPrice, cn, …); metadata.ts builds every route's
+                               metadata + Open Graph (pageMetadata), forms.ts posts to Netlify Forms
+scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
+                               redirect targets, no-JS contact form target, Netlify form names,
+                               booking provider ids, clinic address/hours parse for JSON-LD,
+                               no æ/ø/å strings in app/, components/, lib/
+scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
-  layout/                      Header, MegaMenu, MobileMenu, Footer, ContactBand
-  ui/                          primitives: Button, Eyebrow, SectionHeading, Stars, Photo, …
+  layout/                      Header (DesktopNav, MegaMenu, DropdownMenu, MobileMenu), Footer
+  booking/                     BookingEmbed (switches on the booking provider), GeckoEmbed, TimmaEmbed
+  ui/                          primitives: Button, Eyebrow, SectionHeading, Photo, ScrollRow,
+                               ResponsiveText (mobile/desktop copy), JoinedLines, HoneypotField, …
+  seo/                         OrganizationJsonLd (root layout); JsonLd, absoluteUrl, breadcrumbList
   <page>/                      page-local components (owned by that page)
 app/                           routes (see below)
 design-reference/              the source design: screens/*.png, sections/*.html, uploads/
@@ -64,8 +76,40 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | `/klinikker` | `6kl` / `mk` |
 | `/kontakt` | `6ko` / `mc` |
 | `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` |
-| `/booking` | Gecko Booking embed (`config/site.ts` → booking) |
+| `/booking` | no design: intro band + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
 | `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style |
+
+## Booking providers
+
+`config/site.ts` → `booking` is a discriminated union (`config/types.ts` → `BookingConfig`);
+each clinic carries its own ids at the provider (`content/clinics.ts` → `Clinic.booking`,
+type `ClinicBookingIds`).
+
+| Provider | Market | Config | Per clinic | /booking |
+|---|---|---|---|---|
+| `gecko` | fillox.dk | `href`, `geckoHost`, `geckoIcCode` | `geckoCalendarId` (optional) | Gecko's `iframe.js` injects ONE calendar for every clinic (`GeckoEmbed`), capped at 1184px and centred in the white card (min-height 640px) |
+| `timma` | fillox.no | `href`, `timmaBaseUrl` (`https://bestill.timma.no/reservation/`) | `timmaId` (required on open clinics) | clinic picker (a button per open clinic with a `timmaId`) + that clinic's TIMMA page in an iframe at full width (`TimmaEmbed`) |
+
+- `components/booking/BookingEmbed.tsx` (server) switches on `site.booking.provider` and
+  renders the white card around the embed; `app/booking/page.tsx` only renders the intro band
+  and `<BookingEmbed />`. Adding a provider = a variant in `BookingConfig` + a case there
+  (the `never` default makes TypeScript list the missing case).
+- Links are provider-neutral and built by `lib/booking.ts`: `clinicBookingHref()` →
+  `/booking?geckoCalendarId=12` (Gecko preselects the clinic) or `/booking?klinik=<slug>`;
+  `practitionerBookingHref()` → `/booking?behandler=<slug>`. `withBookingLinks()` sets every
+  open clinic's `bookingHref` (menus, clinic cards). The query parameter names are copy
+  (`content/layout.ts` → `booking.params`).
+- TIMMA picker (`TimmaEmbed`, client): the selected clinic lives in `?klinik=` (read with
+  `useSearchParams` inside `<Suspense>`, so `/booking` stays static; written with
+  `history.replaceState`, which syncs with `useSearchParams`). No selection = picker only;
+  a single clinic is always selected. Copy: `content/layout.ts` → `booking.clinicPicker`
+  (label, hint, iframe title per clinic, "open in a new window" link).
+- TIMMA iframe height: TIMMA's page includes iframe-resizer's child script, so `TimmaFrame`
+  speaks its v2 postMessage protocol itself (sends the init message on load, applies the
+  `[iFrameSizer]<id>:<height>:…` answers from TIMMA's origin only). No third-party script is
+  loaded; without answers the iframe stays 1400px high (min 640px) and scrolls inside.
+- `npm run check:market` fails when the provider is `timma` and an open clinic has no
+  `timmaId`, and lists clinics without a Gecko calendar id as a note.
 
 ## Design tokens (from the design's mobile spec + brand kit)
 

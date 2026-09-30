@@ -1,6 +1,17 @@
 @import "tailwindcss";
 
 /*
+ * Tailwind scans every file that is not gitignored. The design reference and the docs contain
+ * class-like words ("m-35" image-slot ids, "max-w-[1180px]", "sepia" …) that would otherwise end
+ * up in the render-blocking stylesheet of every page.
+ */
+@source not "../design-reference";
+@source not "../ARCHITECTURE.md";
+@source not "../AGENTS.md";
+@source not "../CLAUDE.md";
+@source not "../README.md";
+
+/*
  * Fillox design tokens (design "Fillox Signature v2", mobile spec + brand kit).
  * Use them as Tailwind utilities: bg-plum, text-muted, border-line, bg-cream/8 …
  */
@@ -199,6 +210,14 @@
   @media (min-width: 64rem) {
     html {
       scroll-padding-top: 104px;
+    }
+  }
+  /* Keeps focused elements clear of the fixed mobile book bar on treatment pages
+     (64px bar + 10px offset + air). The bar sets `inert` when it hides, so the padding
+     goes with it. */
+  @media (width < 48rem) {
+    html:has([data-mobile-book-bar]:not([inert])) {
+      scroll-padding-bottom: 96px;
     }
   }
 

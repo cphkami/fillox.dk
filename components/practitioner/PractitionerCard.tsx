@@ -1,11 +1,11 @@
 import Link from "next/link";
+import { ResponsiveText } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { teamMemberHref } from "@/content/team";
 import type { TeamMember } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { CropPhoto } from "./CropPhoto";
 import { PORTRAIT_TOP_POSITION } from "./profile";
-import { Responsive } from "./Responsive";
 
 type PractitionerCardProps = {
   member: TeamMember;
@@ -108,7 +108,7 @@ export function PractitionerCard({
           {name}
         </Heading>
         <p className={cn("text-[13px] text-muted md:text-[14px]", featured ? "md:mb-5 xl:mb-6" : "md:mb-3.5")}>
-          <Responsive mobile={member.titleShort} desktop={member.title ?? member.role} />
+          <ResponsiveText mobile={member.titleShort} desktop={member.title ?? member.role} />
         </p>
         {member.bio ? (
           <p
@@ -117,7 +117,7 @@ export function PractitionerCard({
               featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]",
             )}
           >
-            <Responsive mobile={member.bioShort} desktop={member.bio} />
+            <ResponsiveText mobile={member.bioShort} desktop={member.bio} />
           </p>
         ) : null}
         <div className={cn("mt-auto", !featured && "md:pt-4")}>

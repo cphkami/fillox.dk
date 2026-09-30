@@ -1,7 +1,6 @@
 import Link from "next/link";
-import { ButtonLink, Container, Eyebrow, Photo } from "@/components/ui";
+import { ButtonLink, Container, Eyebrow, Photo, ResponsiveText } from "@/components/ui";
 import type { AboutPageCopy } from "@/content/pages/about";
-import { Responsive } from "./Responsive";
 
 type AboutHeroProps = { hero: AboutPageCopy["hero"]; titleId: string };
 
@@ -35,7 +34,7 @@ export function AboutHero({ hero, titleId }: AboutHeroProps) {
             {hero.title}
           </h1>
           <p className="mb-4 text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-[18px] md:leading-[1.75] xl:text-lead">
-            <Responsive mobile={hero.introShort} desktop={hero.intro} />
+            <ResponsiveText mobile={hero.introShort} desktop={hero.intro} />
           </p>
           <div className="flex items-center gap-[18px]">
             <ButtonLink href={hero.primaryCta.href} size="md" mobileSize="lg" fullWidth="mobile">

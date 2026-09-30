@@ -1,15 +1,17 @@
-import { Container, Photo, SectionHeading } from "@/components/ui";
+import { Container, Photo, ResponsiveText, SectionHeading } from "@/components/ui";
 import { treatmentPage as copy } from "@/content/pages/treatments";
 import type { ImageRef } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { ScrollRegion } from "./ScrollRegion";
 import type { TreatmentView } from "./treatmentView";
-import { Swap } from "./Swap";
 
 /** Aspect assumed for a photo without `width`/`height`: landscape 5 : 3, the widest current pair photo (2000 × 1228). */
 const DEFAULT_ASPECT = 5 / 3;
 /** Width : height of the half slot from 1024px (≈ 143 × 400 … 231 × 520); narrower photos are painted slot-wide. */
 const SLOT_ASPECT = 0.45;
+/** The same at 768–1023px (≈ 105 × 300 … 148 × 300) and in the mobile card (137 × 200). */
+const SLOT_ASPECT_MD = 0.5;
+const SLOT_ASPECT_MOBILE = 0.69;
 
 /**
  * `sizes` of one half of a pair. The half is a tall, narrow slot (≈ 231 × 520px on the
@@ -19,17 +21,19 @@ const SLOT_ASPECT = 0.45;
  * 1280, 400 → 520px (h-fluid-400/520 = 0.375vw − 80px) up to 1600, then 520px; times the
  * aspect (from `width`/`height`, else DEFAULT_ASPECT: over-asking is capped by the file's own
  * size, under-asking makes landscape photos soft on 1x screens) and `image.zoom`.
- * Below 1024: ~14% of the viewport in the 768–1023 grid, 137px in the mobile card.
+ * Below 1024 the slot is just as narrow, so it is the same painted width: 300px tall in the
+ * 768–1023 grid, 200px in the mobile card.
  */
 function halfSizes(image: ImageRef): string {
   const aspect = image.width && image.height ? image.width / image.height : DEFAULT_ASPECT;
-  const k = Math.max(aspect, SLOT_ASPECT) * Math.max(1, image.zoom ?? 1);
+  const zoom = Math.max(1, image.zoom ?? 1);
+  const k = Math.max(aspect, SLOT_ASPECT) * zoom;
   return [
     `(min-width: 1600px) ${Math.ceil(520 * k)}px`,
     `(min-width: 1280px) calc(${(37.5 * k).toFixed(2)}vw - ${Math.floor(80 * k)}px)`,
     `(min-width: 1024px) ${Math.ceil(400 * k)}px`,
-    "(min-width: 768px) 15vw",
-    "140px",
+    `(min-width: 768px) ${Math.ceil(300 * Math.max(aspect, SLOT_ASPECT_MD) * zoom)}px`,
+    `${Math.ceil(200 * Math.max(aspect, SLOT_ASPECT_MOBILE) * zoom)}px`,
   ].join(", ");
 }
 
@@ -58,9 +62,9 @@ function Half({ image, label, tone }: { image: ImageRef; label: string; tone: "b
  */
 export function ResultsSection({ results }: { results: NonNullable<TreatmentView["results"]> }) {
   return (
-    <Container as="section" aria-labelledby="resultater" className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
+    <Container as="section" aria-labelledby={copy.sectionIds.results} className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
       <SectionHeading
-        id="resultater"
+        id={copy.sectionIds.results}
         title={results.title}
         intro={results.intro}
         leading="normal"
@@ -80,7 +84,7 @@ export function ResultsSection({ results }: { results: NonNullable<TreatmentView
                   <Half image={item.after} label={copy.results.after} tone="after" />
                 </div>
                 <figcaption className="px-1.5 pt-2.5 pb-1 text-[13px] text-muted md:mt-3.5 md:p-0 md:text-[14px]">
-                  <Swap mobile={item.mobileCaption} desktop={item.caption} />
+                  <ResponsiveText mobile={item.mobileCaption} desktop={item.caption} />
                 </figcaption>
               </figure>
             </li>

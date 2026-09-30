@@ -1,4 +1,5 @@
 import type { Link } from "../types";
+import { routes } from "../routes";
 
 /**
  * Page copy for the practitioner profile /behandlere/[slug] (design 6alb desktop,
@@ -23,8 +24,8 @@ export const practitionerPage = {
     // TODO: copy review (accessible name, not in the design)
     label: "Brødkrumme",
     items: [
-      { label: "Om os", href: "/om-os" },
-      { label: "Behandlere", href: "/behandlere" },
+      { label: "Om os", href: routes.about },
+      { label: "Behandlere", href: routes.practitioners },
     ] satisfies Link[],
   },
 
@@ -72,7 +73,7 @@ export const practitionerPage = {
     title: "Mød resten af teamet",
     /** Accessible name of the list of practitioners. */
     listLabel: "Andre behandlere",
-    link: { label: "Se alle behandlere", href: "/behandlere" } satisfies Link,
+    link: { label: "Se alle behandlere", href: routes.practitioners } satisfies Link,
   },
 
   /** /behandlere — every practitioner as a card (same card as on /om-os). */

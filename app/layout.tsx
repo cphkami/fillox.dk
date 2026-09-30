@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { OrganizationJsonLd } from "@/components/seo";
 import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
+import { sharedOpenGraph, shareImage } from "@/lib/metadata";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -23,18 +24,10 @@ export const metadata: Metadata = {
   applicationName: site.name,
   openGraph: {
     type: "website",
-    siteName: site.name,
-    locale: site.locale.replace("-", "_"),
+    ...sharedOpenGraph,
     title: meta.defaultTitle,
     description: meta.description,
-    images: [
-      {
-        url: meta.ogImage.src,
-        width: meta.ogImage.width,
-        height: meta.ogImage.height,
-        alt: meta.ogImage.alt,
-      },
-    ],
+    images: [shareImage(meta.ogImage)],
   },
   twitter: { card: "summary_large_image" },
   // Favicons come from the app/favicon.ico (16/32/48, made from icon.png), app/icon.png and
@@ -50,13 +43,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang={site.lang} className={`${poppins.variable} h-full`}>
       <body className="flex min-h-full flex-col">
         <a
-          href="#indhold"
+          href={`#${layoutCopy.mainId}`}
           className="fixed top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-plum px-5 py-3 text-[14px] text-cream transition-transform focus:translate-y-0"
         >
           {layoutCopy.skipLink}
         </a>
         <Header />
-        <main id="indhold" tabIndex={-1} className="flex-1 focus:outline-none">
+        <main id={layoutCopy.mainId} tabIndex={-1} className="flex-1 focus:outline-none">
           {children}
         </main>
         <Footer />

@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { Container, buttonClasses } from "@/components/ui";
+import { Container, HoneypotField, buttonClasses } from "@/components/ui";
 import { blogPage } from "@/content/pages/blog";
 import { cn } from "@/lib/cn";
-import { submitForm } from "@/lib/forms";
+import { honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
 import { Responsive } from "./Responsive";
 
 const copy = blogPage.newsletter;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Status = "idle" | "sending" | "success";
 
@@ -49,7 +48,7 @@ export function NewsletterSignup() {
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") ?? "").trim();
 
-    const nextError = !email ? copy.errors.emailRequired : !EMAIL_PATTERN.test(email) ? copy.errors.emailInvalid : null;
+    const nextError = !email ? copy.errors.emailRequired : !isValidEmail(email) ? copy.errors.emailInvalid : null;
     if (nextError) {
       focusNext.current = "input";
       setError(nextError);
@@ -61,7 +60,7 @@ export function NewsletterSignup() {
     setError(null);
     setStatus("sending");
     try {
-      await submitForm(copy.formName, { email, "bot-field": String(data.get("bot-field") ?? "") });
+      await submitForm(copy.formName, { email, ...honeypotValue(data) });
       focusNext.current = "success";
       setStatus("success");
     } catch {
@@ -79,7 +78,7 @@ export function NewsletterSignup() {
         <div className="flex flex-col gap-3">
           <h2
             id={ids.title}
-            className="text-[28px] leading-[1.15] font-semibold tracking-display text-plum md:text-[32px] xl:text-h2-sm"
+            className="text-[28px] leading-[1.15] font-semibold tracking-display text-balance text-plum md:text-[32px] xl:text-h2-sm"
           >
             <Responsive mobile={copy.titleShort} desktop={copy.title} />
           </h2>
@@ -102,12 +101,7 @@ export function NewsletterSignup() {
             onSubmit={onSubmit}
             className="flex flex-col gap-3 md:gap-2.5 lg:relative"
           >
-            {/* Netlify honeypot (netlify-honeypot="bot-field"): hidden from people, filled by bots. */}
-            <p hidden>
-              <label>
-                bot-field <input name="bot-field" tabIndex={-1} autoComplete="off" />
-              </label>
-            </p>
+            <HoneypotField />
 
             <div className="flex flex-col gap-3 md:flex-row md:gap-2.5">
               <label htmlFor={ids.email} className="sr-only">

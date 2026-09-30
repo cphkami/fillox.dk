@@ -1,4 +1,4 @@
-import { Eyebrow } from "@/components/ui";
+import { Eyebrow, ResponsiveText } from "@/components/ui";
 
 type PricesHeroProps = {
   eyebrow: string;
@@ -41,8 +41,7 @@ export function PricesHero({ eyebrow, title, titleAccent, intro, introShort, tit
           </h1>
         </div>
         <p className="text-[16px] leading-[1.7] text-muted md:max-w-[48ch] md:text-lead md:leading-[1.8]">
-          <span className="md:hidden">{introShort}</span>
-          <span className="max-md:hidden">{intro}</span>
+          <ResponsiveText mobile={introShort} desktop={intro} />
         </p>
       </div>
     </section>

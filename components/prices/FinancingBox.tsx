@@ -1,4 +1,4 @@
-import { ButtonLink, Eyebrow, Photo, containerClasses } from "@/components/ui";
+import { ButtonLink, Eyebrow, Photo, ResponsiveText, containerClasses } from "@/components/ui";
 import type { ImageRef, Link } from "@/content/types";
 import { cn } from "@/lib/cn";
 
@@ -45,8 +45,7 @@ export function FinancingBox({ id, eyebrow, title, text, textShort, cta, image }
             {title}
           </h2>
           <p className="text-[16px] leading-[1.7] text-muted md:mb-7 md:max-w-[40ch] md:text-blush">
-            <span className="md:hidden">{textShort}</span>
-            <span className="max-md:hidden">{text}</span>
+            <ResponsiveText mobile={textShort} desktop={text} />
           </p>
           <ButtonLink href={cta.href} size="lg" fullWidth className="md:hidden">
             {cta.label}

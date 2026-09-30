@@ -1,11 +1,12 @@
 import type { ImageRef, Link } from "../types";
 import { site } from "@/config/site";
+import { aboutTeamAnchor } from "../routes";
 
 /**
- * Anchor id of the team section on /om-os. The hero's "Mød teamet" link is derived
- * from it; other pages can link to `/om-os#${aboutTeamAnchor}`.
+ * Anchor id of the team section on /om-os (content/routes.ts): the hero's "Mød teamet" link is
+ * derived from it; other pages link to `routes.aboutTeam`.
  */
-export const aboutTeamAnchor = "behandlere";
+export { aboutTeamAnchor };
 
 /**
  * Copy for /om-os (design 6om desktop, mo mobile). The practitioners themselves

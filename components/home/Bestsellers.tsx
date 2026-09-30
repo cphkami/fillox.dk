@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { ButtonLink, Container, SectionHeading } from "@/components/ui";
+import { ButtonLink, Container, ResponsiveText, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import type { Bestseller } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { formatPriceFrom } from "@/lib/content";
 import { ArrowCircle } from "./ArrowCircle";
-import { ResponsiveText } from "./ResponsiveText";
 
 /**
  * "Vores bestsellers". Desktop (6a): numbered rows on a plum panel, the highlighted
@@ -17,7 +16,7 @@ export function Bestsellers({ copy, items }: { copy: HomePage["bestsellers"]; it
       <SectionHeading
         id="home-bestsellers-title"
         title={copy.title}
-        intro={<ResponsiveText short={copy.introShort} long={copy.intro} />}
+        intro={<ResponsiveText mobile={copy.introShort} desktop={copy.intro} />}
         introClassName="max-md:mt-3 max-md:leading-[1.7]"
         className="mb-4 md:mb-10 lg:mb-fluid-50"
       />
@@ -73,7 +72,7 @@ export function Bestsellers({ copy, items }: { copy: HomePage["bestsellers"]; it
                       !hl && "lg:text-blush",
                     )}
                   >
-                    <ResponsiveText short={item.mobileDescription} long={item.description} />
+                    <ResponsiveText mobile={item.mobileDescription} desktop={item.description} />
                   </p>
                   <p
                     className={cn(

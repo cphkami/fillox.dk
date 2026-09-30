@@ -2,9 +2,10 @@
  * Small pure helpers shared by the blog overview and article components.
  * No copy of their own: labels come from content/pages/blog.ts.
  */
-import { getPost, sortedPosts } from "@/content/blog";
+import { sortedPosts } from "@/content/blog";
 import { blogPage } from "@/content/pages/blog";
 import type { BlogPost } from "@/content/types";
+import { postsBySlugs } from "@/lib/content";
 
 /** Every filter chip slug a post matches (besides "alle"): its category plus its tags. */
 export function postFilterSlugs(post: BlogPost): string[] {
@@ -16,16 +17,18 @@ export function shortReadingTime(post: BlogPost): string {
   return post.readingMinutes ? blogPage.minutes(post.readingMinutes) : post.readingTime;
 }
 
-/** Joins meta parts with the design's " · " separator, skipping empty ones. */
+/**
+ * Joins meta parts with the design's " · " separator, skipping empty ones and repeats
+ * (a post whose category and kind are both "Efterpleje" reads "Efterpleje", not
+ * "Efterpleje · Efterpleje").
+ */
 export function joinMeta(...parts: Array<string | undefined | false>): string {
-  return parts.filter(Boolean).join(blogPage.separator);
+  return Array.from(new Set(parts.filter((p): p is string => Boolean(p)))).join(blogPage.separator);
 }
 
 /** Resolves slugs to posts (unknown slugs and `exclude` are skipped, order kept). */
 function resolve(slugs: readonly string[] | undefined, exclude: string): BlogPost[] {
-  return (slugs ?? [])
-    .map((slug) => getPost(slug))
-    .filter((p): p is BlogPost => Boolean(p) && p!.slug !== exclude);
+  return postsBySlugs(slugs).filter((p) => p.slug !== exclude);
 }
 
 /**
@@ -77,4 +80,5 @@ export function relatedEntries(post: BlogPost, desktopCount: number, mobileCount
  */
 export const cardFocusRing =
   "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-plum has-[a:focus-visible]:outline-solid";
+/** The card's title link, stretched over the whole card (the card is `relative`). */
 export const stretchedLink = "after:absolute after:inset-0 after:content-[''] focus-visible:outline-none";

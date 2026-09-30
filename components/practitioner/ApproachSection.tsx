@@ -1,6 +1,5 @@
-import { Container, Eyebrow } from "@/components/ui";
+import { Container, Eyebrow, ResponsiveText } from "@/components/ui";
 import type { TeamProfile } from "@/content/types";
-import { Responsive } from "./Responsive";
 
 type ApproachSectionProps = { approach: NonNullable<TeamProfile["approach"]>; titleId: string };
 
@@ -26,7 +25,7 @@ export function ApproachSection({ approach, titleId }: ApproachSectionProps) {
                 {item.title}
               </h3>
               <p className="text-[15px] leading-[1.6] text-muted md:text-[16px] md:leading-[1.75]">
-                <Responsive mobile={item.textShort} desktop={item.text} />
+                <ResponsiveText mobile={item.textShort} desktop={item.text} />
               </p>
             </li>
           ))}

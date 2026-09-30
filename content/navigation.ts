@@ -1,28 +1,29 @@
 import type { Link, NavItem, TreatmentCategory } from "./types";
+import { routes } from "./routes";
 
 /** Main navigation (desktop header + mobile fullscreen menu). */
 export const mainNav: NavItem[] = [
-  { kind: "treatments", label: "Behandlinger", href: "/behandlinger" },
+  { kind: "treatments", label: "Behandlinger", href: routes.treatments },
   /** Desktop dropdown built from content/prices.ts (categories, trust points); a plain link in the mobile menu. */
-  { kind: "prices", label: "Priser", href: "/priser" },
-  { kind: "clinics", label: "Find klinik", href: "/klinikker" },
+  { kind: "prices", label: "Priser", href: routes.prices },
+  { kind: "clinics", label: "Find klinik", href: routes.clinics },
   {
     kind: "menu",
     label: "Om os",
-    href: "/om-os",
+    href: routes.about,
     items: [
-      { label: "Om Fillox", href: "/om-os" },
-      { label: "Vores behandlere", href: "/om-os#behandlere" },
-      { label: "Ledige stillinger", href: "/ledige-stillinger" },
-      { label: "Kontakt", href: "/kontakt" },
+      { label: "Om Fillox", href: routes.about },
+      { label: "Vores behandlere", href: routes.aboutTeam },
+      { label: "Ledige stillinger", href: routes.jobs },
+      { label: "Kontakt", href: routes.contact },
     ],
   },
   /** Mobile menu shows Blog as a top-level row; desktop keeps it in the footer. */
-  { kind: "link", label: "Blog", href: "/blog" },
+  { kind: "link", label: "Blog", href: routes.blog },
 ];
 
 /** Items hidden from the desktop header (still shown in the mobile menu). */
-export const desktopHiddenNav = ["/blog"];
+export const desktopHiddenNav: string[] = [routes.blog];
 
 /**
  * Treatment categories. Order = mega-menu column order.
@@ -75,21 +76,21 @@ export const megaMenuColumns: { title: string; categorySlugs: string[] }[] = [
 export const megaMenuPromo = {
   title: "Usikker på, hvad du skal vælge?",
   text: "Book en gratis konsultation.",
-  link: { label: "Se alle behandlinger", href: "/behandlinger" } satisfies Link,
+  link: { label: "Se alle behandlinger", href: routes.treatments } satisfies Link,
   image: { src: "/images/hero/hero-1.jpg", alt: "" },
 };
 
 /** Footer link rows (design 6a footer). */
 export const footerNav: Link[] = [
-  { label: "Behandlinger", href: "/behandlinger" },
-  { label: "Priser", href: "/priser" },
-  { label: "Om os", href: "/om-os" },
-  { label: "Blog", href: "/blog" },
-  { label: "Content creator", href: "/content-creator" },
-  { label: "Ledige stillinger", href: "/ledige-stillinger" },
+  { label: "Behandlinger", href: routes.treatments },
+  { label: "Priser", href: routes.prices },
+  { label: "Om os", href: routes.about },
+  { label: "Blog", href: routes.blog },
+  { label: "Content creator", href: routes.creator },
+  { label: "Ledige stillinger", href: routes.jobs },
 ];
 
 export const legalNav: Link[] = [
-  { label: "Handelsbetingelser", href: "/handelsbetingelser" },
-  { label: "Privatlivspolitik", href: "/privatlivspolitik" },
+  { label: "Handelsbetingelser", href: routes.terms },
+  { label: "Privatlivspolitik", href: routes.privacy },
 ];

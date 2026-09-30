@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import { buttonClasses } from "@/components/ui/Button";
+import { HoneypotField } from "@/components/ui/HoneypotField";
 import type { NotifyCopy } from "@/content/pages/clinics";
 import { cn } from "@/lib/cn";
-import { submitForm, type FormName } from "@/lib/forms";
+import { honeypotValue, isValidEmail, submitForm, type FormName } from "@/lib/forms";
 
 type Status = "closed" | "open" | "sending" | "success";
 type RequiredField = "name" | "email";
 type FocusTarget = "name" | "email" | "toggle" | "success";
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const inputClasses =
   "block w-full rounded-[16px] border border-line bg-cream px-5 py-4 text-[16px] text-ink transition-colors placeholder:text-placeholder hover:border-rule focus:border-plum aria-[invalid=true]:border-plum";
@@ -112,7 +111,7 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
     const nextErrors: Partial<Record<RequiredField, string>> = {};
     if (!name) nextErrors.name = copy.errors.nameRequired;
     if (!email) nextErrors.email = copy.errors.emailRequired;
-    else if (!EMAIL_PATTERN.test(email)) nextErrors.email = copy.errors.emailInvalid;
+    else if (!isValidEmail(email)) nextErrors.email = copy.errors.emailInvalid;
     setErrors(nextErrors);
     setSubmitFailed(false);
     if (nextErrors.name || nextErrors.email) {
@@ -128,7 +127,7 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
         name,
         email,
         phone: value("phone"),
-        "bot-field": String(data.get("bot-field") ?? ""),
+        ...honeypotValue(data),
       });
       focusNext.current = "success";
       setStatus("success");
@@ -158,12 +157,7 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
       data-notify-open=""
       className="flex flex-col gap-3.5"
     >
-      {/* Netlify honeypot (netlify-honeypot="bot-field"): hidden from people, filled by bots. */}
-      <p hidden>
-        <label>
-          bot-field <input name="bot-field" tabIndex={-1} autoComplete="off" />
-        </label>
-      </p>
+      <HoneypotField />
 
       <div className="grid gap-3.5 lg:grid-cols-2">
         <Field id={ids.name} label={copy.fields.name.label} error={errors.name} errorId={ids.nameError}>

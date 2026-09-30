@@ -3,30 +3,15 @@ import { AboutHero } from "@/components/about/AboutHero";
 import { ResponsibleBand } from "@/components/about/ResponsibleBand";
 import { TeamSection } from "@/components/about/TeamSection";
 import { WhyFillox } from "@/components/about/WhyFillox";
-import { site } from "@/config/site";
-import { layoutCopy } from "@/content/layout";
 import { aboutPage } from "@/content/pages/about";
+import { routes } from "@/content/routes";
 import { team } from "@/content/team";
+import { pageMetadata } from "@/lib/metadata";
 
-const PATH = "/om-os";
+const PATH = routes.about;
 const { meta } = aboutPage;
-const { ogImage, titleTemplate } = layoutCopy.meta;
 
-export const metadata: Metadata = {
-  title: meta.title,
-  description: meta.description,
-  alternates: { canonical: PATH },
-  // Nested objects replace the root layout's, so repeat the shared Open Graph fields.
-  openGraph: {
-    type: "website",
-    siteName: site.name,
-    locale: site.locale.replace("-", "_"),
-    url: PATH,
-    title: titleTemplate.replace("%s", meta.title),
-    description: meta.description,
-    images: [{ url: ogImage.src, width: ogImage.width, height: ogImage.height, alt: ogImage.alt }],
-  },
-};
+export const metadata: Metadata = pageMetadata(meta, PATH);
 
 /** /om-os — Om os (design 6om desktop, mo mobile). */
 export default function AboutPage() {

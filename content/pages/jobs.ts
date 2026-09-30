@@ -1,5 +1,6 @@
 import type { TextPageContent } from "../types";
 import { site } from "@/config/site";
+import { routes } from "../routes";
 
 /**
  * Copy for /ledige-stillinger (no design; rendered by components/text-page).
@@ -49,7 +50,7 @@ export const jobsPage: TextPageContent = {
     text: "Send dit CV og et par ord om dig selv – så vender vi tilbage.",
     actions: [
       { label: "Send ansøgning", href: applicationMail },
-      { label: "Mød teamet", href: "/om-os#behandlere" },
+      { label: "Mød teamet", href: routes.aboutTeam },
     ],
   },
 };

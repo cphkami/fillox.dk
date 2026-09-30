@@ -9,10 +9,11 @@ import { teamMemberHref } from "@/content/team";
  */
 export function AuthorBox({ author }: { author: TeamMember }) {
   const link = author.link ?? { label: author.name, href: teamMemberHref(author.slug) };
+  const titleId = `author-${author.slug}`;
 
   return (
     <aside
-      aria-label={`${copy.author.writtenBy} ${author.name}`}
+      aria-labelledby={titleId}
       className="mt-2 flex items-center gap-3.5 rounded-[20px] bg-white p-5 md:mt-9 md:gap-[18px] md:p-6"
     >
       <Photo
@@ -22,8 +23,12 @@ export function AuthorBox({ author }: { author: TeamMember }) {
         className="size-[60px] shrink-0 md:size-[72px]"
       />
       <div className="min-w-0">
-        <p className="text-[12px] text-muted md:mb-0.5">{copy.author.writtenBy}</p>
-        <p className="text-[17px] font-semibold text-plum md:text-[18px]">{author.name}</p>
+        {/* The box's title ("Skrevet af Annika"), a section of the article like its h2s, so
+            heading navigation reaches it; the two lines keep the design's styles. */}
+        <h2 id={titleId}>
+          <span className="block text-[12px] text-muted md:mb-0.5">{copy.author.writtenBy}</span>{" "}
+          <span className="block text-[17px] font-semibold text-plum md:text-[18px]">{author.name}</span>
+        </h2>
         {author.authorBio ? (
           <p className="text-[14px] leading-[1.6] text-muted max-md:hidden">{author.authorBio}</p>
         ) : null}

@@ -47,9 +47,19 @@ export const site: SiteConfig = {
   },
 
   /**
-   * Gecko Booking: one calendar for every clinic, embedded on /booking. Per-clinic Gecko
-   * calendar ids live on the clinics (content/clinics.ts → booking.geckoCalendarId).
-   * fillox.no uses { provider: "timma", href, timmaBaseUrl } instead (config/types.ts).
+   * Online booking provider (config/types.ts → BookingConfig; /booking renders it through
+   * components/booking/BookingEmbed.tsx).
+   *
+   * fillox.dk — Gecko Booking: one calendar for every clinic, embedded on /booking. Per-clinic
+   * Gecko calendar ids live on the clinics (content/clinics.ts → booking.geckoCalendarId).
+   *
+   * fillox.no — TIMMA: one reservation page per clinic; /booking shows a clinic picker. Set the
+   * TIMMA id on every open clinic (content/clinics.ts → booking.timmaId, e.g. "filloxstortingsgata"):
+   *   booking: {
+   *     provider: "timma",
+   *     href: routes.booking,
+   *     timmaBaseUrl: "https://bestill.timma.no/reservation/",
+   *   },
    */
   booking: {
     provider: "gecko",

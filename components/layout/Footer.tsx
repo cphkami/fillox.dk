@@ -1,26 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
+import { JoinedLines } from "@/components/ui/JoinedLines";
 import { site } from "@/config/site";
 import { clinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
-import { footerNav, legalNav, mainNav } from "@/content/navigation";
+import { footerNav, legalNav } from "@/content/navigation";
+import { routes } from "@/content/routes";
 import { ui } from "@/content/ui";
+import { NavLink } from "./NavLink";
 
 const contactCards = [
   { label: ui.callUs, value: site.contact.phone, href: site.contact.phoneHref },
   { label: ui.writeUs, value: site.contact.email, href: site.contact.emailHref },
 ];
-
-/** Joins inline items with a separator that only shows below lg (desktop stacks them as lines). */
-function MobileJoined({ parts, separator }: { parts: string[]; separator: string }) {
-  return parts.map((part, i) => (
-    <span key={i} className="lg:block">
-      {i > 0 ? <span className="lg:hidden">{separator}</span> : null}
-      {part}
-    </span>
-  ));
-}
 
 /**
  * Plum footer block (design 6a bottom / mf bottom): contact band with phone,
@@ -29,7 +22,7 @@ function MobileJoined({ parts, separator }: { parts: string[]; separator: string
  * every rounded band), its fr-based grids spread with the width.
  */
 export function Footer() {
-  const clinicsHref = mainNav.find((n) => n.kind === "clinics")?.href ?? "/klinikker";
+  const clinicsHref = routes.clinics;
   const copyright = `© ${site.name} · ${site.company.registrationLabel} ${site.company.registrationNumber}`;
 
   return (
@@ -97,10 +90,10 @@ export function Footer() {
                 ) : (
                   <>
                     <p>
-                      <MobileJoined parts={c.address} separator=", " />
+                      <JoinedLines parts={c.address} separator=", " />
                     </p>
                     <p className="text-powder lg:mt-2.5">
-                      <MobileJoined parts={c.hours.map((h) => `${h.days} ${h.hours}`)} separator=" · " />
+                      <JoinedLines parts={c.hours.map((h) => `${h.days} ${h.hours}`)} separator=" · " />
                     </p>
                   </>
                 )}
@@ -109,15 +102,16 @@ export function Footer() {
           </ul>
         </div>
 
-        {/* Footer links + legal */}
+        {/* Footer links + legal. Not prefetched (still client-side navigation): they are on every
+            page, and prefetching them all on scroll costs more mobile data than the rare click saves. */}
         <div className="flex flex-col gap-[22px] lg:flex-row lg:flex-wrap lg:justify-between lg:gap-4 lg:pt-7">
           <nav aria-label={layoutCopy.footer.navLabel}>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-cream/18 pt-[18px] text-[14px] text-cream md:grid-cols-3 lg:flex lg:flex-wrap lg:gap-7 lg:border-0 lg:pt-0">
               {footerNav.map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="hover:text-powder">
+                  <NavLink href={l.href} prefetch={false} className="hover:text-powder">
                     {l.label}
-                  </Link>
+                  </NavLink>
                 </li>
               ))}
             </ul>
@@ -133,9 +127,9 @@ export function Footer() {
                         &nbsp;·&nbsp;
                       </span>
                     ) : null}
-                    <Link href={l.href} className="hover:text-cream">
+                    <NavLink href={l.href} prefetch={false} className="hover:text-cream">
                       {l.label}
-                    </Link>
+                    </NavLink>
                   </li>
                 ))}
               </ul>

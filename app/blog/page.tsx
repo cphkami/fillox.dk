@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { BlogBrowser, type BlogEntry } from "@/components/blog/BlogBrowser";
 import { BlogFilterScope } from "@/components/blog/BlogFilterScope";
 import { FeaturedPost } from "@/components/blog/FeaturedPost";
-import { sharedOpenGraph, shareImage, shareTitle } from "@/components/blog/metadata";
 import { NewsletterSignup } from "@/components/blog/NewsletterSignup";
 import { PostCard } from "@/components/blog/PostCard";
 import { postFilterSlugs } from "@/components/blog/postView";
@@ -10,22 +9,10 @@ import { Responsive } from "@/components/blog/Responsive";
 import { Eyebrow } from "@/components/ui";
 import { blogFilters, getFeaturedPost, sortedPosts } from "@/content/blog";
 import { blogPage as copy } from "@/content/pages/blog";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
-  title: copy.meta.title,
-  description: copy.meta.description,
-  alternates: { canonical: copy.path },
-  // Nested objects replace the root layout's, so the shared Open Graph fields are repeated
-  // (see components/blog/metadata.ts). The share image is the featured article's photo.
-  openGraph: {
-    type: "website",
-    ...sharedOpenGraph,
-    url: copy.path,
-    title: shareTitle(copy.meta.title),
-    description: copy.meta.description,
-    images: [shareImage(getFeaturedPost().image)],
-  },
-};
+/** The share image is the featured article's photo. */
+export const metadata: Metadata = pageMetadata(copy.meta, copy.path, getFeaturedPost().image);
 
 /** /blog — design 6blog (desktop) / mbl (mobile). */
 export default function BlogPage() {

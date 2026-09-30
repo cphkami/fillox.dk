@@ -6,15 +6,16 @@ import {
   useId,
   useRef,
   useState,
-  useSyncExternalStore,
   type ChangeEvent,
   type FormEvent,
   type ReactNode,
 } from "react";
 import { buttonClasses } from "@/components/ui/Button";
+import { HoneypotField } from "@/components/ui/HoneypotField";
 import type { ContactFormCopy } from "@/content/pages/contact";
 import { cn } from "@/lib/cn";
-import { submitForm } from "@/lib/forms";
+import { honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 
 type Field = "name" | "email" | "phone" | "message" | "consent";
 type Errors = Partial<Record<Field, string>>;
@@ -24,18 +25,11 @@ type Status = "idle" | "sending" | "success";
 const FIELD_ORDER: Field[] = ["name", "phone", "email", "message", "consent"];
 const FIELD_ORDER_MOBILE: Field[] = ["name", "email", "phone", "message", "consent"];
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Digits, spaces, "+", "-", "(" and ")", with at least 6 digits. */
 const PHONE_PATTERN = /^\+?[\d\s()-]+$/;
 
 /** Tailwind's md breakpoint (48rem): below it the mobile design (mc) applies. */
 const MOBILE_QUERY = "(max-width: 47.99rem)";
-
-function subscribeMobile(onChange: () => void) {
-  const query = window.matchMedia(MOBILE_QUERY);
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
-}
 
 /**
  * Mobile (mc): white pills, 52px high. Desktop (6ko): cream fields, 16px radius, 58px high.
@@ -78,11 +72,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
    */
   const [clinic, setClinic] = useState<string | null>(null);
 
-  const isMobile = useSyncExternalStore(
-    subscribeMobile,
-    () => window.matchMedia(MOBILE_QUERY).matches,
-    () => false,
-  );
+  const isMobile = useMediaQuery(MOBILE_QUERY);
   /**
    * The select is uncontrolled so a choice made before hydration survives it. When it
    * mounts, read its value (it may already be set) so the overlay shows the right clinic.
@@ -167,7 +157,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
     const next: Errors = {};
     if (!name) next.name = copy.errors.nameRequired;
     if (!email) next.email = copy.errors.emailRequired;
-    else if (!EMAIL_PATTERN.test(email)) next.email = copy.errors.emailInvalid;
+    else if (!isValidEmail(email)) next.email = copy.errors.emailInvalid;
     if (phone && (!PHONE_PATTERN.test(phone) || phone.replace(/\D/g, "").length < 6)) {
       next.phone = copy.errors.phoneInvalid;
     }
@@ -193,7 +183,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
         clinic: value("clinic"),
         message,
         consent: consented ? copy.consent.value : "",
-        "bot-field": String(data.get("bot-field") ?? ""),
+        ...honeypotValue(data),
       });
       focusNext.current = "success";
       setStatus("success");
@@ -219,12 +209,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
       >
         {/* Posted by the no-JS fallback; submitForm() adds it itself. */}
         <input type="hidden" name="form-name" value={copy.formName} />
-        {/* Netlify honeypot (netlify-honeypot="bot-field"): hidden from people, filled by bots. */}
-        <p hidden>
-          <label>
-            bot-field <input name="bot-field" tabIndex={-1} autoComplete="off" />
-          </label>
-        </p>
+        <HoneypotField />
 
         {/*
           DOM (and tab) order is the desktop order: name, phone, e-mail (6ko puts phone next to
@@ -290,7 +275,9 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                 inputClasses,
                 "cursor-pointer appearance-none pe-12 [&>option]:text-ink",
                 showOverlay
-                  ? "text-transparent"
+                  ? // Windows high contrast forces the text colour back on, so the native text shows
+                    // there (and the overlay's copy of it is hidden below).
+                    "text-transparent forced-colors:text-[color:CanvasText]"
                   : // Native text (no JS / before hydration): placeholder colour while the empty option is chosen.
                     "has-[option[value='']:checked]:text-placeholder md:has-[option[value='']:checked]:text-(--color-placeholder-soft)",
               )}
@@ -311,7 +298,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                   clinic ? "text-ink" : "text-placeholder md:text-(--color-placeholder-soft)",
                 )}
               >
-                <span className="truncate">{clinic || fields.clinic.placeholder}</span>
+                <span className="truncate forced-colors:invisible">{clinic || fields.clinic.placeholder}</span>
                 <span className="ms-1.5 shrink-0 md:ms-3">▾</span>
               </span>
             ) : (

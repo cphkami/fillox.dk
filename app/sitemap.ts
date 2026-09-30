@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/config/site";
-import { blogPostHref, posts } from "@/content/blog";
-import { clinics } from "@/content/clinics";
-import { footerNav, legalNav, mainNav, megaMenuPromo } from "@/content/navigation";
+import { blogPostHref, hasArticleBody, posts } from "@/content/blog";
+import { routes, type RouteKey } from "@/content/routes";
 import { team, teamMemberHref } from "@/content/team";
 import { treatmentHref, treatments } from "@/content/treatments";
 
@@ -14,52 +13,40 @@ const abs = (path: string) => (path === "/" ? site.url : `${site.url}${path}`);
 /** "/om-os#behandlere" → "/om-os", "/booking?klinik=x" → "/booking". */
 const pathOf = (href: string) => href.split(/[?#]/)[0] || "/";
 
-/** "/behandlinger/botox" → "/behandlinger". */
-const parentOf = (path: string) => path.slice(0, path.lastIndexOf("/")) || "/";
-
-const isInternal = (href: string) => href.startsWith("/");
-
 /** Newest ISO date in a list (for the blog index), or undefined. */
 const newest = (dates: string[]) => dates.slice().sort().at(-1);
 
+/** Routes that are not listed: noindex pages (the contact form's thank-you page). */
+const unlisted: RouteKey[] = ["contactThanks"];
+
+/** Legal text pages: rarely change, low priority. */
+const legal: RouteKey[] = ["terms", "privacy"];
+
 /**
- * /sitemap.xml — fully derived from /content, so the NO site needs no changes here:
- * - static routes: every internal link in the navigation, footer, legal links, the
- *   booking page and clinic links, plus the index route of each collection
- *   (/behandlinger, /behandlere, /blog, derived from the detail hrefs);
- * - detail routes: every treatment, practitioner and blog post.
- * Hash fragments and query strings are stripped and duplicates removed.
+ * /sitemap.xml — fully derived from content/routes.ts and /content, so the NO site needs no
+ * changes here:
+ * - static routes: every route in content/routes.ts except `unlisted` (hash fragments are
+ *   stripped, so the about page's team anchor collapses into the about page);
+ * - detail routes: every treatment, practitioner and blog post with a written article.
+ *   Excerpt-only posts are noindex (app/blog/[slug]/page.tsx) and left out until their
+ *   text exists (content/blog.ts → hasArticleBody).
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const postDates = posts.map((p) => p.date);
-  const legalPaths = new Set(legalNav.map((l) => pathOf(l.href)));
+  const listedPosts = posts.filter(hasArticleBody);
+  const legalPaths = new Set<string>(legal.map((key) => routes[key]));
 
-  // Index route of each collection = parent of its detail hrefs.
-  const indexOf = (hrefs: string[]) => (hrefs.length ? parentOf(pathOf(hrefs[0])) : undefined);
-  const blogIndex = indexOf(posts.map((p) => blogPostHref(p.slug)));
-  const collectionIndexes = [
-    indexOf(treatments.map((t) => treatmentHref(t.slug))),
-    indexOf(team.map((m) => teamMemberHref(m.slug))),
-    blogIndex,
-  ].filter((path): path is string => Boolean(path));
-
-  const staticHrefs = [
-    "/",
-    site.booking.href,
-    ...mainNav.flatMap((item) => (item.kind === "menu" ? [item.href, ...item.items.map((i) => i.href)] : [item.href])),
-    megaMenuPromo.link.href,
-    ...collectionIndexes,
-    ...clinics.flatMap((c) => (c.bookingHref ? [c.bookingHref] : [])),
-    ...footerNav.map((l) => l.href),
-    ...legalNav.map((l) => l.href),
-  ];
-  const staticPaths = Array.from(new Set(staticHrefs.filter(isInternal).map(pathOf)));
+  const staticPaths = Array.from(
+    new Set(
+      (Object.keys(routes) as RouteKey[]).filter((key) => !unlisted.includes(key)).map((key) => pathOf(routes[key])),
+    ),
+  );
 
   const staticEntries: Entry[] = staticPaths.map((path) => {
-    if (path === "/") return { url: abs(path), changeFrequency: "weekly", priority: 1 };
+    if (path === routes.home) return { url: abs(path), changeFrequency: "weekly", priority: 1 };
     if (legalPaths.has(path)) return { url: abs(path), changeFrequency: "yearly", priority: 0.3 };
-    if (path === blogIndex) {
-      return { url: abs(path), lastModified: newest(postDates), changeFrequency: "weekly", priority: 0.8 };
+    if (path === routes.blog) {
+      const lastModified = newest(listedPosts.map((p) => p.date));
+      return { url: abs(path), ...(lastModified ? { lastModified } : {}), changeFrequency: "weekly", priority: 0.8 };
     }
     return { url: abs(path), changeFrequency: "monthly", priority: 0.8 };
   });
@@ -67,10 +54,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const detailEntries: Entry[] = [
     ...treatments.map((t): Entry => ({ url: abs(treatmentHref(t.slug)), changeFrequency: "monthly", priority: 0.7 })),
     ...team.map((m): Entry => ({ url: abs(teamMemberHref(m.slug)), changeFrequency: "monthly", priority: 0.5 })),
-    ...posts.map((p): Entry => ({ url: abs(blogPostHref(p.slug)), lastModified: p.date, priority: 0.6 })),
+    ...listedPosts.map((p): Entry => ({ url: abs(blogPostHref(p.slug)), lastModified: p.date, priority: 0.6 })),
   ];
 
-  // A detail href can also appear in the navigation (e.g. a treatment in the menu): keep one entry.
+  // Keep one entry per URL.
   const seen = new Set<string>();
   return [...staticEntries, ...detailEntries].filter((e) => !seen.has(e.url) && seen.add(e.url));
 }

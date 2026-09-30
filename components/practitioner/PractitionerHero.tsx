@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { ButtonLink, Container, Eyebrow } from "@/components/ui";
+import { ButtonLink, Container, Eyebrow, ResponsiveText } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { CropPhoto } from "./CropPhoto";
 import { PORTRAIT_TOP_POSITION, type ResolvedProfile } from "./profile";
-import { Responsive } from "./Responsive";
 
 type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
 
@@ -65,7 +64,7 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
           </nav>
 
           <Eyebrow className="md:hidden">
-            <Responsive mobile={profile.titleShort} desktop={profile.title} />
+            <ResponsiveText mobile={profile.titleShort} desktop={profile.title} />
           </Eyebrow>
 
           <h1
@@ -79,7 +78,7 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
 
           {profile.intro ? (
             <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-lead md:leading-[1.75]">
-              <Responsive mobile={profile.introShort} desktop={profile.intro} />
+              <ResponsiveText mobile={profile.introShort} desktop={profile.intro} />
             </p>
           ) : null}
 

@@ -33,7 +33,16 @@ export function ClinicMap({ label, image, pins, clinics, className }: ClinicMapP
       className={cn("relative aspect-[350/220] max-h-[260px] w-full overflow-hidden rounded-[22px] bg-sand", className)}
     >
       <div className="absolute inset-x-0 top-[45%] aspect-[350/220] -translate-y-[45%]">
-        <Image src={image.src} alt={image.alt} fill sizes="100vw" loading="eager" className="object-cover" />
+        {/* The map is the mobile LCP of /klinikker, so it is fetched at high priority. */}
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          sizes="100vw"
+          loading="eager"
+          fetchPriority="high"
+          className="object-cover"
+        />
         <ul>
           {pins.map((pin) => {
             const clinic = clinics.find((c) => c.slug === pin.slug);

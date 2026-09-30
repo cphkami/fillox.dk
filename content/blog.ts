@@ -1,3 +1,4 @@
+import { routes } from "./routes";
 import type { BlogFilter, BlogPost } from "./types";
 
 /**
@@ -249,6 +250,15 @@ export function getPost(slug: string): BlogPost | undefined {
   return posts.find((p) => p.slug === slug);
 }
 
+/**
+ * True when the post has its written article (`body`). An excerpt-only post still gets a
+ * page (excerpt + booking card), but it is noindex, left out of the sitemap and claims no
+ * reading time until the text exists (app/blog/[slug]/page.tsx, app/sitemap.ts).
+ */
+export function hasArticleBody(post: BlogPost): boolean {
+  return Boolean(post.body?.length);
+}
+
 /** Posts newest first. */
 export function sortedPosts(): BlogPost[] {
   return [...posts].sort((a, b) => b.date.localeCompare(a.date));
@@ -259,13 +269,6 @@ export function getFeaturedPost(): BlogPost {
   return posts.find((p) => p.featured) ?? sortedPosts()[0];
 }
 
-/** Posts matching a filter chip slug ("alle" = every post), newest first. */
-export function getPostsByCategory(filterSlug: string): BlogPost[] {
-  const all = sortedPosts();
-  if (filterSlug === "alle") return all;
-  return all.filter((p) => p.categorySlug === filterSlug || p.tags?.includes(filterSlug));
-}
-
 export function blogPostHref(slug: string): string {
-  return `/blog/${slug}`;
+  return `${routes.blog}/${slug}`;
 }

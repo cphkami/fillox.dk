@@ -174,7 +174,3 @@ export const pricesPage = {
     } satisfies ImageRef,
   },
 };
-
-export function getPriceCard(id: string): PriceCard | undefined {
-  return priceCards.find((c) => c.id === id);
-}

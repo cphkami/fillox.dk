@@ -11,6 +11,7 @@ import type { NavItem } from "@/content/types";
 import { ui } from "@/content/ui";
 import { cn } from "@/lib/cn";
 import type { HeaderData } from "./menuData";
+import { useAriaCurrent } from "./NavLink";
 
 type MobileMenuProps = Pick<HeaderData, "categories" | "clinics"> & {
   items: NavItem[];
@@ -37,6 +38,7 @@ function rowClasses(expanded = false) {
  */
 export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: MobileMenuProps) {
   const pathname = usePathname();
+  const ariaCurrent = useAriaCurrent();
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<Section | null>("treatments");
   const [level2, setLevel2] = useState(false);
@@ -200,7 +202,13 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
         >
           {/* Top bar: logo + round close button */}
           <div className="flex items-center justify-between px-5 py-3.5 md:px-10">
-            <Link href="/" aria-label={homeLabel} onClick={onNavigate} className="rounded-sm">
+            <Link
+              href="/"
+              aria-label={homeLabel}
+              onClick={onNavigate}
+              // White plate behind the dark logo in Windows high contrast (dark canvas), as in the header.
+              className="rounded-sm forced-colors:bg-white forced-colors:outline-[color:CanvasText] forced-colors:forced-color-adjust-none"
+            >
               <Image
                 src={site.brand.logoDark}
                 alt=""
@@ -236,7 +244,12 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                   if (item.kind === "link" || item.kind === "prices") {
                     return (
                       <li key={item.href}>
-                        <Link href={item.href} onClick={onNavigate} className={rowClasses()}>
+                        <Link
+                          href={item.href}
+                          onClick={onNavigate}
+                          aria-current={ariaCurrent(item.href)}
+                          className={rowClasses()}
+                        >
                           {item.label}
                         </Link>
                       </li>
@@ -282,6 +295,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                           <Link
                             href={item.href}
                             onClick={onNavigate}
+                            aria-current={ariaCurrent(item.href)}
                             className="flex min-h-[46px] items-center text-[15px] font-semibold text-plum"
                           >
                             {ui.seeAllTreatments}&nbsp;<span aria-hidden="true">→</span>
@@ -297,6 +311,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                                 <Link
                                   href={c.href}
                                   onClick={onNavigate}
+                                  aria-current={ariaCurrent(c.href)}
                                   className="block text-[16px] font-semibold text-ink"
                                 >
                                   {c.name}
@@ -333,6 +348,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                               <Link
                                 href={sub.href}
                                 onClick={onNavigate}
+                                aria-current={ariaCurrent(sub.href)}
                                 className="flex min-h-[46px] items-center text-[16px] text-ink"
                               >
                                 {sub.label}
@@ -373,6 +389,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                         <Link
                           href={t.href}
                           onClick={onNavigate}
+                          aria-current={ariaCurrent(t.href)}
                           className="flex min-h-[61px] items-center justify-between gap-3 border-b border-line"
                         >
                           <span className="text-[17px] font-medium">{t.mobileName}</span>
@@ -386,6 +403,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                   <Link
                     href={category.href}
                     onClick={onNavigate}
+                    aria-current={ariaCurrent(category.href)}
                     className="flex min-h-14 items-center text-[15px] font-semibold text-plum"
                   >
                     {category.allLabel}&nbsp;<span aria-hidden="true">→</span>

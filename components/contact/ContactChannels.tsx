@@ -1,18 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ResponsiveText } from "@/components/ui";
 import type { ContactChannel } from "@/content/pages/contact";
 import { cn } from "@/lib/cn";
-
-/** Mobile (mc) wording below 768px, desktop (6ko) wording from 768px. */
-function Variant({ mobile, desktop }: { mobile?: string; desktop: string }) {
-  if (!mobile || mobile === desktop) return <>{desktop}</>;
-  return (
-    <>
-      <span className="md:hidden">{mobile}</span>
-      <span className="max-md:hidden">{desktop}</span>
-    </>
-  );
-}
 
 function ChannelCard({ href, className, children }: { href?: string; className: string; children: ReactNode }) {
   // No href: an information card (no link, no arrow). tel:/mailto: are plain anchors;
@@ -66,7 +56,7 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
                     accent ? "md:text-powder" : "md:text-plum",
                   )}
                 >
-                  <Variant mobile={channel.labelShort} desktop={channel.label} />
+                  <ResponsiveText mobile={channel.labelShort} desktop={channel.label} />
                 </span>
                 <span
                   className={cn(
@@ -75,7 +65,7 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
                     !accent && linked && "md:group-hover:text-plum",
                   )}
                 >
-                  <Variant mobile={channel.valueShort} desktop={channel.value} />
+                  <ResponsiveText mobile={channel.valueShort} desktop={channel.value} />
                 </span>
               </span>
               {/* Mobile shows an arrow instead of the note; screen readers still get the note.

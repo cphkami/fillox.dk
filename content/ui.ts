@@ -15,7 +15,6 @@ export const ui = {
   bookAt: "Book i",
   seePrices: "Se priser",
   readMore: "Læs mere",
-  seeAll: "Se alle",
   seeAllTreatments: "Se alle behandlinger",
   seeAllClinics: "Se alle klinikker",
   /** Link at the bottom of the desktop "Priser" dropdown ("Se alle priser →"). */
@@ -26,8 +25,6 @@ export const ui = {
   /* ------------------------------------------------------------------ Prices */
   /** Price prefix: "fra 799 kr". */
   from: "fra",
-  /** Uppercase-ready variant used in price pills, e.g. "FRA 799 KR". */
-  fromUpper: "Fra",
   free: "Gratis",
 
   /* ----------------------------------------------------------------- Contact */

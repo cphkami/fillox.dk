@@ -10,11 +10,35 @@ import type { TreatmentView } from "./treatmentView";
  * card, photo left). Photos are 220px tall up to 1280px and grow to 300px at the 1600px
  * canvas, so they keep the design's proportion as the columns widen. `sizes` = the widest
  * slot on the 1600px canvas (1440px content width, 24px gaps).
+ * Three posts on a tablet (768–1023px) would be 213px-wide columns with 4-line titles, so
+ * there they stack as wide cards (photo left, 2 : 3) and become the design's 3 columns at lg.
  */
 const layouts = {
-  1: { grid: "md:grid-cols-1", card: "md:grid md:grid-cols-2", photo: "md:h-full md:min-h-fluid-300/380", sizes: "(min-width: 1600px) 720px, 50vw" },
-  2: { grid: "md:grid-cols-2", card: "", photo: "h-fluid-220/300", sizes: "(min-width: 1600px) 708px, 50vw" },
-  3: { grid: "md:grid-cols-3", card: "", photo: "h-fluid-220/300", sizes: "(min-width: 1600px) 464px, 30vw" },
+  1: {
+    grid: "md:grid-cols-1",
+    card: "md:grid md:grid-cols-2",
+    photo: "md:h-full md:min-h-fluid-300/380",
+    body: "",
+    longMetaFrom: "md",
+    sizes: "(min-width: 1600px) 720px, 50vw",
+  },
+  2: {
+    grid: "md:grid-cols-2",
+    card: "",
+    photo: "h-fluid-220/300",
+    body: "",
+    longMetaFrom: "md",
+    sizes: "(min-width: 1600px) 708px, 50vw",
+  },
+  3: {
+    grid: "md:grid-cols-1 lg:grid-cols-3",
+    card: "md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:flex",
+    photo: "md:h-full md:min-h-[220px] lg:h-fluid-220/300 lg:min-h-0",
+    body: "md:px-8 md:py-7 lg:px-7 lg:pt-[26px] lg:pb-[30px]",
+    // "FOREBYGGELSE · 3 MIN LÆSNING" wraps in columns narrower than the design canvas's.
+    longMetaFrom: "canvas",
+    sizes: "(min-width: 1600px) 464px, (min-width: 1024px) 30vw, 40vw",
+  },
 } as const;
 
 /**
@@ -25,12 +49,12 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
   const layout = layouts[Math.min(posts.items.length, 3) as 1 | 2 | 3];
   const single = posts.items.length === 1;
   return (
-    <Container as="section" aria-labelledby="fra-bloggen" className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
+    <Container as="section" aria-labelledby={copy.sectionIds.posts} className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
       <div className="mb-4 md:mb-9 md:flex md:items-end md:justify-between md:gap-6">
         <div>
           <Eyebrow className="mb-3.5 max-md:hidden">{posts.eyebrow}</Eyebrow>
           <h2
-            id="fra-bloggen"
+            id={copy.sectionIds.posts}
             className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
           >
             {posts.title}
@@ -64,16 +88,19 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                 />
                 <div
                   className={cn(
-                    "flex flex-1 flex-col md:px-5 md:pt-[26px] md:pb-[30px] lg:px-7",
+                    "flex flex-1 flex-col",
+                    layout.body || "md:px-5 md:pt-[26px] md:pb-[30px] lg:px-7",
                     single && "md:justify-center md:px-10 md:py-10 lg:px-14",
                   )}
                 >
                   <p className="text-[12px] text-muted md:mb-2.5 md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
-                    <span className="md:hidden">
+                    {/* Short meta ("Guide · 4 min") on mobile, the long label from md (three
+                        columns: from the 1180px design canvas). */}
+                    <span className={layout.longMetaFrom === "md" ? "md:hidden" : "min-[73.75rem]:hidden"}>
                       {kind}
                       {post.readingMinutes ? ` · ${post.readingMinutes} ${copy.posts.minutes}` : ""}
                     </span>
-                    <span className="max-md:hidden">
+                    <span className={layout.longMetaFrom === "md" ? "max-md:hidden" : "hidden min-[73.75rem]:inline"}>
                       {kind} · {post.readingTime}
                     </span>
                   </p>

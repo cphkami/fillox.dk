@@ -7,11 +7,12 @@ import { clinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
 import { mainNav, megaMenuColumns, megaMenuPromo, treatmentCategories } from "@/content/navigation";
 import { priceCards, pricesPage, type PriceCard } from "@/content/prices";
+import { routes } from "@/content/routes";
 import { getTreatment, treatmentHref } from "@/content/treatments";
 import type { Clinic, ImageRef, NavItem } from "@/content/types";
 import { ui } from "@/content/ui";
 import { site } from "@/config/site";
-import { formatPrice } from "@/lib/format";
+import { formatPriceFrom } from "@/lib/content";
 
 export type MenuTreatment = {
   slug: string;
@@ -92,7 +93,7 @@ function toMenuTreatment(slug: string): MenuTreatment | undefined {
     name: t.name,
     mobileName: t.mobileMenuName ?? t.name,
     href: treatmentHref(t.slug),
-    price: t.priceFrom != null ? `${ui.from} ${formatPrice(t.priceFrom)}` : undefined,
+    price: t.priceFrom != null ? formatPriceFrom(t.priceFrom) : undefined,
   };
 }
 
@@ -112,22 +113,23 @@ function lowestPrice(card: PriceCard): string | undefined {
     const from = getTreatment(slug)?.priceFrom;
     return from == null ? [] : [from];
   });
-  if (fromPrices.length) return `${ui.from} ${formatPrice(Math.min(...fromPrices))}`;
+  if (fromPrices.length) return formatPriceFrom(Math.min(...fromPrices));
   const amounts = card.rows.flatMap((r) => (r.price.kind === "amount" ? [r.price.amount] : []));
-  if (amounts.length) return `${ui.from} ${formatPrice(Math.min(...amounts))}`;
+  if (amounts.length) return formatPriceFrom(Math.min(...amounts));
   if (card.rows.some((r) => r.price.kind === "free")) return ui.free;
   return undefined;
 }
 
 /** Link to a clinic on the clinics page, e.g. "/klinikker#city2". */
-export function clinicAnchor(clinic: Clinic, clinicsHref: string): string {
+function clinicAnchor(clinic: Clinic, clinicsHref: string): string {
   return `${clinicsHref}#${clinic.slug}`;
 }
 
+/** Nav items, mega menu, mobile menu categories, clinics and prices for <Header/>. */
 export function buildHeaderData(): HeaderData {
-  const clinicsHref = mainNav.find((n) => n.kind === "clinics")?.href ?? "/klinikker";
-  const treatmentsHref = mainNav.find((n) => n.kind === "treatments")?.href ?? "/behandlinger";
-  const pricesHref = mainNav.find((n) => n.kind === "prices")?.href ?? "/priser";
+  const clinicsHref = routes.clinics;
+  const treatmentsHref = routes.treatments;
+  const pricesHref = routes.prices;
 
   return {
     nav: mainNav,

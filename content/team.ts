@@ -1,5 +1,7 @@
 import type { TeamMember } from "./types";
+import { routes } from "./routes";
 import { site } from "@/config/site";
+import { practitionerBookingHref } from "@/lib/booking";
 import { formatDecimal } from "@/lib/format";
 
 /**
@@ -13,8 +15,9 @@ import { formatDecimal } from "@/lib/format";
  * design-reference/.image-slots.state.json (s6om-*, s6bx-annika, s6alb-hero).
  */
 
-const profileHref = (slug: string) => `/behandlere/${slug}`;
-const bookWith = (slug: string) => `${site.booking.href}?behandler=${slug}`;
+const profileHref = (slug: string) => `${routes.practitioners}/${slug}`;
+/** Booking link that preselects a practitioner: /booking?behandler=<slug> (lib/booking.ts). */
+const bookWith = practitionerBookingHref;
 
 export const team: TeamMember[] = [
   {
@@ -55,8 +58,8 @@ export const team: TeamMember[] = [
       src: "/images/team/alberte.jpg",
       alt: "Alberte, kosmetisk behandler hos Fillox",
       position: "50% 50%",
-      width: 1920,
-      height: 2560,
+      width: 1728,
+      height: 2304,
     },
     crops: {
       // s6om-alb
@@ -65,8 +68,8 @@ export const team: TeamMember[] = [
         alt: "Alberte, kosmetisk behandler hos Fillox",
         position: "38% 80%",
         zoom: 1.33,
-        width: 1920,
-        height: 2560,
+        width: 1728,
+        height: 2304,
       },
     },
     bio: "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden.",
@@ -85,8 +88,8 @@ export const team: TeamMember[] = [
         alt: "Alberte, kosmetisk behandler hos Fillox",
         position: "42% 62%",
         zoom: 1.19,
-        width: 1920,
-        height: 2560,
+        width: 1728,
+        height: 2304,
       },
       primaryCta: { label: "Book tid hos Alberte", href: bookWith("alberte") },
       secondaryCta: { label: "Se behandlinger", href: "#behandlinger" },
@@ -198,8 +201,8 @@ export const team: TeamMember[] = [
       src: "/images/team/annika.jpg",
       alt: "Annika, kosmetisk sygeplejerske hos Fillox",
       position: "50% 50%",
-      width: 1920,
-      height: 2560,
+      width: 1440,
+      height: 1920,
     },
     crops: {
       // s6om-ann
@@ -208,8 +211,8 @@ export const team: TeamMember[] = [
         alt: "Annika, kosmetisk sygeplejerske hos Fillox",
         position: "42% 76%",
         zoom: 1.37,
-        width: 1920,
-        height: 2560,
+        width: 1440,
+        height: 1920,
       },
       // s6bx-annika (Botox page, "Din behandler")
       practitioner: {
@@ -217,8 +220,8 @@ export const team: TeamMember[] = [
         alt: "Annika, kosmetisk sygeplejerske hos Fillox",
         position: "48% 69%",
         zoom: 1.36,
-        width: 1920,
-        height: 2560,
+        width: 1440,
+        height: 1920,
       },
     },
     bio: "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden om de forskellige behandlinger og muligheder.",
@@ -274,8 +277,8 @@ export const team: TeamMember[] = [
       src: "/images/team/mike.jpg",
       alt: "Mike, kosmetisk behandler hos Fillox",
       position: "50% 50%",
-      width: 2136,
-      height: 2560,
+      width: 1602,
+      height: 1920,
     },
     crops: {
       // s6om-mik
@@ -284,8 +287,8 @@ export const team: TeamMember[] = [
         alt: "Mike, kosmetisk behandler hos Fillox",
         position: "43% 51%",
         zoom: 1.19,
-        width: 2136,
-        height: 2560,
+        width: 1602,
+        height: 1920,
       },
     },
     bio: "Mike har mange års erfaring i den kosmetiske branche og er kendt for sin rolige tilgang og skarpe øje for detaljer.",

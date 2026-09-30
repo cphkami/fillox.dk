@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { Container, Eyebrow, buttonClasses } from "@/components/ui";
+import { Container, Eyebrow, ResponsiveText, buttonClasses } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { getTreatment, treatmentHref } from "@/content/treatments";
 import type { TeamProfile } from "@/content/types";
 import { formatPriceValue } from "@/lib/content";
 import { cn } from "@/lib/cn";
-import { Responsive } from "./Responsive";
 
 type OffersSectionProps = {
   offers: NonNullable<TeamProfile["offers"]>;
@@ -66,7 +65,7 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
                     "md:border-0 md:bg-plum md:text-cream md:hover:bg-plum-deep",
                   )}
                 >
-                  <Responsive mobile={offers.ctaLabelShort} desktop={offers.ctaLabel} />
+                  <ResponsiveText mobile={offers.ctaLabelShort} desktop={offers.ctaLabel} />
                   {/* Unique accessible name per button ("Book hos Alberte: Microneedling"). */}
                   <span className="sr-only">
                     {practitionerPage.offerLabelSeparator}
