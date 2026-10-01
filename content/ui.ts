@@ -44,6 +44,35 @@ export const ui = {
   trustpilot: "Trustpilot",
   /** Rating label before the stars ("Fremragende ★★★★½"). */
   trustpilotLabel: "Fremragende",
+  /** Aggregate rating, e.g. "4,7 ud af 5 · 172 anmeldelser" ({score}, {count} from config/site.ts). */
+  trustpilotSummary: "{score} ud af 5 · {count} anmeldelser",
+  /** Link to the Trustpilot profile next to every review rotator (arrow added by the component). */
+  seeAllReviews: "Se alle anmeldelser på Trustpilot",
+
+  /* ----------------------------------------------------------------- Reviews */
+  /** Accessible name of a review carousel that has no visible heading. */
+  reviewsLabel: "Kundeanmeldelser",
+  /** aria-roledescription of the review carousel and of each review in it (read by screen readers). */
+  carouselRole: "karrusel",
+  slideRole: "slide",
+  /** Each review's label and its dot button: "Anmeldelse 2 af 5". */
+  reviewPosition: "Anmeldelse {n} af {total}",
+  /** Accessible name of the group of dot buttons. */
+  reviewPicker: "Vælg anmeldelse",
+  reviewPrevious: "Forrige anmeldelse",
+  reviewNext: "Næste anmeldelse",
+  /** Pause / play button of the automatic rotation. */
+  reviewsPause: "Stop automatisk skift af anmeldelser",
+  reviewsPlay: "Start automatisk skift af anmeldelser",
+  /** Star rating of one review: "5 ud af 5 stjerner". */
+  reviewRating: "{rating} ud af 5 stjerner",
+  /** Typographic quote marks around a review quote. */
+  quoteOpen: "“",
+  quoteClose: "”",
+  /** Between author, date and source under a review: "Sarah · 23. sep. 2026 · Trustpilot". */
+  separator: " · ",
+  /** Screen-reader note after a link that opens in a new tab (shown in brackets). */
+  opensInNewTab: "åbner i en ny fane",
 } as const;
 
 export type UiStrings = typeof ui;

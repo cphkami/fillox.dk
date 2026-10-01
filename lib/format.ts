@@ -12,3 +12,8 @@ export function formatPrice(amount: number): string {
 export function formatDecimal(value: number): string {
   return decimalFormat.format(value);
 }
+
+/** 1234 → "1.234" (DK): a whole number in the market locale (review counts). */
+export function formatInteger(value: number): string {
+  return numberFormat.format(value);
+}

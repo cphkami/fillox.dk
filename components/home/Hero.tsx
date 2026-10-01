@@ -57,8 +57,8 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
           </div>
 
           {/* cn() does not merge Tailwind classes, so the 13px override needs a variant to beat the base 14px. */}
-          <TrustpilotRating size="sm" className="max-md:text-[13px] md:hidden" />
-          <TrustpilotRating size="md" className="mb-11 max-md:hidden" />
+          <TrustpilotRating size="sm" linked className="max-md:text-[13px] md:hidden" />
+          <TrustpilotRating size="md" linked className="mb-11 max-md:hidden" />
 
           {/* Below md the 12px labels need a 16px column gap to read as three stats (12px
               below 360px, where 16 would push "Trustpilot" past the panel's padding). */}

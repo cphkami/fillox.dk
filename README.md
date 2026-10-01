@@ -116,6 +116,10 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       steder — vi bruger 1.499 kr (`content/treatments.ts`, bestsellers). Fillox bekræfter.
 - [ ] **Juridisk**: registreret adresse og mailadresse til databeskyttelse (`info@` på
       privatlivssiden, `kontakt@` i `config/site.ts`) — `content/pages/legal.ts`.
+- [ ] **Anmeldelser og Botox** (juridisk vurdering): Botox er receptpligtig medicin. Anmeldelser,
+      der nævner Botox, er udeladt, og de seks botulinumtoksin-sider (Botox, Lip flip, Gummy
+      smile, Hyperhidrose, Traptox, Botox for mænd) viser ingen kundeanmeldelser
+      (`treatmentsWithoutReviews` i `content/reviews.ts`). Slå dem først til, når det er afklaret.
 - [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
       `content/clinics.ts`), større original af Om os-billedet (`content/pages/about.ts`).
@@ -135,9 +139,9 @@ skal du rette en tekst i en komponent, hører teksten til i `content/`.
 
 | Fil / mappe | Hvad |
 |---|---|
-| `config/site.ts` | `market: "no"`, `country: "NO"`, `legalName`, `domain`/`url` (`https://fillox.no`), `locale: "nb-NO"`, `lang: "nb"`, `currency: "NOK"`, `pricePattern`, telefon/e-mail, `company` (`registrationLabel: "Org.nr."`), Instagram, Trustpilot, **booking** (se punkt 3) |
+| `config/site.ts` | `market: "no"`, `country: "NO"`, `legalName`, `domain`/`url` (`https://fillox.no`), `locale: "nb-NO"`, `lang: "nb"`, `currency: "NOK"`, `pricePattern`, telefon/e-mail, `company` (`registrationLabel: "Org.nr."`), Instagram, Trustpilot (`score`, `reviewCount`, `url` som på profilen), **booking** (se punkt 3) |
 | `content/routes.ts` | Norske stier, fx `/om-oss`, `/personvern`, `/kontakt/takk` — **og omdøb de matchende mapper i `app/`** |
-| `content/**` | Al tekst og data: navigation, klinikker, behandlinger, priser, behandlere, blog, sidetekster, UI-strenge, 404, `/booking`-tekst, `seo.ts` (dag-labels), `forms.ts` (formularnavne), `redirects.ts` (gamle fillox.no-URL'er) |
+| `content/**` | Al tekst og data: navigation, klinikker, behandlinger, priser, behandlere, blog, sidetekster, UI-strenge, 404, `/booking`-tekst, `seo.ts` (dag-labels), `forms.ts` (formularnavne), `redirects.ts` (gamle fillox.no-URL'er), `reviews.ts` (kun ægte anmeldelser fra fillox.no's Trustpilot-profil, ordret; se kommentaren øverst i filen) |
 | `public/__forms.html` | Samme formularnavne som `content/forms.ts` |
 | `public/__kontakt-sendt.html` | Videresender til `routes.contactThanks` (fx `/kontakt/takk`) |
 | `public/images/**` | Fotos; **klinikkortet** `public/images/clinics/kort.svg` er et København-kort |

@@ -1,5 +1,6 @@
 import { site } from "@/config/site";
 import { practitionerPage } from "@/content/pages/practitioner";
+import { reviewsFor, type ReviewSelection } from "@/content/reviews";
 import type { ImageRef, Link, TeamMember, TeamProfile } from "@/content/types";
 
 /**
@@ -29,7 +30,8 @@ export type ResolvedProfile = {
   offers?: TeamProfile["offers"];
   offersCtaHref: string;
   experience?: TeamProfile["experience"];
-  reviews: NonNullable<TeamProfile["reviews"]>;
+  /** Verified reviews that name the practitioner, filled up with general ones (content/reviews.ts). */
+  reviews: ReviewSelection;
   booking: NonNullable<TeamProfile["booking"]>;
 };
 
@@ -71,7 +73,7 @@ export function resolveProfile(member: TeamMember): ResolvedProfile {
     offers,
     offersCtaHref: bookingHref,
     experience: p?.experience && p.experience.items.length > 0 ? p.experience : undefined,
-    reviews: p?.reviews ?? [],
+    reviews: reviewsFor({ practitioner: member.slug, seed: member.slug }),
     booking: p?.booking ?? {
       title: copy.booking.title(member.name),
       text: copy.booking.text,

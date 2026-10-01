@@ -6,7 +6,8 @@ import { routes } from "../routes";
  * ma mobile) and the practitioner index /behandlere.
  *
  * The practitioner's own content (name, title, intro, facts, approach, offers,
- * experience, reviews, booking band) lives in content/team.ts → TeamMember.profile.
+ * experience, booking band) lives in content/team.ts → TeamMember.profile; their customer
+ * reviews in content/reviews.ts (reviewSets.practitioners).
  * This file only holds the page-level strings around it, plus the fallbacks used
  * for members whose profile is missing or incomplete.
  *
@@ -38,12 +39,15 @@ export const practitionerPage = {
    */
   offerLabelSeparator: ": ",
 
+  /**
+   * Customer reviews section (rotating; the reviews are content/reviews.ts). The heading names
+   * the practitioner only when every review shown names them; when the profile is filled up with
+   * general reviews (fewer than 3 of their own), it says `generalTitle`.
+   */
+  // TODO: copy review (headings not in the design)
   review: {
-    /** Typographic quote marks around the review quote. */
-    quoteOpen: "“",
-    quoteClose: "”",
-    /** Between author and source: "Songül · Trustpilot". */
-    separator: " · ",
+    title: (name: string) => `Det siger kunderne om ${name}`,
+    generalTitle: "Det siger vores kunder",
   },
 
   /**

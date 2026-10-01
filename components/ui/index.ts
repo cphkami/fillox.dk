@@ -3,6 +3,8 @@ export type { ButtonSize, ButtonStyleProps, ButtonVariant } from "./Button";
 export { Eyebrow } from "./Eyebrow";
 export { SectionHeading } from "./SectionHeading";
 export { TrustpilotRating } from "./TrustpilotRating";
+export { ReviewRotator } from "./ReviewRotator";
+export { AllReviewsLink } from "./AllReviewsLink";
 export { Photo } from "./Photo";
 export { Container, containerClasses, gutterClasses } from "./Container";
 export type { Gutter } from "./Container";

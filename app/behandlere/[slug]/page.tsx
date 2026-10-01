@@ -64,7 +64,7 @@ export default async function PractitionerPage({ params }: Props) {
   // The closing booking band repeats the hero's button, so it only closes a page that has
   // content between the two; a profile without sections ends with the rest of the team.
   const hasSections = Boolean(
-    profile.approach || profile.offers || profile.experience || profile.reviews.length > 0,
+    profile.approach || profile.offers || profile.experience || profile.reviews.reviews.length > 0,
   );
 
   const url = absoluteUrl(teamMemberHref(member.slug));
@@ -105,7 +105,9 @@ export default async function PractitionerPage({ params }: Props) {
         {profile.experience ? (
           <ExperienceSection experience={profile.experience} titleId={id("experience")} />
         ) : null}
-        {profile.reviews.length > 0 ? <ReviewSection reviews={profile.reviews} /> : null}
+        {profile.reviews.reviews.length > 0 ? (
+          <ReviewSection selection={profile.reviews} name={profile.name} titleId={id("reviews")} />
+        ) : null}
         {hasSections ? (
           <BookingBand booking={profile.booking} titleId={id("booking")} />
         ) : (

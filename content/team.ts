@@ -18,11 +18,9 @@ import { formatDecimal } from "@/lib/format";
  * hero intro and fact cards (no offers: the live site does not say who performs what,
  * and offers would also make treatment pages pick that member as "Din behandler").
  *
- * `profile.reviews` are verbatim excerpts of the Trustpilot reviews in "Tilbagemeldinger fra
- * vores kunder" on the live homepage (https://fillox.dk/), each one naming the practitioner.
- * That block shows them beside a 5-star rating (the reviews themselves carry no star count;
- * trustpilot.com blocks scripted reads). None of them names Alberte, so her profile has none.
- * Reviewers are shown by first name (+ initial when Trustpilot shows a surname).
+ * Customer reviews are not kept here: every profile shows the verified Trustpilot reviews that
+ * name the practitioner (content/reviews.ts → reviewSets.practitioners), filled up with general
+ * reviews. `profile.reviews` is deprecated and ignored.
  *
  * Card links: only a member with `profile.offers` gets "Se hvad X tilbyder"; the others link
  * with "Læs mere om X" (their profile has no list of treatments).
@@ -77,19 +75,6 @@ export const team: TeamMember[] = [
         { label: "Specialområde", value: "Ansigtskonturering, næse & hage" },
         { label: "Rolle", value: "Fagligt ansvarlig læge" },
       ],
-      // Live homepage, Trustpilot review "Den bedste i skandinavien" by Sofii Diaz
-      // (https://dk.trustpilot.com/reviews/662fbf1b5324f53bc92637e3), verbatim excerpt.
-      reviews: [
-        {
-          quote:
-            "Har været hos dr Tom i dag for at lave læber og jeg har aldrig været mere fornøjd. … Mine læber er naturlige, plumped og fyldt op perfekt efter min form.",
-          quoteShort:
-            "Har været hos dr Tom i dag for at lave læber og jeg har aldrig været mere fornøjd.",
-          author: "Sofii D.",
-          source: "Trustpilot",
-          rating: 5,
-        },
-      ],
     },
   },
   {
@@ -122,7 +107,8 @@ export const team: TeamMember[] = [
     // doctors and nurses. Until confirmed, the design's unsourced claims are left out: the title
     // "Kosmetisk behandler", the clinics (City2 & Amager), the specialty "Laser &
     // hudforbedring", the "Erfaring & uddannelse" timeline (2021 kosmetolog, 2022 laser/IPL,
-    // 2023 Fillox, løbende kurser) and the design's sample review. bio, bioShort, intro and the
+    // 2023 Fillox, løbende kurser) and the design's sample review (her real Trustpilot reviews are
+    // in content/reviews.ts). bio, bioShort, intro and the
     // facts come from her "Ansatte" pop-up and quote on https://fillox.dk/om-os/.
     bio: "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden.",
     bioShort: "Holder sig konstant orienteret i den nyeste viden inden for den kosmetiske verden.",
@@ -222,9 +208,9 @@ export const team: TeamMember[] = [
           },
         ],
       },
-      // No `experience` and no `reviews` until the owner supplies sourced ones (see the TODO
-      // above): add `experience` once her education is confirmed, and `reviews` only with a
-      // real review that names her (none of the live homepage's Trustpilot reviews does).
+      // No `experience` until the owner supplies a sourced one (see the TODO above): add it once
+      // her education is confirmed. Her reviews: content/reviews.ts (Trustpilot reviews that
+      // name her).
       booking: {
         title: "Book tid hos Alberte",
         text: "Vælg behandling og klinik. Første konsultation er altid gratis.",
@@ -282,19 +268,6 @@ export const team: TeamMember[] = [
         { label: "Uddannet af", value: "Dr. Tom i Fillox" },
         { label: "Fokus", value: "Naturlige resultater" },
         { label: "Prioritet", value: "Kundetilfredshed" },
-      ],
-      // Live homepage, Trustpilot review "Annika fra FILLOX City2 er helt fantastisk!" by
-      // Songül, verbatim excerpt.
-      reviews: [
-        {
-          quote:
-            "Jeg har gået fast hos Annika siden hun startede, og jeg føler mig altid 100% tryg i hendes hænder. Hun er ærlig, lyttende og vanvittigt dygtig – hun gør kun det, der giver mening, og aldrig noget for bare at sælge.",
-          quoteShort:
-            "Jeg har gået fast hos Annika siden hun startede, og jeg føler mig altid 100% tryg i hendes hænder.",
-          author: "Songül",
-          source: "Trustpilot",
-          rating: 5,
-        },
       ],
     },
   },
@@ -389,18 +362,6 @@ export const team: TeamMember[] = [
         { label: "Udvikling", value: "Løbende uddannelse" },
         { label: "Tilgang", value: "Dine ønsker & behov" },
         { label: "Fokus", value: "Tryghed & tilfredshed" },
-      ],
-      // Live homepage, Trustpilot review "Fillox - Mike" by Maria, verbatim excerpt.
-      reviews: [
-        {
-          quote:
-            "Jeg har fået lavet filler hos fillox, udført af Mike. Han er utrolig dygtig og rolig og det gør oplevelsen tryg og behagelig hele vejen igennem.",
-          quoteShort:
-            "Mike er utrolig grundig og dygtig til sit arbejde og man kan mærke at han virkelig brænder for sit håndværk.",
-          author: "Maria",
-          source: "Trustpilot",
-          rating: 5,
-        },
       ],
     },
   },

@@ -1,6 +1,7 @@
 import type { ImageRef, Link } from "../types";
 import { site } from "@/config/site";
 import { formatDecimal } from "@/lib/format";
+import { reviewsFor } from "../reviews";
 import { ui } from "../ui";
 import { routes } from "../routes";
 import { treatmentHref } from "../treatments";
@@ -13,6 +14,7 @@ import { treatmentHref } from "../treatments";
  * - bestseller rows → content/treatments.ts `bestsellers`
  * - practitioners   → content/team.ts `team`
  * - clinic cards    → content/clinics.ts `clinics` (`hoursSummary`, `openingNote`)
+ * - testimonial     → content/reviews.ts (verified Trustpilot reviews, set "home")
  */
 
 type Stat = { value: string; label: string };
@@ -38,10 +40,10 @@ export const homePage = {
     primaryCta: { label: ui.bookCta, href: site.booking.href } satisfies Link,
     secondaryCta: { label: ui.seePrices, href: routes.prices } satisfies Link,
     image: {
-      src: "/images/hero/hero-1.jpg",
-      // TODO: copy review (alt text)
-      alt: "Kvinde med mørkt, opsat hår foran en rosa baggrund",
-      position: "50% 50%",
+      src: "/images/hero/hero-warm.jpg",
+      alt: "Kvinde med langt, gyldenbrunt hår og glødende hud i varmt lys",
+      // Face sits in the upper half; keep the eyes clear of the top edge on wide crops.
+      position: "50% 30%",
     } satisfies ImageRef,
     stats: [
       { value: "10.000+", label: "Behandlinger" },
@@ -113,13 +115,11 @@ export const homePage = {
   },
 
   testimonial: {
-    // TODO: copy review (accessible names, not in the design)
-    label: "Kundeanmeldelse",
-    ratingLabel: "5 ud af 5 stjerner",
-    rating: 5,
-    quote: "“Professionelle, rolige og ærlige. Jeg blev frarådet mere, end jeg blev anbefalet, dét er tillid.”",
-    author: "Maria",
-    source: "Trustpilot",
+    // TODO: copy review (accessible name, not in the design)
+    /** Accessible name of the review carousel (the section has no visible heading). */
+    label: "Kundeanmeldelser",
+    /** Verified Trustpilot reviews, rotated (content/reviews.ts → reviewSets.home). */
+    reviews: reviewsFor({ set: "home" }).reviews,
     /** Desktop only (the mobile card has no photo). Decorative next to the quote. */
     image: {
       src: "/images/results/duo-pink.jpg",

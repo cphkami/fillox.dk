@@ -79,8 +79,11 @@ export type SiteConfig = {
 
   /** The visible label ("Fremragende") is copy: content/ui.ts → ui.trustpilotLabel. */
   trustpilot: {
-    /** Score 0–5, formatted in `locale` where shown ("4,7"). */
+    /** TrustScore 0–5 as Trustpilot shows it, formatted in `locale` where shown ("4,7"). */
     score: number;
+    /** Total number of reviews behind the score, as Trustpilot shows it ("172 anmeldelser"). */
+    reviewCount?: number;
+    /** Profile page ("Se alle anmeldelser"). */
     url: string;
   };
 

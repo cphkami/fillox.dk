@@ -8,6 +8,7 @@ import { PractitionerSection } from "@/components/treatment/PractitionerSection"
 import { PriceSection } from "@/components/treatment/PriceSection";
 import { RelatedPosts } from "@/components/treatment/RelatedPosts";
 import { ResultsSection } from "@/components/treatment/ResultsSection";
+import { ReviewsSection } from "@/components/treatment/ReviewsSection";
 import { TreatmentHero } from "@/components/treatment/TreatmentHero";
 import { TreatmentJsonLd } from "@/components/treatment/TreatmentJsonLd";
 import { buildTreatmentView } from "@/components/treatment/treatmentView";
@@ -40,7 +41,7 @@ export default async function TreatmentPage({ params }: Props) {
   if (!treatment) notFound();
 
   const view = buildTreatmentView(treatment);
-  const hasPlainSections = Boolean(view.practitioner || view.results || view.prices || view.posts);
+  const hasPlainSections = Boolean(view.practitioner || view.results || view.reviews || view.prices || view.posts);
 
   return (
     <>
@@ -52,6 +53,7 @@ export default async function TreatmentPage({ params }: Props) {
         <div className="pt-12 md:pt-fluid-84">
           {view.practitioner ? <PractitionerSection practitioner={view.practitioner} /> : null}
           {view.results ? <ResultsSection results={view.results} /> : null}
+          {view.reviews ? <ReviewsSection reviews={view.reviews} /> : null}
           {view.prices ? <PriceSection prices={view.prices} /> : null}
           {view.posts ? <RelatedPosts posts={view.posts} /> : null}
         </div>

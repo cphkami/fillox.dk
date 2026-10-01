@@ -298,6 +298,12 @@
   [data-surface="plum"] :focus-visible {
     outline-color: var(--color-powder);
   }
+  /* White card below 1024px, plum band from 1024px (the home testimonial: rotator + link). */
+  @media (width >= 64rem) {
+    [data-surface="plum-lg"] :focus-visible {
+      outline-color: var(--color-powder);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

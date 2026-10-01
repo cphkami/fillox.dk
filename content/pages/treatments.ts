@@ -28,6 +28,7 @@ export const treatmentPage = {
     results: "resultater",
     prices: "priser",
     posts: "fra-bloggen",
+    reviews: "anmeldelser",
   },
 
   /** Accessible name of the breadcrumb <nav>. */
@@ -65,6 +66,20 @@ export const treatmentPage = {
     /** Accessible name of the before/after row while it scrolls sideways (mobile). */
     // TODO: copy review (accessible name, not in the design)
     scrollLabel: "Resultater, rul vandret for at se flere",
+  },
+
+  /**
+   * Rotating customer reviews (content/reviews.ts → reviewsFor({ treatment })), after the
+   * results. The heading names the treatment only when every review shown is about it; when
+   * general reviews fill the section up (fewer than 5 of its own), it says `generalTitle`.
+   * The Botox pages have no reviews section (content/reviews.ts → treatmentsWithoutReviews).
+   */
+  // TODO: copy review (section not in the design)
+  reviews: {
+    eyebrow: "Anmeldelser",
+    title: withName("Det siger kunderne om"),
+    generalTitle: "Det siger vores kunder",
+    intro: "Udvalgte anmeldelser fra vores kunder på Trustpilot.",
   },
 
   prices: {

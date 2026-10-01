@@ -37,6 +37,7 @@ content/
   clinics.ts                   clinics
   treatments.ts                every treatment (slug, name, category, priceFrom, short, detail?)
   team.ts                      practitioners
+  reviews.ts                   verified Trustpilot reviews (verbatim) + where each is shown (see "Reviews")
   blog.ts                      blog posts
   prices.ts                    price list (Priser page)
   ui.ts                        shared UI strings ("Book tid", "Se priser", "Læs mere" …)
@@ -48,13 +49,15 @@ lib/                           helpers (formatPrice, cn, …); metadata.ts build
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
                                redirect targets, no-JS contact form target, Netlify form names,
                                booking provider ids, clinic address/hours parse for JSON-LD,
-                               no æ/ø/å strings in app/, components/, lib/
+                               no æ/ø/å strings in app/, components/, lib/, review excerpts
+                               verbatim + review sets consistent (content/reviews.ts)
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
   layout/                      Header (DesktopNav, MegaMenu, DropdownMenu, MobileMenu), Footer
   booking/                     BookingEmbed (switches on the booking provider), GeckoEmbed, TimmaEmbed
   ui/                          primitives: Button, Eyebrow, SectionHeading, Photo, ScrollRow,
-                               ResponsiveText (mobile/desktop copy), JoinedLines, HoneypotField, …
+                               ResponsiveText (mobile/desktop copy), JoinedLines, HoneypotField,
+                               ReviewRotator (client), AllReviewsLink, TrustpilotRating, …
   seo/                         OrganizationJsonLd (root layout); JsonLd, absoluteUrl, breadcrumbList
   <page>/                      page-local components (owned by that page)
 app/                           routes (see below)
@@ -110,6 +113,57 @@ type `ClinicBookingIds`).
   loaded; without answers the iframe stays 1400px high (min 640px) and scrolls inside.
 - `npm run check:market` fails when the provider is `timma` and an open clinic has no
   `timmaId`, and lists clinics without a Gecko calendar id as a note.
+
+## Reviews
+
+Every customer quote on the site is a real Trustpilot review, quoted verbatim, and they rotate
+(owner's request: at least 3–5 reviews wherever reviews are shown).
+
+- **Data** — `content/reviews.ts`: `reviews` (text, reviewer name as Trustpilot shows it, date,
+  rating, the review's URL, the practitioners / treatments it names) and `reviewSets` (`home`,
+  `general`, per practitioner slug, per treatment slug). The only shortened form is `short`:
+  whole sentences of the text with "…" where text is left out; `npm run check:market` verifies
+  every excerpt against its text and every set against the reviews (a practitioner set only
+  takes reviews that name that person, `general` only reviews that name nobody and fit every
+  page — nothing about needles, anaesthesia or a "sygeplejerske", which a laser page or a
+  doctor's profile would contradict). The file's header lists what is left out on purpose
+  (reviews naming Botox, former staff, Fillox Oslo …).
+- **Botox pages** — `treatmentsWithoutReviews` (Botox, Lip flip, Gummy smile, Hyperhidrose,
+  Traptox, Botox for mænd) show no reviews section at all: Botox is a prescription medicine,
+  and even general reviews read as Botox testimonials on those pages. Open legal question for
+  the owner (README checklist); `check:market` validates the list.
+- **Selection** — `reviewsFor({ practitioner | treatment | set, min = 3, max = 6, seed })`: the
+  own reviews (≤ max), filled up to `min` with `general` ones (never twice; `seed` = page slug
+  varies which). Treatment pages pass `min: 5`; practitioner profiles keep 3, so a profile
+  with few reviews of its own is not mostly general ones. `allSpecific` tells the section whether its heading may name the
+  practitioner / treatment; otherwise it says "Det siger vores kunder", so a general review is
+  never presented as being about that person or treatment.
+- **Aggregate** — `config/site.ts` → `trustpilot` (`score`, `reviewCount`, `url`) and
+  `ui.trustpilotLabel`; update them together from the profile. `TrustpilotRating` is linked
+  (new tab, 44px hit area) in the home hero; `showSummary` adds "4,7 ud af 5 · 172 anmeldelser".
+- **Rotator** — `components/ui/ReviewRotator.tsx` (client, no libraries; WAI-ARIA carousel):
+  all reviews rendered in one grid cell (height of the tallest, no layout shift; the first one
+  in the server HTML), crossfade + 16px slide every 7s; pauses on hover, focus inside, hidden
+  tab and while mostly off screen; no rotation or animation with prefers-reduced-motion. Pause
+  / play, previous / next and (box ≥ 28rem) dot buttons (each its own tab stop; inactive dots
+  ≥ 3:1), all 44px; swipe on touch. Any step stops the rotation; `aria-live` is "off" while it
+  actually rotates and "polite" whenever it is paused (hover, focus, button, reduced motion),
+  so the review a user moves to is announced. Each slide is a `div role="group"
+  aria-roledescription="slide"` around a plain `<figure>`. Without JavaScript the controls
+  keep their space but stay `invisible` until hydration. Tab order is slide link → pause →
+  previous → dots → next (controls below the quote, as designed); focus inside pauses the
+  rotation, so the review never changes before a keyboard user reaches pause (WCAG 2.2.2).
+  Props: `surface` (`light`, `plum`, `plum-lg` = white card below 1024px, plum band from
+  1024px; the home column carries `data-surface="plum-lg"` so the link under the rotator gets
+  the powder focus ring too), `size` (`large` pull quote, `compact` card), `align`, `valign`
+  (`start` on practitioner profiles: shorter reviews sit under the heading). Dates are
+  formatted on the server (`lib/reviews.ts` → `toReviewSlides`, site.locale).
+- **Placements** — home testimonial (set `home`, plum split panel), practitioner profiles
+  (`components/practitioner/ReviewSection`), treatment pages after the results except the
+  Botox pages (`components/treatment/ReviewsSection`, copy in `content/pages/treatments.ts` →
+  `reviews`).
+  Each has "Se alle anmeldelser på Trustpilot →" (`AllReviewsLink`). No review structured data:
+  reviews a business shows about itself are not eligible for review rich results.
 
 ## Design tokens (from the design's mobile spec + brand kit)
 

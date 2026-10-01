@@ -7,10 +7,20 @@ import { site } from "@/config/site";
 import { treatmentCategories, mainNav } from "@/content/navigation";
 import { treatmentPage as copy } from "@/content/pages/treatments";
 import { priceCards } from "@/content/prices";
+import { reviewsFor } from "@/content/reviews";
 import { routes } from "@/content/routes";
 import { team } from "@/content/team";
 import { getTreatment } from "@/content/treatments";
-import type { BeforeAfter, BlogPost, FaqItem, ImageRef, Link, TeamMember, Treatment } from "@/content/types";
+import type {
+  BeforeAfter,
+  BlogPost,
+  CustomerReview,
+  FaqItem,
+  ImageRef,
+  Link,
+  TeamMember,
+  Treatment,
+} from "@/content/types";
 import { ui } from "@/content/ui";
 import { formatPrice } from "@/lib/format";
 import { formatPriceFrom, formatPriceValue, relatedPostsForTreatment } from "@/lib/content";
@@ -61,6 +71,8 @@ export type TreatmentView = {
     mobileCta: Link;
   };
   results?: { title: string; intro?: string; items: BeforeAfter[] };
+  /** Verified reviews about the treatment, filled up with general ones (content/reviews.ts). */
+  reviews?: { eyebrow: string; title: string; intro: string; items: CustomerReview[] };
   prices?: {
     eyebrow: string;
     title: string;
@@ -232,6 +244,20 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
       }
     : undefined;
 
+  /* Reviews: its own, filled up to 5 with general ones (the heading only names it when all are
+     its own); none on the Botox pages (content/reviews.ts → treatmentsWithoutReviews). */
+  const reviewSelection = reviewsFor({ treatment: treatment.slug, seed: treatment.slug, min: 5 });
+  const reviews: TreatmentView["reviews"] = reviewSelection.reviews.length
+    ? {
+        eyebrow: copy.reviews.eyebrow,
+        title: reviewSelection.allSpecific
+          ? copy.reviews.title(nameInSentence(treatment, treatment.name))
+          : copy.reviews.generalTitle,
+        intro: copy.reviews.intro,
+        items: reviewSelection.reviews,
+      }
+    : undefined;
+
   const faqIsOwn = Boolean(d?.faq?.length);
   const faq = d?.faq?.length ? d.faq : copy.faq.fallback;
 
@@ -277,6 +303,7 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     results: d?.results?.length
       ? { title: d.resultsTitle ?? copy.results.title(title), intro: d.resultsIntro, items: d.results }
       : undefined,
+    reviews,
     prices,
     posts,
     faq,

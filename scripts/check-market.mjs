@@ -23,7 +23,11 @@
  *    booking.timmaId (content/clinics.ts); with "gecko" clinics without a calendar id are listed;
  * 8. every open clinic's address and opening hours parse into the structured data
  *    (components/seo/OrganizationJsonLd.tsx), which otherwise silently drops them;
- * 9. no string in app/, components/ or lib/ contains æ, ø or å (copy belongs in content/).
+ * 9. no string in app/, components/ or lib/ contains æ, ø or å (copy belongs in content/);
+ * 10. customer reviews (content/reviews.ts) are quoted verbatim: every excerpt (`short`) is whole
+ *     sentences of its review's text, in order, with "…" wherever text is left out; every set
+ *     lists existing reviews, and a practitioner / treatment set only reviews that name it;
+ *     treatmentsWithoutReviews lists existing treatments that have no review set.
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import nodeModule from "node:module";
@@ -221,6 +225,80 @@ for (const file of ["app", "components", "lib"].flatMap((dir) => sourceFiles(joi
   visit(source);
 }
 
+// 10. Reviews: verbatim excerpts and consistent sets.
+const { reviews, reviewSets, treatmentsWithoutReviews } = await importSite("content/reviews.ts");
+const { team } = await importSite("content/team.ts");
+const { treatments } = await importSite("content/treatments.ts");
+const ELLIPSIS = "…";
+const squash = (text) => text.replace(/\s+/g, " ").trim();
+// A sentence ends with . ! ? … or an emoji (reviews often end a sentence with one).
+const SENTENCE_END = /(?:[.!?…]|\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}\uFE0F])$/u;
+const reviewIds = new Set();
+for (const review of reviews) {
+  const where = `content/reviews.ts "${review.id}"`;
+  if (reviewIds.has(review.id)) errors.push(`${where}: duplicate id`);
+  reviewIds.add(review.id);
+  if (!review.text?.trim() || !review.author?.trim()) errors.push(`${where}: text and author are required`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(review.date) || Number.isNaN(Date.parse(review.date))) {
+    errors.push(`${where}: date must be an ISO date (got "${review.date}")`);
+  }
+  if (!Number.isInteger(review.rating) || review.rating < 1 || review.rating > 5) errors.push(`${where}: rating must be 1–5`);
+  if (!/^https:\/\//.test(review.url)) errors.push(`${where}: url must be the review's https page`);
+  if (review.short === undefined) continue;
+  const text = squash(review.text);
+  const short = squash(review.short);
+  const parts = short.split(ELLIPSIS).map((part) => part.trim()).filter(Boolean);
+  let position = 0;
+  for (const [i, part] of parts.entries()) {
+    const at = text.indexOf(part, position);
+    if (at < 0) {
+      errors.push(`${where}: short is not verbatim from the text ("${part.slice(0, 50)}")`);
+      break;
+    }
+    if (i === 0 && at > 0 && !short.startsWith(ELLIPSIS)) errors.push(`${where}: short leaves out the start without "…"`);
+    if (at > 0 && !SENTENCE_END.test(text.slice(0, at).trimEnd())) {
+      errors.push(`${where}: short starts mid-sentence ("${part.slice(0, 30)}")`);
+    }
+    if (!SENTENCE_END.test(part) && at + part.length < text.length) {
+      errors.push(`${where}: short cuts a sentence ("…${part.slice(-30)}")`);
+    }
+    position = at + part.length;
+  }
+  if (position < text.length && !short.endsWith(ELLIPSIS)) errors.push(`${where}: short leaves out the end without "…"`);
+}
+const teamSlugs = new Set(team.map((member) => member.slug));
+const treatmentSlugs = new Set(treatments.map((treatment) => treatment.slug));
+const checkSet = (name, ids, belongs) => {
+  if (new Set(ids).size !== ids.length) errors.push(`content/reviews.ts reviewSets.${name}: a review is listed twice`);
+  for (const id of ids) {
+    const review = reviews.find((r) => r.id === id);
+    if (!review) errors.push(`content/reviews.ts reviewSets.${name}: unknown review "${id}"`);
+    else if (belongs && !belongs(review)) errors.push(`content/reviews.ts reviewSets.${name}: "${id}" ${belongs.reason}`);
+  }
+};
+checkSet("home", reviewSets.home);
+const isGeneral = (review) => !review.practitioners?.length && !review.treatments?.length;
+isGeneral.reason = "names a practitioner or treatment (general reviews must fit every page)";
+checkSet("general", reviewSets.general, isGeneral);
+for (const [slug, ids] of Object.entries(reviewSets.practitioners)) {
+  if (!teamSlugs.has(slug)) errors.push(`content/reviews.ts reviewSets.practitioners: "${slug}" is not in content/team.ts`);
+  const names = (review) => review.practitioners?.includes(slug);
+  names.reason = `does not name ${slug} (practitioners)`;
+  checkSet(`practitioners.${slug}`, ids, names);
+}
+for (const [slug, ids] of Object.entries(reviewSets.treatments)) {
+  if (!treatmentSlugs.has(slug)) errors.push(`content/reviews.ts reviewSets.treatments: "${slug}" is not in content/treatments.ts`);
+  const about = (review) => review.treatments?.includes(slug);
+  about.reason = `is not about ${slug} (treatments)`;
+  checkSet(`treatments.${slug}`, ids, about);
+}
+for (const slug of treatmentsWithoutReviews) {
+  if (!treatmentSlugs.has(slug)) errors.push(`content/reviews.ts treatmentsWithoutReviews: "${slug}" is not in content/treatments.ts`);
+  if (reviewSets.treatments[slug]?.length) {
+    errors.push(`content/reviews.ts reviewSets.treatments.${slug}: the page shows no reviews (treatmentsWithoutReviews)`);
+  }
+}
+
 for (const note of notes) console.log(`check:market note: ${note}`);
 
 if (errors.length) {
@@ -229,5 +307,6 @@ if (errors.length) {
 }
 console.log(
   `check:market ok: ${routePaths.size} routes, ${collections.length} collections, ${legacyRedirects.length} redirects, ` +
-    `${declaredForms.length} forms, ${openClinics.length} open clinics (booking: ${site.booking.provider})`,
+    `${declaredForms.length} forms, ${openClinics.length} open clinics (booking: ${site.booking.provider}), ` +
+    `${reviews.length} reviews`,
 );

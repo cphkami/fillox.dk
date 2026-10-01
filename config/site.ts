@@ -41,8 +41,11 @@ export const site: SiteConfig = {
     instagram: "https://www.instagram.com/fillox_dk/",
   },
 
+  // As shown on https://dk.trustpilot.com/review/fillox.dk (checked 2026-10-01): TrustScore 4,7
+  // "Fremragende" (content/ui.ts → trustpilotLabel), 172 anmeldelser. Update all three together.
   trustpilot: {
     score: 4.7,
+    reviewCount: 172,
     url: "https://dk.trustpilot.com/review/fillox.dk",
   },
 

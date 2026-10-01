@@ -207,6 +207,10 @@ export type Bestseller = {
 
 /* --------------------------------------------------------------------- Team */
 
+/**
+ * @deprecated Not rendered any more. Customer reviews are verified Trustpilot reviews in
+ * content/reviews.ts (`CustomerReview`, sets per practitioner and treatment).
+ */
 export type Review = {
   quote: string;
   /** Shorter quote on mobile when the design differs. */
@@ -255,6 +259,10 @@ export type TeamProfile = {
     title: string; // "Erfaring & uddannelse"
     items: { period: string; periodShort?: string; text: string; textShort?: string }[];
   };
+  /**
+   * @deprecated Ignored: the profile shows the verified reviews of set
+   * `practitioners.<slug>` in content/reviews.ts (filled up with general reviews).
+   */
   reviews?: Review[];
   /** Closing booking band. */
   booking?: { title: string; text: string; cta: Link };
@@ -300,6 +308,51 @@ export type TeamMember = {
   };
   /** Extended profile content for /behandlere/[slug]. Only Alberte has a full design. */
   profile?: TeamProfile;
+};
+
+/* ------------------------------------------------------------------ Reviews */
+
+/**
+ * A verified customer review (content/reviews.ts), quoted VERBATIM from its source page.
+ * Never edit `text`, `author`, `date` or `rating`; shorten only through `short`.
+ */
+export type CustomerReview = {
+  /** Stable id: source prefix + the source's review id, e.g. "tp-6ab3d188b09e9f629f95ce8a". */
+  id: string;
+  /** The review text exactly as published (line breaks and emoji included). */
+  text: string;
+  /**
+   * Excerpt for the rotators: whole sentences of `text`, word for word and in order, with
+   * "…" wherever text is left out (start, middle or end). Omit when `text` is short enough.
+   * `npm run check:market` verifies it against `text`.
+   */
+  short?: string;
+  /** The reviewer's name exactly as the source displays it. */
+  author: string;
+  /** Publication date the source shows, ISO "2026-09-23" (local date of the market). */
+  date: string;
+  /** Star rating 1–5. */
+  rating: number;
+  /** Where it was published, e.g. "Trustpilot". */
+  source: string;
+  /** The review's own page (linked from the quote). */
+  url: string;
+  /** Team members the review names (content/team.ts slugs). */
+  practitioners?: string[];
+  /** Treatments the review is about (content/treatments.ts slugs). */
+  treatments?: string[];
+};
+
+/** Which reviews are shown where: lists of CustomerReview ids, in display order. */
+export type ReviewSets = {
+  /** Home page testimonial. */
+  home: string[];
+  /** Reviews that name no practitioner or treatment: the fallback that fills up short sets. */
+  general: string[];
+  /** Per team member slug: only reviews that name that person. */
+  practitioners: Record<string, string[]>;
+  /** Per treatment slug: only reviews about that treatment. */
+  treatments: Record<string, string[]>;
 };
 
 /* --------------------------------------------------------------------- Blog */
