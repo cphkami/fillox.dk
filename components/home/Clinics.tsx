@@ -1,29 +1,9 @@
 import Link from "next/link";
-import { Container, JoinedLines, SectionHeading } from "@/components/ui";
+import { Container, HoursSummary, JoinedLines, SectionHeading, splitHours } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import type { Clinic } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { ArrowCircle } from "./ArrowCircle";
-
-/**
- * "Hverdage 10–20 · Weekend 10–18". The parts never break inside, and when the second
- * part wraps, its "·" (drawn in the column gap) falls outside the box and is clipped, so
- * no line starts or ends with a dangling separator.
- */
-function HoursSummary({ text, className }: { text: string; className?: string }) {
-  const parts = text.split(/\s+·\s+/);
-  if (parts.length < 2) return <p className={className}>{text}</p>;
-  return (
-    <p className={cn("flex flex-wrap gap-x-[.75em] overflow-hidden", className)}>
-      {parts.map((part, i) => (
-        <span key={part} className="whitespace-nowrap">
-          {i > 0 ? <span className="-ml-[.75em] inline-block w-[.75em] text-center">·</span> : null}
-          {part}
-        </span>
-      ))}
-    </p>
-  );
-}
 
 /**
  * "Her finder du Fillox". Desktop (6a): four white cards. Mobile (mf): stacked cards
@@ -71,7 +51,8 @@ export function Clinics({
                   </p>
                   {clinic.hoursSummary ? (
                     <HoursSummary
-                      text={clinic.hoursSummary}
+                      // "Hverdage 10–19 · Weekend 10–17"
+                      parts={splitHours(clinic.hoursSummary)}
                       className="lg:mt-2 lg:leading-[normal] lg:text-plum"
                     />
                   ) : null}

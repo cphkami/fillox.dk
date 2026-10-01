@@ -64,12 +64,12 @@ export type Clinic = {
   name: string;
   /** Full name used on the Find klinik page, e.g. "Fillox City2". */
   fullName: string;
-  /** Address lines, e.g. ["Cityringen 2, Plan 3", "2630 Høje Taastrup"]. */
+  /** Address lines, e.g. ["Cityringen 2, Plan 3", "2630 Taastrup"]. */
   address: string[];
   hours: OpeningHours[];
   /**
    * One-line hours summary on the home page clinic cards (6a / mf), e.g.
-   * "Hverdage 10–20 · Weekend 10–18". Other places join `hours`.
+   * "Hverdage 10–19 · Weekend 10–17". Other places list `hours` (components/ui/HoursSummary).
    */
   hoursSummary?: string;
   /** Transport / parking note. */

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
+import { HoursSummary } from "@/components/ui/HoursSummary";
 import { JoinedLines } from "@/components/ui/JoinedLines";
 import { site } from "@/config/site";
 import { clinics } from "@/content/clinics";
@@ -94,9 +95,10 @@ export function Footer() {
                     <p>
                       <JoinedLines parts={c.address} separator=", " />
                     </p>
-                    <p className="text-powder lg:mt-2.5">
-                      <JoinedLines parts={c.hours.map((h) => `${h.days} ${h.hours}`)} separator=" · " />
-                    </p>
+                    <HoursSummary
+                      parts={c.hours.map((h) => `${h.days} ${h.hours}`)}
+                      className="text-powder lg:mt-2.5 lg:flex-col"
+                    />
                   </>
                 )}
               </li>

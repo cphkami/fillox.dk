@@ -54,7 +54,7 @@ export const clinicsPage = {
     title: "Find klinik",
     // TODO: copy review (meta description is not in the design; built from the hero text)
     description:
-      "Find din Fillox-klinik i City2, Amager Centret, på Frederiksberg og snart på Østerbro. Se adresser, åbningstider og transport, og book tid i klinikken.",
+      "Find din Fillox-klinik i City2, Amager Centret, på Frederiksberg og snart på Østerbro. Se adresser og åbningstider, og book tid i klinikken.",
   },
 
   hero: {
@@ -129,6 +129,10 @@ export const clinicsPage = {
     daysLong: {
       "Man–fre": "Mandag–fredag",
       "Lør–søn": "Lørdag–søndag",
+      "Man–tir": "Mandag–tirsdag",
+      "Ons–fre": "Onsdag–fredag",
+      "Lør": "Lørdag",
+      "Søn": "Søndag",
     } as Record<string, string>,
   },
 

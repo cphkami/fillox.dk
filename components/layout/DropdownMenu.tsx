@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLink } from "@/components/ui/ArrowLink";
+import { HoursSummary } from "@/components/ui/HoursSummary";
 import type { Link as LinkItem } from "@/content/types";
 import { ui } from "@/content/ui";
 import type { MenuClinic, MenuPrices } from "./menuData";
@@ -52,7 +53,7 @@ export function ClinicsDropdown({
               ) : (
                 <>
                   <span className="mt-0.5 block text-[14px] leading-[1.6] text-muted">{c.address.join(", ")}</span>
-                  <span className="block text-[14px] leading-[1.6] text-plum">{c.hours.join(" · ")}</span>
+                  <HoursSummary as="span" parts={c.hours} className="text-[14px] leading-[1.6] text-plum" />
                 </>
               )}
             </Link>

@@ -139,6 +139,8 @@ function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem[]; car
     }
   }
   if (!items.length) return { items };
+  // `priceRowLabels` also sets the order (the treatment's own row first), not the price list's.
+  if (only) items.sort((a, b) => only.indexOf(a.label) - only.indexOf(b.label));
 
   const extraCard = priceCards.find((c) => c.id === copy.prices.extraRowsCardId);
   const extraLabels = copy.prices.extraRows[target.categorySlug] ?? copy.prices.extraRows.default ?? [];

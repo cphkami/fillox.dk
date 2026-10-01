@@ -31,7 +31,7 @@ type ContactChannelsProps = {
  * The three contact cards (phone, e-mail, on-call doctor). Desktop (6ko): label + value
  * on the left, a note on the right, the on-call card in plum. Mobile (mc): large tap
  * targets with an arrow circle, the on-call card in sand. A card without `href` is not a
- * link and has no arrow (the on-call card: its number is in the booking confirmation).
+ * link and has no arrow (none today: the on-call card calls the akut number, 35 10 00 50).
  */
 export function ContactChannels({ channels, label }: ContactChannelsProps) {
   return (

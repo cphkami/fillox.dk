@@ -34,7 +34,7 @@ type PriceCategoriesProps = {
 };
 
 /**
- * The six price cards, always open: every price is visible (and server-rendered) at
+ * The price cards (content/prices.ts), always open: every price is visible (and server-rendered) at
  * every width.
  *
  * - Desktop/tablet (≥768px, 6b): white cards, two columns from 1024px (below 1180px a

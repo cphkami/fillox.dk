@@ -47,6 +47,8 @@ export const posts: BlogPost[] = [
       width: 1600,
       height: 1096,
     },
+    // TODO: fact check (owner): the design's example article, written in Annika's voice; fillox.dk
+    // has no article by her. Facts (time, training, longevity) match fillox.dk/rynkebehandling.
     authorSlug: "annika",
     treatmentSlugs: ["botox"],
     relatedPostSlugs: [
@@ -70,9 +72,9 @@ export const posts: BlogPost[] = [
       { type: "h2", id: "selve-behandlingen", text: "Selve behandlingen" },
       {
         type: "paragraph",
-        text: "Behandlingen tager 15 til 20 minutter. Vi renser huden og markerer punkterne, og derefter injicerer vi små mængder med en meget tynd nål. De fleste beskriver det som et kort prik.",
+        text: "Behandlingen tager cirka 20 til 40 minutter. Vi renser huden og markerer punkterne, og derefter injicerer vi små mængder med en meget tynd nål. De fleste beskriver det som et kort prik.",
         mobileText:
-          "Behandlingen tager 15 til 20 minutter. Vi injicerer små mængder med en meget tynd nål. De fleste beskriver det som et kort prik.",
+          "Behandlingen tager cirka 20 til 40 minutter. Vi injicerer små mængder med en meget tynd nål. De fleste beskriver det som et kort prik.",
       },
       {
         type: "booking",
@@ -90,18 +92,20 @@ export const posts: BlogPost[] = [
       {
         type: "list",
         style: "bullet",
+        // "Vent 2 timer …" is fillox.dk/rynkebehandling ("Let træning: 2t / Hård træning: 24t").
+        // TODO: fact check (owner): the other two points are not on fillox.dk.
         items: [
           "Undgå at ligge ned de første fire timer",
-          "Spring træning, sauna og alkohol over resten af dagen",
+          "Vent 2 timer med let træning og 24 timer med hård træning",
           "Undgå at massere de behandlede områder",
         ],
       },
       { type: "h2", id: "hvor-laenge-holder-det", text: "Hvor længe holder det?" },
       {
         type: "paragraph",
-        text: "Resultatet holder typisk 3 til 4 måneder. Effekten begynder efter 3 til 5 dage og er fuldt udviklet efter omkring to uger. Du er altid velkommen til en gratis kontrol.",
+        text: "Resultatet holder typisk 3 til 5 måneder. Effekten begynder efter 3 til 5 dage og er fuldt udviklet efter omkring to uger. Du er altid velkommen til en gratis kontrol.",
         mobileText:
-          "Resultatet holder typisk 3 til 4 måneder. Effekten er fuldt udviklet efter omkring to uger, og kontrollen er altid gratis.",
+          "Resultatet holder typisk 3 til 5 måneder. Effekten er fuldt udviklet efter omkring to uger, og kontrollen er altid gratis.",
       },
     ],
   },

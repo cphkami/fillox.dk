@@ -116,10 +116,10 @@ export const treatmentPage = {
   faq: {
     title: "Ofte stillede spørgsmål",
     /**
-     * FAQ for treatments without their own. Built only from facts stated elsewhere in the
-     * design (6b trust chips, konsultation card, financing box).
+     * FAQ for treatments without their own. Facts from the live fillox.dk: free consultation,
+     * financing, the optional free check-up ~14 days after (fillox.dk/om-os/kontrol-eftertjek),
+     * the doctor on call 24/7 (fillox.dk front page).
      */
-    // TODO: copy review
     fallback: [
       {
         question: "Er konsultationen gratis?",
@@ -133,7 +133,7 @@ export const treatmentPage = {
       {
         question: "Hvad hvis jeg har spørgsmål efter behandlingen?",
         answer:
-          "Du får altid en gratis kontrol efter behandlingen, og vi har vagtlæge døgnet rundt, hvis du er i tvivl om noget.",
+          "Du kan booke en gratis kontrol cirka 14 dage efter behandlingen, og vi har altid en vagtlæge, hvis du er i tvivl om noget.",
       },
     ] satisfies FaqItem[],
   },
@@ -155,9 +155,9 @@ export const treatmentPage = {
 
   /**
    * Fact cards for treatments without `detail.facts`. `price` is "fra 999 kr".
-   * Values are the design's trust chips (6b): gratis konsultation, vagtlæge 24/7, finansiering.
+   * Values are the design's trust chips (6b), also stated on the live fillox.dk: gratis
+   * konsultation, vagtlæge 24/7, finansiering.
    */
-  // TODO: copy review
   fallbackFacts: (price?: string) => [
     ...(price ? [{ label: "Pris", value: price }] : []),
     { label: "Konsultation", value: "Gratis" },
@@ -174,7 +174,7 @@ export const treatmentPage = {
   fallbackAbout: {
     categoryText: {
       fillers:
-        "Filleren er lavet af hyaluronsyre, et stof der findes naturligt i huden. Resultatet ses med det samme og sætter sig helt i løbet af 1–2 uger, og filleren kan opløses igen, hvis der er behov for det.",
+        "Filleren er lavet af hyaluronsyre, et stof der findes naturligt i huden, og er tilsat lidocain, et bedøvelsesmiddel. Resultatet ses med det samme, og det endelige resultat ses, når hævelsen har lagt sig. Filleren kan opløses igen, hvis der er behov for det.",
       rynkebehandling:
         "Vi bruger botox, et receptpligtigt lægemiddel, som doseres præcist til det område, der skal behandles. Før din første behandling har du en lovpligtig lægekonsultation, som altid er gratis.",
       hudforbedring:
@@ -187,7 +187,7 @@ export const treatmentPage = {
         "Mænds hud, muskulatur og ansigtsform er anderledes end kvinders, så vi doserer og planlægger behandlingen efter det. Målet er et naturligt resultat, der passer til dit udtryk.",
     } as Record<string, string>,
     paragraphs: [
-      "Vi starter altid med en gratis konsultation, hvor din behandler vurderer dine ønsker og lægger en plan sammen med dig. Efter behandlingen får du en gratis kontrol, og vores vagtlæge kan kontaktes døgnet rundt, hvis du er i tvivl om noget.",
+      "Vi starter altid med en gratis konsultation, hvor din behandler vurderer dine ønsker og lægger en plan sammen med dig. Cirka 14 dage efter behandlingen kan du booke en gratis kontrol, og vores vagtlæge kan kontaktes døgnet rundt, hvis du er i tvivl om noget.",
     ],
     listLabel: "Sådan foregår det",
     items: ["Gratis konsultation", "En plan tilpasset dig", "Behandling i en af vores klinikker", "Gratis kontrol bagefter"],
@@ -276,18 +276,28 @@ export const treatmentPage = {
   } as Record<string, string>,
 
   /**
-   * Optional explicit list of price-list rows (labels in content/prices.ts) for a
-   * treatment, when not every matched row applies to it.
+   * Optional explicit list of price-list rows (labels in content/prices.ts, searched in the cards
+   * of the treatment's category) for a treatment, when not every matched row applies to it. The
+   * "Se alle priser" link under the list leads to the full card.
    */
   priceRowLabels: {
-    // TODO: copy review — laser areas offered to men.
-    "laser-for-maend": [
-      "Overlæbe / Hage / Hals",
+    // A filler area costs the "op til 1 ml" price; larger amounts are the 4 ml package
+    // (fillox.dk/fillers/ansigtskonturering: kindben, hage, kæbelinje …). Listed in the order
+    // to show: the treatment's own row (its "fra" price) first.
+    kindben: ["Kindben", "Ansigtskonturering · 4 ml"],
+    kaebelinje: ["Kæbelinjer", "Ansigtskonturering · 4 ml"],
+    "kaebelinje-for-maend": ["Kæbelinjer", "Ansigtskonturering · 4 ml"],
+    hage: ["Hage", "Ansigtskonturering · 4 ml"],
+    // The most booked areas; the full list (25 areas, men's areas, packages) is on /priser.
+    "laser-harfjerning": [
       "Helt ansigt",
+      "Overlæbe",
       "Armhuler",
       "Hele arme (inkl. hænder)",
       "Hele ben (inkl. fødder)",
-      "Hel krop (pakkepris)",
+      "Ryg (inkl. lænd)",
+      "Bikinilinje",
+      "Brasil",
     ],
   } as Record<string, string[]>,
 };
@@ -302,7 +312,10 @@ export const treatmentsOverview = {
   },
   title: "Behandlinger",
   intro:
-    "Fillers, rynkebehandling, hudforbedring og laser, udført af læger og sygeplejersker. Vi fremhæver dine naturlige træk og starter altid med en gratis konsultation.",
+    // Not "… og laser, udført af læger og sygeplejersker": live, laser is done by staff trained in
+    // Fillox Academy (fillox.dk/harfjerning). Fillers and botox: fillox.dk/priser (konsultation
+    // v. kosmetisk sygeplejerske, specialist-tillæg v. læge) and /rynkebehandling (sygeplejerske/læge).
+    "Fillers, rynkebehandling, hudforbedring og laser. Fillers og botox udføres af læger og sygeplejersker, og vi starter altid med en gratis konsultation.",
   /** Accessible name of the category jump links. */
   jumpLabel: "Hop til kategori",
   heroImage: {

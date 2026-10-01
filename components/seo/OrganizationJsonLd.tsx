@@ -16,7 +16,7 @@ export const WEBSITE_ID = `${site.url}/#website`;
 /** "tel:+4535100050" → "+4535100050". */
 const telephone = site.contact.phoneHref.replace(/^tel:/, "");
 
-/** ["Cityringen 2, Plan 3", "2630 Høje Taastrup"] → schema.org PostalAddress. */
+/** ["Cityringen 2, Plan 3", "2630 Taastrup"] → schema.org PostalAddress. */
 function postalAddress(lines: string[]) {
   const last = lines.at(-1) ?? "";
   const match = last.match(/^(\d+)\s+(.+)$/);
@@ -32,7 +32,7 @@ function postalAddress(lines: string[]) {
 /** "10" / "9.30" / "9:30" → "10:00" / "09:30". */
 const toTime = (hours: string, minutes?: string) => `${hours.padStart(2, "0")}:${minutes ?? "00"}`;
 
-/** [{ days: "Man–fre", hours: "10–20" }] → schema.org OpeningHoursSpecification[]. */
+/** [{ days: "Man–fre", hours: "10–19" }] → schema.org OpeningHoursSpecification[]. */
 function openingHours(hours: OpeningHours[]) {
   return hours.flatMap(({ days, hours: range }) => {
     const dayOfWeek = seoContent.openingDays[days];

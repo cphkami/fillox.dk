@@ -18,10 +18,11 @@ export { aboutTeamAnchor };
 export const aboutPage = {
   meta: {
     title: "Om os",
-    // TODO: copy review (meta description is not in the design; built from the hero text).
+    // Not in the design; built from the live https://fillox.dk/om-os/ ("Vores vision": højne
+    // kvaliteten …; "Hos Fillox udføres alle behandlinger af læger og sygeplejersker").
     // Keep it at 155 characters or fewer so search results don't truncate it.
     description:
-      "Hos Fillox behandler kun læger og sygeplejersker – med en ærlig vurdering før hver behandling. Mød Dr. Tom og vores behandlere.",
+      "Vi vil højne kvaliteten i den æstetisk-medicinske branche. Hos Fillox udføres alle behandlinger af læger og sygeplejersker. Mød Dr. Tom og teamet.",
   },
 
   hero: {

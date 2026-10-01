@@ -47,7 +47,7 @@ export type MenuClinic = {
   slug: string;
   name: string;
   address: string[];
-  /** Pre-formatted opening hours, e.g. ["Man–fre 10–20", "Lør–søn 10–18"]. */
+  /** Pre-formatted opening hours, e.g. ["Man–fre 10–19", "Lør–søn 10–17"]. */
   hours: string[];
   /** Anchor on the clinics page. */
   href: string;

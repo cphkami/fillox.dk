@@ -10,6 +10,23 @@ import { formatDecimal } from "@/lib/format";
  * the others from name/title/bio. Credentials that are not in the design are
  * left out on purpose — do not invent them.
  *
+ * Facts, bios and quotes come from the live fillox.dk: the "Ansatte" pop-ups on
+ * https://fillox.dk/om-os/ (one per practitioner, with a personal quote), "Fagansvarlig
+ * kompetence" on the same page, and the price list (https://fillox.dk/priser/:
+ * "Næsekorrektion — Udføres af Dr. Tom"). Bios are lightly adapted; `quote` is a verbatim
+ * excerpt of the practitioner's own quote. The other members' `profile` holds only the
+ * hero intro and fact cards (no offers: the live site does not say who performs what,
+ * and offers would also make treatment pages pick that member as "Din behandler").
+ *
+ * `profile.reviews` are verbatim excerpts of the Trustpilot reviews in "Tilbagemeldinger fra
+ * vores kunder" on the live homepage (https://fillox.dk/), each one naming the practitioner.
+ * That block shows them beside a 5-star rating (the reviews themselves carry no star count;
+ * trustpilot.com blocks scripted reads). None of them names Alberte, so her profile has none.
+ * Reviewers are shown by first name (+ initial when Trustpilot shows a surname).
+ *
+ * Card links: only a member with `profile.offers` gets "Se hvad X tilbyder"; the others link
+ * with "Læs mere om X" (their profile has no list of treatments).
+ *
  * Image crops: `image` is the default card crop (6a/mf/mo use the photos uncropped,
  * centred). `crops.*` reproduce the zoomed image-slot crops from
  * design-reference/.image-slots.state.json (s6om-*, s6bx-annika, s6alb-hero).
@@ -42,21 +59,47 @@ export const team: TeamMember[] = [
         zoom: 1.63,
       },
     },
-    bio: "Tom er uddannet læge i Oslo og daglig leder i Fillox. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere og trådløft. Han er fagligt ansvarlig for alle behandlinger og har selv uddannet flere af klinikkens sygeplejersker.",
+    // Also the "Din behandler" text on /behandlinger/naesekorrektion (no practitionerText there).
+    bio: "Tom er uddannet læge i Oslo og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere og trådløft. Han er fagligt ansvarlig læge i Fillox, og næsekorrektioner udføres af ham.",
     bioShort:
-      "Specialist i ansigtskonturering samt næse- og hagekorrektioner. Fagligt ansvarlig for alle behandlinger.",
+      "Uddannet læge i Oslo og fagligt ansvarlig i Fillox. Specialområde: ansigtskonturering samt næse- og hagekorrektioner.",
     featured: true,
     link: { label: "Book tid hos Dr. Tom", href: bookWith("tom") },
     bookingHref: bookWith("tom"),
+    profile: {
+      intro:
+        "Tom er uddannet læge i Oslo og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere og trådløft, og han er fagligt ansvarlig læge i Fillox.",
+      introShort:
+        "Tom er uddannet læge i Oslo og daglig leder i Fillox. Specialområde: ansigtskonturering samt næse- og hagekorrektioner.",
+      primaryCta: { label: "Book tid hos Dr. Tom", href: bookWith("tom") },
+      facts: [
+        { label: "Uddannet", value: "Læge i Oslo" },
+        { label: "Specialområde", value: "Ansigtskonturering, næse & hage" },
+        { label: "Rolle", value: "Fagligt ansvarlig læge" },
+      ],
+      // Live homepage, Trustpilot review "Den bedste i skandinavien" by Sofii Diaz
+      // (https://dk.trustpilot.com/reviews/662fbf1b5324f53bc92637e3), verbatim excerpt.
+      reviews: [
+        {
+          quote:
+            "Har været hos dr Tom i dag for at lave læber og jeg har aldrig været mere fornøjd. … Mine læber er naturlige, plumped og fyldt op perfekt efter min form.",
+          quoteShort:
+            "Har været hos dr Tom i dag for at lave læber og jeg har aldrig været mere fornøjd.",
+          author: "Sofii D.",
+          source: "Trustpilot",
+          rating: 5,
+        },
+      ],
+    },
   },
   {
     slug: "alberte",
     name: "Alberte",
+    // No `title`: the live site gives Alberte none, so cards and her profile show the role.
     role: "Behandler",
-    title: "Kosmetisk behandler",
     image: {
       src: "/images/team/alberte.jpg",
-      alt: "Alberte, kosmetisk behandler hos Fillox",
+      alt: "Alberte, behandler hos Fillox",
       position: "50% 50%",
       width: 1728,
       height: 2304,
@@ -65,18 +108,27 @@ export const team: TeamMember[] = [
       // s6om-alb
       about: {
         src: "/images/team/alberte.jpg",
-        alt: "Alberte, kosmetisk behandler hos Fillox",
+        alt: "Alberte, behandler hos Fillox",
         position: "38% 80%",
         zoom: 1.33,
         width: 1728,
         height: 2304,
       },
     },
+    // TODO: fact check (owner): the live site gives Alberte no title, education or clinic, and
+    // nothing places her at a clinic (the homepage puts Annika at City2). Her profession, her
+    // clinics and what she performs are unconfirmed: the offers below are the design's, and they
+    // include injections (Skinbooster, PRF) while the live site says all treatments are done by
+    // doctors and nurses. Until confirmed, the design's unsourced claims are left out: the title
+    // "Kosmetisk behandler", the clinics (City2 & Amager), the specialty "Laser &
+    // hudforbedring", the "Erfaring & uddannelse" timeline (2021 kosmetolog, 2022 laser/IPL,
+    // 2023 Fillox, løbende kurser) and the design's sample review. bio, bioShort, intro and the
+    // facts come from her "Ansatte" pop-up and quote on https://fillox.dk/om-os/.
     bio: "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden.",
-    bioShort: "Holder sig altid opdateret med den nyeste viden inden for laser og hudforbedring.",
+    bioShort: "Holder sig konstant orienteret i den nyeste viden inden for den kosmetiske verden.",
+    quote: "“Min tilgang er at forbedre og ikke forandre.”",
     link: { label: "Se hvad Alberte tilbyder", href: profileHref("alberte") },
     bookingHref: bookWith("alberte"),
-    clinicSlugs: ["city2", "amager-centret"],
     profile: {
       intro:
         "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden. Hendes drivkraft er at hjælpe mennesker med at blive den bedste version af sig selv, med resultater der forbedrer frem for at forandre.",
@@ -85,7 +137,7 @@ export const team: TeamMember[] = [
       // s6alb-hero
       heroImage: {
         src: "/images/team/alberte.jpg",
-        alt: "Alberte, kosmetisk behandler hos Fillox",
+        alt: "Alberte, behandler hos Fillox",
         position: "42% 62%",
         zoom: 1.19,
         width: 1728,
@@ -93,10 +145,13 @@ export const team: TeamMember[] = [
       },
       primaryCta: { label: "Book tid hos Alberte", href: bookWith("alberte") },
       secondaryCta: { label: "Se behandlinger", href: "#behandlinger" },
+      // From her quote on /om-os ("Min tilgang er at forbedre og ikke forandre", "fremhæve hver
+      // kundes naturlige skønhed og skabe eller bevare harmoni"); the Trustpilot score is
+      // Fillox's overall score (site.trustpilot), so it says so.
       facts: [
-        { label: "Arbejder i", value: "City2 & Amager" },
-        { label: "Specialer", value: "Laser & hudforbedring" },
-        { label: "Trustpilot", value: `${formatDecimal(site.trustpilot.score)} ★ fra sine kunder` },
+        { label: "Tilgang", value: "Forbedre, ikke forandre" },
+        { label: "Fokus", value: "Naturlig skønhed & harmoni" },
+        { label: "Fillox på Trustpilot", value: `${formatDecimal(site.trustpilot.score)} ★` },
       ],
       approach: {
         eyebrow: "Sådan arbejder jeg",
@@ -124,10 +179,14 @@ export const team: TeamMember[] = [
         title: "Det tilbyder Alberte dig",
         ctaLabel: "Book hos Alberte",
         ctaLabelShort: "Book",
+        // Prices as on https://fillox.dk/priser/: laser from 500 (Overlæbe, Hage …), Microneedling
+        // 1 behandling 999, skinboosters from 1.499 (Ejal 40), Signatur behandling 999, PRF Hud
+        // 1 behandling 2.499; the fillers consultation (v. kosmetisk sygeplejerske) is free.
         items: [
           {
             name: "Laser hårfjerning",
-            description: "Permanent hårfjerning til alle hudtyper, fra overlæbe til hel krop.",
+            // Live (/harfjerning): diode laser, settings adapted to the skin type and hair.
+            description: "Diodelaser tilpasset din hudtype og hårstruktur, fra overlæbe til hel krop.",
             price: { kind: "amount", amount: 500, from: true },
             treatmentSlug: "laser-harfjerning",
           },
@@ -139,7 +198,8 @@ export const team: TeamMember[] = [
           },
           {
             name: "Skinbooster",
-            description: "Dybdegående fugt med Profhilo eller Sunekos for frisk, strammere hud.",
+            // "fra 1.499" is Ejal 40 (Profhilo from 2.499, Sunekos Performa from 1.599).
+            description: "Dybdegående fugt med Profhilo, Sunekos eller Ejal 40 for frisk, strammere hud.",
             price: { kind: "amount", amount: 1499, from: true },
             treatmentSlug: "skinbooster",
           },
@@ -162,29 +222,9 @@ export const team: TeamMember[] = [
           },
         ],
       },
-      experience: {
-        title: "Erfaring & uddannelse",
-        items: [
-          { period: "2023 –", periodShort: "2023", text: "Kosmetisk behandler hos Fillox" },
-          { period: "2022", text: "Certificeret i laser og IPL" },
-          { period: "2021", text: "Uddannet kosmetolog" },
-          {
-            period: "Løbende",
-            text: "Kurser i hudforbedring og nye teknikker",
-            textShort: "Kurser i hudforbedring",
-          },
-        ],
-      },
-      reviews: [
-        {
-          quote:
-            "Alberte er så grundig og rolig. Hun forklarede alt undervejs, og resultatet er præcis, hvad jeg håbede på.",
-          quoteShort: "Alberte er så grundig og rolig. Resultatet er præcis, hvad jeg håbede på.",
-          author: "Camilla",
-          source: "Trustpilot",
-          rating: 5,
-        },
-      ],
+      // No `experience` and no `reviews` until the owner supplies sourced ones (see the TODO
+      // above): add `experience` once her education is confirmed, and `reviews` only with a
+      // real review that names her (none of the live homepage's Trustpilot reviews does).
       booking: {
         title: "Book tid hos Alberte",
         text: "Vælg behandling og klinik. Første konsultation er altid gratis.",
@@ -224,19 +264,47 @@ export const team: TeamMember[] = [
         height: 1920,
       },
     },
-    bio: "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden om de forskellige behandlinger og muligheder.",
+    bio: "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden om det æstetiske felt og de forskellige behandlinger og muligheder.",
     bioShort: "Uddannet i Fillox af Dr. Tom, med stor viden om behandlinger og muligheder.",
+    quote: "“Jeg er først tilfreds, når du er glad og tilfreds.”",
     authorBio: "Kosmetisk sygeplejerske, uddannet i Fillox af Dr. Tom.",
-    link: { label: "Se hvad Annika tilbyder", href: profileHref("annika") },
+    link: { label: "Læs mere om Annika", href: profileHref("annika") },
     bookingHref: bookWith("annika"),
+    profile: {
+      intro:
+        "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden inden for det æstetiske felt. Hun brænder for et naturligt resultat, og hendes behandlinger bygger på solid viden, kvalitet og professionalisme.",
+      introShort:
+        "Annika er kosmetisk sygeplejerske, uddannet i Fillox af Dr. Tom. Hun brænder for et naturligt resultat.",
+      primaryCta: { label: "Book tid hos Annika", href: bookWith("annika") },
+      // Her quote on /om-os: "Jeg brænder for et naturligt resultat … Kundetilfredshed er min
+      // højeste prioritet". The title above already says "Kosmetisk sygeplejerske".
+      facts: [
+        { label: "Uddannet af", value: "Dr. Tom i Fillox" },
+        { label: "Fokus", value: "Naturlige resultater" },
+        { label: "Prioritet", value: "Kundetilfredshed" },
+      ],
+      // Live homepage, Trustpilot review "Annika fra FILLOX City2 er helt fantastisk!" by
+      // Songül, verbatim excerpt.
+      reviews: [
+        {
+          quote:
+            "Jeg har gået fast hos Annika siden hun startede, og jeg føler mig altid 100% tryg i hendes hænder. Hun er ærlig, lyttende og vanvittigt dygtig – hun gør kun det, der giver mening, og aldrig noget for bare at sælge.",
+          quoteShort:
+            "Jeg har gået fast hos Annika siden hun startede, og jeg føler mig altid 100% tryg i hendes hænder.",
+          author: "Songül",
+          source: "Trustpilot",
+          rating: 5,
+        },
+      ],
+    },
   },
   {
     slug: "maria",
     name: "Maria",
     role: "Sygeplejerske",
+    // mo / mb spell it "Fillers & botox"; the brand name is capitalised everywhere instead (live:
+    // "Fillers & Botox-behandlinger"), so the title matches the bio under it on the same card.
     title: "Sygeplejerske · Fillers & Botox",
-    // mo / mb spell it with a lowercase "botox".
-    titleShort: "Sygeplejerske · Fillers & botox",
     image: {
       src: "/images/team/maria.jpg",
       alt: "Maria, sygeplejerske hos Fillox",
@@ -263,19 +331,32 @@ export const team: TeamMember[] = [
         height: 800,
       },
     },
-    bio: "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring og ekspert i både fillers og botox.",
-    bioShort: "Detaljeorienteret og holistisk, med flere års erfaring med fillers og botox.",
-    link: { label: "Se hvad Maria tilbyder", href: profileHref("maria") },
+    bio: "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring. Hun er ekspert i både fillers og Botox, med sans for det naturlige resultat.",
+    bioShort: "Detaljeorienteret og holistisk, med flere års erfaring og ekspert i fillers og Botox.",
+    quote: "“At se mine tilfredse kunder smile er en af de største glæder, jeg har.”",
+    link: { label: "Læs mere om Maria", href: profileHref("maria") },
     bookingHref: bookWith("maria"),
+    profile: {
+      intro:
+        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger. Hun er ekspert i både fillers og Botox og kombinerer behandlinger til skræddersyede løsninger, med sans for det naturlige resultat.",
+      introShort:
+        "Maria er sygeplejerske med flere års erfaring og ekspert i både fillers og Botox, med sans for det naturlige resultat.",
+      primaryCta: { label: "Book tid hos Maria", href: bookWith("maria") },
+      facts: [
+        { label: "Specialer", value: "Fillers & Botox" },
+        { label: "Tilgang", value: "Holistisk & detaljeorienteret" },
+        { label: "Fokus", value: "Skræddersyede løsninger" },
+      ],
+    },
   },
   {
     slug: "mike",
     name: "Mike",
-    role: "Behandler",
-    title: "Kosmetisk behandler",
+    role: "Sygeplejerske",
+    title: "Kosmetisk sygeplejerske",
     image: {
       src: "/images/team/mike.jpg",
-      alt: "Mike, kosmetisk behandler hos Fillox",
+      alt: "Mike, kosmetisk sygeplejerske hos Fillox",
       position: "50% 50%",
       width: 1602,
       height: 1920,
@@ -284,17 +365,44 @@ export const team: TeamMember[] = [
       // s6om-mik
       about: {
         src: "/images/team/mike.jpg",
-        alt: "Mike, kosmetisk behandler hos Fillox",
+        alt: "Mike, kosmetisk sygeplejerske hos Fillox",
         position: "43% 51%",
         zoom: 1.19,
         width: 1602,
         height: 1920,
       },
     },
-    bio: "Mike har mange års erfaring i den kosmetiske branche og er kendt for sin rolige tilgang og skarpe øje for detaljer.",
-    bioShort: "Kendt for sin rolige tilgang og sit skarpe øje for detaljer.",
-    link: { label: "Se hvad Mike tilbyder", href: profileHref("mike") },
+    bio: "Mike er kvalificeret kosmetisk sygeplejerske og har udvidet sin ekspertise gennem løbende uddannelse. Han tilpasser behandlingen til dine ønsker og behov.",
+    bioShort: "Tilpasser behandlingen til dine ønsker og behov, med et naturligt resultat som mål.",
+    quote: "“Det vigtigste for mig er, at klienten føler sig tryg og tilfreds.”",
+    link: { label: "Læs mere om Mike", href: profileHref("mike") },
     bookingHref: bookWith("mike"),
+    profile: {
+      intro:
+        "Mike er kvalificeret kosmetisk sygeplejerske og har udvidet sin ekspertise gennem løbende uddannelse. Han tilpasser behandlingen til dine ønsker og behov, og hans mål er et naturligt smukt resultat, der fremhæver din naturlige skønhed.",
+      introShort:
+        "Mike er kosmetisk sygeplejerske og tilpasser behandlingen til dine ønsker og behov, med et naturligt resultat som mål.",
+      primaryCta: { label: "Book tid hos Mike", href: bookWith("mike") },
+      // /om-os: "udvidet sin ekspertise … gennem løbende uddannelse"; his quote: "tilpasse mine
+      // behandlinger til klientens ønsker og behov … at klienten føler sig tryg og tilfreds".
+      facts: [
+        { label: "Udvikling", value: "Løbende uddannelse" },
+        { label: "Tilgang", value: "Dine ønsker & behov" },
+        { label: "Fokus", value: "Tryghed & tilfredshed" },
+      ],
+      // Live homepage, Trustpilot review "Fillox - Mike" by Maria, verbatim excerpt.
+      reviews: [
+        {
+          quote:
+            "Jeg har fået lavet filler hos fillox, udført af Mike. Han er utrolig dygtig og rolig og det gør oplevelsen tryg og behagelig hele vejen igennem.",
+          quoteShort:
+            "Mike er utrolig grundig og dygtig til sit arbejde og man kan mærke at han virkelig brænder for sit håndværk.",
+          author: "Maria",
+          source: "Trustpilot",
+          rating: 5,
+        },
+      ],
+    },
   },
 ];
 

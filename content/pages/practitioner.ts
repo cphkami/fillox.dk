@@ -42,7 +42,7 @@ export const practitionerPage = {
     /** Typographic quote marks around the review quote. */
     quoteOpen: "“",
     quoteClose: "”",
-    /** Between author and source: "Camilla · Trustpilot". */
+    /** Between author and source: "Songül · Trustpilot". */
     separator: " · ",
   },
 
@@ -80,17 +80,19 @@ export const practitionerPage = {
   index: {
     meta: {
       title: "Vores behandlere",
-      // TODO: copy review (not in the design)
+      // Not in the design; the team as on the live https://fillox.dk/om-os/ (one doctor,
+      // "Fagligt ansvarlig er æstetisk læge Tom Haugland", plus nurses and practitioners).
       description:
-        "Mød læger, sygeplejersker og behandlere hos Fillox. Se hvem de er, hvad de tilbyder, og book tid hos den behandler, du foretrækker.",
+        "Mød æstetisk læge Tom Haugland og vores sygeplejersker og behandlere hos Fillox. Se, hvem de er, og book tid hos den behandler, du foretrækker.",
     },
     eyebrow: "Teamet",
     title: "Mød vores behandlere",
     /**
      * Card link to the profile when TeamMember.link points elsewhere (Dr. Tom's links to
-     * booking). Same wording as the other members' links in content/team.ts.
+     * booking). Neutral, like the links of the members without offers in content/team.ts
+     * ("Se hvad X tilbyder" is only for a profile that lists treatments, i.e. Alberte's).
      */
-    cardLinkLabel: (name: string) => `Se hvad ${name} tilbyder`,
+    cardLinkLabel: (name: string) => `Læs mere om ${name}`,
   },
 };
 

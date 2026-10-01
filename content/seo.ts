@@ -15,12 +15,16 @@ export const seoContent = {
   openingDays: {
     "Man–fre": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
     "Lør–søn": ["Saturday", "Sunday"],
+    "Man–tir": ["Monday", "Tuesday"],
+    "Ons–fre": ["Wednesday", "Thursday", "Friday"],
+    "Lør": ["Saturday"],
+    "Søn": ["Sunday"],
   } as Record<string, SchemaDay[]>,
 
   /**
    * Photo used in the structured data for a clinic without its own `seoImage`
    * (content/clinics.ts); same placeholder as the /klinikker cards.
    */
-  // TODO: set seoImage (and geo) on each clinic in content/clinics.ts once photos exist.
+  // TODO: set seoImage on each clinic in content/clinics.ts once photos exist (geo is set).
   clinicImage: "/images/results/behandling-3.jpg",
 };

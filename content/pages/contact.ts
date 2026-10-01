@@ -22,8 +22,8 @@ export type ContactChannel = {
   value: string;
   valueShort?: string;
   /**
-   * Right-hand note on desktop, e.g. "Hverdage 10–20". Mobile shows an arrow instead (linked
-   * cards) and keeps the note for screen readers only.
+   * Right-hand note on desktop, e.g. "Man–fre 10–17 · Lør 10–14". Mobile shows an arrow
+   * instead (linked cards) and keeps the note for screen readers only.
    */
   note: string;
   /** tel:/mailto:/page link. Omit for an information-only card (no link, no arrow). */
@@ -97,7 +97,9 @@ export const contactPage = {
       id: "phone",
       label: ui.callUs,
       value: site.contact.phone,
-      note: "Hverdage 10–20",
+      // Telephone hours, fillox.dk/kontakt + footer: "Telefontiden: Man – Fre: 10 – 17,
+      // Lørdag: 10 – 14, Søndag: Lukket".
+      note: "Man–fre 10–17 · Lør 10–14",
       href: site.contact.phoneHref,
       tone: "plain",
     },
@@ -115,10 +117,10 @@ export const contactPage = {
       labelShort: "Vagtlæge 24/7",
       value: "Vagtlæge 24/7",
       valueShort: "Efter din behandling",
-      note: "Nummer i din bekræftelse",
-      // TODO: copy review — the mobile design (mc) gives this card an arrow but no target, and
-      // the on-call number is only in the booking confirmation. Until Fillox gives a page or
-      // number to link to, it is an information card without a link (add `href` to link it).
+      // fillox.dk/kontakt: "AKUT ASSISTANCE 24/7, Telefon: 35 10 00 50" and a "Ring AKUT
+      // TELEFON" button to the same number, so the card (an arrow on mobile, mc) calls it.
+      note: `Akuttelefon ${site.contact.phone}`,
+      href: site.contact.phoneHref,
       tone: "accent",
     },
   ] satisfies ContactChannel[],

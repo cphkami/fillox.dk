@@ -42,7 +42,8 @@ log ind, venteliste).
 med Cmd/Ctrl + Shift + R) og gå igennem:
 
 - [ ] Menuen øverst (Book ny tid / Log ind / ...) og trin 1–4
-- [ ] Vælg klinik (chips) og åbn/luk nogle ydelsesgrupper
+- [ ] Vælg klinik (chips) og åbn/luk nogle ydelsesgrupper. Radioknapperne (de runde
+      cirkler ved klinikker og ydelser) er 24 px og får en plum prik, når de er valgt
 - [ ] Tryk på **i**'et ved en ydelse: beskrivelsen i vinduet skal stå med samme skrift
       (Poppins) som resten (se "Ydelsesbeskrivelser" nedenfor)
 - [ ] Vælg en ydelse, se "Du har valgt", tryk **Videre**
@@ -64,9 +65,12 @@ med Cmd/Ctrl + Shift + R) og gå igennem:
       venteliste-formularen, men tjek det selv: vælg en tid, se formularen og tryk
       **Tilbage** uden at bekræfte. (At vælge en tid kan holde tiden et øjeblik, så gør det på
       en tid langt ude i kalenderen.) Tjek også felter, som kun findes dér: et felt med en
-      knap ved siden af (fx rabatkode), antal-vælgeren (− 1 +) og betaling. De to første er
-      stylet ud fra Geckos kode, men kunne ikke ses i den rigtige booking. Tjek også
-      kvitteringssiden (trin 4 "Færdig") næste gang der kommer en rigtig booking.
+      knap ved siden af (fx rabatkode), antal-vælgeren (− 1 +), radioknapper (hvis formularen
+      har et valg mellem flere muligheder) og betaling. De tre første er stylet ud fra Geckos
+      kode, men kunne ikke ses i den rigtige booking. Radioknapperne skal være lige så store
+      som ved ydelserne, og man skal kunne vælge en mulighed ved at trykke hvor som helst på
+      linjen. Tjek også kvitteringssiden (trin 4 "Færdig") næste gang der kommer en rigtig
+      booking.
 - [ ] Siderne for en kunde, der er logget ind (**Dine oplysninger**, **Dine reservationer**),
       og en bekræftelsesboks med knapperne **Annuller** og **Accepter**, som Gecko fx kan vise,
       når en reservation annulleres
@@ -113,7 +117,7 @@ indhold ind, du gemte i trin 5) og gem. Bookingen ser ud som før med det samme.
   besøgendes browser kontakter Google (IP-adresse) på bookingsiderne. Hjemmesiden selv henter
   ikke skrifter fra Google. Vil I undgå det, kan `@import`-linjen slettes; så bruges
   Helvetica/Arial i bookingen. Alt andet i temaet virker stadig.
-- **Længde**: filen er ca. 57 KB, fordi den er kommenteret. Tjek efter indsættelsen, at
+- **Længde**: filen er ca. 59 KB, fordi den er kommenteret. Tjek efter indsættelsen, at
   slutningen kom med (sidste afsnit hedder "12. Motion" og slutter med `}` før `</style>`).
   Skærer Gecko teksten af, så kontakt udvikleren for en kortere version.
 - **Gecko-opdateringer**: temaet bygger på Geckos klassenavne, som de så ud i oktober 2026.

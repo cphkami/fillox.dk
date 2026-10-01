@@ -405,7 +405,7 @@ ol.gecko_breadcrumb li.current {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 10px 20px 10px 46px;
+  padding: 10px 20px 10px 48px;
   font-size: 15px;
   font-weight: 500;
   line-height: 1.3;
@@ -415,13 +415,14 @@ ol.gecko_breadcrumb li.current {
   border-radius: 100px;
 }
 
-/* Gecko sets the radio circle's border with !important. */
+/* The radio circle (24px, as in the service list) with a 12px dot when chosen.
+   Gecko sets the circle's border with !important. */
 .gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio-label::before {
-  left: 16px;
-  top: calc(50% - 10px);
+  left: 14px;
+  top: calc(50% - 12px);
   margin-left: 0;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   background: transparent;
   border: 1.5px solid var(--fx-plum) !important;
   border-radius: 50%;
@@ -429,11 +430,11 @@ ol.gecko_breadcrumb li.current {
 }
 
 .gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio + .gc-company-picker-radio-label::after {
-  left: 21px;
-  top: calc(50% - 5px);
+  left: 20px;
+  top: calc(50% - 6px);
   margin-left: 0;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background-color: var(--fx-cream);
   border-radius: 50%;
 }
@@ -535,19 +536,22 @@ ol.gecko_breadcrumb li.current {
   border-top: 1px solid var(--fx-line);
 }
 
+/* The whole row is the tap target (Gecko); the circle is centred on the first
+   line of the service name. */
 .gecko-list-dropdown .gecko-list-dropdown__checkbox {
-  width: 54px;
-  padding: 17px 4px 16px 22px;
+  width: 58px;
+  padding: 15px 4px 16px 22px;
   vertical-align: top;
 }
 
-/* Radio circle drawn in CSS (replaces Gecko's icon-font glyph). */
+/* Radio circle drawn in CSS (replaces Gecko's icon-font glyph): 24px, with a
+   12px plum dot when chosen. */
 .gecko-list-dropdown .gecko-list-dropdown__checkbox::before {
   content: "";
   display: block;
   box-sizing: border-box;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   margin: 0;
   padding: 0;
   font-family: inherit;
@@ -560,7 +564,7 @@ ol.gecko_breadcrumb li.current {
   content: "";
   padding: 0;
   background: var(--fx-plum);
-  box-shadow: inset 0 0 0 4px var(--fx-white);
+  box-shadow: inset 0 0 0 5px var(--fx-white);
 }
 
 .gecko-list-dropdown .gecko-list-dropdown__option {
@@ -641,7 +645,7 @@ ol.gecko_breadcrumb li.current {
   /* Phone: the name gets the full width; duration and price share the line
      under it. */
   .gecko-list-dropdown .gecko-list-dropdown__checkbox {
-    width: 46px;
+    width: 48px;
     padding-left: 16px;
   }
 
@@ -1885,21 +1889,40 @@ textarea.form-control {
   background-color: var(--fx-blush);
 }
 
-/* Radios outside the clinic chips */
-.radio {
+/* Radios outside the clinic chips (the clinic chips are .radio too, and have
+   their own rules in section 3): a 24px circle with a 12px plum dot, centred on
+   the first line of the label. Each option is a row at least 44px tall, and
+   the invisible radio covers the whole row (as on the clinic chips), so a tap
+   anywhere on the row chooses it. The text lines up with the checkboxes'. */
+.radio:not(.gc-company-picker-radio-group) {
+  min-height: 44px;
+  margin-top: 0;
+  margin-bottom: 0;
   padding-left: 34px;
 }
 
-.radio input[type="radio"] {
-  width: 22px;
-  height: 22px;
-  margin: 0 0 0 -34px;
+.radio:not(.gc-company-picker-radio-group) input[type="radio"] {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
 
-.radio label::before {
-  top: 0;
-  width: 22px;
-  height: 22px;
+.radio:not(.gc-company-picker-radio-group) label {
+  display: block;
+  min-height: 44px;
+  padding: 11px 0 10px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.radio:not(.gc-company-picker-radio-group) label::before {
+  top: 10px;
+  left: 0;
+  width: 24px;
+  height: 24px;
   margin-left: -34px;
   background-color: var(--fx-white);
   border: 1.5px solid var(--fx-plum) !important;
@@ -1907,21 +1930,23 @@ textarea.form-control {
   outline: none;
 }
 
-.radio label::after {
-  top: 6px;
+.radio:not(.gc-company-picker-radio-group) label::after {
+  top: 16px;
   left: 6px;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   margin-left: -34px;
   background-color: var(--fx-plum);
   border-radius: 50%;
 }
 
-.radio input[type="radio"]:checked + label::after {
+.radio:not(.gc-company-picker-radio-group) input[type="radio"]:checked + label::after {
   background-color: var(--fx-plum);
 }
 
-.radio input[type="radio"]:focus-visible + label::before {
+/* Keyboard focus: a ring around the circle. Gecko: "outline: none !important"
+   on it. (The clinic chips get their ring around the whole chip.) */
+.radio:not(.gc-company-picker-radio-group) input[type="radio"]:focus-visible + label::before {
   outline: 2px solid var(--fx-plum) !important;
   outline-offset: 2px;
 }

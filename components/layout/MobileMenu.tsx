@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/Button";
+import { HoursSummary } from "@/components/ui/HoursSummary";
+import { JoinedLines } from "@/components/ui/JoinedLines";
 import { TrustpilotRating } from "@/components/ui/TrustpilotRating";
 import { site } from "@/config/site";
 import type { NavItem } from "@/content/types";
@@ -320,9 +322,9 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                                   <span className="font-semibold text-plum">{c.openingNote}</span>
                                 ) : (
                                   <>
-                                    {c.address.join(", ")}
-                                    <br />
-                                    {c.hours.join(" · ")}
+                                    {/* Lines break only between the address lines and the hours parts. */}
+                                    <JoinedLines parts={c.address} separator=", " />
+                                    <HoursSummary as="span" parts={c.hours} />
                                   </>
                                 )}
                               </div>

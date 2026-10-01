@@ -11,3 +11,4 @@ export { ScrollRow, revealFocusedItem } from "./ScrollRow";
 export { ResponsiveText } from "./ResponsiveText";
 export { HoneypotField } from "./HoneypotField";
 export { JoinedLines } from "./JoinedLines";
+export { HoursSummary, splitHours } from "./HoursSummary";
