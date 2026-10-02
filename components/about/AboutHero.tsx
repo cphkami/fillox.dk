@@ -9,6 +9,9 @@ type AboutHeroProps = { hero: AboutPageCopy["hero"]; titleId: string };
  * - Desktop (6om, ≥1024px): sand panel, text left and photo right, 50/50, min 600px high
  *   (grows to 680px on the 1600px canvas; the panel spans the surface band).
  * - Mobile (mo): rounded photo on top, text on cream below, full-width CTA.
+ * - Type: the H1 is the heading font (Poppins 500, espresso `text-heading`; -0.025em from 768px
+ *   like the home H1); intro, CTA and the "Mød teamet" link are Figtree. The link is the
+ *   site's text link: ink over a deep-bronze underline, accent on hover (Button `textLink`).
  */
 export function AboutHero({ hero, titleId }: AboutHeroProps) {
   return (
@@ -29,11 +32,11 @@ export function AboutHero({ hero, titleId }: AboutHeroProps) {
           <Eyebrow className="mb-4 lg:mb-[18px]">{hero.eyebrow}</Eyebrow>
           <h1
             id={titleId}
-            className="mb-4 text-[36px] leading-[1.08] font-semibold tracking-display md:mb-[22px] md:text-[52px] md:leading-[1.04] lg:text-h1 lg:leading-[1.02]"
+            className="mb-4 font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mb-[22px] md:text-[52px] md:leading-[1.04] md:tracking-hero lg:text-h1 lg:leading-[1.02]"
           >
             {hero.title}
           </h1>
-          <p className="mb-4 text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-[18px] md:leading-[1.75] xl:text-lead">
+          <p className="mb-4 text-[16px] leading-[1.7] text-pretty text-muted md:mb-[30px] md:max-w-[44ch] md:text-[18px] md:leading-[1.75] xl:text-lead">
             <ResponsiveText mobile={hero.introShort} desktop={hero.intro} />
           </p>
           <div className="flex items-center gap-[18px]">
@@ -42,7 +45,7 @@ export function AboutHero({ hero, titleId }: AboutHeroProps) {
             </ButtonLink>
             <Link
               href={hero.teamLink.href}
-              className="relative border-b border-ink pb-[3px] text-ui-sm text-ink transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:border-plum hover:text-plum max-md:hidden"
+              className="relative border-b border-rule-strong pb-[3px] text-ui-sm text-ink transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:border-accent hover:text-accent max-md:hidden"
             >
               {hero.teamLink.label} <span aria-hidden="true">↓</span>
             </Link>

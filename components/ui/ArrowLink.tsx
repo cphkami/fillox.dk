@@ -3,8 +3,12 @@ import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/cn";
 
 type ArrowLinkProps = ComponentPropsWithoutRef<typeof Link> & {
-  /** "plum" (default) on light surfaces, "powder" on plum surfaces. */
-  tone?: "plum" | "powder" | "ink";
+  /**
+   * - "accent" (default) on light surfaces: accent text (10:1 on cream), accent-deep on hover.
+   * - "band" on a rose band: on-band text, band-accent on hover.
+   * - "ink": ink text, accent on hover.
+   */
+  tone?: "accent" | "band" | "ink";
   /**
    * - "md" (default) `text-ui-sm`: the design's 14px, growing to 16px at 1600px (page links:
    *   "Se priser →", "Mød hele teamet →").
@@ -17,20 +21,20 @@ type ArrowLinkProps = ComponentPropsWithoutRef<typeof Link> & {
 const sizes = { md: "text-ui-sm", menu: "text-[15px]" } as const;
 
 /**
- * Semibold text link with a trailing arrow, e.g. "Se alle behandlinger →" (600/plum).
+ * Semibold text link with a trailing arrow, e.g. "Se alle behandlinger →" (Figtree 600, accent).
  * An invisible hit area (12px above and below, 4px to the sides) makes it a 44px touch target
  * without moving the text; keep 12px free around it for other links.
  */
-export function ArrowLink({ tone = "plum", size = "md", className, children, ...props }: ArrowLinkProps) {
+export function ArrowLink({ tone = "accent", size = "md", className, children, ...props }: ArrowLinkProps) {
   return (
     <Link
       {...props}
       className={cn(
         "group relative inline-block font-semibold transition-colors after:absolute after:-inset-x-1 after:-inset-y-3",
         sizes[size],
-        tone === "plum" && "text-plum hover:text-plum-deep",
-        tone === "powder" && "text-powder hover:text-cream",
-        tone === "ink" && "text-ink hover:text-plum",
+        tone === "accent" && "text-accent hover:text-accent-deep",
+        tone === "band" && "text-on-band hover:text-band-accent",
+        tone === "ink" && "text-ink hover:text-accent",
         className,
       )}
     >

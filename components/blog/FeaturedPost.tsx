@@ -39,13 +39,15 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
           />
         </Eyebrow>
 
-        <h2 className="text-[24px] leading-[1.2] font-semibold tracking-display md:text-[36px] md:leading-[1.12] xl:text-h2-md">
+        <h2 className="font-heading text-[24px] leading-[1.2] tracking-display text-balance text-heading md:text-[36px] md:leading-[1.12] xl:text-h2-md">
           <Link href={blogPostHref(post.slug)} className={stretchedLink}>
             {post.title}
           </Link>
         </h2>
 
-        <p className="text-body leading-[1.7] text-muted md:leading-[1.75]">
+        {/* text-pretty: no one-word last line; 50ch keeps the one-column tablet layout (768–1023)
+            at ≈ 75 characters a line and never binds in the lg two-column layout. */}
+        <p className="text-body leading-[1.7] text-pretty text-muted md:max-w-[50ch] md:leading-[1.75]">
           <Responsive mobile={post.excerptShort} desktop={post.excerpt} />
         </p>
 
@@ -72,7 +74,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
           aria-hidden="true"
           className={cn(
             buttonClasses({ variant: "primary", size: "mdTight" }),
-            "mt-2.5 self-start group-hover:bg-plum-deep max-md:hidden",
+            "mt-2.5 self-start group-hover:bg-accent-deep max-md:hidden",
           )}
         >
           {copy.featured.cta}

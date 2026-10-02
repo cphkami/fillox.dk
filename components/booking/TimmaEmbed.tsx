@@ -63,7 +63,7 @@ function TimmaView({ clinics, copy, selected, onSelect }: ViewProps) {
   return (
     <div>
       <div className="px-3 pt-4 md:px-2 md:pt-2">
-        <h2 id={labelId} className="text-h4 leading-[1.2] font-semibold tracking-display">
+        <h2 id={labelId} className="font-heading text-h4 leading-[1.2] tracking-display text-heading">
           {copy.label}
         </h2>
         <p className="mt-1.5 text-small leading-[1.6] text-muted">{copy.hint}</p>
@@ -79,7 +79,7 @@ function TimmaView({ clinics, copy, selected, onSelect }: ViewProps) {
                 className={cn(
                   buttonClasses({ variant: isActive ? "primary" : "white", size: "chip" }),
                   // Same 1px border as the inactive buttons, so switching clinics never shifts the row.
-                  isActive && "border border-plum hover:border-plum-deep",
+                  isActive && "border border-accent hover:border-accent-deep",
                 )}
               >
                 {clinic.name}
@@ -98,7 +98,7 @@ function TimmaView({ clinics, copy, selected, onSelect }: ViewProps) {
               href={selected.src}
               target="_blank"
               rel="noopener"
-              className="relative text-ui-sm font-medium text-plum underline decoration-plum/35 underline-offset-[3px] transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:decoration-plum"
+              className="relative text-ui-sm font-medium text-accent underline decoration-rule-strong underline-offset-[3px] transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:decoration-accent"
             >
               {copy.openDirect}
             </a>

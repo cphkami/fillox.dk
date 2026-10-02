@@ -6,14 +6,15 @@ import { RichText } from "./RichText";
 /**
  * Reading measure of the prose (paragraphs, lists, plain address lines, the address card):
  * ≤ ~75 characters per line (ARCHITECTURE.md → "Type scale"). Headings keep the full column.
- * - 768–1279px: 640px. At 768 that is the whole column (tablet unchanged); from ≈ 850px the
- *   column reaches 720px, where the prose would run to ≈ 80 characters per line.
- * - From 1280px: 58ch ≈ 619px at 17px, 655px at 18px, capped by the 684px column at 19px;
- *   `ch` grows with the font, so the measure stays ≈ 70 characters per line.
+ * From 768px: 52ch. Figtree sets ≈ 1.42 characters per `ch` (a wide "0", narrow lowercase;
+ * Poppins set ≈ 1.29), so 52ch is ≈ 74 characters per line: 566px at 17px, 600px at 18px,
+ * 633px at 19px, inside the 640px (tablet) / 684px (≥ 1280) column. `ch` grows with the font,
+ * so the measure holds at every size. (The Poppins-era 640px / 58ch ran to 82–88 characters
+ * per line in Figtree.)
  * `ch` resolves against the element's own font, so the measure only goes on elements set in
  * the prose size (`text-body-lg`).
  */
-const measure = "md:max-w-[640px] xl:max-w-[58ch]";
+const measure = "md:max-w-[52ch]";
 
 /**
  * Body text of a text page, styled like the blog article column (6art / mar):
@@ -33,7 +34,7 @@ export function TextBlocks({ blocks, className }: { blocks: TextBlock[]; classNa
               <h2
                 key={i}
                 id={block.id}
-                className="mt-3 text-[22px] leading-[1.2] font-semibold tracking-display text-balance text-ink first:mt-0 md:mt-[22px] md:text-[28px] xl:mt-fluid-22/25 xl:text-h3-lg"
+                className="mt-3 font-heading text-[22px] leading-[1.2] tracking-display text-balance text-heading first:mt-0 md:mt-[22px] md:text-[28px] xl:mt-fluid-22/25 xl:text-h3-lg"
               >
                 {block.text}
               </h2>
@@ -44,7 +45,7 @@ export function TextBlocks({ blocks, className }: { blocks: TextBlock[]; classNa
               // 19 / 21px, `text-title-lg` (21 → 23px) from 1280.
               <h3
                 key={i}
-                className="mt-2 text-[19px] leading-[1.3] font-semibold tracking-[-.01em] text-balance text-ink first:mt-0 md:mt-3 md:text-[21px] xl:mt-fluid-12 xl:text-title-lg"
+                className="mt-2 font-heading text-[19px] leading-[1.3] tracking-[-.01em] text-balance text-heading first:mt-0 md:mt-3 md:text-[21px] xl:mt-fluid-12 xl:text-title-lg"
               >
                 {block.text}
               </h3>

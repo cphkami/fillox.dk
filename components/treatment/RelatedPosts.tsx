@@ -50,18 +50,18 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
   const layout = layouts[Math.min(posts.items.length, 3) as 1 | 2 | 3];
   const single = posts.items.length === 1;
   return (
-    <Container as="section" aria-labelledby={copy.sectionIds.posts} className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
+    <Container as="section" aria-labelledby={copy.sectionIds.posts} className="pt-2 pb-12 leading-[1.5] md:pt-0 md:pb-fluid-96">
       <div className="mb-4 md:mb-9 md:flex md:items-end md:justify-between md:gap-6 xl:mb-fluid-36">
         <div>
           <Eyebrow className="mb-3.5 max-md:hidden">{posts.eyebrow}</Eyebrow>
           <h2
             id={copy.sectionIds.posts}
-            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
+            className="font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
           >
             {posts.title}
           </h2>
           {posts.intro ? (
-            <p className="max-w-[56ch] text-body leading-[1.75] text-muted max-md:hidden">{posts.intro}</p>
+            <p className="max-w-[52ch] text-body leading-[1.75] text-pretty text-muted max-md:hidden">{posts.intro}</p>
           ) : null}
         </div>
         {posts.link ? (
@@ -97,7 +97,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                           "md:px-5 md:pt-[26px] md:pb-[30px] lg:px-7 xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30",
                   )}
                 >
-                  <p className="text-micro text-muted md:mb-2.5 md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
+                  <p className="text-micro text-muted md:mb-2.5 md:font-bold md:tracking-[2px] md:text-accent md:uppercase">
                     {/* Short meta ("Guide · 4 min") on mobile, the long label from md (three
                         columns: from the 1180px design canvas). */}
                     <span className={layout.longMetaFrom === "md" ? "md:hidden" : "min-[73.75rem]:hidden"}>
@@ -112,7 +112,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                       excerpt's 18px at 1600), as the /blog featured card does; ≤ 1280 unchanged. */}
                   <h3
                     className={cn(
-                      "mt-1 text-[16px] leading-[1.4] font-semibold md:mt-0 md:mb-[18px] md:text-h4 md:leading-[1.3] md:tracking-display",
+                      "mt-1 font-heading text-[16px] leading-[1.4] text-heading md:mt-0 md:mb-[18px] md:text-h4 md:leading-[1.3] md:tracking-display",
                       single && "xl:mb-fluid-18 xl:text-[length:clamp(20px,calc(-4px+1.875vw),26px)]",
                     )}
                   >
@@ -126,7 +126,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "self-start border-b border-ink pb-[3px] text-ui-sm max-md:hidden",
+                      "self-start border-b border-rule-strong pb-[3px] text-ui-sm max-md:hidden",
                       !single && "mt-auto",
                     )}
                   >

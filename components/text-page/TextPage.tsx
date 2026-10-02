@@ -13,13 +13,13 @@ type TextPageProps = {
 
 /**
  * Simple text page (terms, privacy, jobs, content creator): sand hero, a readable
- * text column (max 720px; prose max 640px, 58ch from 1280px, see TextBlocks) and a sticky CTA
+ * text column (max 720px; prose max 52ch ≈ 74 characters, see TextBlocks) and a sticky CTA
  * card on the right from 1024px.
  * Below 1024px the CTA card follows the text. The text lines up with the hero text
  * at every width (surface margin + the hero's side padding: 20 / 64 / 80px from the
  * page edge up to 1280px, 88px at 1280, 112px from 1536px).
- * Wide (≥1280px): the column stays 684px wide while the body grows 17 → 19px, so the prose
- * keeps ≈ 72 characters per line (58ch, capped by the column at 19px); the CTA card grows
+ * Wide (≥1280px): the column stays 684px wide while the body grows 17 → 19px; the prose
+ * keeps ≈ 74 characters per line (52ch: 566 → 633px, see TextBlocks); the CTA card grows
  * 280 → 336px and top/bottom padding grows with the viewport.
  * The sticky card stays 21px under the sticky header, which is 93px at 1024–1279 and grows
  * 95 → 98px from 1280 to 1600 (components/layout/Header.tsx).

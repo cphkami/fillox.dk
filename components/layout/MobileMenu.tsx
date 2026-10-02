@@ -29,7 +29,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
 function rowClasses(expanded = false) {
   return cn(
     "flex min-h-[61px] w-full items-center justify-between border-b border-line text-left text-[18px] transition-colors",
-    expanded ? "font-semibold text-plum" : "font-medium text-ink",
+    expanded ? "font-semibold text-accent" : "font-medium text-ink",
   );
 }
 
@@ -270,7 +270,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                         className={cn(rowClasses(isOpen), "cursor-pointer")}
                       >
                         <span>{item.label}</span>
-                        <span aria-hidden="true" className={cn("text-[22px]", isOpen ? "text-plum" : "text-muted")}>
+                        <span aria-hidden="true" className={cn("text-[22px]", isOpen ? "text-accent" : "text-muted")}>
                           {isOpen ? "–" : "+"}
                         </span>
                       </button>
@@ -298,7 +298,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                             href={item.href}
                             onClick={onNavigate}
                             aria-current={ariaCurrent(item.href)}
-                            className="flex min-h-[46px] items-center text-[15px] font-semibold text-plum"
+                            className="flex min-h-[46px] items-center text-[15px] font-semibold text-accent"
                           >
                             {ui.seeAllTreatments}&nbsp;<span aria-hidden="true">→</span>
                           </Link>
@@ -319,7 +319,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                                   {c.name}
                                 </Link>
                                 {c.comingSoon ? (
-                                  <span className="font-semibold text-plum">{c.openingNote}</span>
+                                  <span className="font-semibold text-accent">{c.openingNote}</span>
                                 ) : (
                                   <>
                                     {/* Lines break only between the address lines and the hours parts. */}
@@ -333,7 +333,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                                   href={c.bookingHref}
                                   onClick={onNavigate}
                                   aria-label={`${ui.bookAt} ${c.name}`}
-                                  className="relative pt-0.5 text-[14px] font-semibold whitespace-nowrap text-plum after:absolute after:-inset-3"
+                                  className="relative pt-0.5 text-[14px] font-semibold whitespace-nowrap text-accent after:absolute after:-inset-3"
                                 >
                                   {ui.book}&nbsp;<span aria-hidden="true">→</span>
                                 </Link>
@@ -384,7 +384,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                     <span aria-hidden="true">‹&nbsp;</span>
                     {treatmentsItem?.label}
                   </button>
-                  <h2 className="mt-1 mb-3 text-[28px] font-semibold tracking-display">{category.name}</h2>
+                  <h2 className="mt-1 mb-3 font-heading text-[28px] tracking-display text-heading">{category.name}</h2>
                   <ul>
                     {category.treatments.map((t) => (
                       <li key={t.slug}>
@@ -406,7 +406,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                     href={category.href}
                     onClick={onNavigate}
                     aria-current={ariaCurrent(category.href)}
-                    className="flex min-h-14 items-center text-[15px] font-semibold text-plum"
+                    className="flex min-h-14 items-center text-[15px] font-semibold text-accent"
                   >
                     {category.allLabel}&nbsp;<span aria-hidden="true">→</span>
                   </Link>

@@ -52,7 +52,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
           className="h-full"
         />
         {soon && clinic.openingNote ? (
-          <p className="absolute top-[18px] left-[18px] rounded-full bg-plum px-4 py-[7px] text-micro font-semibold tracking-[.12em] text-cream uppercase">
+          <p className="absolute top-[18px] left-[18px] rounded-full bg-accent px-4 py-[7px] text-micro font-semibold tracking-[.12em] text-on-accent uppercase">
             {clinic.openingNote}
           </p>
         ) : null}
@@ -67,12 +67,12 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
         <div className="flex items-center justify-between gap-3 md:mb-2.5 xl:mb-fluid-10">
           <h2
             id={titleId}
-            className="py-[.2em] text-[20px] leading-[1.1] font-semibold text-plum md:py-0 md:text-[24px] md:leading-[normal] md:tracking-display md:text-ink lg:text-h3-lg xl:py-[.2em] xl:leading-[1.1]"
+            className="py-[.2em] font-heading text-[20px] leading-[1.1] text-accent md:py-0 md:text-[24px] md:leading-[normal] md:tracking-display md:text-heading lg:text-h3-lg xl:py-[.2em] xl:leading-[1.1]"
           >
             {clinic.fullName}
           </h2>
           {soon && (comingSoon?.openingNoteShort ?? clinic.openingNote) ? (
-            <p className="shrink-0 rounded-full bg-powder px-3 py-[5px] text-[12px] font-semibold text-plum md:hidden">
+            <p className="shrink-0 rounded-full bg-secondary px-3 py-[5px] text-[12px] font-semibold text-accent md:hidden">
               {comingSoon?.openingNoteShort ?? clinic.openingNote}
             </p>
           ) : null}
@@ -138,7 +138,8 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
             {/* As in mk: 1fr 1fr (not minmax(0,1fr)), so the longer label gets the wider pill. Both
                 pills are 52px high (border-box), per the mobile spec. From 768px "Rutevejledning →" is
                 a text link with an invisible ≥ 48px-high hit area (after:) that leaves the underline
-                in place, at the pill's size (text-ui, as the textLink button beside a pill on /). */}
+                in place, at the pill's size and in the textLink button's colours (ink over a
+                deep-bronze underline, accent on hover), as beside a pill on /. */}
             <div className="grid grid-cols-[1fr_1fr] items-start gap-2 md:mt-auto md:flex md:flex-wrap md:items-center md:gap-x-[18px] md:gap-y-3">
               <Link
                 href={clinic.bookingHref ?? site.booking.href}
@@ -158,7 +159,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
                   href={clinic.directionsHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-[52px] items-center justify-center rounded-full border border-plum px-[26px] text-[15px] max-[374px]:px-4 whitespace-nowrap text-plum transition-colors hover:bg-plum hover:text-cream md:inline-block md:h-auto md:rounded-none md:border-0 md:border-b md:border-ink md:relative md:px-0 md:pb-[3px] md:text-ui md:text-ink md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3 md:hover:bg-transparent md:hover:border-plum md:hover:text-plum"
+                  className="flex h-[52px] items-center justify-center rounded-full border border-accent px-[26px] text-[15px] max-[374px]:px-4 whitespace-nowrap text-accent transition-colors hover:bg-accent hover:text-on-accent md:inline-block md:h-auto md:rounded-none md:border-0 md:border-b md:border-rule-strong md:relative md:px-0 md:pb-[3px] md:text-ui md:text-ink md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3 md:hover:bg-transparent md:hover:border-accent md:hover:text-accent"
                 >
                   {copy.directions}
                   <span aria-hidden="true" className="max-md:hidden">

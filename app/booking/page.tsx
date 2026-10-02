@@ -30,6 +30,8 @@ export const metadata: Metadata = pageMetadata(
  * `text-small` (14 → 15px, one line). The help block is capped at 440px (480px at 1600,
  * growing with its text), so longer help copy (other markets) wraps instead of squeezing the
  * intro.
+ * The intro is capped at 50ch: ≈ 72 characters per line in Figtree (≈ 1.42 characters per
+ * `ch`), as production's 56ch was in Poppins.
  * The white booking card spans the band too; BookingEmbed sizes it and the embed inside it
  * per provider. Gecko's page is transparent, so the white card is its background; the Fillox
  * theme pasted into Gecko (integrations/gecko) keeps it that way and styles the calendar inside.
@@ -43,11 +45,11 @@ export default function BookingPage() {
             <Eyebrow>{copy.eyebrow}</Eyebrow>
             <h1
               id="booking-title"
-              className="mt-4 text-[36px] leading-[1.08] font-semibold tracking-display md:mt-5 md:text-h1-sm"
+              className="mt-4 font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mt-5 md:text-h1-sm md:tracking-hero"
             >
               {copy.title}
             </h1>
-            <p className="mt-4 max-w-[56ch] text-[16px] leading-[1.7] text-muted md:mt-5 md:text-lead md:leading-[1.75]">
+            <p className="mt-4 max-w-[50ch] text-[16px] leading-[1.7] text-muted md:mt-5 md:text-lead md:leading-[1.75]">
               {copy.intro}
             </p>
           </div>

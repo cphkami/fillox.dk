@@ -180,9 +180,11 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
                 onClick={() => onSelect?.(filter.slug)}
                 className={cn(
                   buttonClasses({ variant: isActive ? "primary" : "white", size: "chip" }),
+                  // A 1.5 line keeps the chips >= 44px high from 768px (Figtree's "normal" line is 1.2).
+                  "md:leading-[1.5]",
                   // Same 1px border as the inactive chips, so switching filters never shifts the row.
-                  isActive && "border border-plum hover:border-plum-deep",
-                  // Windows high contrast replaces the plum fill: mark the pressed chip in system colours.
+                  isActive && "border border-accent hover:border-accent-deep",
+                  // Windows high contrast replaces the accent fill: mark the pressed chip in system colours.
                   isActive && forcedColorsSelected,
                   "shrink-0 snap-start",
                   filter.desktopOnly && !isActive && "max-md:hidden",
@@ -208,7 +210,7 @@ function BlogBrowserView({ hero, filters, featured, entries, active, onSelect, f
         className={cn("pb-8 md:pb-6", showFeatured ? "pt-7 md:pt-fluid-72" : "pt-2 md:pt-6")}
       >
         <div className="mb-8 flex items-baseline justify-between gap-4 max-md:sr-only xl:mb-fluid-32">
-          <h2 id={LIST_HEADING_ID} className="py-[.2em] text-[32px] leading-[1.1] font-semibold tracking-display xl:text-h2-sm">
+          <h2 id={LIST_HEADING_ID} className="py-[.2em] font-heading text-[32px] leading-[1.1] tracking-display text-heading xl:text-h2-sm">
             {copy.list.title}
           </h2>
           <p aria-live="polite" data-blog-count={plan ? "" : undefined} className="shrink-0 text-small text-muted">

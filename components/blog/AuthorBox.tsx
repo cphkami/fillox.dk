@@ -28,13 +28,15 @@ export function AuthorBox({ author }: { author: TeamMember }) {
             heading navigation reaches it; the two lines keep the design's styles. */}
         <h2 id={titleId}>
           <span className="block text-micro text-muted md:mb-0.5">{copy.author.writtenBy}</span>{" "}
-          <span className="block text-[17px] font-semibold text-plum md:text-lead">{author.name}</span>
+          <span className="block font-heading text-[17px] text-accent md:text-lead">{author.name}</span>
         </h2>
         {author.authorBio ? (
           <p className="text-small leading-[1.6] text-muted max-md:hidden">{author.authorBio}</p>
         ) : null}
-        {/* Mobile: 45px tap target (py-3) whose margin box stays the design's 21px line + 4px gap. */}
-        <ArrowLink href={link.href} className="max-md:-mt-2 max-md:-mb-3 max-md:py-3 md:mt-1.5">
+        {/* Mobile: 45px tap target (py-3) whose margin box stays the design's 21px line + 4px gap.
+            leading 1.5 keeps that 21px line (Figtree's "normal" is 17px), so ArrowLink's hit area
+            (12px above and below) stays 45px from 768px too. */}
+        <ArrowLink href={link.href} className="leading-[1.5] max-md:-mt-2 max-md:-mb-3 max-md:py-3 md:mt-1.5">
           {link.label}
         </ArrowLink>
       </div>

@@ -30,7 +30,7 @@ export function TextPageHero({ hero, titleId }: TextPageHeroProps) {
           {hero.eyebrow ? <Eyebrow className="mb-4 md:mb-[18px]">{hero.eyebrow}</Eyebrow> : null}
           <h1
             id={titleId}
-            className="text-[min(36px,9.25vw)] leading-[1.08] font-semibold tracking-display text-balance break-words md:text-[52px] md:leading-[1.04] lg:text-h1 lg:leading-[1.02]"
+            className="font-heading text-[min(36px,9.25vw)] leading-[1.08] tracking-display text-balance break-words text-heading md:text-[52px] md:leading-[1.04] md:tracking-hero lg:text-h1 lg:leading-[1.02]"
           >
             {hero.title}
           </h1>

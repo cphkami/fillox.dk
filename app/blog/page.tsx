@@ -28,7 +28,7 @@ export default function BlogPage() {
   const hero = (
     <>
       <Eyebrow className="md:mb-3.5">{copy.hero.eyebrow}</Eyebrow>
-      <h1 className="mt-4 text-[36px] leading-[1.08] font-semibold tracking-display md:mt-0 md:mb-[18px] md:text-[52px] xl:text-h1-sm">
+      <h1 className="mt-4 font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mt-0 md:mb-[18px] md:text-[52px] md:tracking-hero xl:text-h1-sm">
         {copy.hero.title}
       </h1>
       <p className="mt-4 text-[16px] leading-[1.7] text-muted md:mx-auto md:mt-0 md:max-w-[52ch] md:text-[18px] md:leading-[1.75] xl:text-lead">

@@ -63,11 +63,11 @@ export function ClinicMap({ label, image, pins, clinics, className }: ClinicMapP
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "size-3.5 shrink-0 rounded-full shadow-[0_0_0_3px_rgba(255,255,255,.9)]",
-                      soon ? "border-[3px] border-plum bg-cream" : "bg-plum",
+                      "size-3.5 shrink-0 rounded-full ring-3 ring-white/90",
+                      soon ? "border-[3px] border-accent bg-cream" : "bg-accent",
                     )}
                   />
-                  <span className="rounded-full bg-white px-2.5 py-1 text-micro leading-[1.35] font-semibold whitespace-nowrap text-plum shadow-[0_2px_8px_rgba(36,39,36,.1)] transition-colors group-hover:bg-plum group-hover:text-cream">
+                  <span className="rounded-full bg-white px-2.5 py-1 text-micro leading-[1.35] font-semibold whitespace-nowrap text-accent shadow-[0_2px_8px_color-mix(in_srgb,var(--color-ink)_10%,transparent)] transition-colors group-hover:bg-accent group-hover:text-on-accent">
                     {clinic.name}
                     {soon && clinic.openingNote ? <span className="sr-only">{`, ${clinic.openingNote}`}</span> : null}
                   </span>

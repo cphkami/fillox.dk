@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Figtree, Poppins } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { OrganizationJsonLd } from "@/components/seo";
@@ -8,9 +8,23 @@ import { layoutCopy } from "@/content/layout";
 import { sharedOpenGraph, shareImage } from "@/lib/metadata";
 import "./globals.css";
 
+/*
+ * Figtree is the site font (body, UI); Poppins 500 is for headings only (app/globals.css →
+ * font-sans / font-heading). `subsets` only picks the files that are PRELOADED: "latin" holds
+ * æ ø å (Latin-1); next/font still declares the latin-ext files (unicode-range), which a browser
+ * downloads only for a page that uses one of their characters.
+ */
+const figtree = Figtree({
+  subsets: ["latin"],
+  // No weight: the variable font, one file per subset for 400 (body), 500, 600 (semibold UI) and
+  // 700 (eyebrows). (A "400 700" range is rejected by Turbopack's next/font.)
+  variable: "--font-figtree",
+  display: "swap",
+});
+
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "500",
   variable: "--font-poppins",
   display: "swap",
 });
@@ -40,11 +54,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={site.lang} className={`${poppins.variable} h-full`}>
+    <html lang={site.lang} className={`${figtree.variable} ${poppins.variable} h-full`}>
       <body className="flex min-h-full flex-col">
         <a
           href={`#${layoutCopy.mainId}`}
-          className="fixed top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-plum px-5 py-3 text-[14px] text-cream transition-transform focus:translate-y-0"
+          className="fixed top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-accent px-5 py-3 text-[14px] text-on-accent transition-transform focus:translate-y-0"
         >
           {layoutCopy.skipLink}
         </a>

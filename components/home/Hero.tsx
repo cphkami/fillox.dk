@@ -12,10 +12,14 @@ import { cn } from "@/lib/cn";
  * stats, eyebrow, buttons), so the padding eases to 80 / 56px at 1600 to keep the panel at
  * ≈ 800px and leave the USP band visible above the fold on a 1710 × ~985 laptop viewport.
  * The photo's min-height (720 → 800px) is only a floor for shorter copy (other markets).
+ *
+ * Line height 1.5 on the section: the design's "normal" in Poppins. Figtree's own "normal" is
+ * 1.2, which made the eyebrow, the "Se priser" link, the Trustpilot rating and the stat labels
+ * 4–6px shorter (and the link's touch target < 44px). Elements with their own leading keep it.
  */
 export function Hero({ hero }: { hero: HomePage["hero"] }) {
   return (
-    <Container as="section" gutter="surface" aria-labelledby="home-hero-title">
+    <Container as="section" gutter="surface" aria-labelledby="home-hero-title" className="leading-[1.5]">
       <div className="grid overflow-hidden rounded-[24px] bg-sand lg:grid-cols-[minmax(0,1.12fr)_minmax(0,1fr)]">
         <div className="flex flex-col justify-center gap-4 px-[22px] pt-7 pb-[30px] md:gap-0 md:px-10 md:pt-12 md:pb-14 lg:pt-[120px] lg:pr-8 lg:pb-[72px] lg:pl-14 xl:pt-[clamp(80px,calc(280px-12.5vw),120px)] xl:pb-[clamp(56px,calc(136px-5vw),72px)] xl:pl-16 2xl:pl-20">
           <Eyebrow tone="muted" className="md:mb-[22px] md:text-small md:font-semibold md:tracking-[.2em]">
@@ -24,10 +28,10 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
 
           <h1
             id="home-hero-title"
-            className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-[30px] md:text-[56px] md:leading-[1.02] md:tracking-hero lg:text-h1"
+            className="font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mb-[30px] md:text-[56px] md:leading-[1.02] md:tracking-hero lg:text-h1"
           >
             <span className="md:whitespace-nowrap">{hero.title}</span>{" "}
-            <span className="text-plum lg:block">
+            <span className="text-emphasis lg:block">
               {hero.titleAccent.map((word, i) => (
                 <Fragment key={word}>
                   {i > 0 ? " " : null}
@@ -37,7 +41,7 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
             </span>
           </h1>
 
-          <p className="text-[16px] leading-[1.7] text-muted md:mb-[34px] md:max-w-[40ch] md:text-lead md:leading-[1.75]">
+          <p className="text-[16px] leading-[1.7] text-pretty text-muted md:mb-[34px] md:max-w-[40ch] md:text-lead md:leading-[1.75]">
             <ResponsiveText mobile={hero.leadShort} desktop={hero.lead} />
           </p>
 
@@ -50,7 +54,7 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
             <ButtonLink
               href={hero.secondaryCta.href}
               variant="textLink"
-              className="max-md:h-11 max-md:border-0 max-md:pb-0 max-md:text-[15px] max-md:font-semibold max-md:text-plum max-md:hover:text-plum-deep md:relative md:after:absolute md:after:-inset-x-2 md:after:-inset-y-2.5"
+              className="max-md:h-11 max-md:border-0 max-md:pb-0 max-md:text-[15px] max-md:font-semibold max-md:text-accent max-md:hover:text-accent-deep md:relative md:after:absolute md:after:-inset-x-2 md:after:-inset-y-2.5"
             >
               {hero.secondaryCta.label}
             </ButtonLink>
@@ -68,7 +72,7 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
                 <dt className="order-2 mt-0.5 text-[12px] tracking-[1px] text-muted uppercase max-[374px]:tracking-[.5px] md:mt-1 md:text-micro md:tracking-[2px]">
                   {stat.label}
                 </dt>
-                <dd className="order-1 text-[21px] font-semibold tracking-display text-plum md:text-stat">
+                <dd className="order-1 font-heading text-[21px] tracking-display text-accent md:text-stat">
                   {stat.value}
                 </dd>
               </div>

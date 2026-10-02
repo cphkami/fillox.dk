@@ -90,11 +90,18 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
 - Behandler-links er `/booking?behandler=<slug>` (Gecko læser dem ikke; de er til statistik).
 - Kalender-id'erne sættes pr. klinik i `content/clinics.ts` → `booking: { geckoCalendarId: "12" }`
   (id'et findes i Gecko-admin; `"12.13"` for flere kalendere).
+- Kalenderens udseende (skrift, farver, knapper) er et CSS-tema, der sættes ind **i Gecko**:
+  `integrations/gecko/fillox-booking-theme.css`, vejledning i `integrations/gecko/README.md`.
+  Temaet følger hjemmesidens farver og skrifter; ændres de, skal temaet opdateres og sættes ind
+  i Gecko igen.
 
 ## Før lancering
 
 - [ ] **Gecko-kalender-id'er** på City2, Amager Centret og Frederiksberg i `content/clinics.ts`
       (`booking.geckoCalendarId`), så klinik-links vælger klinikken i kalenderen.
+- [ ] **Gecko-tema**: sæt den nye `integrations/gecko/fillox-booking-theme.css` (Figtree,
+      Poppins-overskrifter, den plum-brune farve) ind i Gecko i stedet for det gamle tema, se
+      `integrations/gecko/README.md`. Ellers er kalenderen på `/booking` stadig plum med Poppins.
 - [ ] **Copy review** — alle `// TODO: copy review` i `content/**` (tekster, der ikke står i
       designet og er skrevet i designets tone):
   - [ ] `content/layout.ts`: SEO-titel/-beskrivelse, alt-tekst på delingsbillede, skjulte
@@ -120,6 +127,10 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       der nævner Botox, er udeladt, og de seks botulinumtoksin-sider (Botox, Lip flip, Gummy
       smile, Hyperhidrose, Traptox, Botox for mænd) viser ingen kundeanmeldelser
       (`treatmentsWithoutReviews` i `content/reviews.ts`). Slå dem først til, når det er afklaret.
+- [ ] **Båndet lige over footeren** ("Støvet rosa & beige"): designets lyse bånd ("Fagligt
+      ansvarlig" på Om os, "Book tid hos …" på behandlersiderne) var i ét med den beige footer.
+      Om os bruger nu sand (`components/about/ResponsibleBand.tsx`), behandlersiderne det
+      rosa bånd. Vælg én løsning til begge sider.
 - [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
       `content/clinics.ts`), større original af Om os-billedet (`content/pages/about.ts`).

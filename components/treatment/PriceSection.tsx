@@ -8,13 +8,13 @@ export function PriceSection({ prices }: { prices: NonNullable<TreatmentView["pr
     <Container
       as="section"
       aria-labelledby={copy.sectionIds.prices}
-      className="flex flex-col gap-4 pt-2 pb-12 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start md:gap-10 md:pt-0 md:pb-fluid-96 lg:gap-fluid-64"
+      className="flex flex-col gap-4 pt-2 pb-12 leading-[1.5] md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-start md:gap-10 md:pt-0 md:pb-fluid-96 lg:gap-fluid-64"
     >
       <div className="flex flex-col gap-4 md:block">
         <Eyebrow className="md:mb-3.5">{prices.eyebrow}</Eyebrow>
         <h2
           id={copy.sectionIds.prices}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-4 md:text-[40px] md:leading-[1.1] xl:text-h2"
+          className="font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-4 md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {prices.title}
         </h2>
@@ -30,7 +30,8 @@ export function PriceSection({ prices }: { prices: NonNullable<TreatmentView["pr
             <div
               key={`${item.label}-${i}`}
               // 16px rows and a 14px note on mobile too (the design's 15 / 13, raised to the
-              // body / small-text minimums).
+              // body / small-text minimums). Line height 1.5 from the section (Poppins' "normal"):
+              // 55 / 57px rows, a wrapped label 24px per line, as the /priser rows.
               className="flex justify-between gap-3 border-t border-line py-[15px] text-body last:border-b md:py-4"
             >
               <dt>

@@ -70,7 +70,7 @@ const categoryHref = (slug: TreatmentCategory["slug"]) => `${routes.treatments}#
 /**
  * Desktop "Behandlinger" mega menu (the owner's design v2, design-reference/mega-menu-v2.webp):
  * four short columns with the most booked treatments of a category, "For mænd" as a tag under
- * them, and a plum panel for visitors who are unsure what to choose. The mobile menu lists every
+ * them, and a rose band panel for visitors who are unsure what to choose. The mobile menu lists every
  * category instead (treatmentCategories).
  */
 export const megaMenu: MegaMenuContent = {

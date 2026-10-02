@@ -104,7 +104,7 @@ export function PractitionerCard({
       <div className={cn("flex flex-1 flex-col gap-1.5 px-2.5 pt-4 md:p-0", featured ? "md:block xl:pl-6" : "md:gap-0")}>
         <Heading
           className={cn(
-            "text-[22px] font-semibold tracking-display text-plum",
+            "font-heading text-[22px] tracking-display text-accent",
             featured
               ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px] xl:mb-fluid-6/10 xl:text-h2"
               : "md:mt-[22px] md:mb-1 md:text-[24px] xl:text-h3-md",
@@ -129,11 +129,14 @@ export function PractitionerCard({
           <Link
             href={href}
             className={cn(
-              "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-plum transition-colors hover:text-plum-deep",
+              "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-accent transition-colors hover:text-accent-deep",
               "after:absolute after:inset-0 after:rounded-[24px]",
               "md:h-auto md:border-b md:pb-[3px] md:text-ui-sm md:font-normal",
-              // 6om: the featured link is an ink inline-block; the grid cards use an inline plum link.
-              featured ? "md:inline-block md:border-ink md:text-ink md:hover:text-plum" : "md:inline md:border-plum",
+              // 6om: the featured link is an ink inline-block; the grid cards use an inline accent link.
+              // Both underlines are the deep bronze of the text links (Button textLink).
+              featured
+                ? "md:inline-block md:border-rule-strong md:text-ink md:hover:border-accent md:hover:text-accent"
+                : "md:inline md:border-rule-strong md:hover:border-accent-deep",
             )}
           >
             {label}

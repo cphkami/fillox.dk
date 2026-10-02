@@ -22,7 +22,8 @@ in `README.md` → "Rebranding til fillox.no".
   before using an API you're unsure of: this version has breaking changes
   (for example, `params` is a Promise in pages and `generateMetadata`).
 - Tailwind CSS v4 (`@theme` tokens in `app/globals.css`).
-- Poppins via `next/font/google`.
+- Fonts via `next/font/google` (`app/layout.tsx`): Figtree (variable) for running text and UI,
+  Poppins 500 for headings only (see "Design tokens" → "Typography").
 - `next/image` for all photos.
 - Static generation for every route (`generateStaticParams` for dynamic routes).
 - Deploy target: Netlify (`netlify.toml`).
@@ -71,8 +72,8 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | `/` | `6a` / `mf` |
 | (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
-| `/om-os` | `6om` / `mo` |
-| `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example) |
+| `/om-os` | `6om` / `mo`. "Støvet rosa & beige": the closing "Fagligt ansvarlig" band (the design's powder, desktop only) is `sand` like the hero panel, because the secondary beige read as one block with the footer right under it (the page already has a rose band higher up). The practitioner pages solve the same case with the rose `band`; open for the owner to pick one (README → "Før lancering") |
+| `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). "Støvet rosa & beige": the name (H1) takes `text-emphasis`; the closing "Book tid hos …" band (the design's powder) is the rose `band`, because the secondary beige read as one block with the footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
 | `/behandlinger/[slug]` | template `6c`, Botox `6bx` / Lip filler `mb` |
@@ -153,37 +154,147 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   keep their space but stay `invisible` until hydration. Tab order is slide link → pause →
   previous → dots → next (controls below the quote, as designed); focus inside pauses the
   rotation, so the review never changes before a keyboard user reaches pause (WCAG 2.2.2).
-  Props: `surface` (`light`, `plum`, `plum-lg` = white card below 1024px, plum band from
-  1024px; the home column carries `data-surface="plum-lg"` so the link under the rotator gets
-  the powder focus ring too), `size` (`large` pull quote, `compact` card), `align`, `valign`
+  Props: `surface` (`light`, `band` = a rose band, `band-lg` = white card below 1024px, rose
+  band from 1024px; the home column carries `data-surface="band-lg"` so the link under the
+  rotator gets the band's text selection too),
+  `size` (`large` pull quote in the heading font, `compact` card text in Figtree), `align`, `valign`
   (`start` on practitioner profiles: shorter reviews sit under the heading). Dates are
   formatted on the server (`lib/reviews.ts` → `toReviewSlides`, site.locale).
-- **Placements** — home testimonial (set `home`, plum split panel), practitioner profiles
+- **Placements** — home testimonial (set `home`, rose split panel), practitioner profiles
   (`components/practitioner/ReviewSection`), treatment pages after the results except the
   Botox pages (`components/treatment/ReviewsSection`, copy in `content/pages/treatments.ts` →
   `reviews`).
   Each has "Se alle anmeldelser på Trustpilot →" (`AllReviewsLink`). No review structured data:
   reviews a business shows about itself are not eligible for review rich results.
 
-## Design tokens (from the design's mobile spec + brand kit)
+## Design tokens ("Støvet rosa & beige", 2026-10)
+
+The design was drawn in plum (`#6B3840`) with Poppins everywhere. In October 2026 the owner chose,
+from the /lab experiment, **Figtree** as the site font with **Poppins only for headings** ("not as
+thick, not as black") and the palette **"Støvet rosa & beige"** (lab palette `stoevet-rosa`, with a
+lighter footer beige than the lab's Senses `#B19784`). Layout, components and copy are unchanged.
+Every value lives in `app/globals.css` (`@theme`); components use the semantic names below and
+never a hex value. All text pairs are WCAG AA (ratios in the table).
+
+**Light surfaces and text**
 
 | Token | Value | Use |
 |---|---|---|
-| `plum` | `#6B3840` | primary: buttons, links, names, dark bands |
-| `cream` | `#F7F2EA` | page base |
-| `sand` | `#EFE6DC` | surfaces (hero panel, cards) |
-| `powder` | `#E8D3CE` | secondary surface, buttons on plum |
-| `blush` | `#EFE2DE` | body text on plum |
-| `ink` | `#242724` | headings / body text |
+| `cream` | `#F7F2EA` | page base (krem) |
+| `sand` | `#EFE6DC` | surfaces (hero panel, cards, icon circles) |
+| `secondary` | `#E4D6CB` | secondary surface (team panel, hovered arrow circles); was powder `#E8D3CE` |
+| `line` | `#E2D5C5` | hairlines on light |
+| `rule` | `#BAA586` | bronze dividers (hero stats). Decorative only (2.1:1), never text |
+| `rule-strong` | `#8A7455` | deep bronze: active nav underline, text-link underlines (`textLink`): 4.0:1 on cream |
+| `ink` | `#242724` | body text |
+| `heading` | `#3B2A28` | headings (espresso): 12.2:1 on cream, 11.0 on sand |
 | `muted` | `#5E4F4D` | secondary text |
-| `line` | `#E3D6CC` | hairlines on light |
-| `rule` | `#D9BFB8` | dividers in hero stats |
 | `taupe` | `#7A624F` | prices and price notes, the /priser hero eyebrow (design `#B39C89`, darkened to pass WCAG AA: 4.62:1 on sand) |
 | `placeholder` | `#746A67` | input placeholders, the only placeholder colour (design `#8A7F7C`, darkened: 4.71:1 on cream) |
+| `emphasis` | `#94544A` | the H1's accent words (large text: 4.7:1 on sand, 5.2 on cream) |
+| `selection` | `#E2C2B9` | text selection on light (ink on it 9.1:1) |
 
-- Typography (Poppins): desktop H1 64/1.02 SemiBold, -0.035em; H2 40/1.1 SemiBold, -0.03em;
-  mobile H1 36/1.08, H2 28/1.15, body 16/1.7 (articles 17), eyebrow 12 Bold uppercase +2px.
-  From 1280px these grow with the type scale ("Wide layout" → "Type scale").
+**Accent** (the Fillox Academy plum-brown; was plum): buttons, links, eyebrows, numbers, checkmarks,
+the focus ring, on light surfaces AND on the rose bands and the footer.
+
+| Token | Value | Use |
+|---|---|---|
+| `accent` | `#543232` | 10.0:1 on cream, 9.1 on sand, 5.0 on the band, 7.1 on the footer |
+| `accent-deep` | `#422424` | hover of accent buttons / links |
+| `on-accent` | `#F7F2EA` | text on accent (10.0:1; 12.5 on accent-deep) |
+
+**Band** (dusty rose; every surface that was a plum band: USP band, bestseller list, review panels,
+the mega menu's panel, "Om behandlingen" / "Klar til at booke?" bands, price boxes, clinics USP strip …)
+
+| Token | Value | Use |
+|---|---|---|
+| `band` | `#D9A192` | the surface |
+| `on-band` | `#33211D` | headings, names, the quote, links: 6.9:1 |
+| `band-body` | `#3A2622` | running text: 6.4:1 |
+| `band-accent` | `#4F2A27` | eyebrows, prices, stars, hours, link hover: 5.6:1 |
+| `band-fine` | `#3F2824` | fine print: 6.1:1 |
+| `band-line` | `rgb(51 33 29 / .2)` | dividers (decorative) |
+| `band-highlight` | `#FBF8F4` | hovered / focused bestseller row, text selection on bands |
+| `band-card` / `band-card-hover` | white 30% / 45% | translucent cards on the band |
+
+**Footer** (a light warm beige; tune it with `--color-footer` alone, its text stays ≥ 7:1)
+
+| Token | Value | Use |
+|---|---|---|
+| `footer` | `#DCCBBB` | the footer block (chosen over `#D4C2B1` and `#E4D6CA`: clearly lighter than Senses `#B19784`, still a distinct beige next to cream / sand) |
+| `on-footer` | `#33211D` | clinic names, contact values, links: 9.7:1 |
+| `footer-body` | `#3A2622` | running text, legal: 9.0:1 |
+| `footer-accent` | `#4F2A27` | uppercase labels, hours, link hover: 7.9:1 |
+| `footer-line` | `rgb(51 33 29 / .18)` | dividers (decorative) |
+| `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail cards |
+
+The footer shows the black logo (`site.brand.logoDark`, as the header) and the `primary` button.
+
+**Removed names.** The production names `plum`, `plum-deep`, `powder` and `blush`, the `light` /
+`lightInk` button variants, `tone="light"` / `"powder"` / `"plum"` on the primitives,
+`surface="plum" | "plum-lg"` on the rotator and `data-surface="plum" | "plum-lg"` no longer exist:
+every use was converted (recipe below), so a leftover fails the type check or renders no colour.
+
+**Surfaces and focus.** The focus ring is the accent on every surface (≥ 5:1 everywhere), so no
+surface needs a ring of its own. `data-surface` now only marks where text selection switches to the
+band's highlight: `data-surface="band"` on a band, `"band-lg"` on an element that is a band from
+1024px only, `"band-md"` on a sand card that turns into a band from 768px (the band highlight is
+only 1.17:1 on sand, so the card keeps the light rose selection), `"footer"` on the footer block.
+
+**Typography**
+
+- Figtree (`font-sans`, the body default): running text, nav, buttons, eyebrows, labels, prices,
+  forms, menus (dropdowns, mega-menu links, mobile menu rows), footer — everything that is not a
+  heading. Weights 400 / 500 / 600 / 700 as before (one variable file). Body text stays `ink` /
+  `muted`.
+- Poppins 500 (`font-heading`: family + weight 500, weight synthesis off, so a leftover
+  `font-semibold` still renders 500): H1, H2, H3, hero stat numbers, card / column titles
+  (bestsellers, team names, clinic names, price-card titles, blog card titles), the mega menu's
+  heading, the big review quote. Colour `text-heading` on light, `text-on-band` on a band. Only
+  weight 500 of Poppins is loaded.
+- Tracking: `tracking-hero` -0.025em (H1), `tracking-display` -0.02em (H2, H3, card titles)
+  (production -0.035 / -0.03em).
+- Sizes: desktop H1 64/1.02, H2 40/1.1; mobile H1 36/1.08, H2 28/1.15, body 16/1.7 (articles
+  17), eyebrow 12 Bold uppercase +2px. From 1280px these grow with the type scale ("Wide layout"
+  → "Type scale").
+- Default line height: `body` sets `line-height: 1.5` (`app/globals.css`). The design leaves most
+  line heights at "normal", which in Poppins is 1.5; Figtree's "normal" is only 1.2, so without
+  it every nav item, menu row, price row and band would be shorter than designed. Text that sets
+  its own `leading-*` is unaffected. (Some sections still carry an explicit `leading-[1.5]` from
+  before this default: redundant, harmless.)
+- Arrows (→ ←) come from the system's Lucida Grande in both stacks ("Fillox Arrows").
+
+**Recipe (pages and components)**: how production's classes were converted (use it for a
+component ported from an older branch or from fillox-no).
+
+| Production | Now |
+|---|---|
+| heading `font-semibold text-ink` (+ `tracking-display` / `tracking-hero`) | `font-heading text-heading` (keep the tracking token; drop `font-semibold`) |
+| heading on a band `font-semibold text-cream` | `font-heading text-on-band` |
+| `SectionHeading tone="light"` | `tone="band"` |
+| `bg-plum` band + `data-surface="plum"` | `bg-band` + `data-surface="band"` |
+| `text-cream` on a band (names, links, the quote) | `text-on-band` |
+| `text-blush` on a band | `text-band-body` |
+| `text-powder` on a band (eyebrows, prices, stars, hours) | `text-band-accent` (`Eyebrow tone="band"`) |
+| `text-rule` on a band | `text-band-fine` |
+| `border-cream/18`, `border-[rgba(243,237,228,.16)]` on a band | `border-band-line` |
+| `bg-cream/8`, `bg-cream/12` cards on a band | `bg-band-card`, `hover:bg-band-card-hover` |
+| `hover:bg-powder` row on a band | `hover:bg-band-highlight` |
+| `variant="light"` / `"lightInk"` button on a band | `variant="primary"` (the default) |
+| `ArrowLink` / `AllReviewsLink tone="powder"` | `tone="band"` |
+| `TrustpilotRating tone="light"` | `tone="band"` |
+| `ReviewRotator surface="plum"` / `"plum-lg"` | `surface="band"` / `"band-lg"` |
+| `text-plum`, `border-plum`, `bg-plum` (buttons, links, numbers on light) | `text-accent`, `border-accent`, `bg-accent` |
+| `hover:bg-plum-deep`, `text-plum-deep` | `hover:bg-accent-deep`, `text-accent-deep` |
+| `text-cream` on an accent fill | `text-on-accent` |
+| `bg-powder` (secondary surface) | `bg-secondary` |
+| a powder block directly above the footer (/blog newsletter, practitioner "Book tid hos …") | `bg-band` + `data-surface="band"`, so it stays distinct from the beige footer |
+| the H1's accent words `text-plum` | `text-emphasis` |
+| `focus-visible:outline-powder` and other ring overrides | remove (the accent ring fits every surface) |
+| `border-[rgba(243,237,228,.16)]` / `bg-[rgba(243,237,228,.16)]` / `border-[#f3ede4]` on a band | `border-band-line` / `bg-band-line` |
+| `border-[rgba(243,237,228,.45)]` (arrow circle on a band) | `border-on-band/40` |
+| `shadow-[0_10px_30px_rgba(107,56,64,.10)]` | `shadow-photo` |
+
 - Shape: pill buttons (radius 100px; 52px high on mobile, secondary taps ≥ 44px),
   cards 18–24px radius, 12px margin on surfaces, 20px side margin on text (mobile).
 - Behaviour: sticky header, fullscreen mobile menu with accordions, horizontal scroll
@@ -269,7 +380,13 @@ tracking stay as they are. All tokens follow one formula, a → b:
   line identical, a wrapped heading keeps a 1.1 gap); `SectionHeading leading="normal"` does
   this.
 - Line length: body copy stays ≤ ~75 characters. `ch` max widths scale with the font
-  (`max-w-[56ch]`); article and text-page prose uses `md:max-w-[58ch]`.
+  (`max-w-[52ch]`, the `SectionHeading` intro default); article prose sets its own measure (`components/blog/ArticleBody`), text-page
+  prose uses `md:max-w-[52ch]` (see below). Figtree sets ≈ 1.42 characters per `ch` (Poppins
+  ≈ 1.29), so a Poppins-era `ch` width holds ≈ 10% more characters in Figtree (58ch ≈ 82). Re-derived so far: text pages
+  (`components/text-page`) `md:max-w-[52ch]` (≈ 74 characters, all widths ≥ 768), the /booking
+  intro `max-w-[50ch]` (≈ 71), the article body (`components/blog/ArticleBody`) paragraphs and
+  lists `md:max-w-[48ch]`, its lead `md:max-w-[43ch]` (same right edge at 19 vs 17px; ≤ 72
+  characters, all widths ≥ 768), the /blog featured excerpt `md:max-w-[50ch]` + `text-pretty`.
 - Card paddings grow at `xl` with `xl:p-fluid-N` / `xl:px-fluid-N`.
 
 ### Site chrome (components/layout)
@@ -293,11 +410,12 @@ tracking stay as they are. All tokens follow one formula, a → b:
   sits 2px under the header (dropdowns: `pt-[34px] xl:pt-fluid-35/36`).
 - Mega menu (the owner's design v2, `design-reference/mega-menu-v2.webp`, drawn on the 1180px
   canvas; copy in `content/navigation.ts` → `megaMenu`): four columns (uppercase eyebrow,
-  4 treatments, "Alle … →"), a hairline, the "For mænd" pill tag + note, and a plum panel
-  (26.5% of the width, ≥ 272px; eyebrow, heading, text, powder button pinned to the bottom)
+  4 treatments, "Alle … →"), a hairline, the "For mænd" pill tag + note, and a rose band panel
+  (`bg-band`, the design's plum panel; 26.5% of the width, ≥ 272px; eyebrow, heading, text,
+  accent button pinned to the bottom)
   flush right. It follows the type scale like the page text: links + "Alle" `text-ui-sm`
-  (always smaller than the nav), eyebrows `text-micro` +.2em, heading `text-h3`, plum text
-  `text-body-sm`, note `text-small`; links on a 2.35em pitch (the line height). Paddings
+  (always smaller than the nav), eyebrows `text-micro` +.2em, heading `text-h3` (Poppins,
+  `font-heading`), band text `text-body-sm`, note `text-small`; links on a 2.35em pitch (the line height). Paddings
   40 / 32px, 36px top and bottom, columns 32px apart (×1.2 at 1600, `*-fluid-*`). Width: the
   surface band (as in the design) up to 1280px, centred on the canvas (a full 1536px band at
   1600 left the columns half empty). Panel height: 343px at 1024–1280, 368 at 1440, 393 at 1600.
@@ -308,11 +426,19 @@ tracking stay as they are. All tokens follow one formula, a → b:
 All sizes use `text-ui` (15px below 1280). Heights below 1280 → at 1600 (without border):
 xs 44.5 → 47.5, sm 48.5 → 53.5, mdTight 50.5 → 55.5, md / xl 54.5 → 59.5, chip 44.5 → 47.5;
 lg 52 and compact 44 are fixed. Paddings grow with `xl:px-fluid-* xl:py-fluid-*`.
+Every size sets `leading-[1.5]` (Poppins' "normal" line height, which these heights were measured
+in; Figtree's is 1.2 and made every padded pill 4–6px shorter and the header 5–6px lower). With it
+the header measures 92.5px at 1024–1279 and 94 → 97.5px from 1280 (`scroll-padding-top` clears it
+by 13.5–15.5px).
 
 ### Type and UI rules (best practice; the only changes allowed below 1280)
 
 - Body text ≥ 16px (18 at 1600), line-height 1.5–1.75; headings 1.05–1.2.
 - Small text ≥ 14px where possible, never < 12px (uppercase eyebrows 12px with tracking).
+  Figtree's x-height is ≈ 9% smaller than Poppins' (0.50 vs 0.548em), so a size kept from the
+  design reads smaller than it did: the 13px mobile team titles (`about/TeamMemberCard`,
+  `practitioner/PractitionerCard`, `home/Team`, `practitioner/TeamRow`) look like ≈ 12px Poppins.
+  They stay 13px for now (site-wide decision; raise all four together to 14px if changed).
 - Nav 15–17px; button text ≥ 15px; buttons and chips ≥ 44px high (mobile primary 52px).
 - Form inputs 16px on mobile (no iOS zoom on focus).
 - Touch targets ≥ 44 × 44px: use `min-h-11` rows, or an invisible `after:` / `before:` hit
@@ -330,7 +456,7 @@ lg 52 and compact 44 are fixed. Paddings grow with `xl:px-fluid-* xl:py-fluid-*`
   "surface")` from `components/ui` on elements that can't be a Container. Hand-rolled
   gutters (`px-5 md:px-10 lg:px-14`, `px-3 md:px-6`) become `px-gutter` / `px-surface`.
 - The header logo, page text and footer align: text sits on the content gutter, rounded
-  bands (hero panels, plum bands, footer) on the surface margin.
+  bands (hero panels, rose bands, footer) on the surface margin.
 - Grids **fill** the canvas: `fr` columns / `flex-1`, never fixed-width items floating
   in the middle. Photos keep their proportions as they grow (`aspect-*`, or
   `h-fluid-N`), so they never turn into letterboxes. Hero split panels keep the column

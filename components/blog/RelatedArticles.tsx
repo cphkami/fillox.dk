@@ -18,7 +18,7 @@ export function RelatedArticles({ entries }: { entries: RelatedEntry[] }) {
     <Container as="section" aria-labelledby={HEADING_ID} className="pb-10 md:pt-fluid-56 md:pb-6">
       <h2
         id={HEADING_ID}
-        className="mb-4 text-[28px] leading-[1.15] font-semibold tracking-display md:mb-7 md:py-[.2em] md:text-center md:text-[32px] md:leading-[1.1] xl:mb-fluid-28 xl:text-h2-sm"
+        className="mb-4 font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-7 md:py-[.2em] md:text-center md:text-[32px] md:leading-[1.1] xl:mb-fluid-28 xl:text-h2-sm"
       >
         {copy.related.title}
       </h2>

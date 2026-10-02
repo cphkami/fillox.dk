@@ -22,6 +22,8 @@ const RESULT_PHOTO_SIZES =
  *
  * Below lg the sand panel sits on the surface margin; from lg the panel is transparent
  * and the content sits on the content gutter.
+ *
+ * Line height 1.5 on the section (the captions): the design's "normal" in Poppins; Figtree's is 1.2.
  */
 export function Results({ copy }: { copy: HomePage["results"] }) {
   return (
@@ -29,7 +31,7 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
       as="section"
       gutter="none"
       aria-labelledby="home-results-title"
-      className="px-surface lg:px-gutter"
+      className="px-surface leading-[1.5] lg:px-gutter"
     >
       <div className="rounded-[24px] bg-sand px-5 py-10 md:px-10 md:py-14 lg:bg-transparent lg:px-0 lg:pt-0 lg:pb-fluid-96">
         <SectionHeading
@@ -39,7 +41,8 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
           align="left"
           leading="normal"
           className="mb-4 lg:mb-fluid-50 lg:text-center"
-          introClassName="max-md:leading-[1.7] lg:mx-auto"
+          // 48ch, not SectionHeading's 52ch (≤ 70 characters a line in Figtree; see Bestsellers).
+          introClassName="max-md:leading-[1.7] md:max-w-[48ch] lg:mx-auto"
         />
 
         <ScrollRow
@@ -56,7 +59,7 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
                   image={item.image}
                   sizes={RESULT_PHOTO_SIZES}
                   radius="var(--photo-radius)"
-                  className="h-[280px] [--photo-radius:20px] lg:aspect-[5/6] lg:h-auto lg:shadow-[0_10px_30px_rgba(107,56,64,.10)] lg:[--photo-radius:24px]"
+                  className="h-[280px] [--photo-radius:20px] lg:aspect-[5/6] lg:h-auto lg:shadow-photo lg:[--photo-radius:24px]"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
                 />
                 <span className="mt-2 block text-[14px] text-muted lg:mt-3.5 lg:px-1.5 lg:text-body lg:italic">

@@ -21,14 +21,21 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
 }
 
 /**
- * "Mød dem, der behandler dig". Desktop (6a): powder panel, five portraits in a row,
- * "Mød hele teamet →" under the heading. Mobile (mf): horizontal scroll row on the page
- * background, link under the row.
+ * "Mød dem, der behandler dig". Desktop (6a): secondary beige panel (the design's powder), five
+ * portraits in a row, "Mød hele teamet →" under the heading. Mobile (mf): horizontal scroll row
+ * on the page background, link under the row. Names are Poppins (font-heading): accent on
+ * mobile, heading colour from lg under a 1px accent rule. On hover the name is underlined (and
+ * turns accent from lg): heading and accent are both dark browns (1.2:1 apart), so the colour
+ * change alone was barely visible.
+ *
+ * Line height 1.5 on the section: the design's "normal" in Poppins (Figtree's is 1.2). The card
+ * link has 6px of padding under the role label, so the focus ring's rounded corner (radius 18 /
+ * 20px + 3px offset) clears its first letter instead of crossing it.
  */
 export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamMember[] }) {
   return (
-    <Container as="section" gutter="surface" aria-labelledby="home-team-title">
-      <div className="flex flex-col gap-4 px-2 py-14 md:px-4 lg:gap-0 lg:rounded-[24px] lg:bg-powder lg:px-14 lg:py-fluid-84 xl:px-16 2xl:px-20">
+    <Container as="section" gutter="surface" aria-labelledby="home-team-title" className="leading-[1.5]">
+      <div className="flex flex-col gap-4 px-2 py-14 md:px-4 lg:gap-0 lg:rounded-[24px] lg:bg-secondary lg:px-14 lg:py-fluid-84 xl:px-16 2xl:px-20">
         <SectionHeading
           id="home-team-title"
           title={copy.title}
@@ -37,7 +44,7 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
           className="lg:mb-3.5 lg:text-center"
         />
 
-        <TeamLink link={copy.link} className="mb-fluid-48 text-center text-ui-sm leading-[normal] max-lg:hidden" />
+        <TeamLink link={copy.link} className="mb-fluid-48 text-center text-ui-sm leading-[1.5] max-lg:hidden" />
 
         <ScrollRow
           aria-label={copy.listLabel}
@@ -45,7 +52,7 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
         >
           {members.map((member) => (
             <li key={member.slug} className="w-[150px] flex-none snap-start lg:w-auto">
-              <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] lg:rounded-[20px]">
+              <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] pb-1.5 lg:rounded-[20px]">
                 {/* The visible name and role label the link, so the portrait is decorative here.
                     From lg the box is 268px tall (the design); from 1280px the height grows with
                     the column width to 360px on the 1600 canvas, keeping the ~0.7 portrait ratio.
@@ -60,13 +67,13 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
                 />
                 <h3
                   className={cn(
-                    "mt-2.5 text-[16px] font-semibold text-plum",
-                    "lg:mt-[18px] lg:border-t lg:border-plum lg:pt-3.5 lg:text-h4 lg:tracking-display lg:text-ink lg:group-hover:text-plum",
+                    "mt-2.5 font-heading text-[16px] text-accent decoration-1 underline-offset-4 group-hover:underline",
+                    "lg:mt-[18px] lg:border-t lg:border-accent lg:pt-3.5 lg:text-h4 lg:tracking-display lg:text-heading lg:group-hover:text-accent",
                   )}
                 >
                   {member.name}
                 </h3>
-                <p className="text-[13px] text-muted lg:mt-1 lg:text-micro lg:tracking-[2px] lg:text-plum lg:uppercase">
+                <p className="text-[13px] text-muted lg:mt-1 lg:text-micro lg:tracking-[2px] lg:text-accent lg:uppercase">
                   {member.role}
                 </p>
               </Link>

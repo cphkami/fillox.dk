@@ -14,8 +14,8 @@ import { useAriaCurrent } from "./NavLink";
 const panelPrefetch = (open: boolean) => (open ? null : false);
 
 /*
- * Menu type is fixed from 1024px up and shared by every header panel (MegaMenu too): titles
- * 16px/600, links 15px, secondary text 14px, uppercase micro labels 12px, "Se alle →" 15px/600
+ * Menu type is fixed from 1024px up and shared by every header panel (MegaMenu too), all Figtree
+ * (menus are UI text, not headings): titles 16px/600, links 15px, secondary text 14px, uppercase micro labels 12px, "Se alle →" 15px/600
  * (ArrowLink size "menu"). Frame: white, 20px radius, 12px inset, 28px text inset.
  */
 
@@ -45,15 +45,15 @@ export function ClinicsDropdown({
               aria-current={ariaCurrent(c.href)}
               className="group block rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
             >
-              <span className="block text-[16px] font-semibold text-ink transition-colors group-hover:text-plum">
+              <span className="block text-[16px] font-semibold text-ink transition-colors group-hover:text-accent">
                 {c.name}
               </span>
               {c.comingSoon ? (
-                <span className="mt-1 block text-[12px] tracking-[2px] text-plum uppercase">{c.openingNote}</span>
+                <span className="mt-1 block text-[12px] tracking-[2px] text-accent uppercase">{c.openingNote}</span>
               ) : (
                 <>
                   <span className="mt-0.5 block text-[14px] leading-[1.6] text-muted">{c.address.join(", ")}</span>
-                  <HoursSummary as="span" parts={c.hours} className="text-[14px] leading-[1.6] text-plum" />
+                  <HoursSummary as="span" parts={c.hours} className="text-[14px] leading-[1.6] text-accent" />
                 </>
               )}
             </Link>
@@ -97,7 +97,7 @@ export function LinksDropdown({
               prefetch={prefetch}
               onClick={onNavigate}
               aria-current={ariaCurrent(item.href)}
-              className="block rounded-[12px] px-4 py-2.5 text-[15px] whitespace-nowrap text-ink transition-colors hover:bg-cream hover:text-plum"
+              className="block rounded-[12px] px-4 py-2.5 text-[15px] whitespace-nowrap text-ink transition-colors hover:bg-cream hover:text-accent"
             >
               {item.label}
             </Link>
@@ -137,10 +137,10 @@ export function PricesDropdown({
                 className="group flex h-full flex-col rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
               >
                 {/* Title first in the DOM so the link's name starts with it; the eyebrow is shown on top. */}
-                <span className="mt-1 text-[16px] font-semibold text-ink transition-colors group-hover:text-plum">
+                <span className="mt-1 text-[16px] font-semibold text-ink transition-colors group-hover:text-accent">
                   {c.title}
                 </span>{" "}
-                {c.price ? <span className="mt-0.5 text-[14px] text-plum">{c.price}</span> : null}{" "}
+                {c.price ? <span className="mt-0.5 text-[14px] text-accent">{c.price}</span> : null}{" "}
                 <span className="order-first text-[12px] font-semibold tracking-[.12em] text-muted uppercase">
                   {c.eyebrow}
                 </span>
@@ -164,7 +164,7 @@ export function PricesDropdown({
         <ul className="flex flex-col gap-3 text-[14px] leading-[1.45] text-ink">
           {prices.trust.map((point) => (
             <li key={point} className="flex items-start gap-2.5">
-              <svg aria-hidden="true" viewBox="0 0 16 16" className="mt-0.5 size-4 shrink-0 text-plum">
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="mt-0.5 size-4 shrink-0 text-accent">
                 <path
                   d="M3.5 8.5l3 3 6-7"
                   fill="none"

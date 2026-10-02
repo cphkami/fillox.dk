@@ -13,26 +13,59 @@
 @source not "../integrations";
 
 /*
- * Fillox design tokens (design "Fillox Signature v2", mobile spec + brand kit).
- * Use them as Tailwind utilities: bg-plum, text-muted, border-line, bg-cream/8 …
+ * Fillox design tokens: the design "Fillox Signature v2" (mobile spec + brand kit) in the owner's
+ * palette "Støvet rosa & beige" (2026-10; ported from the /lab experiment's "stoevet-rosa").
+ * Use them as Tailwind utilities: bg-accent, text-heading, bg-band, text-on-band, border-line …
+ * Every text pair is WCAG AA (ratios below); ARCHITECTURE.md → "Design tokens" has the table.
  */
 @theme {
-  /* Brand colours */
-  --color-plum: #6b3840; /* primary: buttons, links, names, dark bands */
-  --color-plum-deep: #572d34; /* hover state of plum buttons */
-  --color-cream: #f7f2ea; /* page base */
+  /* Light surfaces */
+  --color-cream: #f7f2ea; /* page base (krem) */
   --color-sand: #efe6dc; /* surfaces: hero panel, cards, icon circles */
-  --color-powder: #e8d3ce; /* secondary surface, buttons on plum */
-  --color-blush: #efe2de; /* body text on plum */
-  --color-ink: #242724; /* headings / body text */
+  --color-secondary: #e4d6cb; /* secondary surface: team panel, hovered arrow circles (light Senses beige) */
+  --color-line: #e2d5c5; /* hairlines on light */
+  --color-rule: #baa586; /* bronze: dividers (hero stats). Decorative only: 2.1:1 on cream, never text */
+  --color-rule-strong: #8a7455; /* deep bronze: active nav underline, text-link underlines (4.0:1 on cream) */
+
+  /* Text on light */
+  --color-ink: #242724; /* body text */
+  --color-heading: #3b2a28; /* headings (espresso, softer than ink): 12.2:1 on cream, 11.0 on sand */
   --color-muted: #5e4f4d; /* secondary text */
-  --color-line: #e3d6cc; /* hairlines on light */
-  --color-rule: #d9bfb8; /* dividers in hero stats, legal text on plum */
   /* Taupe and placeholder are darkened versions of the design's #b39c89 / #8a7f7c (same hue) so
      they pass WCAG AA (4.5:1) as body-size text: taupe 4.62 on sand, 5.11 on cream, 5.69 on white;
      placeholder 4.71 on cream, 5.25 on white. */
   --color-taupe: #7a624f; /* prices and price notes, the /priser hero eyebrow */
   --color-placeholder: #746a67; /* input placeholder text (the only placeholder colour) */
+  --color-emphasis: #94544a; /* the H1's accent words (large text only: 4.7:1 on sand, 5.2 on cream) */
+
+  /* Accent: the Fillox Academy plum-brown. Buttons, links, eyebrows, numbers, focus ring, on light
+     AND on the rose bands (10.0:1 on cream, 9.1 on sand, 5.0 on band). */
+  --color-accent: #543232;
+  --color-accent-deep: #422424; /* hover of accent buttons / links */
+  --color-on-accent: #f7f2ea; /* text on accent (krem): 10.0:1, 12.5 on accent-deep */
+  --color-selection: #e2c2b9; /* text selection on light (ink on it 9.1:1) */
+
+  /* Band: dusty rose surfaces (was plum): USP band, bestseller list, review panels, mega-menu
+     panel, "Om behandlingen" / CTA bands, price boxes … Mark the element data-surface="band". */
+  --color-band: #d9a192;
+  --color-on-band: #33211d; /* headings, names, the quote, links: 6.9:1 */
+  --color-band-body: #3a2622; /* running text: 6.4:1 */
+  --color-band-accent: #4f2a27; /* eyebrows, prices, stars, hours, link hover: 5.6:1 */
+  --color-band-fine: #3f2824; /* fine print: 6.1:1 */
+  --color-band-line: rgb(51 33 29 / 0.2); /* dividers on the band (decorative) */
+  --color-band-highlight: #fbf8f4; /* hovered / focused bestseller row, text selection on bands */
+  --color-band-card: rgb(255 255 255 / 0.3); /* translucent cards on the band */
+  --color-band-card-hover: rgb(255 255 255 / 0.45);
+
+  /* Footer: a light warm beige (the owner: Senses #b19784 was far too dark). Tune the footer with
+     --color-footer alone: its text tokens are espresso and stay ≥ 7:1 on any of the candidates. */
+  --color-footer: #dccbbb;
+  --color-on-footer: #33211d; /* clinic names, contact values, links: 9.7:1 */
+  --color-footer-body: #3a2622; /* running text, legal: 9.0:1 */
+  --color-footer-accent: #4f2a27; /* labels, hours, link hover: 7.9:1 */
+  --color-footer-line: rgb(51 33 29 / 0.18); /* dividers (decorative) */
+  --color-footer-card: rgb(255 255 255 / 0.35); /* phone / e-mail cards */
+  --color-footer-card-hover: rgb(255 255 255 / 0.5);
 
   /* Trustpilot */
   --color-trustpilot: #00b67a;
@@ -41,10 +74,11 @@
   /* Shadows */
   --shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1); /* mega menu / dropdowns */
   --shadow-float: 0 10px 30px rgba(36, 39, 36, 0.18); /* floating book bar */
+  --shadow-photo: 0 10px 30px rgb(84 50 50 / 0.1); /* result photos (accent-tinted; was plum at 10%) */
 
-  /* Letter-spacing */
-  --tracking-display: -0.03em; /* H2 / card titles */
-  --tracking-hero: -0.035em; /* desktop H1 */
+  /* Letter-spacing (relaxed with the lighter 500 headings; production: -0.03em / -0.035em) */
+  --tracking-display: -0.02em; /* H2, H3, card titles */
+  --tracking-hero: -0.025em; /* desktop H1 */
   --tracking-eyebrow: 2px;
 
   /* Motion */
@@ -72,9 +106,10 @@
 }
 
 /*
- * Arrows (→ ←) are not in Poppins. next/font's metric fallback (Arial) would draw them
- * long and thin; the design gets them from the system fallback (Lucida Grande on macOS).
- * Elsewhere local() fails and the stack continues as normal.
+ * Arrows (→ ←) are drawn from the system fallback (Lucida Grande on macOS), as in the design: not
+ * in Poppins, and next/font's metric fallback (Arial) would draw them long and thin. First in
+ * both stacks, so body (Figtree) and heading arrows match. Elsewhere local() fails and the stack
+ * continues as normal.
  */
 @font-face {
   font-family: "Fillox Arrows";
@@ -89,10 +124,33 @@
   unicode-range: U+2190-21FF;
 }
 
+/*
+ * Fonts (loaded by next/font in app/layout.tsx):
+ * - Figtree (--font-figtree, variable 400–700) is the site font: running text, nav, buttons,
+ *   eyebrows, labels, prices, forms, menus, footer. Utility: font-sans (the body default).
+ * - Poppins 500 (--font-poppins) is for headings only: H1–H3, hero stat numbers, card / column
+ *   titles, the mega menu's heading, the big review quote. Utility: font-heading (family + weight
+ *   500), with text-heading (espresso) on light or text-on-band on a band.
+ * Symbol glyphs the fonts lack (▾ ★ ✕) fall through to the generic sans-serif, as in the design.
+ */
 @theme inline {
-  /* Poppins is loaded by next/font in app/layout.tsx (CSS var --font-poppins). Symbol glyphs
-     Poppins lacks (▾ ★ ✕) fall through to the generic sans-serif, exactly as in the design. */
-  --font-sans: "Fillox Arrows", var(--font-poppins), sans-serif;
+  --font-sans: "Fillox Arrows", var(--font-figtree), sans-serif;
+}
+:root {
+  --font-heading: "Fillox Arrows", var(--font-poppins), sans-serif;
+  /* The owner: "not as thick". Only this weight of Poppins is loaded. */
+  --heading-weight: 500;
+}
+
+/*
+ * Heading type: Poppins 500. Weight synthesis is off, so a leftover font-semibold / font-bold on
+ * a heading still renders the loaded 500 (never a faux bold). Colour stays separate: text-heading
+ * on light surfaces, text-on-band on bands.
+ */
+@utility font-heading {
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  font-synthesis-weight: none;
 }
 
 /*
@@ -278,31 +336,48 @@
     color: var(--color-ink);
     font-family: var(--font-sans);
     font-weight: 400;
-    /* The design sets no line-height unless stated: match the browser's "normal". */
-    line-height: normal;
+    /* The design sets no line-height unless stated, i.e. the browser's "normal" — which for the
+       design's Poppins is 1.5. Figtree's "normal" is only 1.2, so the inherited default is 1.5:
+       every row, nav item, menu and band keeps the height it had in Poppins. */
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background-color: var(--color-powder);
+    background-color: var(--color-selection);
     color: var(--color-ink);
   }
-
-  /* Visible focus ring in plum; on plum surfaces (data-surface="plum") in powder. */
-  :focus-visible {
-    outline: 2px solid var(--color-plum);
-    outline-offset: 3px;
+  /* On a rose band (data-surface="band"; "band-lg" = a band from 1024px only) and in the footer
+     the light selection would vanish: the band's near-white highlight instead. */
+  :is([data-surface="band"], [data-surface="footer"])::selection,
+  :is([data-surface="band"], [data-surface="footer"]) ::selection {
+    background-color: var(--color-band-highlight);
+    color: var(--color-on-band);
   }
-  [data-surface="plum"] :focus-visible {
-    outline-color: var(--color-powder);
-  }
-  /* White card below 1024px, plum band from 1024px (the home testimonial: rotator + link). */
   @media (width >= 64rem) {
-    [data-surface="plum-lg"] :focus-visible {
-      outline-color: var(--color-powder);
+    [data-surface="band-lg"]::selection,
+    [data-surface="band-lg"] ::selection {
+      background-color: var(--color-band-highlight);
+      color: var(--color-on-band);
     }
+  }
+  /* "band-md" = a sand card below 768px that turns into a rose band from 768px (WhyFillox,
+     FinancingBox, AboutBand): the light rose selection on the card, the band's highlight from 768. */
+  @media (width >= 48rem) {
+    [data-surface="band-md"]::selection,
+    [data-surface="band-md"] ::selection {
+      background-color: var(--color-band-highlight);
+      color: var(--color-on-band);
+    }
+  }
+
+  /* Visible focus ring in the accent on every surface: 10:1 on cream, 9:1 on sand, 5:1 on the
+     rose band, 7:1 on the footer, so the bands and the footer need no ring of their own. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
   }
 }
 

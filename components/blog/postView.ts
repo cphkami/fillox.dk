@@ -79,6 +79,6 @@ export function relatedEntries(post: BlogPost, desktopCount: number, mobileCount
  * the whole card instead of the title text.
  */
 export const cardFocusRing =
-  "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-plum has-[a:focus-visible]:outline-solid";
+  "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-3 has-[a:focus-visible]:outline-accent has-[a:focus-visible]:outline-solid";
 /** The card's title link, stretched over the whole card (the card is `relative`). */
 export const stretchedLink = "after:absolute after:inset-0 after:content-[''] focus-visible:outline-none";

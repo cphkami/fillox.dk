@@ -19,8 +19,12 @@ import { cn } from "@/lib/cn";
  *   beyond ~1.03:1 at the 1.63 zoom. From 1280px the featured block uses the team grid's
  *   column gap (--team-gap-x, set by TeamSection), so the photo lines up with the first
  *   two grid cards and the text with the last two; the bio measure widens from 50ch to
- *   58ch there so it fills more of its wider cell. Type follows the scale from 1280px
+ *   52ch there so it fills more of its wider cell (≈ 75 characters per line in Figtree, which
+ *   fits more characters into a ch than the design's Poppins: 58ch gave 85). Type follows the scale from 1280px
  *   (names 24 → 28 / 40 → 48, bio 16 → 18, title 14 → 15, link 14 → 16).
+ * - Type and colour: names are the heading font (Poppins 500) in the accent, as the design
+ *   colours them; titles, bios, quotes and links are Figtree. The quote rule and the CTA text
+ *   use the accent; the CTA underlines (from 768px) are the deep bronze of the text links.
  * - Featured photo: tom-wide.jpg is a 560px-wide portrait padded with blurred sides to
  *   1320×880, so the 1.63 zoom is the smallest that hides them in the 53:52 slot (zoom 1
  *   shows ≈ 130px of blur on each side at 1600). It stays soft on wide screens until a
@@ -29,6 +33,9 @@ import { cn } from "@/lib/cn";
  *   portrait at 4:5, capped at 440px high (the 6om crops only fit the 246×340 slot). The
  *   featured block splits 0.85fr / 1fr so its bio column keeps a readable measure.
  * - `quote` (6om spec note: "et personligt citat") renders as a small blockquote when set.
+ * - Bio and quote use `text-pretty`: Figtree's narrower glyphs left one-word last lines in the
+ *   grid cards ("resultat.", "forandre.”") at 1280–1710; Chrome and Safari now avoid them
+ *   without changing the measure or the copy.
  *
  * The whole card links to the practitioner's profile (/behandlere/<slug>). When the
  * card's CTA goes elsewhere (Dr. Tom: "Book tid hos Dr. Tom"), the name carries the
@@ -104,7 +111,7 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
       >
         <h3
           className={cn(
-            "text-[22px] font-semibold tracking-display text-plum",
+            "font-heading text-[22px] tracking-display text-accent",
             featured
               ? "md:mb-1.5 md:text-[32px] md:leading-[1.1] lg:text-[40px] xl:text-h2"
               : "md:mt-[22px] md:mb-1 md:text-[24px] xl:text-h3-md",
@@ -127,8 +134,8 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
         {member.bio ? (
           <p
             className={cn(
-              "text-[15px] leading-[1.65] text-muted md:text-body md:leading-[1.75]",
-              featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]",
+              "text-[15px] leading-[1.65] text-pretty text-muted md:text-body md:leading-[1.75]",
+              featured && "md:mb-[18px] md:max-w-[50ch] xl:max-w-[52ch]",
             )}
           >
             <ResponsiveText mobile={member.bioShort} desktop={member.bio} />
@@ -137,8 +144,8 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
         {member.quote ? (
           <blockquote
             className={cn(
-              "mt-1.5 border-l-2 border-plum pl-3 text-[15px] leading-[1.6] font-medium text-ink md:text-body",
-              featured ? "md:mt-0 md:mb-[18px] md:max-w-[50ch] xl:max-w-[58ch]" : "md:mt-3.5",
+              "mt-1.5 border-l-2 border-accent pl-3 text-[15px] leading-[1.6] font-medium text-pretty text-ink md:text-body",
+              featured ? "md:mt-0 md:mb-[18px] md:max-w-[50ch] xl:max-w-[52ch]" : "md:mt-3.5",
             )}
           >
             <p>{member.quote}</p>
@@ -148,10 +155,15 @@ export function TeamMemberCard({ member, featured = false }: { member: TeamMembe
           <Link
             href={cta.href}
             className={cn(
-              "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-plum transition-colors hover:text-plum-deep",
+              "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-accent transition-colors hover:text-accent-deep",
               "md:h-auto md:border-b md:pb-[3px] md:text-ui-sm md:font-normal",
-              // 6om: Dr. Tom's link is an ink inline-block; the grid cards use an inline plum span.
-              featured ? "md:inline-block md:border-ink md:text-ink md:hover:text-plum" : "md:inline md:border-plum",
+              // 6om: Dr. Tom's link is an ink inline-block (the site's text link: deep-bronze
+              // underline, accent on hover); the grid cards use an inline accent link. Both
+              // underlines are the deep bronze of the text links (Button textLink), as on
+              // /behandlere (PractitionerCard); the grid-card underline goes accent-deep on hover.
+              featured
+                ? "md:inline-block md:border-rule-strong md:text-ink md:hover:border-accent md:hover:text-accent"
+                : "md:inline md:border-rule-strong md:hover:border-accent-deep",
               // A separate CTA (Dr. Tom) gets an invisible 44px hit area from 768px, where the link
               // itself is only as tall as its text.
               ctaIsProfile ? stretched : "relative z-10 md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3",

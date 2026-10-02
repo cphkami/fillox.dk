@@ -33,7 +33,7 @@ export const homePage = {
     eyebrow: "Æstetisk medicin",
     /** H1 part 1 (ink). Desktop keeps it on one line. */
     title: "Fremhæv din",
-    /** H1 part 2 (plum). Desktop puts each entry on its own line; mobile runs them together. */
+    /** H1 part 2 (the emphasis colour). Desktop puts each entry on its own line; mobile runs them together. */
     titleAccent: ["naturlige", "skønhed"],
     lead: "Hos Fillox får du trygge, professionelle behandlinger, udført af læger og sygeplejersker og tilpasset din egen anatomi.",
     leadShort: "Trygge, professionelle behandlinger, udført af læger og sygeplejersker og tilpasset din egen anatomi.",
@@ -52,7 +52,7 @@ export const homePage = {
     ] satisfies Stat[],
   },
 
-  /** Plum band under the hero. Mobile (mf) shows the titles only. */
+  /** Rose band under the hero. Mobile (mf) shows the titles only. */
   usps: [
     { title: "Erfarne behandlere", text: "Kun læger og sygeplejersker" },
     { title: "Naturlige resultater", text: "Din egen anatomi som udgangspunkt" },

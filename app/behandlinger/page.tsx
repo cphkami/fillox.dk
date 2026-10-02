@@ -18,11 +18,12 @@ export const metadata: Metadata = pageMetadata(copy.meta, PATH);
 
 /**
  * /behandlinger — every treatment, grouped by category (no dedicated design; built from
- * the 6c hero panel, the blog-card style and the closing plum band). Each category
+ * the 6c hero panel, the blog-card style and the closing rose band). Each category
  * section has id="<categorySlug>" for the menu links (/behandlinger#fillers …).
  * Cards: 1 column (mobile), 2 (tablet; an odd last card spans both), 3 from lg. A category
  * with 1, 2 or 4 treatments would leave a 3-column row half empty, so from lg its heading
  * moves into the first column(s) of the same grid and the cards fill the rest.
+ * `leading-[1.5]` on the containers: Poppins' "normal" (Figtree's is 1.2), as on the treatment pages.
  */
 export default function TreatmentsOverviewPage() {
   const categories = treatmentCategories
@@ -31,10 +32,10 @@ export default function TreatmentsOverviewPage() {
 
   return (
     <>
-      <Container gutter="none" className="md:px-surface">
+      <Container gutter="none" className="leading-[1.5] md:px-surface">
         <div className="flex flex-col gap-4 px-5 pt-5 pb-4 md:grid md:grid-cols-1 md:gap-0 md:overflow-hidden md:rounded-[24px] md:bg-sand md:p-0 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-4 md:justify-center md:gap-0 md:px-10 md:py-14 lg:px-14 lg:py-fluid-72 xl:px-16 2xl:px-20">
-            <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-[22px] md:text-h1 md:leading-[1.02]">
+            <h1 className="font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mb-[22px] md:text-h1 md:leading-[1.02] md:tracking-hero">
               {copy.title}
             </h1>
             <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[48ch] md:text-lead md:leading-[1.75]">
@@ -68,7 +69,7 @@ export default function TreatmentsOverviewPage() {
         </div>
       </Container>
 
-      <Container className="pt-8 pb-9 md:pt-fluid-84 md:pb-fluid-60">
+      <Container className="pt-8 pb-9 leading-[1.5] md:pt-fluid-84 md:pb-fluid-60">
         <div className="flex flex-col gap-14 md:gap-fluid-96">
           {categories.map(({ category, items }) => {
             const card = priceCards.find((c) => c.categorySlug === category.slug);
@@ -94,12 +95,12 @@ export default function TreatmentsOverviewPage() {
                   <div>
                     <h2
                       id={`${category.slug}-title`}
-                      className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
+                      className="font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
                     >
                       {category.name}
                     </h2>
                     {intro ? (
-                      <p className="max-w-[56ch] text-body leading-[1.7] text-muted md:leading-[1.75]">{intro}</p>
+                      <p className="max-w-[52ch] text-body leading-[1.7] text-muted md:leading-[1.75]">{intro}</p>
                     ) : null}
                   </div>
                   {card ? (

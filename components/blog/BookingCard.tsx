@@ -30,10 +30,11 @@ export function BookingCard({ treatmentSlug, eyebrow, note, hideNoteOnMobile }: 
     >
       <div>
         <Eyebrow className="md:mb-1.5">{eyebrow}</Eyebrow>
-        <p className="text-lead font-semibold max-md:mt-3">
-          {name}
+        {/* The card's title: the treatment in the heading face, its price in the body face. */}
+        <p className="text-lead max-md:mt-3">
+          <span className="font-heading tracking-display text-heading">{name}</span>
           {treatment.priceFrom ? (
-            <span className="font-normal text-muted">
+            <span className="text-muted">
               {blogPage.separator}
               {formatPriceFrom(treatment.priceFrom)}
             </span>

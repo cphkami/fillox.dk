@@ -51,7 +51,7 @@ export function MobileBookBar({ name, price, cta, hideAtId }: MobileBookBarProps
       data-mobile-book-bar=""
       inert={hidden}
       className={cn(
-        "fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 transition-[translate,opacity] duration-300 md:hidden",
+        "fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 leading-[1.5] transition-[translate,opacity] duration-300 md:hidden",
         hidden && "pointer-events-none translate-y-[calc(100%+20px)] opacity-0",
       )}
     >

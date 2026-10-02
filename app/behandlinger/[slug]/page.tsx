@@ -35,6 +35,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const BOOKING_BAND_ID = "book";
 
+/**
+ * Every section root in components/treatment sets `leading-[1.5]`: Poppins' "normal", which the
+ * design's unset line heights assume (Figtree's "normal" is 1.2). Text without its own leading
+ * (price rows, "Godt til", hero facts, eyebrows, captions) keeps the design's spacing and the
+ * 1.5 body minimum; headings, intros and FAQ answers set their own.
+ */
 export default async function TreatmentPage({ params }: Props) {
   const { slug } = await params;
   const treatment = getTreatment(slug);

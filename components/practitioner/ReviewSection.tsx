@@ -23,7 +23,7 @@ export function ReviewSection({ selection, name, titleId }: ReviewSectionProps) 
   return (
     <Container gutter="surface">
       <div className="flex flex-col items-center rounded-[24px] bg-white px-[22px] py-7 text-center md:bg-transparent md:px-8 md:py-fluid-72">
-        <h2 id={titleId} className="mb-4 text-micro font-bold tracking-[2px] text-plum uppercase md:mb-6">
+        <h2 id={titleId} className="mb-4 text-micro font-bold tracking-[2px] text-accent uppercase md:mb-6">
           {selection.allSpecific ? copy.title(name) : copy.generalTitle}
         </h2>
         <ReviewRotator

@@ -7,8 +7,8 @@ import { trustpilotSummary } from "@/lib/reviews";
 type TrustpilotRatingProps = {
   /** "md" = 20px squares (desktop), "sm" = 18px squares (mobile). */
   size?: "sm" | "md";
-  /** "light" = cream label for plum surfaces. */
-  tone?: "ink" | "light";
+  /** "ink" on light surfaces, "band" on a rose band. */
+  tone?: "ink" | "band";
   /** Score 0–5; defaults to site.trustpilot.score. Stars are shown in half steps. */
   score?: number;
   /** Label before the stars; defaults to ui.trustpilotLabel ("Fremragende"). */
@@ -20,6 +20,9 @@ type TrustpilotRatingProps = {
   /** Use for font-size / alignment, e.g. "max-md:text-[13px] justify-center". Default text 14px (`text-small`, 15 at 1600). */
   className?: string;
 };
+
+const textTones = { ink: "text-ink", band: "text-on-band" } as const;
+const summaryTones = { ink: "text-muted", band: "text-band-body" } as const;
 
 /**
  * "Fremragende ★★★★½" — label + five green Trustpilot squares, last one partly filled. The
@@ -66,15 +69,11 @@ export function TrustpilotRating({
           );
         })}
       </span>
-      {visibleSummary ? <span className={tone === "light" ? "text-blush" : "text-muted"}>{visibleSummary}</span> : null}
+      {visibleSummary ? <span className={summaryTones[tone]}>{visibleSummary}</span> : null}
     </>
   );
 
-  const classes = cn(
-    "flex flex-wrap items-center gap-x-2.5 gap-y-1 text-small",
-    tone === "light" ? "text-cream" : "text-ink",
-    className,
-  );
+  const classes = cn("flex flex-wrap items-center gap-x-2.5 gap-y-1 text-small", textTones[tone], className);
 
   if (linked) {
     return (

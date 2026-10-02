@@ -45,7 +45,7 @@ function Half({ image, label, tone }: { image: ImageRef; label: string; tone: "b
         aria-hidden="true"
         className={cn(
           "absolute top-2 left-2 rounded-full bg-cream px-2.5 py-[3px] text-micro font-semibold text-ink md:top-3.5 md:left-3.5 md:px-3.5 md:py-1.5 md:tracking-[.12em] md:uppercase",
-          tone === "after" && "md:bg-plum md:text-cream",
+          tone === "after" && "md:bg-accent md:text-on-accent",
         )}
       >
         {label}
@@ -62,7 +62,7 @@ function Half({ image, label, tone }: { image: ImageRef; label: string; tone: "b
  */
 export function ResultsSection({ results }: { results: NonNullable<TreatmentView["results"]> }) {
   return (
-    <Container as="section" aria-labelledby={copy.sectionIds.results} className="pt-2 pb-12 md:pt-0 md:pb-fluid-96">
+    <Container as="section" aria-labelledby={copy.sectionIds.results} className="pt-2 pb-12 leading-[1.5] md:pt-0 md:pb-fluid-96">
       <SectionHeading
         id={copy.sectionIds.results}
         title={results.title}

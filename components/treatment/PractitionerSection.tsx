@@ -47,7 +47,7 @@ function photoSizes(image: ImageRef): string {
 
 /**
  * "Din behandler" (6c/6bx: photo left, heading + text + quote + "Mød hele teamet →";
- * mb: photo, name in plum, title, short text and a full-width "Book hos …" button).
+ * mb: photo, name in the accent, title, short text and a full-width "Book hos …" button).
  * Wide screens: the 1 : 1.4 split fills the canvas and the photo grows 520 → 640px tall
  * (≈ the design's 418 × 520 portrait proportion at every width).
  */
@@ -56,7 +56,7 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
     <Container
       as="section"
       aria-labelledby={copy.sectionIds.practitioner}
-      className="flex flex-col gap-4 pt-2 pb-14 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-10 md:pt-0 md:pb-fluid-84 lg:gap-fluid-64"
+      className="flex flex-col gap-4 pt-2 pb-14 leading-[1.5] md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-10 md:pt-0 md:pb-fluid-84 lg:gap-fluid-64"
     >
       <Photo
         image={p.image}
@@ -68,7 +68,7 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
         <Eyebrow className="md:mb-[18px]">{copy.practitioner.eyebrow}</Eyebrow>
         <h2
           id={copy.sectionIds.practitioner}
-          className="text-[28px] font-semibold tracking-display text-plum md:mb-4 md:text-[32px] md:leading-[1.1] md:text-ink lg:text-[40px] xl:text-h2"
+          className="font-heading text-[28px] tracking-display text-accent md:mb-4 md:text-[32px] md:leading-[1.1] md:text-heading lg:text-[40px] xl:text-h2"
         >
           <ResponsiveText mobile={p.member.name} desktop={p.heading} />
         </h2>
@@ -77,14 +77,14 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
           <ResponsiveText mobile={p.mobileText} desktop={p.text} />
         </p>
         {p.quote ? (
-          <blockquote className="mb-[22px] text-h3 leading-[1.4] font-semibold tracking-display text-plum max-md:hidden">
+          <blockquote className="mb-[22px] font-heading text-h3 leading-[1.4] tracking-display text-accent max-md:hidden">
             <p>{copy.practitioner.quote(p.quote)}</p>
           </blockquote>
         ) : null}
         <Link
           href={p.link.href}
           // Invisible hit area (12px above and below) as on ArrowLink: a 44px target, the line doesn't move.
-          className="relative inline-block border-b border-ink pb-[3px] text-ui-sm text-ink transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:border-plum hover:text-plum max-md:hidden"
+          className="relative inline-block border-b border-rule-strong pb-[3px] text-ui-sm text-ink transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:border-accent hover:text-accent max-md:hidden"
         >
           {p.link.label} <span aria-hidden="true">→</span>
         </Link>

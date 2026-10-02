@@ -3,17 +3,16 @@ import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Pill buttons from the design (radius 100px).
+ * Pill buttons from the design (radius 100px), in the "Støvet rosa & beige" palette.
  *
- * - primary   plum bg + cream text (one per section on light surfaces)
- * - light     powder bg + plum text, semibold (the CTA on plum surfaces)
- * - lightInk  powder bg + ink text, semibold (6c/6bx book band "Book Botox · fra 799 kr", 6b "Book tid")
- * - outline   1px plum border + plum text
+ * - primary   accent (plum-brown) bg + krem text: THE button, on light surfaces, on the rose bands
+ *             and in the footer alike (krem on accent 10:1; accent on the band 5:1)
+ * - outline   1px accent border + accent text
  * - outlineInk 1px ink border + ink text
  * - white     white bg + 1px line border (chips, secondary on sand)
- * - textLink  underlined text link with a 1px border-bottom ("Se priser")
+ * - textLink  ink text over a 1px deep-bronze underline ("Se priser")
  */
-export type ButtonVariant = "primary" | "light" | "lightInk" | "outline" | "outlineInk" | "white" | "textLink";
+export type ButtonVariant = "primary" | "outline" | "outlineInk" | "white" | "textLink";
 
 /**
  * Padding is vertical × horizontal (from the design sections). Every size uses `text-ui`
@@ -53,24 +52,31 @@ const base =
 const forcedColorsBorder = "forced-colors:border forced-colors:border-[color:ButtonText]";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: `rounded-full bg-plum text-cream hover:bg-plum-deep ${forcedColorsBorder}`,
-  light: `rounded-full bg-powder font-semibold text-plum hover:bg-cream ${forcedColorsBorder}`,
-  lightInk: `rounded-full bg-powder font-semibold text-ink hover:bg-cream ${forcedColorsBorder}`,
-  outline: "rounded-full border border-plum text-plum hover:bg-plum hover:text-cream",
+  primary: `rounded-full bg-accent text-on-accent hover:bg-accent-deep ${forcedColorsBorder}`,
+  outline: "rounded-full border border-accent text-accent hover:bg-accent hover:text-on-accent",
   outlineInk: "rounded-full border border-ink text-ink hover:bg-ink hover:text-cream",
-  white: "rounded-full border border-line bg-white text-ink hover:border-plum hover:text-plum",
-  textLink: "border-b border-current pb-[3px] text-ui text-ink hover:text-plum",
+  white: "rounded-full border border-line bg-white text-ink hover:border-accent hover:text-accent",
+  textLink:
+    "border-b border-rule-strong pb-[3px] text-ui text-ink hover:border-accent hover:text-accent",
 };
 
+/**
+ * Every size sets `leading-[1.5]`: the padded heights above were measured in Poppins, whose
+ * "normal" line height is 1.5 (1050 + 350 + 100 gap on 1000 units). Figtree's is 1.2, which
+ * made every padded pill 4–6px shorter (and the desktop header 5–6px lower). On the fixed
+ * heights (lg, compact, mobile chip) it changes nothing, but it keeps the documented height
+ * where a page turns one into a padded pill (`lg:h-auto lg:py-4`: footer "Book tid", home
+ * "Se alle behandlinger"). textLink takes no size, so it keeps the surrounding line height.
+ */
 const sizes: Record<ButtonSize, string> = {
-  xs: "px-[22px] py-[11px] text-ui xl:px-fluid-22/24",
-  sm: "px-[30px] py-[13px] text-ui xl:px-fluid-30/34 xl:py-fluid-13/14",
-  mdTight: "px-[30px] py-[14px] text-ui xl:px-fluid-30/34 xl:py-fluid-14/15",
-  md: "px-9 py-4 text-ui xl:px-fluid-36/40 xl:py-fluid-16/17",
-  xl: "px-[42px] py-4 text-ui xl:px-fluid-42/48 xl:py-fluid-16/17",
-  chip: "px-5 py-[11px] text-ui max-md:h-11 max-md:px-[18px] max-md:py-0 xl:px-fluid-20/22",
-  lg: "h-[52px] px-[26px] text-ui",
-  compact: "h-11 px-5 text-ui",
+  xs: "px-[22px] py-[11px] text-ui leading-[1.5] xl:px-fluid-22/24",
+  sm: "px-[30px] py-[13px] text-ui leading-[1.5] xl:px-fluid-30/34 xl:py-fluid-13/14",
+  mdTight: "px-[30px] py-[14px] text-ui leading-[1.5] xl:px-fluid-30/34 xl:py-fluid-14/15",
+  md: "px-9 py-4 text-ui leading-[1.5] xl:px-fluid-36/40 xl:py-fluid-16/17",
+  xl: "px-[42px] py-4 text-ui leading-[1.5] xl:px-fluid-42/48 xl:py-fluid-16/17",
+  chip: "px-5 py-[11px] text-ui leading-[1.5] max-md:h-11 max-md:px-[18px] max-md:py-0 xl:px-fluid-20/22",
+  lg: "h-[52px] px-[26px] text-ui leading-[1.5]",
+  compact: "h-11 px-5 text-ui leading-[1.5]",
 };
 
 const mobileSizes: Record<NonNullable<ButtonStyleProps["mobileSize"]>, string> = {
@@ -81,7 +87,7 @@ const mobileSizes: Record<NonNullable<ButtonStyleProps["mobileSize"]>, string> =
 
 /**
  * The pressed / current chip in Windows high contrast (forced colors): that mode replaces the
- * plum fill that marks the state, so paint the chip in the system Highlight colours instead.
+ * accent fill that marks the state, so paint the chip in the system Highlight colours instead.
  * No effect outside forced-colors mode. Add it to the selected chip's classes.
  */
 export const forcedColorsSelected =

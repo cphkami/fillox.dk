@@ -6,18 +6,18 @@ import { formatPriceFrom } from "@/lib/content";
 
 /**
  * Treatment card on /behandlinger: price eyebrow, name, one-liner and "Læs mere →"
- * (mobile: a plum arrow on the right instead).
+ * (mobile: an accent arrow on the right instead). The name is the heading face (card title).
  */
 export function TreatmentCard({ treatment }: { treatment: Treatment }) {
   const name = treatment.detail?.title ?? treatment.name;
   return (
     <article className="relative flex h-full flex-col rounded-[18px] bg-white py-4 pr-12 pl-[18px] transition-shadow hover:shadow-menu md:rounded-[24px] md:px-7 md:pt-[26px] md:pb-[30px] xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30">
       {treatment.priceFrom !== undefined ? (
-        <p className="mb-1 text-[12px] font-bold tracking-[1.5px] text-plum uppercase md:mb-2.5 md:text-micro md:tracking-[2px]">
+        <p className="mb-1 text-[12px] font-bold tracking-[1.5px] text-accent uppercase md:mb-2.5 md:text-micro md:tracking-[2px]">
           {formatPriceFrom(treatment.priceFrom)}
         </p>
       ) : null}
-      <h3 className="text-[17px] leading-[1.35] font-semibold md:text-h4 md:leading-[1.3] md:tracking-display">
+      <h3 className="font-heading text-[17px] leading-[1.35] text-heading md:text-h4 md:leading-[1.3] md:tracking-display">
         <Link href={treatmentHref(treatment.slug)} className="after:absolute after:inset-0 after:content-['']">
           {name}
         </Link>
@@ -25,10 +25,10 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
       <p className="mt-1 text-[14px] leading-[1.6] text-muted md:mt-2 md:mb-[18px] md:text-body md:leading-[1.7]">
         {treatment.short}
       </p>
-      <span aria-hidden="true" className="mt-auto self-start border-b border-ink pb-[3px] text-ui-sm max-md:hidden">
+      <span aria-hidden="true" className="mt-auto self-start border-b border-rule-strong pb-[3px] text-ui-sm max-md:hidden">
         {ui.readMore} →
       </span>
-      <span aria-hidden="true" className="absolute top-1/2 right-[18px] -translate-y-1/2 text-[18px] text-plum md:hidden">
+      <span aria-hidden="true" className="absolute top-1/2 right-[18px] -translate-y-1/2 text-[18px] text-accent md:hidden">
         →
       </span>
     </article>

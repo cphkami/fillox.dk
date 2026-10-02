@@ -27,7 +27,7 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
         <Eyebrow className="mb-3.5 max-md:hidden">{offers.eyebrow}</Eyebrow>
         <h2
           id={titleId}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:text-[40px] md:leading-[1.1] xl:text-h2"
+          className="font-heading text-[28px] leading-[1.15] tracking-display text-heading md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {offers.title}
         </h2>
@@ -45,12 +45,13 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
               className="flex items-center justify-between gap-2.5 rounded-[18px] bg-white py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7 xl:px-fluid-30/36 xl:pt-fluid-30/36 xl:pb-fluid-28/32"
             >
               <div className="min-w-0">
-                <h3 className="text-[16px] font-semibold md:mb-2 md:py-[.2em] md:text-h3 md:leading-[1.1] md:tracking-display">
+                <h3 className="font-heading text-[16px] text-heading md:mb-2 md:py-[.2em] md:text-h3 md:leading-[1.1] md:tracking-display">
                   {treatment ? (
-                    // Invisible hit area: the mobile row's name is a 44px target without moving it.
+                    // Invisible hit area: the mobile row's name is a 44px target without moving it. Hover
+                    // underlines, as the other title links do: heading → accent alone is too close to see.
                     <Link
                       href={treatmentHref(treatment.slug)}
-                      className="relative transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:text-plum"
+                      className="relative decoration-1 underline-offset-4 transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:text-accent hover:underline"
                     >
                       {offer.name}
                     </Link>
@@ -67,7 +68,7 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
                   href={bookingHref}
                   className={cn(
                     buttonClasses({ variant: "outline", size: "xs", mobileSize: "chip" }),
-                    "md:border-0 md:bg-plum md:text-cream md:hover:bg-plum-deep",
+                    "md:border-0 md:bg-accent md:text-on-accent md:hover:bg-accent-deep",
                   )}
                 >
                   <ResponsiveText mobile={offers.ctaLabelShort} desktop={offers.ctaLabel} />

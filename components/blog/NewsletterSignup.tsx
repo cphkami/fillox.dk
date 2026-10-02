@@ -16,6 +16,10 @@ type Status = "idle" | "sending" | "success";
  * "Få tips og tilbud i din indbakke" band at the bottom of /blog (6blog: text left,
  * e-mail + "Tilmeld" right; mbl: stacked, full-width field and button). Posts to
  * Netlify Forms (`copy.formName`, declared in public/__forms.html) with inline validation.
+ *
+ * The design's pale rose band is the rose band here (`bg-band`, on-band text), not the
+ * `secondary` beige: it sits directly above the beige footer, and the two beiges read as one
+ * block. Rose over beige keeps the design's contrast between this band and the footer.
  */
 export function NewsletterSignup() {
   const [status, setStatus] = useState<Status>("idle");
@@ -73,24 +77,25 @@ export function NewsletterSignup() {
     <Container gutter="surface" className="md:mt-fluid-48">
       <section
         aria-labelledby={ids.title}
-        className="flex flex-col gap-3 rounded-[24px] bg-powder px-5 py-7 md:gap-8 md:p-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-fluid-48 lg:px-14 lg:py-fluid-56 xl:px-fluid-64/80"
+        data-surface="band"
+        className="flex flex-col gap-3 rounded-[24px] bg-band px-5 py-7 md:gap-8 md:p-10 lg:grid lg:grid-cols-2 lg:items-center lg:gap-fluid-48 lg:px-14 lg:py-fluid-56 xl:px-fluid-64/80"
       >
         <div className="flex flex-col gap-3">
           <h2
             id={ids.title}
-            className="text-[28px] leading-[1.15] font-semibold tracking-display text-balance text-plum md:text-[32px] xl:text-h2-sm"
+            className="font-heading text-[28px] leading-[1.15] tracking-display text-balance text-on-band md:text-[32px] xl:text-h2-sm"
           >
             <Responsive mobile={copy.titleShort} desktop={copy.title} />
           </h2>
-          <p id={ids.text} className="text-body leading-[1.7] text-muted md:leading-[1.75]">
+          <p id={ids.text} className="text-body leading-[1.7] text-band-body md:leading-[1.75]">
             <Responsive mobile={copy.textShort} desktop={copy.text} />
           </p>
         </div>
 
         {status === "success" ? (
           <div ref={successRef} tabIndex={-1} role="status" className="focus:outline-none">
-            <p className="text-body font-semibold text-plum">{copy.success.title}</p>
-            <p className="mt-1 text-small leading-[1.6] text-muted">{copy.success.text}</p>
+            <p className="text-body font-semibold text-on-band">{copy.success.title}</p>
+            <p className="mt-1 text-small leading-[1.6] text-band-body">{copy.success.text}</p>
           </div>
         ) : (
           <form
@@ -99,7 +104,7 @@ export function NewsletterSignup() {
             aria-describedby={`${ids.text} ${ids.privacy}`}
             noValidate
             onSubmit={onSubmit}
-            className="flex flex-col gap-3 md:gap-2.5 lg:relative"
+            className="flex flex-col gap-3 md:gap-2.5"
           >
             <HoneypotField />
 
@@ -123,7 +128,7 @@ export function NewsletterSignup() {
                 }}
                 // 16px up to 1279px, like every input (no iOS zoom on focus), 18px at 1600 (text-body).
                 // From 768px the row stretches the field to the button's height (53 / 55 / 56px).
-                className="h-[52px] w-full min-w-0 rounded-full border border-transparent bg-white px-5 text-[16px] text-ink transition-colors placeholder:text-placeholder hover:border-line aria-[invalid=true]:border-plum md:h-auto md:flex-1 md:px-6 md:py-3 xl:text-body"
+                className="h-[52px] w-full min-w-0 rounded-full border border-transparent bg-white px-5 text-[16px] text-ink transition-colors placeholder:text-placeholder hover:border-line aria-[invalid=true]:border-accent md:h-auto md:flex-1 md:px-6 md:py-3 xl:text-body"
               />
               <button
                 type="submit"
@@ -142,21 +147,19 @@ export function NewsletterSignup() {
               <p
                 id={ids.error}
                 role={error === copy.errors.submit ? "alert" : undefined}
-                className="text-fine leading-[1.5] font-semibold text-plum md:px-6"
+                className="text-fine leading-[1.5] font-semibold text-band-accent md:px-6"
               >
                 {error}
               </p>
             ) : null}
 
-            {/* lg: hangs below the form, so the field and button stay centred on the text as in 6blog. */}
-            <p
-              id={ids.privacy}
-              className="text-fine leading-[1.6] text-muted md:px-6 lg:absolute lg:inset-x-0 lg:top-full lg:mt-2.5"
-            >
+            {/* In the form's flow at every width: the field, error and note are one block, centred on
+                the text column from lg (6blog has no note), so the band's padding always holds them. */}
+            <p id={ids.privacy} className="text-fine leading-[1.6] text-band-fine md:px-6">
               {copy.privacy.text}{" "}
               <Link
                 href={copy.privacy.link.href}
-                className="text-ink underline underline-offset-2 hover:text-plum xl:whitespace-nowrap"
+                className="text-on-band underline underline-offset-2 transition-colors hover:text-band-accent xl:whitespace-nowrap"
               >
                 {copy.privacy.link.label}
               </Link>

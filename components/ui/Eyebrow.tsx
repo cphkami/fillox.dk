@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 const tones = {
-  plum: "text-plum",
+  /** The default on light surfaces (10:1 on cream, 9:1 on sand). */
+  accent: "text-accent",
   muted: "text-muted",
-  /** On plum surfaces. */
-  powder: "text-powder",
-  blush: "text-blush",
+  /** On a rose band (5.6:1). */
+  band: "text-band-accent",
+  /** In the footer (7.9:1). */
+  footer: "text-footer-accent",
   taupe: "text-taupe",
 } as const;
 
@@ -27,6 +29,6 @@ type EyebrowProps = {
 };
 
 /** Small uppercase label above headings (e.g. "ÆSTETISK MEDICIN"). */
-export function Eyebrow({ children, tone = "plum", size = "sm", as: Tag = "p", className }: EyebrowProps) {
+export function Eyebrow({ children, tone = "accent", size = "sm", as: Tag = "p", className }: EyebrowProps) {
   return <Tag className={cn("uppercase", sizes[size], tones[tone], className)}>{children}</Tag>;
 }

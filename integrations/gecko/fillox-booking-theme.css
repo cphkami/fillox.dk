@@ -1,5 +1,5 @@
 /* Fillox theme for Gecko Booking (fillox.dk/booking). Paste into Gecko, see README.md. */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Poppins:wght@500&display=swap");
 
 /* =============================================================================
    FILLOX THEME FOR GECKO BOOKING
@@ -9,7 +9,7 @@
    view, wrapped in a style element. Step by step in README.md (Danish).
 
    What it styles (Gecko class names, checked against the live booking, 2026-10):
-     1. Base: Poppins, colours, links, focus ring
+     1. Base: Figtree (text) + Poppins (headings), colours, links, focus ring
      2. Top: site menu (Book ny tid / Log ind / ...), progress steps
      3. Step 1: clinic picker, service groups + rows, selected service, Videre
      4. Add-ons page (tillaegsydelser)
@@ -41,11 +41,12 @@
      so a changed nesting level in Gecko does not break them.
    - The iframe body stays transparent: the card around the embed on
      fillox.dk/booking (white) is the background.
-   - Type follows fillox.dk: 16px body text and fields, 15px on buttons, menus
-     and chips. Smaller on purpose: labels (step names, weekday and week-number
-     letters, durations and practitioner titles), error lines under fields
-     (14px, semibold), and the date chips on a phone and in the date picker and
-     the time slots on a phone (14px, so a full row fits the 280-350px embed).
+   - Type follows fillox.dk: Figtree for the text (16px body text and fields,
+     15px on buttons, menus and chips), Poppins 500 in espresso for headings.
+     Smaller on purpose: labels (step names, weekday and week-number letters,
+     durations and practitioner titles), error lines under fields (14px,
+     semibold), and the date chips on a phone and in the date picker and the
+     time slots on a phone (14px, so a full row fits the 280-350px embed).
    ========================================================================== */
 
 
@@ -53,26 +54,28 @@
    0. Tokens
    -------------------------------------------------------------------------- */
 :root {
-  --fx-plum: #6B3840;        /* primary: buttons, selected states, links */
-  --fx-plum-deep: #572D34;   /* hover on plum */
-  --fx-cream: #F7F2EA;       /* page base, text on plum */
-  --fx-sand: #EFE6DC;        /* surfaces: headers, bars, cards */
-  --fx-powder: #E8D3CE;      /* secondary surface, hover on sand */
-  --fx-blush: #EFE2DE;       /* soft highlight (selected service, waiting list) */
-  --fx-ink: #242724;         /* text */
-  --fx-muted: #5E4F4D;       /* secondary text */
-  --fx-line: #E3D6CC;        /* hairlines, chip and field borders */
-  --fx-rule: #D9BFB8;        /* field border on hover */
-  --fx-taupe: #7A624F;       /* prices (4.6:1 on sand, 5.2:1 on cream) */
-  --fx-placeholder: #746A67; /* placeholders (5.3:1 on white) */
+  --fx-accent: #543232;       /* accent (plum-brown): buttons, selected states, links, focus ring (10.0:1 on cream) */
+  --fx-accent-deep: #422424;  /* hover on accent */
+  --fx-cream: #F7F2EA;        /* page base, text on accent */
+  --fx-sand: #EFE6DC;         /* surfaces: headers, bars, cards */
+  --fx-secondary: #E4D6CB;    /* secondary surface (light beige), hover on sand */
+  --fx-blush: #EFE2DE;        /* soft rose highlight (selected service, waiting list) */
+  --fx-ink: #242724;          /* text */
+  --fx-heading: #3B2A28;      /* headings (espresso, softer than ink: 12.2:1 on cream) */
+  --fx-muted: #5E4F4D;        /* secondary text */
+  --fx-line: #E2D5C5;         /* hairlines, chip and field borders */
+  --fx-rule: #BAA586;         /* bronze: field border on hover, the empty-day dash (decorative) */
+  --fx-taupe: #7A624F;        /* prices (4.6:1 on sand, 5.2:1 on cream) */
+  --fx-placeholder: #746A67;  /* placeholders (5.3:1 on white) */
   --fx-white: #FFFFFF;
-  --fx-font: "Poppins", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --fx-font: "Figtree", "Helvetica Neue", Helvetica, Arial, sans-serif;          /* text, buttons, fields, labels */
+  --fx-font-heading: "Poppins", "Helvetica Neue", Helvetica, Arial, sans-serif;  /* headings, weight 500 */
   --fx-shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1);
-  --fx-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236B3840' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --fx-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23543232' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 
   /* Gecko's own variables (booking_specific_css.css): progress steps */
-  --geckoLineColor: #E3D6CC;
-  --style-breadcrumb-visited-bg: #6B3840;
+  --geckoLineColor: #E2D5C5;
+  --style-breadcrumb-visited-bg: #543232;
   --style-breadcrumb-visited-color: #F7F2EA;
   --style-breadcrumb-next-bg: #EFE6DC;
   --style-breadcrumb-next-color: #5E4F4D;
@@ -115,19 +118,29 @@ p, td, th, table {
   color: inherit;
 }
 
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6,
 .btn, button, input, select, textarea,
 .year__text, .modal, .popover, .tooltip, .dropdown-menu {
   font-family: var(--fx-font);
 }
 
+/* Headings: Poppins 500 in espresso, as on fillox.dk (everything else is
+   Figtree). The heading-like texts further down get the same font, weight and
+   colour: step and page headings, practitioner names, the day view's date,
+   the waiting-list title. Gecko's week title is an h1 too, but it is the label
+   of the week bar and stays Figtree (section 6). */
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  color: var(--fx-ink);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--fx-font-heading);
+  font-weight: 500;
+  letter-spacing: -0.02em;
   line-height: 1.2;
+  color: var(--fx-heading);
+}
+
+/* Bold text inside a heading keeps the heading's weight: Poppins is loaded in
+   500 only, so 600 would be a faux bold. */
+:is(h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6) :is(strong, b, .font-bold) {
+  font-weight: inherit;
 }
 
 strong, b, .font-bold {
@@ -136,11 +149,11 @@ strong, b, .font-bold {
 
 /* Text links (link-styled buttons keep their own colours). */
 a:not(.btn), a:not(.btn):link, a:not(.btn):visited {
-  color: var(--fx-plum);
+  color: var(--fx-accent);
 }
 
 a:not(.btn):hover, a:not(.btn):active, a:not(.btn):focus {
-  color: var(--fx-plum-deep);
+  color: var(--fx-accent-deep);
 }
 
 .text-muted, .help-block {
@@ -148,7 +161,7 @@ a:not(.btn):hover, a:not(.btn):active, a:not(.btn):focus {
 }
 
 .text-danger, .sysMsgColor {
-  color: var(--fx-plum);
+  color: var(--fx-accent);
 }
 
 hr {
@@ -157,12 +170,12 @@ hr {
   margin: 20px 0;
 }
 
-/* Visible focus ring in plum, as on fillox.dk (keyboard focus only).
+/* Visible focus ring in the accent colour, as on fillox.dk (keyboard focus only).
    Gecko removes every focus outline with "outline: none !important" on all
    elements, so the ring needs !important to come back. */
 :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible,
 .btn.btn:focus-visible {
-  outline: 2px solid var(--fx-plum) !important;
+  outline: 2px solid var(--fx-accent) !important;
   outline-offset: 3px;
 }
 
@@ -182,11 +195,16 @@ hr {
 #contentdiv :is(h1, h2, h3, strong, p):has(+ .headlineHrLine) {
   display: block;
   margin: 0 0 6px;
+  font-family: var(--fx-font-heading);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: var(--fx-ink);
+  color: var(--fx-heading);
+}
+
+#contentdiv :is(h1, h2, h3, p):has(+ .headlineHrLine) :is(strong, b) {
+  font-weight: inherit;
 }
 
 #contentdiv .headlineHrLine + p {
@@ -208,11 +226,16 @@ hr {
 
 :is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) {
   margin-bottom: 6px;
+  font-family: var(--fx-font-heading);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: var(--fx-ink);
+  color: var(--fx-heading);
+}
+
+:is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) strong {
+  font-weight: inherit;
 }
 
 :is(.text-center:has(.sitemenuWrap) + .clearfix + p, .text-center:has(.sitemenuWrap) + .clearfix + script + p):has(strong) + p {
@@ -222,11 +245,16 @@ hr {
 
 .gc-code-signup-form p:first-child:has(strong) {
   margin: 0 0 4px;
+  font-family: var(--fx-font-heading);
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: var(--fx-ink);
+  letter-spacing: -0.02em;
+  color: var(--fx-heading);
+}
+
+.gc-code-signup-form p:first-child:has(strong) strong {
+  font-weight: inherit;
 }
 
 .gc-code-signup-form p:first-child:has(strong) + p {
@@ -281,11 +309,11 @@ hr {
 
 .sitemenuWrap .btn.sitemenu_selected {
   color: var(--fx-cream) !important;
-  background-color: var(--fx-plum);
+  background-color: var(--fx-accent);
 }
 
 .sitemenuWrap .btn:hover:not(.sitemenu_selected) {
-  color: var(--fx-plum) !important;
+  color: var(--fx-accent) !important;
   background-color: var(--fx-sand);
   border-color: transparent;
 }
@@ -346,7 +374,7 @@ ol.gecko_breadcrumb li.current {
 }
 
 .gecko_breadcrumb li.current::before {
-  box-shadow: 0 0 0 4px var(--fx-powder);
+  box-shadow: 0 0 0 4px var(--fx-secondary);
 }
 
 .gecko_breadcrumb li::after {
@@ -363,7 +391,7 @@ ol.gecko_breadcrumb li.current {
    -------------------------------------------------------------------------- */
 
 /* "Dit behandlingssted": the clinic radios become chips; the chosen clinic is
-   plum, like the clinic picker on fillox.no. */
+   the accent colour, like the clinic picker on fillox.no. */
 .gc-company-picker-group {
   display: flex;
   flex-wrap: wrap;
@@ -424,7 +452,7 @@ ol.gecko_breadcrumb li.current {
   width: 24px;
   height: 24px;
   background: transparent;
-  border: 1.5px solid var(--fx-plum) !important;
+  border: 1.5px solid var(--fx-accent) !important;
   border-radius: 50%;
   outline: none;
 }
@@ -440,14 +468,14 @@ ol.gecko_breadcrumb li.current {
 }
 
 .gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:hover + .gc-company-picker-radio-label {
-  color: var(--fx-plum);
-  border-color: var(--fx-plum);
+  color: var(--fx-accent);
+  border-color: var(--fx-accent);
 }
 
 .gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:checked + .gc-company-picker-radio-label {
   color: var(--fx-cream);
-  background: var(--fx-plum);
-  border-color: var(--fx-plum);
+  background: var(--fx-accent);
+  border-color: var(--fx-accent);
 }
 
 .gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:checked + .gc-company-picker-radio-label::before {
@@ -455,7 +483,7 @@ ol.gecko_breadcrumb li.current {
 }
 
 .gc-company-picker-group .gc-company-picker-radio-group .gc-company-picker-radio:focus-visible + .gc-company-picker-radio-label {
-  outline: 2px solid var(--fx-plum) !important;
+  outline: 2px solid var(--fx-accent) !important;
   outline-offset: 3px;
 }
 
@@ -496,7 +524,7 @@ ol.gecko_breadcrumb li.current {
 }
 
 .gecko-list-dropdown .gecko-list-dropdown__group .gecko-list-dropdown__group-name:hover {
-  background-color: var(--fx-powder);
+  background-color: var(--fx-secondary);
 }
 
 /* Chevron drawn in CSS (replaces Gecko's icon-font glyph). */
@@ -509,8 +537,8 @@ ol.gecko_breadcrumb li.current {
   height: 9px;
   margin: -7px 0 0;
   font-family: inherit;
-  border-right: 2px solid var(--fx-plum);
-  border-bottom: 2px solid var(--fx-plum);
+  border-right: 2px solid var(--fx-accent);
+  border-bottom: 2px solid var(--fx-accent);
   transform: rotate(45deg);
 }
 
@@ -545,7 +573,7 @@ ol.gecko_breadcrumb li.current {
 }
 
 /* Radio circle drawn in CSS (replaces Gecko's icon-font glyph): 24px, with a
-   12px plum dot when chosen. */
+   12px accent dot when chosen. */
 .gecko-list-dropdown .gecko-list-dropdown__checkbox::before {
   content: "";
   display: block;
@@ -556,14 +584,14 @@ ol.gecko_breadcrumb li.current {
   padding: 0;
   font-family: inherit;
   background: var(--fx-white);
-  border: 1.5px solid var(--fx-plum);
+  border: 1.5px solid var(--fx-accent);
   border-radius: 50%;
 }
 
 .gecko-list-dropdown .gecko-list-dropdown__row.checked .gecko-list-dropdown__checkbox::before {
   content: "";
   padding: 0;
-  background: var(--fx-plum);
+  background: var(--fx-accent);
   box-shadow: inset 0 0 0 5px var(--fx-white);
 }
 
@@ -627,7 +655,7 @@ ol.gecko_breadcrumb li.current {
   padding: 0;
   font-size: 16px;
   line-height: 22px;
-  color: var(--fx-plum);
+  color: var(--fx-accent);
 }
 
 @media (min-width: 1024px) {
@@ -715,15 +743,15 @@ ol.gecko_breadcrumb li.current {
   min-width: 44px;
   padding: 0 14px;
   font-weight: 600;
-  color: var(--fx-plum);
-  background-color: var(--fx-powder);
+  color: var(--fx-accent);
+  background-color: var(--fx-secondary);
   border-radius: 0 20px 20px 0;
   cursor: pointer;
 }
 
 .serviceSelected.serviceSelectedDelete:hover {
   color: var(--fx-cream);
-  background-color: var(--fx-plum);
+  background-color: var(--fx-accent);
 }
 
 /* The "X" has an inline 9px font size. */
@@ -750,7 +778,7 @@ ol.gecko_breadcrumb li.current {
 }
 
 #contentdiv .serviceAdditionGroup:not(.group-remove-tabs):hover {
-  background-color: var(--fx-powder);
+  background-color: var(--fx-secondary);
 }
 
 #contentdiv .serviceAdditionGroup .serviceAdditionGroup-name {
@@ -774,8 +802,8 @@ ol.gecko_breadcrumb li.current {
   display: block;
   width: 9px;
   height: 9px;
-  border-right: 2px solid var(--fx-plum);
-  border-bottom: 2px solid var(--fx-plum);
+  border-right: 2px solid var(--fx-accent);
+  border-bottom: 2px solid var(--fx-accent);
   transform: rotate(45deg);
 }
 
@@ -830,8 +858,8 @@ ol.gecko_breadcrumb li.current {
   line-height: 1.2;
   text-transform: none;
   color: var(--fx-cream) !important;
-  background-color: var(--fx-plum) !important;
-  border: 1px solid var(--fx-plum) !important;
+  background-color: var(--fx-accent) !important;
+  border: 1px solid var(--fx-accent) !important;
   border-radius: 100px !important;
   box-shadow: none;
 }
@@ -840,8 +868,8 @@ ol.gecko_breadcrumb li.current {
 .btn.btn-success:active,
 .btn.btn-primary:not(.gc-view-btn):not(.gb__login--small):not(.gb__logout--small):hover,
 .btn.btn-primary:not(.gc-view-btn):not(.gb__login--small):not(.gb__logout--small):active {
-  background-color: var(--fx-plum-deep) !important;
-  border-color: var(--fx-plum-deep) !important;
+  background-color: var(--fx-accent-deep) !important;
+  border-color: var(--fx-accent-deep) !important;
 }
 
 /* Secondary: Tilbage, Tilmeld venteliste, Annuller in dialogs (white pill, as on
@@ -867,15 +895,15 @@ ol.gecko_breadcrumb li.current {
 
 :is(#siteContentContainer, .modal) .btn.btn-white:not(.dropdown-toggle, .gc-view-btn, .input-group-btn .btn, .gecko_number_plus_minus_wrapper .btn):hover,
 :is(#siteContentContainer, .modal) .btn.btn-default:not(.dropdown-toggle, .input-group-btn .btn):hover {
-  color: var(--fx-plum) !important;
-  border-color: var(--fx-plum) !important;
+  color: var(--fx-accent) !important;
+  border-color: var(--fx-accent) !important;
 }
 
 /* Rarely shown "LAES MERE" etc. */
 .btn.btn-danger:not(:has(.fa-minus)) {
-  color: var(--fx-plum) !important;
-  background-color: var(--fx-powder) !important;
-  border-color: var(--fx-powder) !important;
+  color: var(--fx-accent) !important;
+  background-color: var(--fx-secondary) !important;
+  border-color: var(--fx-secondary) !important;
   border-radius: 100px !important;
 }
 
@@ -889,7 +917,7 @@ ol.gecko_breadcrumb li.current {
   font-size: 15px;
   font-weight: 500;
   vertical-align: middle;
-  color: var(--fx-plum);
+  color: var(--fx-accent);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -943,7 +971,7 @@ ol.gecko_breadcrumb li.current {
 }
 
 .btn.gc-view-btn:hover {
-  color: var(--fx-plum) !important;
+  color: var(--fx-accent) !important;
   background: var(--fx-sand) !important;
 }
 
@@ -951,7 +979,7 @@ ol.gecko_breadcrumb li.current {
 .btn.gc-view-btn.gc-view-btn-selected:hover {
   pointer-events: none;
   color: var(--fx-cream) !important;
-  background: var(--fx-plum) !important;
+  background: var(--fx-accent) !important;
 }
 
 @media (max-width: 560px) {
@@ -999,6 +1027,7 @@ ol.gecko_breadcrumb li.current {
   font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
+  letter-spacing: normal;
   text-transform: none;
   color: var(--fx-ink);
 }
@@ -1024,8 +1053,8 @@ ol.gecko_breadcrumb li.current {
 
 #calWrapper .control__bar .minus__text:hover,
 #calWrapper .control__bar .plus__text:hover {
-  color: var(--fx-plum) !important;
-  border-color: var(--fx-plum);
+  color: var(--fx-accent) !important;
+  border-color: var(--fx-accent);
 }
 
 #calWrapper .control__bar .uge__minus {
@@ -1113,12 +1142,15 @@ img.cal-info__image--small {
   border-radius: 50%;
 }
 
+/* The practitioner's name: a card title (Poppins, as the team names on fillox.dk). */
 .control__bar--cal-cell p {
   margin: 0;
+  font-family: var(--fx-font-heading);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.35;
-  color: var(--fx-ink);
+  letter-spacing: -0.01em;
+  color: var(--fx-heading);
 }
 
 .control__bar--cal-cell span {
@@ -1184,16 +1216,16 @@ img.cal-info__image--small {
 }
 
 .uge__cal .cal-day__body a:hover {
-  --style-calendar-green-color: #6B3840;
-  --style-calendar-yellow-color: #6B3840;
-  border-color: var(--fx-plum);
+  --style-calendar-green-color: #543232;
+  --style-calendar-yellow-color: #543232;
+  border-color: var(--fx-accent);
   filter: none;
 }
 
 .uge__cal .cal-day__body a:active {
-  --style-calendar-green-bg: #6B3840;
+  --style-calendar-green-bg: #543232;
   --style-calendar-green-color: #F7F2EA;
-  border-color: var(--fx-plum);
+  border-color: var(--fx-accent);
 }
 
 .uge__cal .cal-day__body a.body__timeRow--red,
@@ -1281,8 +1313,10 @@ img.cal-info__image--small {
 }
 
 .gc-empty-week-heading {
+  font-family: var(--fx-font-heading);
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--fx-heading);
 }
 
 #nextFreeTimeTextDiv {
@@ -1360,8 +1394,8 @@ img.cal-info__image--small {
 
 .mcp .mcp-cell.mcp-header-nav:hover .fa {
   color: var(--fx-cream);
-  background: var(--fx-plum);
-  border-color: var(--fx-plum);
+  background: var(--fx-accent);
+  border-color: var(--fx-accent);
 }
 
 /* Weekday letters (row after the header) */
@@ -1426,17 +1460,17 @@ img.cal-info__image--small {
 }
 
 .mcp .mcp-cell a:hover {
-  --style-calendar-green-color: #6B3840;
-  --style-calendar-yellow-color: #6B3840;
-  border-color: var(--fx-plum);
+  --style-calendar-green-color: #543232;
+  --style-calendar-yellow-color: #543232;
+  border-color: var(--fx-accent);
   filter: none;
 }
 
-/* Today: plum ring. Gecko turns its hover slate grey with !important. */
+/* Today: accent ring. Gecko turns its hover slate grey with !important. */
 .mcp .mcp-cell a.curDayColor {
   font-weight: 700;
-  border-color: var(--fx-plum);
-  box-shadow: inset 0 0 0 1px var(--fx-plum);
+  border-color: var(--fx-accent);
+  box-shadow: inset 0 0 0 1px var(--fx-accent);
 }
 
 .mcp .mcp-cell a.curDayColor:hover:not(.curDayWaitingList):not(.curDayInactive) {
@@ -1477,11 +1511,14 @@ img.cal-info__image--small {
 /* -----------------------------------------------------------------------------
    8. Day view: a day's free times ("Vaelg en tid")
    -------------------------------------------------------------------------- */
+/* The day ("Fredag, 2. oktober 2026"): the heading of the day's times. */
 div.font-bold.text-center {
   margin: 4px 0 4px;
+  font-family: var(--fx-font-heading);
   font-size: 18px;
-  font-weight: 600;
-  color: var(--fx-ink);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--fx-heading);
 }
 
 /* Practitioner header */
@@ -1548,17 +1585,17 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
 }
 
 .cal-time__body .cal-time__row:hover .cal-time__cell {
-  --style-calendar-green-color: #6B3840;
-  --style-calendar-yellow-color: #6B3840;
-  border-color: var(--fx-plum) !important;
+  --style-calendar-green-color: #543232;
+  --style-calendar-yellow-color: #543232;
+  border-color: var(--fx-accent) !important;
 }
 
 /* Selected time (if Gecko keeps the choice on the page) */
 .cal-time__body .cal-time__row .cal-time__cell:has(input:checked),
 .cal-time__body .cal-time__row:active .cal-time__cell {
-  --style-calendar-green-bg: #6B3840;
+  --style-calendar-green-bg: #543232;
   --style-calendar-green-color: #F7F2EA;
-  border-color: var(--fx-plum) !important;
+  border-color: var(--fx-accent) !important;
 }
 
 .cal-time__body .cal-time__row .cal-time__cell.red--hover {
@@ -1601,9 +1638,11 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
 
 #waitinglistTxtDiv .waitinglistTxt {
   margin-bottom: 4px;
+  font-family: var(--fx-font-heading);
   font-size: 17px;
-  font-weight: 600;
-  color: var(--fx-ink);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--fx-heading);
 }
 
 #waitinglistTxtDiv p {
@@ -1647,7 +1686,6 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
 .card-box h5, .card-box .h5 {
   margin: 0 0 8px;
   font-size: 16px;
-  font-weight: 600;
 }
 
 .form-group {
@@ -1670,7 +1708,7 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
   color: var(--fx-ink);
 }
 
-/* Inputs: 16px text (no zoom on iPhone), at least 48px high, plum focus. */
+/* Inputs: 16px text (no zoom on iPhone), at least 48px high, accent focus. */
 .form-control {
   height: auto;
   min-height: 52px;
@@ -1689,8 +1727,8 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
 }
 
 .form-control:focus {
-  border-color: var(--fx-plum);
-  outline: 2px solid var(--fx-plum) !important;
+  border-color: var(--fx-accent);
+  outline: 2px solid var(--fx-accent) !important;
   outline-offset: 2px;
   box-shadow: none;
 }
@@ -1743,7 +1781,7 @@ textarea.form-control {
   padding: 0 20px;
   font-size: 15px;
   font-weight: 500;
-  color: var(--fx-plum) !important;
+  color: var(--fx-accent) !important;
   background-color: var(--fx-sand) !important;
   border: 1px solid var(--fx-line) !important;
   border-left: 0 !important;
@@ -1752,7 +1790,7 @@ textarea.form-control {
 }
 
 .input-group .input-group-btn .btn:hover {
-  background-color: var(--fx-powder) !important;
+  background-color: var(--fx-secondary) !important;
 }
 
 /* Number stepper ("Antal pladser"): [ - | 1 | + ] with the field's height and
@@ -1775,7 +1813,7 @@ textarea.form-control {
   margin: 0;
   padding: 0;
   font-size: 16px;
-  color: var(--fx-plum) !important;
+  color: var(--fx-accent) !important;
   background-color: var(--fx-white) !important;
   border: 1px solid var(--fx-line) !important;
   border-radius: 0 !important;
@@ -1810,8 +1848,8 @@ textarea.form-control {
 /* Validation (parsley): Gecko paints errors red with !important. */
 .form-control.parsley-error,
 .has-error .form-control {
-  border-color: var(--fx-plum) !important;
-  box-shadow: inset 0 0 0 1px var(--fx-plum);
+  border-color: var(--fx-accent) !important;
+  box-shadow: inset 0 0 0 1px var(--fx-accent);
 }
 
 .parsley-errors-list li,
@@ -1821,7 +1859,7 @@ textarea.form-control {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
-  color: var(--fx-plum);
+  color: var(--fx-accent);
 }
 
 /* Checkboxes (terms, newsletter, add-ons). Gecko: border !important. */
@@ -1853,7 +1891,7 @@ textarea.form-control {
   height: 22px;
   margin-left: -34px;
   background-color: var(--fx-white);
-  border: 1.5px solid var(--fx-plum) !important;
+  border: 1.5px solid var(--fx-accent) !important;
   border-radius: 6px;
   outline: none;
 }
@@ -1872,7 +1910,7 @@ textarea.form-control {
 }
 
 .checkbox input[type="checkbox"]:checked + label::before {
-  background-color: var(--fx-plum);
+  background-color: var(--fx-accent);
 }
 
 .checkbox input[type="checkbox"]:checked + label::after {
@@ -1881,7 +1919,7 @@ textarea.form-control {
 
 /* Keyboard focus on the drawn box. Gecko: "outline: none !important" on it. */
 .checkbox input[type="checkbox"]:focus-visible + label::before {
-  outline: 2px solid var(--fx-plum) !important;
+  outline: 2px solid var(--fx-accent) !important;
   outline-offset: 2px;
 }
 
@@ -1890,7 +1928,7 @@ textarea.form-control {
 }
 
 /* Radios outside the clinic chips (the clinic chips are .radio too, and have
-   their own rules in section 3): a 24px circle with a 12px plum dot, centred on
+   their own rules in section 3): a 24px circle with a 12px accent dot, centred on
    the first line of the label. Each option is a row at least 44px tall, and
    the invisible radio covers the whole row (as on the clinic chips), so a tap
    anywhere on the row chooses it. The text lines up with the checkboxes'. */
@@ -1925,7 +1963,7 @@ textarea.form-control {
   height: 24px;
   margin-left: -34px;
   background-color: var(--fx-white);
-  border: 1.5px solid var(--fx-plum) !important;
+  border: 1.5px solid var(--fx-accent) !important;
   border-radius: 50%;
   outline: none;
 }
@@ -1936,18 +1974,18 @@ textarea.form-control {
   width: 12px;
   height: 12px;
   margin-left: -34px;
-  background-color: var(--fx-plum);
+  background-color: var(--fx-accent);
   border-radius: 50%;
 }
 
 .radio:not(.gc-company-picker-radio-group) input[type="radio"]:checked + label::after {
-  background-color: var(--fx-plum);
+  background-color: var(--fx-accent);
 }
 
 /* Keyboard focus: a ring around the circle. Gecko: "outline: none !important"
    on it. (The clinic chips get their ring around the whole chip.) */
 .radio:not(.gc-company-picker-radio-group) input[type="radio"]:focus-visible + label::before {
-  outline: 2px solid var(--fx-plum) !important;
+  outline: 2px solid var(--fx-accent) !important;
   outline-offset: 2px;
 }
 
@@ -1962,7 +2000,7 @@ textarea.form-control {
 }
 
 /* Gecko's fold-out bars ("Opret ny bruger" on the Ny kunde? page): a sand bar
-   like the service groups. Gecko's chevron glyph stays, in plum. The bars on
+   like the service groups. Gecko's chevron glyph stays, in the accent colour. The bars on
    the logged-in pages (.geckoTabWrapper) keep Gecko's own layout and take the
    font and colours. */
 .geckoTab {
@@ -1981,7 +2019,7 @@ textarea.form-control {
 .geckoTab:hover,
 .geckoTab:active,
 .geckoTab:focus {
-  background-color: var(--fx-powder);
+  background-color: var(--fx-secondary);
 }
 
 .geckoTab.geckoTabOpen,
@@ -1993,7 +2031,7 @@ textarea.form-control {
 .geckoTab::after {
   right: 20px;
   font-size: 14px;
-  color: var(--fx-plum);
+  color: var(--fx-accent);
 }
 
 /* Login provider list, info lists */
@@ -2019,7 +2057,7 @@ textarea.form-control {
 }
 
 .alert-danger {
-  color: var(--fx-plum);
+  color: var(--fx-accent);
   background-color: var(--fx-blush);
 }
 
@@ -2090,8 +2128,8 @@ textarea.form-control {
 }
 
 /* Date picker (jQuery UI): opens from the waiting list's "Mellem d." / "og d."
-   fields. A white card like the menus; days as chips; today with a plum ring,
-   the chosen day plum. Selectors carry two classes to beat jQuery UI's own. */
+   fields. A white card like the menus; days as chips; today with an accent
+   ring, the chosen day in the accent colour. Selectors carry two classes to beat jQuery UI's own. */
 .ui-datepicker.ui-widget {
   width: 296px;
   max-width: calc(100vw - 32px);
@@ -2165,8 +2203,8 @@ textarea.form-control {
 .ui-datepicker .ui-datepicker-prev:hover,
 .ui-datepicker .ui-datepicker-next:hover {
   color: var(--fx-cream);
-  background: var(--fx-plum);
-  border-color: var(--fx-plum);
+  background: var(--fx-accent);
+  border-color: var(--fx-accent);
 }
 
 .ui-datepicker .ui-datepicker-prev .ui-icon,
@@ -2219,24 +2257,24 @@ textarea.form-control {
 
 .ui-datepicker .ui-datepicker-calendar td a.ui-state-default:hover,
 .ui-datepicker .ui-datepicker-calendar td a.ui-state-default.ui-state-hover {
-  color: var(--fx-plum);
+  color: var(--fx-accent);
   background: var(--fx-sand);
-  border-color: var(--fx-plum);
+  border-color: var(--fx-accent);
 }
 
 /* Today */
 .ui-datepicker .ui-datepicker-calendar td a.ui-state-default.ui-state-highlight {
   font-weight: 700;
   color: var(--fx-ink);
-  border-color: var(--fx-plum);
-  box-shadow: inset 0 0 0 1px var(--fx-plum);
+  border-color: var(--fx-accent);
+  box-shadow: inset 0 0 0 1px var(--fx-accent);
 }
 
 /* The chosen day */
 .ui-datepicker .ui-datepicker-calendar td a.ui-state-default.ui-state-active {
   color: var(--fx-cream);
-  background: var(--fx-plum);
-  border-color: var(--fx-plum);
+  background: var(--fx-accent);
+  border-color: var(--fx-accent);
   box-shadow: none;
 }
 
@@ -2258,7 +2296,7 @@ textarea.form-control {
 }
 
 #worldSpinner .fa {
-  color: var(--fx-plum) !important;
+  color: var(--fx-accent) !important;
 }
 
 

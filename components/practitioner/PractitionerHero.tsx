@@ -21,6 +21,10 @@ type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
  *   6px more between lines when a name wraps ("Dr. Tom Haugland": 1.1 at 76px, 1.14 at 52px):
  *   line-height 1.02em + 6px with −3px margins. Whole px, not em, so the line box stays on
  *   Chrome's 1/64px layout grid and a single line renders pixel-identical.
+ * - Type and colour ("Støvet rosa & beige"): the name is the page's accent, as in the design (plum
+ *   there), so the H1 takes the H1 accent colour (`text-emphasis`) in the heading font. Fact
+ *   values are card titles from 768px (heading font, `text-heading`) and data rows below
+ *   (Figtree, as the rest of the body).
  */
 export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
   const { breadcrumb } = practitionerPage;
@@ -60,7 +64,7 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
                   {/* Invisible 44px hit area (14px above and below) around the small link text. */}
                   <Link
                     href={item.href}
-                    className="relative transition-colors after:absolute after:-inset-x-1 after:-inset-y-3.5 hover:text-plum"
+                    className="relative transition-colors after:absolute after:-inset-x-1 after:-inset-y-3.5 hover:text-accent"
                   >
                     {item.label}
                   </Link>
@@ -68,7 +72,7 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
               ))}
               <li className="inline max-md:hidden">
                 <span aria-hidden="true">{" → "}</span>
-                <span aria-current="page" className="text-plum">
+                <span aria-current="page" className="text-accent">
                   {profile.name}
                 </span>
               </li>
@@ -81,7 +85,7 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
 
           <h1
             id={titleId}
-            className="text-[36px] leading-[1.08] font-semibold tracking-display text-plum md:-my-[3px] md:text-[52px] md:leading-[calc(1.02em+6px)] lg:text-h1"
+            className="font-heading text-[36px] leading-[1.08] tracking-display text-emphasis md:-my-[3px] md:text-[52px] md:tracking-hero md:leading-[calc(1.02em+6px)] lg:text-h1"
           >
             {profile.displayName}
           </h1>
@@ -122,10 +126,10 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
               key={fact.label}
               className="flex justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5 text-[15px] md:flex-col md:justify-start md:gap-0 md:rounded-[24px] md:px-6 md:py-6 lg:px-[30px] lg:py-7 xl:px-fluid-30 xl:py-fluid-28"
             >
-              <dt className="text-muted md:mb-2 md:text-micro md:font-bold md:tracking-[2px] md:text-plum md:uppercase">
+              <dt className="text-muted md:mb-2 md:text-micro md:font-bold md:tracking-[2px] md:text-accent md:uppercase">
                 {fact.label}
               </dt>
-              <dd className="text-right font-semibold md:py-[.2em] md:text-left md:text-h4 md:leading-[1.1] md:tracking-display lg:text-h3">
+              <dd className="text-right font-semibold md:py-[.2em] md:text-left md:font-heading md:text-h4 md:leading-[1.1] md:tracking-display md:text-heading lg:text-h3">
                 {fact.value}
               </dd>
             </div>

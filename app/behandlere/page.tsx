@@ -34,7 +34,7 @@ export default function PractitionersIndexPage() {
           <Eyebrow className="mb-3 md:mb-3.5">{copy.eyebrow}</Eyebrow>
           <h1
             id="behandlere-title"
-            className="text-[36px] leading-[1.08] font-semibold tracking-display md:text-[52px] md:leading-[1.02] lg:text-h1"
+            className="font-heading text-[36px] leading-[1.08] tracking-display text-heading md:text-[52px] md:leading-[1.02] md:tracking-hero lg:text-h1"
           >
             {copy.title}
           </h1>

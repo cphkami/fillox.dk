@@ -7,8 +7,11 @@ import type { ReviewSlide } from "@/lib/reviews";
 import { fillTemplate } from "@/lib/template";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
-/** Surface the rotator sits on. "plum-lg": a white card below 1024px, a plum band from 1024px (home). */
-type Surface = "light" | "plum" | "plum-lg";
+/**
+ * Surface the rotator sits on: "light" (cream, sand, white), "band" (a rose band), "band-lg" (a
+ * white card below 1024px, a rose band from 1024px: the home testimonial).
+ */
+type Surface = "light" | "band" | "band-lg";
 
 type ReviewRotatorProps = {
   /** 1–6 reviews (lib/reviews.ts → toReviewSlides). The first one is the server-rendered one. */
@@ -41,32 +44,37 @@ const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 const SWIPE_DISTANCE = 40;
 
 // Inactive dots are the only visual of a control: ≥ 3:1 against the surface (WCAG 1.4.11).
-// plum/65 = 3.6 : 1 on white, 3.5 : 1 on cream; powder/60 = 3.4 : 1 on plum.
+// accent/65 = 4.0 : 1 on white, 3.8 : 1 on cream; band-accent/75 = 3.5 : 1 on the rose band.
+// The large quote is a heading (Poppins, text-heading / text-on-band); the compact one is card
+// text (Figtree, ink): `quote` is the large quote's colour, `compactQuote` the compact one's.
 const surfaces = {
   light: {
-    stars: "text-plum",
-    quote: "text-ink",
+    stars: "text-accent",
+    quote: "text-heading",
+    compactQuote: "text-ink",
     caption: "text-muted",
-    button: "border-plum/30 text-plum hover:border-plum hover:bg-plum hover:text-cream",
-    dot: "bg-plum/65 group-hover:bg-plum/85",
-    dotActive: "bg-plum",
+    button: "border-accent/30 text-accent hover:border-accent hover:bg-accent hover:text-on-accent",
+    dot: "bg-accent/65 group-hover:bg-accent/85",
+    dotActive: "bg-accent",
   },
-  plum: {
-    stars: "text-powder",
-    quote: "text-cream",
-    caption: "text-blush uppercase tracking-[2px]",
-    button: "border-powder/50 text-powder hover:border-powder hover:bg-powder hover:text-plum",
-    dot: "bg-powder/60 group-hover:bg-powder/80",
-    dotActive: "bg-powder",
+  band: {
+    stars: "text-band-accent",
+    quote: "text-on-band",
+    compactQuote: "text-on-band",
+    caption: "text-band-body uppercase tracking-[2px]",
+    button: "border-band-accent/40 text-band-accent hover:border-accent hover:bg-accent hover:text-on-accent",
+    dot: "bg-band-accent/75 group-hover:bg-band-accent/90",
+    dotActive: "bg-band-accent",
   },
-  "plum-lg": {
-    stars: "text-plum lg:text-powder",
-    quote: "text-ink lg:text-cream",
-    caption: "text-muted lg:tracking-[2px] lg:text-blush lg:uppercase",
+  "band-lg": {
+    stars: "text-accent lg:text-band-accent",
+    quote: "text-heading lg:text-on-band",
+    compactQuote: "text-ink lg:text-on-band",
+    caption: "text-muted lg:tracking-[2px] lg:text-band-body lg:uppercase",
     button:
-      "border-plum/30 text-plum hover:border-plum hover:bg-plum hover:text-cream lg:border-powder/50 lg:text-powder lg:hover:border-powder lg:hover:bg-powder lg:hover:text-plum",
-    dot: "bg-plum/65 group-hover:bg-plum/85 lg:bg-powder/60 lg:group-hover:bg-powder/80",
-    dotActive: "bg-plum lg:bg-powder",
+      "border-accent/30 text-accent hover:border-accent hover:bg-accent hover:text-on-accent lg:border-band-accent/40 lg:text-band-accent",
+    dot: "bg-accent/65 group-hover:bg-accent/85 lg:bg-band-accent/75 lg:group-hover:bg-band-accent/90",
+    dotActive: "bg-accent lg:bg-band-accent",
   },
 } as const;
 
@@ -74,16 +82,18 @@ const sizes = {
   large: {
     valign: "center",
     stars: "mb-2.5 gap-1 text-[16px] md:mb-[18px] md:text-lead lg:gap-1.5",
+    // Poppins 500 at every size (the big review quote is a heading role).
     quote:
-      "text-[18px] leading-[1.55] font-medium md:text-h3-md md:leading-[1.4] md:font-semibold md:tracking-display lg:text-quote lg:leading-[1.35]",
-    caption: "mt-2.5 text-[13px] md:mt-4 md:text-small",
+      "font-heading text-[18px] leading-[1.55] md:text-h3-md md:leading-[1.4] md:tracking-display lg:text-quote lg:leading-[1.35]",
+    // leading 1.5 = the design's "normal" in Poppins; Figtree's is 1.2 (a wrapped caption was cramped).
+    caption: "mt-2.5 text-[13px] leading-[1.5] md:mt-4 md:text-small",
     controls: "mt-6 md:mt-8",
   },
   compact: {
     valign: "start",
     stars: "mb-3 gap-0.5 text-[15px]",
     quote: "text-body leading-[1.65] font-medium md:text-lead md:leading-[1.6]",
-    caption: "mt-3 text-small",
+    caption: "mt-3 text-small leading-[1.5]",
     controls: "mt-6",
   },
 } as const;
@@ -314,7 +324,10 @@ export function ReviewRotator({
                     </span>
                   ))}
                 </p>
-                <blockquote cite={review.url} className={cn("text-pretty", z.quote, a.quote, s.quote)}>
+                <blockquote
+                  cite={review.url}
+                  className={cn("text-pretty", z.quote, a.quote, size === "compact" ? s.compactQuote : s.quote)}
+                >
                   <p>
                     {ui.quoteOpen}
                     {review.quote}
@@ -331,12 +344,13 @@ export function ReviewRotator({
                   {separatorSpace}
                   <span className="whitespace-nowrap">
                     {separatorMark}
-                    {/* Hit area 14px above and below the text: ≥ 44px tall at the 13px mobile caption. */}
+                    {/* Hit area 16px above and below the text: ≥ 44px tall at the 13px mobile
+                        caption (Figtree's text box is 15px high there, Poppins' was 19). */}
                     <a
                       href={review.url}
                       target="_blank"
                       rel="noopener"
-                      className="relative underline decoration-1 underline-offset-[3px] after:absolute after:-inset-x-1 after:-inset-y-3.5 hover:decoration-2"
+                      className="relative underline decoration-1 underline-offset-[3px] after:absolute after:-inset-x-1 after:-inset-y-4 hover:decoration-2"
                     >
                       {review.source}
                       <span className="sr-only">{` (${ui.opensInNewTab})`}</span>

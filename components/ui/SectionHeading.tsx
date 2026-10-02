@@ -4,15 +4,18 @@ import { Eyebrow } from "./Eyebrow";
 
 type SectionHeadingProps = {
   title: ReactNode;
-  /** Optional paragraph under the title (16px/1.75 → 18px at 1600 via `text-body`, max 56ch). */
+  /** Optional paragraph under the title (16px/1.75 → 18px at 1600 via `text-body`, max 52ch ≈ 75 characters in Figtree). */
   intro?: ReactNode;
   /** Optional eyebrow above the title. */
   eyebrow?: ReactNode;
   align?: "center" | "left";
   /** Heading level; defaults to h2. */
   as?: "h1" | "h2" | "h3";
-  /** "light" = cream title + blush intro, for plum surfaces. */
-  tone?: "ink" | "light";
+  /**
+   * - "ink" (default): espresso title (text-heading), muted intro, accent eyebrow; light surfaces.
+   * - "band": on-band title, band-body intro, band-accent eyebrow; a rose band (bg-band).
+   */
+  tone?: "ink" | "band";
   /**
    * Desktop (≥768px) line-height of the 40px title. Mobile is always 28px/1.15.
    * - "tight" (default) 1.1 — 6a "Vores bestsellers"; 6alb all three H2s; 6b "Del betalingen op i
@@ -48,9 +51,15 @@ const leadings = {
 
 const introGaps = { 12: "mt-3", 16: "mt-4" } as const;
 
+const tones = {
+  ink: { eyebrow: "accent", title: "text-heading", intro: "text-muted" },
+  band: { eyebrow: "band", title: "text-on-band", intro: "text-band-body" },
+} as const;
+
 /**
- * Section title: Poppins 600, -0.03em, 28px mobile / 40px desktop (768–1280px), then the
- * fluid --text-h2 token (40 → 48px at 1600px) on wide screens; with optional intro.
+ * Section title: Poppins 500 (`font-heading`), -0.02em (`tracking-display`), 28px mobile / 40px
+ * desktop (768–1280px), then the fluid --text-h2 token (40 → 48px at 1600px) on wide screens;
+ * with optional eyebrow (Figtree) and intro (Figtree, `text-body`).
  */
 export function SectionHeading({
   title,
@@ -67,19 +76,20 @@ export function SectionHeading({
   introClassName,
 }: SectionHeadingProps) {
   const centered = align === "center";
+  const t = tones[tone];
   return (
     <div className={cn(centered && "text-center", className)}>
       {eyebrow ? (
-        <Eyebrow tone={tone === "light" ? "powder" : "plum"} className="mb-3.5">
+        <Eyebrow tone={t.eyebrow} className="mb-3.5">
           {eyebrow}
         </Eyebrow>
       ) : null}
       <Tag
         id={id}
         className={cn(
-          "text-[28px] font-semibold tracking-display md:text-[40px] xl:text-h2",
+          "font-heading text-[28px] tracking-display md:text-[40px] xl:text-h2",
           leadings[leading],
-          tone === "light" ? "text-cream" : "text-ink",
+          t.title,
           titleClassName,
         )}
       >
@@ -88,10 +98,10 @@ export function SectionHeading({
       {intro ? (
         <p
           className={cn(
-            "max-w-[56ch] text-body leading-[1.75]",
+            "max-w-[52ch] text-body leading-[1.75]",
             introGaps[introGap],
             centered && "mx-auto",
-            tone === "light" ? "text-blush" : "text-muted",
+            t.intro,
             introClassName,
           )}
         >

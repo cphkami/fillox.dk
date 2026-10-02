@@ -24,7 +24,7 @@ export default function ClinicsPage() {
           <Eyebrow className="mb-[18px] max-md:hidden xl:mb-fluid-18">{hero.eyebrow}</Eyebrow>
           <h1
             id="klinikker-title"
-            className="text-[36px] leading-[1.08] font-semibold tracking-display md:mb-5 md:text-[52px] md:leading-[1.02] lg:text-h1 xl:mb-fluid-20"
+            className="font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mb-5 md:text-[52px] md:leading-[1.02] md:tracking-hero lg:text-h1 xl:mb-fluid-20"
           >
             {hero.title}
           </h1>

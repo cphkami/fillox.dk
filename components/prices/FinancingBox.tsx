@@ -15,13 +15,20 @@ type FinancingBoxProps = {
 };
 
 /**
- * "Finansiering" box. Desktop (6b): plum panel, text left + clinic photo right.
+ * "Finansiering" box. Desktop (6b): rose band panel (`bg-band`, the design's plum panel), text
+ * left + clinic photo right.
  * Tablet (768–1023px): the photo sits under the text in a landscape crop, because a
  * half-width column would be portrait and cut the wide wall logo.
- * Mobile (mp): sand card with heading, short text and a full-width plum button.
+ * Mobile (mp): sand card with heading, short text and a full-width accent button.
+ * Type: the H2 is the heading face (`text-heading` on sand, `text-on-band` on the band), the text
+ * Figtree (`text-muted` / `text-band-body`); the button is the primary (accent) pill everywhere.
+ * The H2 is balanced (`text-balance`): with the relaxed tracking it no longer fits one 390px
+ * line, and an unbalanced wrap would leave "rater" alone on the second.
+ * `data-surface="band-md"`: the band's text selection from 768px only; the mobile sand card
+ * keeps the light selection (the band's near-white highlight is ~1.2:1 on sand).
  *
  * Wide screens (≥1280px): the panel spans the fluid canvas on the surface margin; the
- * text column's padding follows the footer's plum block, the H2 and the text use the fluid
+ * text column's padding follows the footer's top block, the H2 and the text use the fluid
  * tokens (48px and 18px at 1600px) and the photo grows in height: 376px at 1280 (the
  * design's 1180 panel height, where the H2 wraps) → 424px at 1600. It grows less than its
  * width so the text block (which only grows ~5%) still fills over half the panel height;
@@ -35,28 +42,26 @@ export function FinancingBox({ id, eyebrow, title, text, textShort, cta, image }
   const titleId = `${id}-title`;
   return (
     <section id={id} aria-labelledby={titleId} className={cn(containerClasses("surface"), "pt-6 md:pt-0")}>
-      <div className="overflow-hidden rounded-[24px] bg-sand md:bg-plum lg:grid lg:grid-cols-2">
+      <div data-surface="band-md" className="overflow-hidden rounded-[24px] bg-sand md:bg-band lg:grid lg:grid-cols-2">
         <div className="flex flex-col gap-3 px-[22px] py-7 md:justify-center md:gap-0 md:p-10 lg:px-14 lg:py-fluid-56 xl:px-16 2xl:px-20">
-          <Eyebrow tone="powder" className="mb-3.5 max-md:hidden">
+          <Eyebrow tone="band" className="mb-3.5 max-md:hidden">
             {eyebrow}
           </Eyebrow>
           <h2
             id={titleId}
-            className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-3.5 md:text-[40px] md:leading-[1.1] md:text-cream xl:text-h2"
+            className="font-heading text-[28px] leading-[1.15] tracking-display text-balance text-heading md:mb-3.5 md:text-[40px] md:leading-[1.1] md:text-on-band xl:text-h2"
           >
             {title}
           </h2>
-          <p className="text-body leading-[1.7] text-muted md:mb-7 md:max-w-[40ch] md:text-blush">
+          <p className="text-body leading-[1.7] text-muted md:mb-7 md:max-w-[40ch] md:text-band-body">
             <ResponsiveText mobile={textShort} desktop={text} />
           </p>
           <ButtonLink href={cta.href} size="lg" fullWidth className="md:hidden">
             {cta.label}
           </ButtonLink>
-          <div data-surface="plum" className="self-start max-md:hidden">
-            <ButtonLink href={cta.href} variant="lightInk" size="mdTight">
-              {cta.label}
-            </ButtonLink>
-          </div>
+          <ButtonLink href={cta.href} size="mdTight" className="self-start max-md:hidden">
+            {cta.label}
+          </ButtonLink>
         </div>
         <Photo
           image={image}

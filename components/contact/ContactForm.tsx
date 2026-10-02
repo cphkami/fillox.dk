@@ -39,7 +39,7 @@ const MOBILE_QUERY = "(max-width: 47.99rem)";
  * does not trigger the zoom.
  */
 const fieldBase =
-  "block w-full border border-line bg-white px-5 text-[16px] text-ink transition-colors hover:border-rule focus:border-plum aria-[invalid=true]:border-plum md:bg-cream xl:text-body";
+  "block w-full border border-line bg-white px-5 text-[16px] text-ink transition-colors hover:border-rule focus:border-accent aria-[invalid=true]:border-accent md:bg-cream xl:text-body";
 /**
  * One placeholder colour everywhere, --color-placeholder (4.7:1 on cream, 5.3:1 on white).
  * The design's lighter desktop grey (6ko, #9a8b87) failed WCAG AA and is gone.
@@ -113,8 +113,8 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           role="status"
           className="rounded-[18px] bg-white px-5 py-5 focus:outline-none md:rounded-[16px] md:bg-cream md:px-6 md:py-6 xl:p-fluid-24"
         >
-          <p className="text-lead font-semibold tracking-display text-ink">{copy.success.title}</p>
-          <p className="mt-2 text-body-sm leading-[1.7] text-muted">{copy.success.text}</p>
+          <p className="font-heading text-lead tracking-display text-heading">{copy.success.title}</p>
+          <p className="mt-2 text-body-sm leading-[1.7] text-pretty text-muted">{copy.success.text}</p>
           {/* 44px touch target: a min-height on mobile, an invisible hit area from md (tablet). */}
           <button
             type="button"
@@ -125,9 +125,12 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
               focusNext.current = "name";
               setStatus("idle");
             }}
-            className="mt-4 inline-flex items-center text-ui-sm text-ink hover:text-plum max-md:mt-2 max-md:min-h-11 md:relative md:after:absolute md:after:-inset-x-1 md:after:-inset-y-2.5"
+            className="group mt-4 inline-flex items-center text-ui-sm text-ink transition-colors hover:text-accent max-md:mt-2 max-md:min-h-11 md:relative md:after:absolute md:after:-inset-x-1 md:after:-inset-y-2.5"
           >
-            <span className="border-b border-current pb-[3px]">{copy.success.again}</span>
+            {/* Text-link underline as Button "textLink": deep bronze, the accent on hover. */}
+            <span className="border-b border-rule-strong pb-[3px] transition-colors group-hover:border-accent">
+              {copy.success.again}
+            </span>
           </button>
         </div>
       </FormCard>
@@ -351,7 +354,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                 aria-invalid={invalid("consent")}
                 aria-describedby={describedBy("consent")}
                 onChange={clearError("consent")}
-                className="peer size-[22px] cursor-pointer appearance-none rounded-[6px] border border-plum bg-transparent transition-colors checked:bg-plum"
+                className="peer size-[22px] cursor-pointer appearance-none rounded-[6px] border border-accent bg-transparent transition-colors checked:bg-accent"
               />
               <svg
                 aria-hidden="true"
@@ -361,7 +364,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                 strokeWidth="2.2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="pointer-events-none absolute inset-0 m-auto size-3.5 text-cream opacity-0 peer-checked:opacity-100"
+                className="pointer-events-none absolute inset-0 m-auto size-3.5 text-on-accent opacity-0 peer-checked:opacity-100"
               >
                 <path d="M3.5 8.5l3 3 6-7" />
               </svg>
@@ -376,7 +379,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
         </div>
 
         {submitFailed ? (
-          <p role="alert" className="text-small leading-[1.6] font-semibold text-plum md:col-span-2">
+          <p role="alert" className="text-small leading-[1.6] font-semibold text-accent md:col-span-2">
             {copy.errors.submit}
           </p>
         ) : null}
@@ -419,7 +422,7 @@ function FormCard({
           leading-[1.1] py-[.2em] swap moves the glyphs by a sub-pixel at 768. */}
       <h2
         id={titleId}
-        className="mb-3.5 text-[28px] leading-[1.15] font-semibold tracking-display text-ink md:mb-6 md:text-h3-lg md:leading-normal xl:mb-fluid-24"
+        className="mb-3.5 font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-6 md:text-h3-lg md:leading-normal xl:mb-fluid-24"
       >
         {title}
       </h2>
@@ -454,7 +457,7 @@ function FieldRow({
 
 function ErrorText({ id, className, children }: { id: string; className?: string; children: ReactNode }) {
   return (
-    <p id={id} className={cn("mt-0.5 text-fine leading-[1.5] font-semibold text-plum", className)}>
+    <p id={id} className={cn("mt-0.5 text-fine leading-[1.5] font-semibold text-accent", className)}>
       {children}
     </p>
   );

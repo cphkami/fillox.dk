@@ -14,13 +14,13 @@ export function ReviewsSection({ reviews }: { reviews: NonNullable<TreatmentView
     <Container
       as="section"
       aria-labelledby={copy.sectionIds.reviews}
-      className="grid gap-5 pt-2 pb-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:grid-rows-[auto_1fr] md:items-start md:gap-x-10 md:gap-y-0 md:pt-0 md:pb-fluid-96 lg:gap-x-fluid-64"
+      className="grid gap-5 pt-2 pb-12 leading-[1.5] md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:grid-rows-[auto_1fr] md:items-start md:gap-x-10 md:gap-y-0 md:pt-0 md:pb-fluid-96 lg:gap-x-fluid-64"
     >
       <div className="flex flex-col gap-4 md:col-start-1 md:row-start-1 md:block">
         <Eyebrow className="md:mb-3.5">{reviews.eyebrow}</Eyebrow>
         <h2
           id={copy.sectionIds.reviews}
-          className="text-[28px] leading-[1.15] font-semibold tracking-display md:mb-4 md:text-[40px] md:leading-[1.1] xl:text-h2"
+          className="font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-4 md:text-[40px] md:leading-[1.1] xl:text-h2"
         >
           {reviews.title}
         </h2>

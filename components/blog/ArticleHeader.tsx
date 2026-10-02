@@ -8,13 +8,17 @@ import { Responsive } from "./Responsive";
 
 /**
  * Width of the reading column (720px from 800px up, side gutters below). It stays 720px on
- * the wide canvas too: the prose inside it keeps a 57ch measure (ArticleBody), so lines
- * stay ≤ 75 characters as the text grows from 17px to 19px (1280 → 1600px).
+ * the wide canvas too: the prose inside it keeps a 48ch measure (ArticleBody), so lines
+ * stay ≤ ~72 characters as the text grows from 17px to 19px (1280 → 1600px).
  */
 export const readingColumn = "mx-auto w-full max-w-[800px] px-5 md:px-10";
 
-/** Breadcrumb link: an invisible hit area (12px above and below) makes it a 44px target (tablet). */
-const crumbLink = "relative transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:text-plum";
+/**
+ * Breadcrumb link: an invisible hit area (12px above and below) makes it a 44px target (tablet).
+ * The crumbs keep a 1.5 line (21px; Figtree's "normal" is only 1.2) and the link is an inline
+ * block, so its box is that line: 21px + the hit area = 45px.
+ */
+const crumbLink = "relative inline-block transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:text-accent";
 
 /**
  * Article header (6art / mar): breadcrumb "Blog → Botox" (desktop) or "‹ Alle artikler"
@@ -26,7 +30,7 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
   return (
     <header>
       <div className={`${readingColumn} flex flex-col gap-4 pt-4 pb-5 md:gap-[18px] md:pt-fluid-56 md:pb-fluid-40 xl:gap-fluid-18`}>
-        <nav aria-label={copy.breadcrumbLabel} className="text-small text-muted max-md:hidden">
+        <nav aria-label={copy.breadcrumbLabel} className="text-small leading-[1.5] text-muted max-md:hidden">
           <ol className="flex flex-wrap items-center gap-x-1">
             <li>
               <Link href={copy.blogCrumb.href} className={crumbLink}>
@@ -43,8 +47,9 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
         </nav>
         <Link
           href={copy.backLink.href}
-          // py-3/-my-3: 45px tap target (secondary taps >= 44px) without moving the 21px text line.
-          className="-my-3 self-start py-3 text-[14px] text-muted transition-colors hover:text-plum md:hidden"
+          // py-3/-my-3: 45px tap target (secondary taps >= 44px) without moving the 21px text line
+          // (leading 1.5: Figtree's "normal" line is only 17px).
+          className="-my-3 self-start py-3 text-[14px] leading-[1.5] text-muted transition-colors hover:text-accent md:hidden"
         >
           <span aria-hidden="true">‹ </span>
           {copy.backLink.label}
@@ -52,7 +57,7 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
 
         <Eyebrow>{joinMeta(post.category, post.kind)}</Eyebrow>
 
-        <h1 className="text-[36px] leading-[1.08] font-semibold tracking-display text-pretty md:text-[48px] xl:text-h1-xs">{post.title}</h1>
+        <h1 className="font-heading text-[36px] leading-[1.08] tracking-display text-pretty text-heading md:text-[48px] md:tracking-hero xl:text-h1-xs">{post.title}</h1>
 
         <div className="flex items-center gap-2.5 md:gap-3">
           {author ? (

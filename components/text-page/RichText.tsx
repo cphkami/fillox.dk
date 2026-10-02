@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { RichSpan, RichText as RichTextValue } from "@/content/types";
 
 const linkClasses =
-  "font-medium text-plum underline decoration-plum/35 underline-offset-[3px] transition-colors hover:decoration-plum";
+  "font-medium text-accent underline decoration-rule-strong underline-offset-[3px] transition-colors hover:decoration-accent";
 
 function Span({ span }: { span: RichSpan }) {
   if (typeof span === "string") return <>{span}</>;

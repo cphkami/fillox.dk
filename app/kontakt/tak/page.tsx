@@ -30,11 +30,11 @@ export default function ContactThanksPage() {
           <Eyebrow className="mb-[18px] max-md:hidden xl:mb-fluid-18">{hero.eyebrow}</Eyebrow>
           <h1
             id="kontakt-tak-title"
-            className="text-[36px] leading-[1.08] font-semibold tracking-display text-balance text-ink md:mb-[22px] md:text-[52px] md:leading-[1.02] lg:text-h1 xl:mb-fluid-22"
+            className="font-heading text-[36px] leading-[1.08] tracking-display text-balance text-heading md:mb-[22px] md:text-[52px] md:leading-[1.02] md:tracking-hero lg:text-h1 xl:mb-fluid-22"
           >
             {form.success.title}
           </h1>
-          <p className="mt-4 text-[16px] leading-[1.7] text-muted md:mt-0 md:max-w-[42ch] md:text-lead md:leading-[1.75]">
+          <p className="mt-4 text-[16px] leading-[1.7] text-pretty text-muted md:mt-0 md:max-w-[42ch] md:text-lead md:leading-[1.75]">
             {form.success.text}
           </p>
           <ButtonLink href={routes.contact} size="md" mobileSize="lg" fullWidth="mobile" className="mt-8 md:mt-9 xl:mt-fluid-36">

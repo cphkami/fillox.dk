@@ -9,7 +9,9 @@ const MOBILE_QUERY = "(max-width: 767.98px)";
 
 /**
  * FAQ accordion. Desktop (6c/6bx) starts with every item closed; mobile (mb) shows the
- * first answer open until the visitor toggles something. The server cannot know the
+ * first answer open until the visitor toggles something. Questions: the heading face at
+ * every width (Poppins 500, espresso; 16px below 768 as in production, `text-lead` from 768);
+ * answers Figtree. The server cannot know the
  * viewport, so until hydration (or without JS) the mobile default comes from CSS.
  */
 export function FaqAccordion({ items }: { items: FaqItem[] }) {
@@ -35,7 +37,7 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
         const buttonId = `${baseId}-q${i}`;
         const panelId = `${baseId}-a${i}`;
         return (
-          <div key={item.question} className="border-t border-rule md:border-[#d9c9bf] md:last:border-b">
+          <div key={item.question} className="border-t border-rule/70 md:last:border-b">
             <h3>
               <button
                 type="button"
@@ -44,7 +46,7 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
                 aria-controls={panelId}
                 onClick={() => toggle(i)}
                 className={cn(
-                  "flex min-h-11 w-full items-center justify-between gap-3 pt-4 text-left text-[16px] font-semibold md:pt-[22px] md:text-lead md:tracking-display",
+                  "flex min-h-11 w-full items-center justify-between gap-3 pt-4 text-left font-heading text-[16px] text-heading md:pt-[22px] md:text-lead md:tracking-display",
                   isOpen ? "pb-2 md:pb-3" : "pb-4 md:pb-[22px]",
                   cssOpenOnMobile && "max-md:pb-2",
                 )}
@@ -52,7 +54,7 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
                 <span>{item.question}</span>
                 <span
                   aria-hidden="true"
-                  className="flex shrink-0 items-center justify-center font-semibold text-plum md:size-[38px] md:rounded-full md:border md:border-ink md:text-[18px] md:font-normal md:tracking-normal md:text-ink"
+                  className="flex shrink-0 items-center justify-center font-semibold text-accent md:size-[38px] md:rounded-full md:border md:border-accent md:text-[18px] md:font-normal md:tracking-normal"
                 >
                   {cssOpenOnMobile ? (
                     <>
@@ -80,11 +82,11 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
               )}
             >
               <div className="overflow-hidden">
-                {/* 58ch ≈ 72 Poppins characters at any font size (the design's 70ch column ran
-                    ≈ 82, over the 75-character best practice); it also keeps the text clear of
-                    the 38px toggle. Body size on mobile too (16px: the design's 15 raised to the
+                {/* 52ch ≈ 73 Figtree characters at any font size (1ch = 0.64em, an average
+                    letter 0.46em; the design's 70ch column ran ≈ 82 in Poppins, over the
+                    75-character best practice); it also keeps the text clear of the 38px toggle. Body size on mobile too (16px: the design's 15 raised to the
                     body-text minimum). */}
-                <p className="pb-4 text-body leading-[1.65] text-muted md:max-w-[58ch] md:pb-[22px] md:leading-[1.75]">
+                <p className="pb-4 text-body leading-[1.65] text-muted md:max-w-[52ch] md:pb-[22px] md:leading-[1.75]">
                   {item.answer}
                 </p>
               </div>

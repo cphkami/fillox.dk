@@ -22,14 +22,15 @@ const eyebrowClasses = "text-micro leading-[1.25] font-bold tracking-[.2em] uppe
 /**
  * Desktop "Behandlinger" panel (the owner's design v2, design-reference/mega-menu-v2.webp, drawn
  * on the 1180px design canvas): four treatment columns with an "Alle … →" link, a hairline and
- * the "For mænd" tag with its note on the white side; a plum panel (≈ 26.5% of the width, at
- * least 272px so its text and button fit at 1024) flush right, with the button pinned to the
- * bottom, level with the tag.
+ * the "For mænd" tag with its note on the white side; a rose band panel (≈ 26.5% of the width,
+ * at least 272px so its text and button fit at 1024; the design's plum panel in the owner's
+ * "Støvet rosa & beige") flush right, with the button pinned to the bottom, level with the tag.
  *
  * Width (DesktopNav): the canvas's surface band, as in the design, up to 1280px (from 1328px
  * viewport), centred. Type follows the site's type scale like the page text: links and "Alle"
  * links `text-ui-sm` (14 → 16px, always smaller than the 15 → 17px nav), eyebrows `text-micro`,
- * the heading `text-h3`, the plum text `text-body-sm`, the tag note `text-small`. Links sit on a
+ * the heading `text-h3` (Poppins, `font-heading`), the panel text `text-body-sm`, the tag note
+ * `text-small`. Everything but the heading is Figtree. Links sit on a
  * pitch of 2.35 × their size (33 → 38px; the line height, so each row is a full-width target
  * with no gaps). Paddings and gaps are the design's at ≤ 1280 and grow ×1.2 to 1600.
  */
@@ -44,7 +45,7 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
         <div className="grid grid-cols-4 gap-8 xl:gap-fluid-32/38">
           {columns.map((col, i) => (
             <div key={col.eyebrow}>
-              <p id={`${id}-${i}`} className={`${eyebrowClasses} mb-[11px] text-plum xl:mb-fluid-11/13`}>
+              <p id={`${id}-${i}`} className={`${eyebrowClasses} mb-[11px] text-accent xl:mb-fluid-11/13`}>
                 {col.eyebrow}
               </p>
               <ul aria-labelledby={`${id}-${i}`} className="text-ui-sm leading-[2.35] text-ink">
@@ -55,7 +56,7 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
                       prefetch={prefetch}
                       onClick={onNavigate}
                       aria-current={ariaCurrent(t.href)}
-                      className="block whitespace-nowrap transition-colors hover:text-plum"
+                      className="block whitespace-nowrap transition-colors hover:text-accent"
                     >
                       {t.name}
                     </Link>
@@ -80,7 +81,7 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
             </div>
           ))}
         </div>
-        {/* Pinned to the bottom: level with the plum panel's button when that side is the taller one. */}
+        {/* Pinned to the bottom: level with the band panel's button when that side is the taller one. */}
         <div className="mt-auto pt-6 xl:pt-fluid-24">
           <div className="flex items-center gap-3.5 border-t border-line pt-5 xl:pt-fluid-20">
             {/* A 36px pill; the invisible `after:` box (6px above and below the padding box) makes it a
@@ -91,7 +92,7 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
               onClick={onNavigate}
               aria-current={ariaCurrent(tag.href)}
               aria-describedby={`${id}-tag`}
-              className="relative shrink-0 rounded-full border-[1.5px] border-plum px-4 py-2 text-ui-sm leading-[1.25] font-semibold whitespace-nowrap text-plum transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-plum hover:text-cream xl:px-fluid-16/18"
+              className="relative shrink-0 rounded-full border-[1.5px] border-accent px-4 py-2 text-ui-sm leading-[1.25] font-semibold whitespace-nowrap text-accent transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-accent hover:text-on-accent xl:px-fluid-16/18"
             >
               {tag.label}
             </Link>
@@ -103,19 +104,18 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
       </div>
 
       <div
-        data-surface="plum"
-        className="flex w-[26.5%] min-w-68 shrink-0 flex-col bg-plum px-8 py-9 xl:px-fluid-32/40 xl:py-fluid-36/42"
+        data-surface="band"
+        className="flex w-[26.5%] min-w-68 shrink-0 flex-col bg-band px-8 py-9 xl:px-fluid-32/40 xl:py-fluid-36/42"
       >
-        <p className={`${eyebrowClasses} mb-3.5 text-powder xl:mb-fluid-14/16`}>{promo.eyebrow}</p>
-        <p className="text-h3 leading-[1.2] font-semibold tracking-[-0.01em] text-balance text-cream">{promo.title}</p>
-        <p className="mt-3 text-body-sm leading-[1.6] text-blush xl:mt-fluid-12/14">{promo.text}</p>
+        <p className={`${eyebrowClasses} mb-3.5 text-band-accent xl:mb-fluid-14/16`}>{promo.eyebrow}</p>
+        <p className="font-heading text-h3 leading-[1.2] tracking-[-0.01em] text-balance text-on-band">{promo.title}</p>
+        <p className="mt-3 text-body-sm leading-[1.6] text-band-body xl:mt-fluid-12/14">{promo.text}</p>
         <div className="mt-auto pt-6 xl:pt-fluid-24">
           <ButtonLink
             href={promo.cta.href}
             prefetch={prefetch}
             onClick={onNavigate}
             aria-current={ariaCurrent(promo.cta.href)}
-            variant="light"
             size="sm"
             fullWidth
           >

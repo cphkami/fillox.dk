@@ -47,7 +47,7 @@ function prefilterCss(slugs: string[]): string {
     // The count ("3 artikler") is filled in on hydration.
     `${any} [data-blog-count]{visibility:hidden}`,
     // "Alle" loses its pressed look (the "white" chip).
-    `${any} [data-blog-chip="${copy.allFilter}"]{background-color:#fff;color:var(--color-ink);border-color:var(--color-line)}`,
+    `${any} [data-blog-chip="${copy.allFilter}"]{background-color:var(--color-white);color:var(--color-ink);border-color:var(--color-line)}`,
   ];
   const perFilter = slugs.map((slug) => {
     const scope = `[data-blog-filter="${slug}"] [data-blog-fallback]`;
@@ -56,7 +56,7 @@ function prefilterCss(slugs: string[]): string {
       `${scope} [data-blog-item~="${slug}"],${scope} [data-blog-empty~="${slug}"]{display:block}`,
       `${scope} [data-blog-more~="${slug}"]{display:flex}`,
       // The requested chip gets the pressed ("primary") look, also when it is desktop-only.
-      `${scope} [data-blog-chip="${slug}"]{display:inline-flex;background-color:var(--color-plum);color:var(--color-cream);border-color:var(--color-plum)}`,
+      `${scope} [data-blog-chip="${slug}"]{display:inline-flex;background-color:var(--color-accent);color:var(--color-on-accent);border-color:var(--color-accent)}`,
     ].join("");
   });
   return [...shared, ...perFilter].join("");

@@ -48,7 +48,7 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
 
       <div className="min-w-0 md:flex md:flex-1 md:flex-col md:gap-2.5 md:px-[26px] md:pt-6 md:pb-7 xl:px-fluid-26/32 xl:pt-fluid-24 xl:pb-fluid-28">
         <p className="text-[12px] text-muted md:hidden">{joinMeta(post.category, shortReadingTime(post))}</p>
-        <p className="text-micro font-bold tracking-[2px] text-plum uppercase max-md:hidden">
+        <p className="text-micro font-bold tracking-[2px] text-accent uppercase max-md:hidden">
           {post.category}
           {copy.separator}
           <span className="font-semibold text-muted">{post.readingTime}</span>
@@ -57,10 +57,15 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
         {/* 19px (6blog / 6art), from 1280px growing to 22px at 1600 (19 → 22, the token formula):
             the size of the treatment pages' blog-card titles (text-h4), and in step with the
             photo, which grows ~1.36× with the canvas. */}
-        <Heading className="mt-0.5 text-[16px] leading-[1.4] font-semibold md:mt-0 md:text-[19px] md:leading-[1.35] md:tracking-[-.01em] xl:text-[length:clamp(19px,calc(7px+0.9375vw),22px)]">
+        <Heading className="mt-0.5 font-heading text-[16px] leading-[1.4] text-heading md:mt-0 md:text-[19px] md:leading-[1.35] md:tracking-[-.01em] xl:text-[length:clamp(19px,calc(7px+0.9375vw),22px)]">
           <Link
             href={blogPostHref(post.slug)}
-            className={cn(stretchedLink, "transition-colors group-hover:text-plum md:group-hover:text-ink")}
+            // Mobile rows: heading and accent colours are too close to show hover alone, so the
+            // title also underlines (as the home team names); from 768px the card shadow does it.
+            className={cn(
+              stretchedLink,
+              "transition-colors max-md:decoration-1 max-md:underline-offset-4 max-md:group-hover:text-accent max-md:group-hover:underline",
+            )}
           >
             {post.title}
           </Link>
@@ -68,7 +73,7 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
 
         {/* mt-auto pins the link to the card bottom when a neighbour's longer title makes the
             row taller; pt-1 keeps the design's 4px extra gap. */}
-        <span aria-hidden="true" className="text-ui-sm font-semibold text-plum max-md:hidden md:mt-auto md:pt-1">
+        <span aria-hidden="true" className="text-ui-sm font-semibold text-accent max-md:hidden md:mt-auto md:pt-1">
           {copy.list.readArticle}{" "}
           <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
         </span>

@@ -21,7 +21,7 @@ export default function NotFound() {
         <Eyebrow>{copy.eyebrow}</Eyebrow>
         <h1
           id="not-found-title"
-          className="mt-4 text-[36px] leading-[1.08] font-semibold tracking-display md:mt-5 md:text-h1 md:leading-[1.02] md:tracking-hero"
+          className="mt-4 font-heading text-[36px] leading-[1.08] tracking-display text-heading md:mt-5 md:text-h1 md:leading-[1.02] md:tracking-hero"
         >
           {copy.title}
         </h1>

@@ -37,14 +37,15 @@ const HOVER_SWITCH_DELAY = 120;
 
 /**
  * Top-level label style: `text-ui` (15px at 1024–1279, 16 → 17px from 1280) muted; the current
- * section / open menu = ink with a 1px plum underline (hover only darkens the text). The
+ * section / open menu = ink with a 1px deep-bronze underline (rule-strong, 4.0:1 on cream; hover
+ * only darkens the text). The
  * `before:` box is an invisible hit area (8px to the sides, 10px above and below: ≥ 44px high)
  * that leaves the underline where it is; `after:` is taken by the mega menu's hover bridge.
  */
 function itemClasses(highlight: boolean) {
   return cn(
     "relative inline-block border-b pb-[3px] text-ui whitespace-nowrap transition-colors before:absolute before:-inset-x-2 before:-inset-y-2.5",
-    highlight ? "border-plum text-ink" : "border-transparent text-muted hover:text-ink",
+    highlight ? "border-rule-strong text-ink" : "border-transparent text-muted hover:text-ink",
   );
 }
 

@@ -29,7 +29,8 @@ export type ContactChannel = {
   /** tel:/mailto:/page link. Omit for an information-only card (no link, no arrow). */
   href?: string;
   /**
-   * "plain": white card. "accent": plum card on desktop (6ko), sand card on mobile (mc).
+   * "plain": white card. "accent": rose band card on desktop (6ko's dark accent card), sand card on
+   * mobile (mc).
    */
   tone: "plain" | "accent";
 };

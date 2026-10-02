@@ -10,7 +10,7 @@ type TextPageAsideProps = {
 
 /**
  * CTA card beside the text (sand, radius 20, like the 6art / mar booking card).
- * The first action is the primary plum button, the rest are outline buttons (all the same
+ * The first action is the primary accent button, the rest are outline buttons (all the same
  * height). Buttons are full width on mobile and in the desktop side column, side by side
  * on tablet. Wide (≥1280px, type scale): the title grows 22 → 25px (`text-h3`), the text
  * 15 → 16px (`text-body-sm`) and the padding 28 → 32px.
@@ -19,7 +19,7 @@ export function TextPageAside({ aside, titleId, className }: TextPageAsideProps)
   return (
     <aside aria-labelledby={titleId} className={cn("rounded-[20px] bg-sand p-5 md:p-7 xl:p-fluid-28/32", className)}>
       {aside.eyebrow ? <Eyebrow className="mb-1.5">{aside.eyebrow}</Eyebrow> : null}
-      <h2 id={titleId} className="text-[20px] leading-[1.25] font-semibold tracking-display text-balance md:text-h3">
+      <h2 id={titleId} className="font-heading text-[20px] leading-[1.25] tracking-display text-balance text-heading md:text-h3">
         {aside.title}
       </h2>
       {aside.text ? <p className="mt-2 text-body-sm leading-[1.65] text-pretty text-muted">{aside.text}</p> : null}
@@ -32,7 +32,7 @@ export function TextPageAside({ aside, titleId, className }: TextPageAsideProps)
             size="mdTight"
             mobileSize="lg"
             // The primary button gets a transparent 1px border so it is exactly as tall as the
-            // outline buttons (1px plum border) on the same padding.
+            // outline buttons (1px accent border) on the same padding.
             className={cn("max-md:w-full lg:w-full", i === 0 && "border border-transparent")}
           >
             {action.label}

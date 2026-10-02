@@ -47,7 +47,11 @@ type PriceCategoriesProps = {
  *   that a third of the grid can't hold the longest card header on one line.
  * - Mobile (mp, unfolded at the owner's request): a row of jump chips, then the same
  *   cards stacked, header (20px title, label under it) over the rows. No chip is current at
- *   rest; a tapped chip, or a URL hash (/priser#konsultation), marks its chip plum.
+ *   rest; a tapped chip, or a URL hash (/priser#konsultation), marks its chip (accent fill).
+ *
+ * Type: card titles are the heading face (`font-heading text-heading`), the rule under them
+ * the heading colour; label, rows, notes and prices are Figtree. Row hairlines `line`. Rows set
+ * `leading-[1.5]` (Poppins' "normal"; Figtree's is 1.2), which keeps the design's 48px row pitch.
  */
 export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps) {
   /** Category picked by a chip or the URL hash; undefined until the visitor picks one. */
@@ -142,8 +146,8 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
               >
                 {/* Mobile: label always under the title (mp's header shape), so every card header
                     has the same form whatever the title length; from 768px a baseline row (6b). */}
-                <div className="mb-0.5 flex flex-wrap items-baseline justify-between gap-x-4 border-b border-ink pb-3 max-md:flex-col max-md:items-start max-md:gap-y-1 md:mb-1.5 md:pb-3.5">
-                  <h2 id={titleId} className="text-[20px] font-semibold tracking-display md:text-h3">
+                <div className="mb-0.5 flex flex-wrap items-baseline justify-between gap-x-4 border-b border-heading pb-3 max-md:flex-col max-md:items-start max-md:gap-y-1 md:mb-1.5 md:pb-3.5">
+                  <h2 id={titleId} className="font-heading text-[20px] tracking-display text-heading md:text-h3">
                     {c.title}
                   </h2>
                   <Eyebrow>{c.eyebrow}</Eyebrow>
@@ -153,14 +157,14 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
                   {c.rows.map((row) => (
                     <div
                       key={`${row.label} ${row.note ?? ""}`}
-                      className="relative flex justify-between gap-3 border-b border-powder py-[13px] text-ui-sm last:border-b-0"
+                      className="relative flex justify-between gap-3 border-b border-line py-[13px] text-ui-sm leading-[1.5] last:border-b-0"
                     >
                       <dt>
                         {row.href ? (
                           // On touch screens the whole 48px row is the tap target (a 21px text line alone is too small).
                           <Link
                             href={row.href}
-                            className="decoration-1 underline-offset-[3px] hover:underline pointer-coarse:after:absolute pointer-coarse:after:inset-0"
+                            className="decoration-rule-strong decoration-1 underline-offset-[3px] hover:underline pointer-coarse:after:absolute pointer-coarse:after:inset-0"
                           >
                             {row.label}
                           </Link>
