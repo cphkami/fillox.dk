@@ -41,12 +41,16 @@ export const site: SiteConfig = {
     instagram: "https://www.instagram.com/fillox_dk/",
   },
 
-  // As shown on https://dk.trustpilot.com/review/fillox.dk (checked 2026-10-01): TrustScore 4,7
-  // "Fremragende" (content/ui.ts → trustpilotLabel), 172 anmeldelser. Update all three together.
+  // As shown on https://dk.trustpilot.com/review/fillox.dk: TrustScore 4,7 "Fremragende"
+  // (content/ui.ts → trustpilotLabel), 172 anmeldelser. Update all three together, and `checked`
+  // with them (check:market notes when it is more than 60 days old).
+  // TODO (owner): or embed Trustpilot's official TrustBox, which updates itself and uses their own
+  // star assets (the home hero and the footer strip redraw the stars).
   trustpilot: {
     score: 4.7,
     reviewCount: 172,
     url: "https://dk.trustpilot.com/review/fillox.dk",
+    checked: "2026-10-01",
   },
 
   /**

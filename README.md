@@ -42,7 +42,8 @@ npm run build            # kører check:market først (prebuild)
 - en rute i `content/routes.ts` ikke har en `app/<sti>/page.tsx` (eller omvendt), eller en
   redirect i `content/redirects.ts` peger på en side, der ikke findes;
 - en formular i `content/forms.ts` ikke er erklæret i `public/__forms.html` (eller omvendt), eller
-  `public/__kontakt-sendt.html` ikke sender videre til takkesiden;
+  `public/__kontakt-sendt.html` / `public/__nyhedsbrev-tilmeldt.html` ikke sender videre til deres
+  takkeside (`routes.contactThanks` / `routes.newsletterThanks`);
 - booking-udbyderen mangler id'er (TIMMA: `timmaId` på hver åben klinik);
 - en åben kliniks adresse eller åbningstider ikke kan læses ind i de strukturerede data
   (sidste adresselinje skal være `<postnr> <by>`, tider som `10–20`, dag-labels i
@@ -50,7 +51,8 @@ npm run build            # kører check:market først (prebuild)
 - der står æ, ø eller å i en streng i `app/`, `components/` eller `lib/` (tekst hører til i
   `content/`).
 
-Klinikker uden Gecko-kalender-id vises som en note (ikke en fejl).
+Klinikker uden Gecko-kalender-id vises som en note (ikke en fejl), og det samme gør
+Trustpilot-tallene i `config/site.ts`, når `trustpilot.checked` er mere end 60 dage gammel.
 
 ## Deploy til Netlify
 
@@ -68,14 +70,19 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
 | Formular | Navn (`content/forms.ts`) | Hvor |
 |---|---|---|
 | Kontakt | `kontakt` | `/kontakt` |
-| Nyhedsbrev | `nyhedsbrev` | `/blog` |
+| Nyhedsbrev | `nyhedsbrev` | footeren på alle sider + `/blog` |
 | "Få besked" (Østerbro) | `osterbro-besked` | `/klinikker` |
 
 - Netlify finder formularerne ved deploy i `public/__forms.html` (skjult, aldrig linket).
   Feltnavnene dér skal matche det, komponenterne sender.
 - Med JavaScript sender siden data til `/__forms.html` (`lib/forms.ts`) og viser en kvittering
   på stedet. Uden JavaScript poster kontaktformularen til `public/__kontakt-sendt.html`, som
-  sender videre til `/kontakt/tak`.
+  sender videre til `/kontakt/tak`, og nyhedsbrevet til `public/__nyhedsbrev-tilmeldt.html`, som
+  sender videre til `/nyhedsbrev/tak`. Filerne i `public/` indeholder ingen tekst.
+- Nyhedsbrevet: privatlivspolitikken har et afsnit om det (`content/pages/legal.ts`, "12.
+  Nyhedsbrev"), som begge tilmeldinger linker til. Skal godkendes af Fillox inden lancering (se
+  TODO'en dér: mailværktøj, databehandleraftaler, overførsel til USA). Tilbud i nyhedsbrevet må
+  aldrig reklamere for Botox eller andre receptpligtige lægemidler.
 - Spam: honeypot-feltet `bot-field`.
 - Notifikationer (e-mail ved ny besked) sættes op i Netlify under **Forms → Form notifications**.
 
@@ -127,6 +134,12 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       der nævner Botox, er udeladt, og de seks botulinumtoksin-sider (Botox, Lip flip, Gummy
       smile, Hyperhidrose, Traptox, Botox for mænd) viser ingen kundeanmeldelser
       (`treatmentsWithoutReviews` i `content/reviews.ts`). Slå dem først til, når det er afklaret.
+      Afklaringen skal også dække `/behandlinger/for-maend` (`content/pages/men.ts`): siden viser
+      ingen anmeldelser, men nævner Botox for mænd først, med pris og et FAQ-svar.
+- [ ] **Booking hos en bestemt behandler**: `/booking?behandler=<slug>` åbner Gecko-kalenderen
+      uden filter. Kan Gecko forvælge en behandler (et kalender- eller ressource-id pr. behandler,
+      som `geckoCalendarId` pr. klinik)? Indtil da lover siden for mænd ikke "book direkte hos …"
+      (`content/pages/men.ts`); knapperne "Book tid hos …" på behandlerkortene åbner kalenderen.
 - [ ] **Båndet lige over footeren** ("Støvet rosa & beige"): designets lyse bånd ("Fagligt
       ansvarlig" på Om os, "Book tid hos …" på behandlersiderne) var i ét med den beige footer.
       Om os bruger nu sand (`components/about/ResponsibleBand.tsx`), behandlersiderne det
@@ -155,6 +168,7 @@ skal du rette en tekst i en komponent, hører teksten til i `content/`.
 | `content/**` | Al tekst og data: navigation, klinikker, behandlinger, priser, behandlere, blog, sidetekster, UI-strenge, 404, `/booking`-tekst, `seo.ts` (dag-labels), `forms.ts` (formularnavne), `redirects.ts` (gamle fillox.no-URL'er), `reviews.ts` (kun ægte anmeldelser fra fillox.no's Trustpilot-profil, ordret; se kommentaren øverst i filen) |
 | `public/__forms.html` | Samme formularnavne som `content/forms.ts` |
 | `public/__kontakt-sendt.html` | Videresender til `routes.contactThanks` (fx `/kontakt/takk`) |
+| `public/__nyhedsbrev-tilmeldt.html` | Videresender til `routes.newsletterThanks` (fx `/nyhetsbrev/takk`); filnavnet er `content/forms.ts` → `newsletterNoJsAction` |
 | `public/images/**` | Fotos; **klinikkortet** `public/images/clinics/kort.svg` er et København-kort |
 | `ARCHITECTURE.md`, `README.md` | Rutetabel og tekst for NO |
 
@@ -173,6 +187,7 @@ og sitemap bygges af. Ændr begge — `check:market` fejler, hvis de ikke passer
 | `app/handelsbetingelser` | fx `app/vilkar` |
 | `app/privatlivspolitik` | `app/personvern` |
 | `app/kontakt/tak` | `app/kontakt/takk` |
+| `app/nyhedsbrev/tak` | `app/nyhetsbrev/takk` |
 | `app/booking` | beslutning: behold `/booking`, eller `/book-time` som på den nuværende fillox.no |
 
 Resten (`behandlinger`, `behandlere`, `klinikker`, `kontakt`, `priser`, `blog`,

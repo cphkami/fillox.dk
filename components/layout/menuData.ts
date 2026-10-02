@@ -5,7 +5,7 @@
  */
 import { clinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
-import { mainNav, megaMenu, treatmentCategories } from "@/content/navigation";
+import { mainNav, megaMenu, treatmentCategories, treatmentCategoryHref } from "@/content/navigation";
 import { priceCards, pricesPage, type PriceCard } from "@/content/prices";
 import { routes } from "@/content/routes";
 import { getTreatment, treatmentHref } from "@/content/treatments";
@@ -130,7 +130,6 @@ function clinicAnchor(clinic: Clinic, clinicsHref: string): string {
 /** Nav items, mega menu, mobile menu categories, clinics and prices for <Header/>. */
 export function buildHeaderData(): HeaderData {
   const clinicsHref = routes.clinics;
-  const treatmentsHref = routes.treatments;
   const pricesHref = routes.prices;
 
   return {
@@ -149,7 +148,9 @@ export function buildHeaderData(): HeaderData {
       name: c.name,
       label: c.mobileName ?? c.name,
       allLabel: layoutCopy.mobileMenu.categoryAllLabels[c.slug] ?? ui.seeAllTreatments,
-      href: `${treatmentsHref}#${c.slug}`,
+      // The category's own page when it has one ("For mænd" → /behandlinger/for-maend), else its
+      // section on /behandlinger (content/navigation.ts → treatmentCategoryHref).
+      href: treatmentCategoryHref(c.slug),
       treatments: resolveTreatments(c.treatments),
     })),
     clinics: clinics.map((c) => ({

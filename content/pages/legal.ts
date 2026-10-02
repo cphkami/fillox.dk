@@ -1,6 +1,6 @@
 import type { Link, TextBlock, TextPageContent } from "../types";
 import { site } from "@/config/site";
-import { routes } from "../routes";
+import { privacyNewsletterAnchor, routes } from "../routes";
 
 /**
  * Copy for /handelsbetingelser and /privatlivspolitik (no design; rendered by
@@ -243,6 +243,47 @@ export const privacyPage: TextPageContent = {
 
     { type: "h2", text: "11. Ændringer" },
     { type: "paragraph", text: "Den gældende version findes altid på vores hjemmeside." },
+
+    // NOT on the live page: added 2026-10 for the newsletter signup in the footer of every page
+    // and on /blog (GDPR art. 13 information where the address is collected; every signup links
+    // here, routes.privacyNewsletter).
+    // TODO: copy review + legal review by Fillox before launch:
+    // - name the e-mail tool that will send the newsletter (it is a processor too) and confirm the
+    //   data processing agreements with it and with Netlify;
+    // - Netlify is a US company: add the basis for the transfer outside the EU (e.g. the EU–US
+    //   Data Privacy Framework or standard contractual clauses) once confirmed;
+    // - confirm how long the proof of consent is kept after an unsubscribe;
+    // - newsletter offers must never promote Botox or other prescription medicines (advertising
+    //   them to the public is not allowed), the same reason the Botox pages show no reviews.
+    { type: "h2", id: privacyNewsletterAnchor, text: "12. Nyhedsbrev" },
+    {
+      type: "paragraph",
+      text: "Når du tilmelder dig vores nyhedsbrev, behandler vi din e-mailadresse samt tidspunktet for tilmeldingen og den side, du tilmeldte dig på, så vi kan dokumentere dit samtykke.",
+    },
+    {
+      type: "list",
+      items: [
+        [
+          { text: "Formål: ", strong: true },
+          "at sende dig vores nyhedsbrev med tilbud, nyheder og tips om vores behandlinger.",
+        ],
+        [
+          { text: "Retsgrundlag: ", strong: true },
+          "dit samtykke, jf. GDPR artikel 6, stk. 1, litra a, og markedsføringslovens § 10.",
+        ],
+        [{ text: "Opbevaring: ", strong: true }, "vi opbevarer din e-mailadresse, indtil du afmelder dig nyhedsbrevet."],
+        [
+          { text: "Databehandlere: ", strong: true },
+          "tilmeldinger modtages og opbevares hos vores hostingudbyder, Netlify, og nyhedsbrevet sendes via vores e-mailudbyder. De behandler kun oplysningerne efter vores instruks.",
+        ],
+        [
+          { text: "Afmelding: ", strong: true },
+          "du kan til enhver tid trække dit samtykke tilbage via afmeldingslinket i bunden af hvert nyhedsbrev eller ved at skrive til os på ",
+          { text: site.contact.email, href: `mailto:${site.contact.email}` },
+          ". Det påvirker ikke lovligheden af den behandling, der er sket, før du afmeldte dig.",
+        ],
+      ],
+    },
 
     companyLines,
   ],

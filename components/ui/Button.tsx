@@ -11,6 +11,18 @@ import { cn } from "@/lib/cn";
  * - outlineInk 1px ink border + ink text
  * - white     white bg + 1px line border (chips, secondary on sand)
  * - textLink  ink text over a 1px deep-bronze underline ("Se priser")
+ *
+ * Hover, keyboard focus and press share one look per variant, and it is always the brown accent,
+ * never black (owner, 2026-10: "Se alle behandlinger" turned black on hover; it should turn brown
+ * like "Alle artikler om lip filler"):
+ * - primary              → accent-deep fill
+ * - outline / outlineInk → accent fill + krem text (the "Alle artikler om …" look)
+ * - white                → accent border + accent text. Not filled: the white pills are mostly
+ *                          filter chips, whose selected state IS the accent fill (primary), so a
+ *                          filled hover would look selected.
+ * - textLink             → accent text + accent underline
+ * A page that recolours a pill at rest (e.g. `lg:border-ink lg:text-ink`) keeps this hover: the
+ * hover / focus classes are more specific than a breakpoint class. Never add `hover:bg-ink`.
  */
 export type ButtonVariant = "primary" | "outline" | "outlineInk" | "white" | "textLink";
 
@@ -51,13 +63,21 @@ const base =
  */
 const forcedColorsBorder = "forced-colors:border forced-colors:border-[color:ButtonText]";
 
+/** The brown fill of outline pills on hover, keyboard focus and press (krem on accent 10:1). */
+const accentFill = [
+  "hover:border-accent hover:bg-accent hover:text-on-accent",
+  "focus-visible:border-accent focus-visible:bg-accent focus-visible:text-on-accent",
+  "active:border-accent active:bg-accent active:text-on-accent",
+].join(" ");
+
 const variants: Record<ButtonVariant, string> = {
-  primary: `rounded-full bg-accent text-on-accent hover:bg-accent-deep ${forcedColorsBorder}`,
-  outline: "rounded-full border border-accent text-accent hover:bg-accent hover:text-on-accent",
-  outlineInk: "rounded-full border border-ink text-ink hover:bg-ink hover:text-cream",
-  white: "rounded-full border border-line bg-white text-ink hover:border-accent hover:text-accent",
+  primary: `rounded-full bg-accent text-on-accent hover:bg-accent-deep focus-visible:bg-accent-deep active:bg-accent-deep ${forcedColorsBorder}`,
+  outline: `rounded-full border border-accent text-accent ${accentFill}`,
+  outlineInk: `rounded-full border border-ink text-ink ${accentFill}`,
+  white:
+    "rounded-full border border-line bg-white text-ink hover:border-accent hover:text-accent focus-visible:border-accent focus-visible:text-accent",
   textLink:
-    "border-b border-rule-strong pb-[3px] text-ui text-ink hover:border-accent hover:text-accent",
+    "border-b border-rule-strong pb-[3px] text-ui text-ink hover:border-accent hover:text-accent focus-visible:border-accent focus-visible:text-accent",
 };
 
 /**

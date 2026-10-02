@@ -2,6 +2,7 @@ import type { FaqItem, ImageRef, Link } from "../types";
 import { site } from "@/config/site";
 import { pricesPage } from "../prices";
 import { routes } from "../routes";
+import { ui } from "../ui";
 import { blogPage } from "./blog";
 
 /**
@@ -16,6 +17,9 @@ import { blogPage } from "./blog";
 
 /** Section titles that include the treatment name, e.g. "Læs mere om Profhilo". */
 const withName = (prefix: string) => (name: string) => `${prefix} ${name}`;
+
+/** A group of rows in a treatment's price list (treatmentPage.prices.groups). */
+export type PriceGroupCopy = { title: string; note?: string; labels: string[] };
 
 export const treatmentPage = {
   /**
@@ -80,18 +84,49 @@ export const treatmentPage = {
     title: withName("Det siger kunderne om"),
     generalTitle: "Det siger vores kunder",
     intro: "Udvalgte anmeldelser fra vores kunder på Trustpilot.",
+    /**
+     * The Trustpilot score card next to the reviews (components/treatment/TrustpilotScore). Score,
+     * count and profile link come from config/site.ts → trustpilot, the label ("Fremragende")
+     * from ui.trustpilotLabel: update them together from the profile.
+     */
+    score: {
+      /** Under the big score: "ud af 5". */
+      outOf: `${ui.outOf} 5`,
+      /** Next to the stars: "Fremragende på Trustpilot". */
+      label: (label: string) => `${label} på ${ui.trustpilot}`,
+      /** "Baseret på 172 anmeldelser". */
+      count: (count: string) => `Baseret på ${count} anmeldelser`,
+      /** Read by screen readers instead of the visual block: one sentence. */
+      accessible: (label: string, score: string, count: string) =>
+        `${label} på ${ui.trustpilot}: ${score} ${ui.outOf} 5, baseret på ${count} anmeldelser.`,
+    },
   },
 
   prices: {
     eyebrow: "Priser",
     // TODO: copy review — title + intro for treatments without their own price section.
     fallbackTitle: "Vejledende priser",
-    fallbackIntro: "Den endelige pris fastlægges altid ved din konsultation. Konsultation og kontrol er altid gratis.",
-    /** Link under the fallback price list (to the matching card on /priser). */
+    // The price card states `note` under the "fra" price, so the intro no longer repeats it.
+    fallbackIntro: "Den endelige pris fastlægges altid ved din konsultation.",
+    /**
+     * Link under every price list: to the /priser card its rows come from, else the card of the
+     * treatment's category (components/treatment/treatmentView.ts).
+     */
     allPricesLink: { label: "Se alle priser", href: routes.prices } satisfies Link,
     /**
-     * Rows from the /priser "Konsultation & kontrol" card appended to the fallback price
-     * list, by category slug (`default` for the rest). Labels must match content/prices.ts.
+     * Under the "fra" price in the price card (components/treatment/PriceSection), next to a check
+     * mark. Fact from content/prices.ts: the "Konsultation & kontrol" card is "ALTID GRATIS" (as on
+     * fillox.dk/priser). Left out when the price intro already mentions kontrol (`noteCoveredBy`)
+     * or the list has the free konsultation / kontrol rows (`extraRows`): never said twice.
+     */
+    // TODO: copy review (not in the design)
+    note: "Konsultation og kontrol er altid gratis.",
+    /** True when a text already tells that konsultation and kontrol are included / free. */
+    noteCoveredBy: (text: string) => /\bkontrol\b/i.test(text),
+    /**
+     * Rows from the /priser "Konsultation & kontrol" card shown under the fallback price list
+     * (full width, after both columns of a long list), by category slug (`default` for the rest).
+     * Labels must match content/prices.ts.
      */
     extraRowsCardId: "konsultation",
     extraRows: {
@@ -99,6 +134,42 @@ export const treatmentPage = {
       rynkebehandling: ["Lægekonsultation før første botox", "Kontrol efter behandling"],
       default: ["Kontrol efter behandling"],
     } as Record<string, string[]>,
+    /**
+     * Groups in a treatment's own price list, by the slug of the treatment whose `detail.prices`
+     * it is (Botox for mænd shows Botox's list). `labels` are row labels of that list
+     * (content/treatments.ts), in display order; rows in no group come first, without a heading.
+     * `title` is a small heading over the group; `note` is said once under it and replaces the
+     * rows' own notes. Long lists (> 6 rows) run in two columns, split between two groups, never
+     * inside one (components/treatment/PriceSection). A label missing from the list fails the build.
+     */
+    // TODO: copy review (group headings not in the design; /priser has them as one list)
+    groups: {
+      // /priser lists single areas, the area packages ("gælder områderne ovenfor"), then the other
+      // Botox treatments. In two columns "ovenfor" pointed at nothing, so the packages are a group
+      // that names the areas it applies to. Hyperhidrose is not one of them (live: "Øvrige Botox
+      // behandlinger"); placed before the packages so the two columns are even (6 | 6 rows).
+      botox: [
+        {
+          title: "Enkelte områder",
+          labels: [
+            "Lip flip / Gummy smile / Bunny lines",
+            "Brynløft / Nose slimming / Rygerynker",
+            "Nedadgående mundvige",
+            "Pande / Bekymringsrynke / Kragetæer",
+            "Platysmabånd / Nefertiti lift",
+          ],
+        },
+        { title: "Øvrige behandlinger", labels: ["Hyperhidrose (svedige armhuler)"] },
+        {
+          title: "Flere områder",
+          note: "Frit valg blandt de enkelte områder",
+          labels: ["2 områder", "3 områder", "4 områder", "5 områder", "6 områder", "7 områder"],
+        },
+      ],
+      // Hyalase dissolves filler: a service of its own, not an amount of lip filler (and cheaper
+      // than the "fra" price, which is the 0,3 ml row).
+      "lip-filler": [{ title: "Andre ydelser", labels: ["Opløsning af filler (Hyalase)"] }],
+    } as Record<string, PriceGroupCopy[]>,
   },
 
   posts: {

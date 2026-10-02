@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!-- No-JavaScript target of the "nyhedsbrev" form (content/forms.ts → newsletterNoJsAction).
+     Never linked. Netlify Forms stores the POST and serves this static file, which forwards
+     to the thank-you page (routes.newsletterThanks, app/nyhedsbrev/tak). With JavaScript the
+     form posts via lib/forms.ts and shows its success message in place instead. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content="0; url=/nyhedsbrev/tak" />
+    <link rel="canonical" href="/nyhedsbrev/tak" />
+  </head>
+  <body>
+    <a href="/nyhedsbrev/tak">/nyhedsbrev/tak</a>
+  </body>
+</html>

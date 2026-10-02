@@ -92,7 +92,7 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
               onClick={onNavigate}
               aria-current={ariaCurrent(tag.href)}
               aria-describedby={`${id}-tag`}
-              className="relative shrink-0 rounded-full border-[1.5px] border-accent px-4 py-2 text-ui-sm leading-[1.25] font-semibold whitespace-nowrap text-accent transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-accent hover:text-on-accent xl:px-fluid-16/18"
+              className="relative shrink-0 rounded-full border-[1.5px] border-accent px-4 py-2 text-ui-sm leading-[1.25] font-semibold whitespace-nowrap text-accent transition-colors after:absolute after:inset-x-0 after:-inset-y-1.5 hover:bg-accent hover:text-on-accent focus-visible:bg-accent focus-visible:text-on-accent active:bg-accent active:text-on-accent xl:px-fluid-16/18"
             >
               {tag.label}
             </Link>

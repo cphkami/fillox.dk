@@ -15,6 +15,7 @@ import { HoneypotField } from "@/components/ui/HoneypotField";
 import type { ContactFormCopy } from "@/content/pages/contact";
 import { cn } from "@/lib/cn";
 import { honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
+import { useHydrated } from "@/lib/useHydrated";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
 type Field = "name" | "email" | "phone" | "message" | "consent";
@@ -70,6 +71,9 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Errors>({});
   const [submitFailed, setSubmitFailed] = useState(false);
+  // Native validation (required, type="email") until React runs, so the no-JS POST never sends
+  // an empty or malformed form; then the inline validation takes over.
+  const hydrated = useHydrated();
   /**
    * Chosen clinic, shown by the styled overlay over the select. null in the server HTML and
    * until the select has mounted in the browser; meanwhile the select shows its own text.
@@ -211,7 +215,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
         method="post"
         action={copy.noJsAction}
         aria-labelledby={titleId}
-        noValidate
+        noValidate={hydrated}
         onSubmit={onSubmit}
         className="grid gap-3.5 md:grid-cols-2 md:gap-y-[18px]"
       >

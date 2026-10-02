@@ -64,8 +64,25 @@ export const treatmentCategories: TreatmentCategory[] = [
   },
 ];
 
-/** A treatment category on the /behandlinger overview (each category section has id="<slug>"). */
-const categoryHref = (slug: TreatmentCategory["slug"]) => `${routes.treatments}#${slug}`;
+/**
+ * Categories with a landing page of their own instead of a section on /behandlinger. Every link
+ * to such a category (the mega menu's "For mænd" tag, the mobile menu's "Se alle …", the
+ * overview's jump chip) goes to the page, which opens at the top; the overview keeps a teaser
+ * with id="<slug>" so old /behandlinger#<slug> links still land somewhere sensible.
+ */
+export const categoryPages: Partial<Record<TreatmentCategory["slug"], string>> = {
+  "for-maend": routes.men,
+};
+
+/**
+ * Link to a treatment category: its own page (categoryPages), else its section on the
+ * /behandlinger overview (each category section has id="<slug>").
+ */
+export function treatmentCategoryHref(slug: TreatmentCategory["slug"]): string {
+  return categoryPages[slug] ?? `${routes.treatments}#${slug}`;
+}
+
+const categoryHref = treatmentCategoryHref;
 
 /**
  * Desktop "Behandlinger" mega menu (the owner's design v2, design-reference/mega-menu-v2.webp):

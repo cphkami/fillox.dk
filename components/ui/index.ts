@@ -3,6 +3,7 @@ export type { ButtonSize, ButtonStyleProps, ButtonVariant } from "./Button";
 export { Eyebrow } from "./Eyebrow";
 export { SectionHeading } from "./SectionHeading";
 export { TrustpilotRating } from "./TrustpilotRating";
+export { TrustpilotStars } from "./TrustpilotStars";
 export { ReviewRotator } from "./ReviewRotator";
 export { AllReviewsLink } from "./AllReviewsLink";
 export { Photo } from "./Photo";

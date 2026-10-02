@@ -28,8 +28,8 @@ const ALL_FILTER = "alle";
 /** Netlify form of the newsletter signup (declared in public/__forms.html). */
 const NEWSLETTER_FORM: FormName = forms.newsletter;
 
-/** The newsletter note links to the privacy policy. */
-const privacyHref = routes.privacy;
+/** The newsletter note links to the privacy policy's newsletter section. */
+const privacyHref = routes.privacyNewsletter;
 
 /** Dates are ISO days ("2026-09-12"); format them as UTC so the day never shifts. */
 const longDate = new Intl.DateTimeFormat(site.locale, {
@@ -121,6 +121,7 @@ export const blogPage = {
     privacy: {
       text: "Vi bruger kun din e-mail til nyhedsbrevet, og du kan altid afmelde dig.",
       link: { label: "Læs vores privatlivspolitik", href: privacyHref } satisfies Link,
+      end: ".",
     },
   },
 };

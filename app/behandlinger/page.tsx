@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { MenTeaser } from "@/components/men/MenTeaser";
 import { BookingBand } from "@/components/treatment/BookingBand";
 import { TreatmentCard } from "@/components/treatment/TreatmentCard";
 import { ArrowLink, ButtonLink, Container, Photo, ScrollRow } from "@/components/ui";
 import { site } from "@/config/site";
-import { treatmentCategories } from "@/content/navigation";
+import { categoryPages, treatmentCategories } from "@/content/navigation";
+import { menCategorySlug, menPage } from "@/content/pages/men";
 import { treatmentPage, treatmentsOverview as copy } from "@/content/pages/treatments";
 import { priceCards } from "@/content/prices";
 import { routes } from "@/content/routes";
@@ -24,11 +26,17 @@ export const metadata: Metadata = pageMetadata(copy.meta, PATH);
  * with 1, 2 or 4 treatments would leave a 3-column row half empty, so from lg its heading
  * moves into the first column(s) of the same grid and the cards fill the rest.
  * `leading-[1.5]` on the containers: Poppins' "normal" (Figtree's is 1.2), as on the treatment pages.
+ *
+ * Categories with a page of their own (content/navigation.ts → categoryPages: "For mænd" →
+ * /behandlinger/for-maend) get no section here: their jump chip links to the page, and "For mænd"
+ * closes the list as a teaser card (MenTeaser) that keeps id="for-maend" for old links.
  */
 export default function TreatmentsOverviewPage() {
   const categories = treatmentCategories
     .map((category) => ({ category, items: treatmentsInCategory(category.slug) }))
     .filter(({ items }) => items.length > 0);
+  const sections = categories.filter(({ category }) => !categoryPages[category.slug]);
+  const showMenTeaser = categories.some(({ category }) => category.slug === menCategorySlug);
 
   return (
     <>
@@ -50,8 +58,14 @@ export default function TreatmentsOverviewPage() {
               >
                 {categories.map(({ category }) => (
                   <li key={category.slug} className="shrink-0 snap-start">
-                    <ButtonLink href={`#${category.slug}`} variant="white" size="chip">
+                    <ButtonLink href={categoryPages[category.slug] ?? `#${category.slug}`} variant="white" size="chip">
                       {category.name}
+                      {/* A page of its own, not a jump within this page (as the teaser's button). */}
+                      {categoryPages[category.slug] ? (
+                        <>
+                          &nbsp;<span aria-hidden="true">→</span>
+                        </>
+                      ) : null}
                     </ButtonLink>
                   </li>
                 ))}
@@ -71,7 +85,7 @@ export default function TreatmentsOverviewPage() {
 
       <Container className="pt-8 pb-9 leading-[1.5] md:pt-fluid-84 md:pb-fluid-60">
         <div className="flex flex-col gap-14 md:gap-fluid-96">
-          {categories.map(({ category, items }) => {
+          {sections.map(({ category, items }) => {
             const card = priceCards.find((c) => c.categorySlug === category.slug);
             const categoryIntro = copy.categoryIntros[category.slug];
             // Never repeat a card's one-liner right above it.
@@ -126,6 +140,7 @@ export default function TreatmentsOverviewPage() {
               </section>
             );
           })}
+          {showMenTeaser ? <MenTeaser copy={menPage.teaser} id={menCategorySlug} /> : null}
         </div>
       </Container>
 

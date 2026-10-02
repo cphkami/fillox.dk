@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import type { ReviewSlide } from "@/lib/reviews";
 import { fillTemplate } from "@/lib/template";
 import { useMediaQuery } from "@/lib/useMediaQuery";
+import { TrustpilotStars } from "./TrustpilotStars";
 
 /**
  * Surface the rotator sits on: "light" (cream, sand, white), "band" (a rose band), "band-lg" (a
@@ -35,6 +36,11 @@ type ReviewRotatorProps = {
   valign?: "center" | "start";
   /** Milliseconds per review while rotating. */
   interval?: number;
+  /**
+   * How a review's rating is drawn: "glyphs" (default, ★ in the surface's accent) or "trustpilot"
+   * (Trustpilot's green squares, next to a Trustpilot score card: one star style per section).
+   */
+  stars?: "glyphs" | "trustpilot";
   className?: string;
 };
 
@@ -186,6 +192,7 @@ export function ReviewRotator({
   align = "center",
   valign,
   interval = DEFAULT_INTERVAL,
+  stars = "glyphs",
   className,
 }: ReviewRotatorProps) {
   const count = reviews.length;
@@ -318,11 +325,15 @@ export function ReviewRotator({
                   aria-label={fillTemplate(ui.reviewRating, { rating: review.rating })}
                   className={cn("flex leading-none", a.row, z.stars, s.stars)}
                 >
-                  {[0, 1, 2, 3, 4].map((star) => (
-                    <span key={star} className={star < review.rating ? undefined : "opacity-30"}>
-                      ★
-                    </span>
-                  ))}
+                  {stars === "trustpilot" ? (
+                    <TrustpilotStars rating={review.rating} boxClassName="size-[18px] text-[13px] md:size-5 md:text-[14px]" />
+                  ) : (
+                    [0, 1, 2, 3, 4].map((star) => (
+                      <span key={star} className={star < review.rating ? undefined : "opacity-30"}>
+                        ★
+                      </span>
+                    ))
+                  )}
                 </p>
                 <blockquote
                   cite={review.url}

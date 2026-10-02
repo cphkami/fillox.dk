@@ -85,6 +85,12 @@ export type SiteConfig = {
     reviewCount?: number;
     /** Profile page ("Se alle anmeldelser"). */
     url: string;
+    /**
+     * ISO day the score, review count and label were last copied from the profile
+     * ("2026-10-01"). They are static on every page (home hero, footer strip), so
+     * `npm run check:market` prints a note when this is more than 60 days old.
+     */
+    checked?: string;
   };
 
   booking: BookingConfig;

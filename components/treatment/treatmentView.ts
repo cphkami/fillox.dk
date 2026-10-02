@@ -4,9 +4,9 @@
  * no `detail`. Pure data — no React, no copy of its own.
  */
 import { site } from "@/config/site";
-import { treatmentCategories, mainNav } from "@/content/navigation";
+import { treatmentCategories, treatmentCategoryHref, mainNav } from "@/content/navigation";
 import { treatmentPage as copy } from "@/content/pages/treatments";
-import { priceCards } from "@/content/prices";
+import { priceCards, type PriceListRow } from "@/content/prices";
 import { reviewsFor } from "@/content/reviews";
 import { routes } from "@/content/routes";
 import { team } from "@/content/team";
@@ -34,6 +34,16 @@ export type PriceItem = {
   /** Small muted text after the label ("pr. område"). */
   note?: string;
   price: string;
+  /** The price as a number, when it is one (not "gratis"). */
+  amount?: number;
+};
+
+/** Rows of a price list under an optional small heading (content/pages/treatments.ts → prices.groups). */
+export type PriceGroup = {
+  title?: string;
+  /** Said once under the heading (the rows' own notes are left out). */
+  note?: string;
+  items: PriceItem[];
 };
 
 export type TreatmentView = {
@@ -78,7 +88,23 @@ export type TreatmentView = {
     title: string;
     intro?: string;
     mobileIntro?: string;
-    items: PriceItem[];
+    /**
+     * The treatment's "fra" price without the prefix ("999 kr"), shown large in the price card;
+     * only when a row of the list carries that amount (no big number the list does not back).
+     */
+    fromPrice?: string;
+    /**
+     * Line under the "fra" price (copy.prices.note); omitted when the intro mentions kontrol or
+     * `extras` lists the free konsultation / kontrol rows.
+     */
+    note?: string;
+    /** "Book tid" in the price card. */
+    cta: Link;
+    /** The list: one untitled group, or the groups of copy.prices.groups. */
+    groups: PriceGroup[];
+    /** The free konsultation / kontrol rows (fallback lists), full width under the list. */
+    extras: PriceItem[];
+    /** "Se alle priser" → the treatment's card on /priser. */
     link?: Link;
   };
   posts?: { eyebrow: string; title: string; intro?: string; link?: Link; items: BlogPost[] };
@@ -125,12 +151,22 @@ function nameInSentence(treatment: Treatment, name: string): string {
   return first.toLocaleLowerCase(site.locale) + name.slice(1);
 }
 
+/** A /priser row as a price-card row. */
+function toPriceItem(row: PriceListRow): PriceItem {
+  return {
+    label: row.label,
+    note: row.note,
+    price: formatPriceValue(row.price),
+    amount: row.price.kind === "amount" ? row.price.amount : undefined,
+  };
+}
+
 /**
  * Price rows from content/prices.ts for a treatment without its own list: rows tagged with
  * its slug (or its alias's), or untagged rows in its category card that name it, narrowed
- * to `priceRowLabels` when set. The konsultation rows from `extraRows` are appended.
+ * to `priceRowLabels` when set. `extras`: the konsultation rows from `extraRows`.
  */
-function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem[]; cardId?: string } {
+function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem[]; extras: PriceItem[]; cardId?: string } {
   const slug = copy.priceAliases[treatment.slug] ?? treatment.slug;
   const target = getTreatment(slug) ?? treatment;
   const name = target.name.toLocaleLowerCase(site.locale);
@@ -147,20 +183,43 @@ function priceRowsFromPriceList(treatment: Treatment): { items: PriceItem[]; car
           : row.label.toLocaleLowerCase(site.locale).includes(name);
       if (!matches) continue;
       cardId ??= card.id;
-      items.push({ label: row.label, note: row.note, price: formatPriceValue(row.price) });
+      items.push(toPriceItem(row));
     }
   }
-  if (!items.length) return { items };
+  if (!items.length) return { items, extras: [] };
   // `priceRowLabels` also sets the order (the treatment's own row first), not the price list's.
   if (only) items.sort((a, b) => only.indexOf(a.label) - only.indexOf(b.label));
 
   const extraCard = priceCards.find((c) => c.id === copy.prices.extraRowsCardId);
   const extraLabels = copy.prices.extraRows[target.categorySlug] ?? copy.prices.extraRows.default ?? [];
-  for (const label of extraLabels) {
+  const extras = extraLabels.flatMap((label) => {
     const row = extraCard?.rows.find((r) => r.label === label);
-    if (row) items.push({ label: row.label, note: row.note, price: formatPriceValue(row.price) });
-  }
-  return { items, cardId };
+    return row ? [toPriceItem(row)] : [];
+  });
+  return { items, extras, cardId };
+}
+
+/**
+ * `items` in the groups of copy.prices.groups[key]: the rows in no group first (untitled), then
+ * each group in its own order. A grouped label missing from `items` is a content error.
+ */
+function groupPriceItems(items: PriceItem[], key: string | undefined): PriceGroup[] {
+  const groups = key ? copy.prices.groups[key] : undefined;
+  if (!groups?.length) return [{ items }];
+  const byLabel = new Map(items.map((item) => [item.label, item]));
+  const grouped = new Set(groups.flatMap((g) => g.labels));
+  const rest = items.filter((item) => !grouped.has(item.label));
+  const titled = groups.map((g) => ({
+    title: g.title,
+    note: g.note,
+    items: g.labels.map((label) => {
+      const item = byLabel.get(label);
+      if (!item) throw new Error(`treatmentPage.prices.groups["${key}"]: no price row "${label}"`);
+      // The group's note replaces the rows' own ("gælder områderne ovenfor").
+      return g.note ? { ...item, note: undefined } : item;
+    }),
+  }));
+  return rest.length ? [{ items: rest }, ...titled] : titled;
 }
 
 /** Everything /behandlinger/[slug] renders for `treatment`, with the fallbacks applied. */
@@ -194,32 +253,57 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
   /* Prices: its own list, else the list of the treatment it is a variant of, else /priser rows */
   const alias = aliasTarget(treatment);
   const listSource = d?.prices?.length ? d : alias?.detail?.prices?.length ? alias.detail : undefined;
+  const allPricesLink = (cardId?: string): Link => ({
+    label: copy.prices.allPricesLink.label,
+    href: cardId ? `${copy.prices.allPricesLink.href}#${cardId}` : copy.prices.allPricesLink.href,
+  });
+  // Shared by both kinds of list: the "fra" price (only when a row has that amount), the note
+  // under it (unless the intro or the free rows already say it) and "Book tid" in the card.
+  const priceCard = (intro: string | undefined, groups: PriceGroup[], extras: PriceItem[]) => {
+    const backed = groups.some((g) => g.items.some((item) => item.amount === treatment.priceFrom));
+    const noteSaid = extras.length > 0 || (intro !== undefined && copy.prices.noteCoveredBy(intro));
+    return {
+      eyebrow: copy.prices.eyebrow,
+      fromPrice: treatment.priceFrom !== undefined && backed ? formatPrice(treatment.priceFrom) : undefined,
+      note: noteSaid ? undefined : copy.prices.note,
+      cta: { label: ui.bookCta, href: bookHref },
+      groups,
+      extras,
+    };
+  };
   let prices: TreatmentView["prices"];
   if (listSource?.prices?.length) {
+    // "Se alle priser" → the /priser card the list was taken from (a row label in common, e.g.
+    // Laser for mænd), else the card of its category (or its alias's).
+    const ownLabels = new Set(listSource.prices.map((r) => r.label));
+    const categorySlug = (alias ?? treatment).categorySlug;
+    const sourceCard =
+      priceCards.find((c) => c.rows.some((r) => ownLabels.has(r.label))) ??
+      priceCards.find((c) => c.categorySlug === categorySlug);
+    const items: PriceItem[] = listSource.prices.map((r) => ({
+      label: r.label,
+      mobileLabel: r.mobileLabel,
+      note: r.note,
+      price: r.amount !== undefined ? formatPrice(r.amount) : r.price,
+      amount: r.amount,
+    }));
+    const groupsKey = listSource === d ? treatment.slug : alias?.slug;
     prices = {
-      eyebrow: copy.prices.eyebrow,
+      ...priceCard(listSource.pricesIntro, groupPriceItems(items, groupsKey), []),
       title: listSource.pricesTitle ?? copy.prices.fallbackTitle,
       intro: listSource.pricesIntro,
       mobileIntro: listSource.mobile?.pricesIntro,
-      items: listSource.prices.map((r) => ({
-        label: r.label,
-        mobileLabel: r.mobileLabel,
-        note: r.note,
-        price: r.amount !== undefined ? formatPrice(r.amount) : r.price,
-      })),
+      link: allPricesLink(sourceCard?.id),
     };
   } else {
-    const { items, cardId } = priceRowsFromPriceList(treatment);
+    const { items, extras, cardId } = priceRowsFromPriceList(treatment);
     if (items.length) {
+      const intro = d?.pricesIntro ?? copy.prices.fallbackIntro;
       prices = {
-        eyebrow: copy.prices.eyebrow,
+        ...priceCard(intro, [{ items }], extras),
         title: d?.pricesTitle ?? copy.prices.fallbackTitle,
-        intro: d?.pricesIntro ?? copy.prices.fallbackIntro,
-        items,
-        link: {
-          label: copy.prices.allPricesLink.label,
-          href: cardId ? `${copy.prices.allPricesLink.href}#${cardId}` : copy.prices.allPricesLink.href,
-        },
+        intro,
+        link: allPricesLink(cardId),
       };
     }
   }
@@ -273,7 +357,8 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     priceFromText,
     category:
       category && !sameName(category.name, title)
-        ? { name: category.name, href: `${overviewHref}#${category.slug}` }
+        ? // Its own page when it has one (For mænd), else its section on the overview.
+          { name: category.name, href: treatmentCategoryHref(category.slug) }
         : undefined,
     overviewLink: { label: overviewLabel, href: overviewHref },
     hero: {

@@ -3,6 +3,8 @@
  * menu, footer, 404 and the /booking page. Components import from here and
  * never hard-code these strings.
  */
+import { site } from "@/config/site";
+import { forms } from "./forms";
 import { routes } from "./routes";
 
 export const layoutCopy = {
@@ -74,6 +76,72 @@ export const layoutCopy = {
     navLabel: "Sidefod",
     legalLabel: "Juridisk",
     clinicsLabel: "Vores klinikker",
+
+    /**
+     * Newsletter signup at the top of the footer, on every page (owner, 2026-10: "så det er
+     * fast"); hidden on /blog, which has its own band right above the footer. Form strings as
+     * on /blog (content/pages/blog.ts → newsletter); posts to the same Netlify form.
+     */
+    // TODO: copy review (owner's request, not in the design: eyebrow, title, text, success, privacy line)
+    // Owner note: `text` is what the visitor consents to, so it names what the mails are about
+    // (Forbrugerombudsmanden expects the kind of products). Newsletter offers must never promote
+    // Botox or other prescription medicines (no advertising them to the public), the same reason
+    // the Botox pages show no reviews.
+    newsletter: {
+      eyebrow: "Nyhedsbrev",
+      title: "Tilmeld dig vores nyhedsbrev",
+      text: "Få tilbud, nyheder og tips om vores behandlinger på e-mail.",
+      formName: forms.newsletter,
+      placeholder: "Din e-mail",
+      submit: "Tilmeld",
+      emailLabel: "Din e-mail",
+      formLabel: "Tilmeld nyhedsbrevet",
+      sending: "Sender …",
+      errors: {
+        emailRequired: "Skriv din e-mail.",
+        emailInvalid: "Tjek, at e-mailen er skrevet rigtigt.",
+        submit: `Vi kunne ikke gennemføre din tilmelding. Prøv igen, eller skriv til os på ${site.contact.email}.`,
+      },
+      success: {
+        title: "Tak for din tilmelding",
+        text: "Du hører fra os, så snart vi har nyheder og gode tilbud.",
+      },
+      /**
+       * The line under the field, worded as on /blog (content/pages/blog.ts → newsletter.privacy).
+       * The link opens the privacy policy's newsletter section (purpose, legal basis, retention,
+       * processors, how to unsubscribe).
+       */
+      privacy: {
+        text: "Vi bruger kun din e-mail til nyhedsbrevet, og du kan altid afmelde dig.",
+        link: { label: "Læs vores privatlivspolitik", href: routes.privacyNewsletter },
+        end: ".",
+      },
+    },
+
+    /**
+     * Trustpilot strip at the very bottom of the footer, on every page: the label
+     * (content/ui.ts → trustpilotLabel, "Fremragende"), the stars and this line. {score} and
+     * {count} come from config/site.ts → trustpilot (update them from the profile).
+     */
+    // TODO: copy review (owner's request, not in the design)
+    trust: {
+      summary: "{score} ud af 5 · {count} anmeldelser på Trustpilot",
+    },
+  },
+
+  /**
+   * /nyhedsbrev/tak (routes.newsletterThanks): the thank-you page after the newsletter signup
+   * WITHOUT JavaScript. The form posts to public/__nyhedsbrev-tilmeldt.html (Netlify stores the
+   * signup and serves that file), which forwards here. With JavaScript the form shows
+   * footer.newsletter.success in place. noindex.
+   */
+  // TODO: copy review (no design; all copy invented)
+  newsletterThanks: {
+    eyebrow: "Nyhedsbrev",
+    title: "Tak for din tilmelding",
+    text: "Du er nu tilmeldt Fillox’ nyhedsbrev. Du kan altid afmelde dig igen via linket i bunden af hver mail.",
+    primaryCta: { label: "Til forsiden", href: routes.home },
+    secondaryCta: { label: "Se vores behandlinger", href: routes.treatments },
   },
 
   // TODO: copy review (404 page has no design; all copy invented)

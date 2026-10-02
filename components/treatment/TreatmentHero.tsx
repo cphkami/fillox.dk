@@ -134,7 +134,7 @@ export function TreatmentHero({ view }: { view: TreatmentView }) {
             {/* From md a text link with an invisible hit area (12px above and below, as ArrowLink). */}
             <Link
               href={hero.secondaryCta.href}
-              className="relative flex h-[52px] w-full items-center justify-center rounded-full border border-accent px-[26px] text-ui whitespace-nowrap text-accent transition-colors hover:bg-accent hover:text-on-accent md:h-auto md:w-auto md:rounded-none md:border-x-0 md:border-t-0 md:border-rule-strong md:px-0 md:pb-[3px] md:text-ink md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3 md:hover:border-accent md:hover:bg-transparent md:hover:text-accent"
+              className="relative flex h-[52px] w-full items-center justify-center rounded-full border border-accent px-[26px] text-ui whitespace-nowrap text-accent transition-colors hover:bg-accent hover:text-on-accent focus-visible:bg-accent focus-visible:text-on-accent active:bg-accent active:text-on-accent md:h-auto md:w-auto md:rounded-none md:border-x-0 md:border-t-0 md:border-rule-strong md:px-0 md:pb-[3px] md:text-ink md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3 md:hover:border-accent md:hover:bg-transparent md:hover:text-accent md:focus-visible:border-accent md:focus-visible:bg-transparent md:focus-visible:text-accent md:active:border-accent md:active:bg-transparent md:active:text-accent"
             >
               {hero.secondaryCta.label}
             </Link>

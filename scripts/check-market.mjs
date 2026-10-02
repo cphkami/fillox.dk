@@ -13,8 +13,10 @@
  * 3. the collections linked as `${route}/<slug>` (treatments, practitioners, blog) have an
  *    app/<path>/[slug]/page.tsx;
  * 4. every redirect in content/redirects.ts lands on a route (or on a page of a collection);
- * 5. the no-JavaScript contact form target (public/__kontakt-sendt.html) forwards to
- *    routes.contactThanks.
+ * 5. the no-JavaScript form targets forward to their thank-you routes:
+ *    public/__kontakt-sendt.html → routes.contactThanks, and the newsletter's
+ *    (content/forms.ts → newsletterNoJsAction, public/__nyhedsbrev-tilmeldt.html) →
+ *    routes.newsletterThanks; the copy lives on those routes, never in public/.
  *
  * And the other market data that lives outside content/ or is only checked at runtime:
  *
@@ -27,7 +29,12 @@
  * 10. customer reviews (content/reviews.ts) are quoted verbatim: every excerpt (`short`) is whole
  *     sentences of its review's text, in order, with "…" wherever text is left out; every set
  *     lists existing reviews, and a practitioner / treatment set only reviews that name it;
- *     treatmentsWithoutReviews lists existing treatments that have no review set.
+ *     treatmentsWithoutReviews lists existing treatments that have no review set;
+ * 12. no static page shadows a collection page: a folder like app/behandlinger/for-maend wins
+ *     over app/behandlinger/[slug], so no treatment, team member or blog post may take its slug.
+ *
+ * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
+ * in config/site.ts last checked more than 60 days ago (11).
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import nodeModule from "node:module";
@@ -124,12 +131,20 @@ for (const { source, destination } of legacyRedirects) {
   }
 }
 
-// 5. The no-JS contact form target forwards to the thank-you route.
-const noJs = join(root, "public", "__kontakt-sendt.html");
-if (existsSync(noJs)) {
-  const html = readFileSync(noJs, "utf8");
-  if (!html.includes(`url=${routes.contactThanks}"`)) {
-    errors.push(`public/__kontakt-sendt.html does not forward to routes.contactThanks ("${routes.contactThanks}")`);
+// 5. The no-JS form targets forward to their thank-you routes (static files in public/ hold no copy).
+const { newsletterNoJsAction } = await importTs("content/forms.ts");
+const noJsTargets = [
+  ["__kontakt-sendt.html", "contactThanks"],
+  [newsletterNoJsAction.replace(/^\//, ""), "newsletterThanks"],
+];
+for (const [file, key] of noJsTargets) {
+  const noJs = join(root, "public", file);
+  if (!routes[key]) {
+    errors.push(`routes.${key} is missing (thank-you route of public/${file})`);
+  } else if (!existsSync(noJs)) {
+    errors.push(`public/${file} is missing (no-JavaScript form target)`);
+  } else if (!readFileSync(noJs, "utf8").includes(`url=${routes[key]}"`)) {
+    errors.push(`public/${file} does not forward to routes.${key} ("${routes[key]}")`);
   }
 }
 
@@ -296,6 +311,41 @@ for (const slug of treatmentsWithoutReviews) {
   if (!treatmentSlugs.has(slug)) errors.push(`content/reviews.ts treatmentsWithoutReviews: "${slug}" is not in content/treatments.ts`);
   if (reviewSets.treatments[slug]?.length) {
     errors.push(`content/reviews.ts reviewSets.treatments.${slug}: the page shows no reviews (treatmentsWithoutReviews)`);
+  }
+}
+
+// 11. Trustpilot numbers (static on every page) are recent: a note, not an error.
+{
+  const { checked, url } = site.trustpilot;
+  const maxAgeDays = 60;
+  const age = checked ? Math.floor((Date.now() - Date.parse(`${checked}T00:00:00Z`)) / 86_400_000) : NaN;
+  if (!checked || Number.isNaN(age)) {
+    notes.push(`config/site.ts trustpilot.checked is not an ISO day: set it when you copy score and reviewCount from ${url}`);
+  } else if (age > maxAgeDays) {
+    notes.push(
+      `Trustpilot numbers in config/site.ts were checked ${checked} (${age} days ago): update score, reviewCount, ` +
+        `content/ui.ts → trustpilotLabel and checked from ${url}`,
+    );
+  }
+}
+
+// 12. Static pages inside a collection (app/behandlinger/for-maend) never take a collection slug.
+{
+  const { posts } = await importSite("content/blog.ts");
+  const collectionSlugs = {
+    treatments: treatmentSlugs,
+    practitioners: teamSlugs,
+    blog: new Set(posts.map((post) => post.slug)),
+  };
+  for (const path of staticAppRoutes()) {
+    for (const key of collections) {
+      const base = routes[key];
+      if (!base || !path.startsWith(`${base}/`)) continue;
+      const slug = path.slice(base.length + 1);
+      if (!slug.includes("/") && collectionSlugs[key].has(slug)) {
+        errors.push(`app${path}/page.tsx shadows the ${key} page "${slug}" (${base}/[slug]): rename one of them`);
+      }
+    }
   }
 }
 

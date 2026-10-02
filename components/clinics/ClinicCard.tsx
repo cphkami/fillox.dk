@@ -159,7 +159,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
                   href={clinic.directionsHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-[52px] items-center justify-center rounded-full border border-accent px-[26px] text-[15px] max-[374px]:px-4 whitespace-nowrap text-accent transition-colors hover:bg-accent hover:text-on-accent md:inline-block md:h-auto md:rounded-none md:border-0 md:border-b md:border-rule-strong md:relative md:px-0 md:pb-[3px] md:text-ui md:text-ink md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3 md:hover:bg-transparent md:hover:border-accent md:hover:text-accent"
+                  className="flex h-[52px] items-center justify-center rounded-full border border-accent px-[26px] text-[15px] max-[374px]:px-4 whitespace-nowrap text-accent transition-colors hover:bg-accent hover:text-on-accent focus-visible:bg-accent focus-visible:text-on-accent active:bg-accent active:text-on-accent md:inline-block md:h-auto md:rounded-none md:border-0 md:border-b md:border-rule-strong md:relative md:px-0 md:pb-[3px] md:text-ui md:text-ink md:after:absolute md:after:-inset-x-1 md:after:-inset-y-3 md:hover:bg-transparent md:hover:border-accent md:hover:text-accent md:focus-visible:bg-transparent md:focus-visible:border-accent md:focus-visible:text-accent md:active:bg-transparent md:active:border-accent md:active:text-accent"
                 >
                   {copy.directions}
                   <span aria-hidden="true" className="max-md:hidden">

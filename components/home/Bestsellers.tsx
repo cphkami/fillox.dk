@@ -144,7 +144,9 @@ export function Bestsellers({ copy, items }: { copy: HomePage["bestsellers"]; it
           variant="outline"
           size="lg"
           fullWidth="mobile"
-          className="md:px-9 lg:h-auto lg:border-ink lg:py-3.5 lg:text-ink lg:hover:bg-ink lg:hover:text-cream xl:px-fluid-36/40 xl:py-fluid-14/15"
+          // The accent outline at every width, hovering to the brown fill like "Alle artikler om …"
+          // (owner, 2026-10: the design's ink outline turned black on hover).
+          className="md:px-9 lg:h-auto lg:py-3.5 xl:px-fluid-36/40 xl:py-fluid-14/15"
         >
           <span>
             {copy.cta.label}

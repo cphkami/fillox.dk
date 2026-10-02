@@ -11,10 +11,22 @@
 export const forms = {
   /** /kontakt contact form. */
   contact: "kontakt",
-  /** Newsletter signup on /blog. */
+  /**
+   * Newsletter signup: in the footer of every page and the band at the bottom of /blog
+   * (components/ui/NewsletterForm). Fields: email, source ("footer:/behandlinger/lip-filler",
+   * "blog:/blog": where the visitor signed up, as a record of the consent).
+   */
   newsletter: "nyhedsbrev",
   /** "Få besked" signup on the coming-soon Østerbro clinic card (/klinikker). */
   notifyOsterbro: "osterbro-besked",
 } as const;
 
 export type FormName = (typeof forms)[keyof typeof forms];
+
+/**
+ * No-JavaScript target of the newsletter signup. Without JavaScript (or before the page has
+ * hydrated) the form POSTs straight to Netlify with this static file as its action, so the
+ * e-mail address never ends up in the page URL. Netlify stores the submission and serves the
+ * file: public/__nyhedsbrev-tilmeldt.html, a short thank-you page linking back to the site.
+ */
+export const newsletterNoJsAction = "/__nyhedsbrev-tilmeldt.html";

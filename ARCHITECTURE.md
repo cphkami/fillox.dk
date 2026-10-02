@@ -48,10 +48,11 @@ content/
 lib/                           helpers (formatPrice, cn, …); metadata.ts builds every route's
                                metadata + Open Graph (pageMetadata), forms.ts posts to Netlify Forms
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
-                               redirect targets, no-JS contact form target, Netlify form names,
+                               redirect targets, no-JS form targets (contact, newsletter), Netlify form names,
                                booking provider ids, clinic address/hours parse for JSON-LD,
                                no æ/ø/å strings in app/, components/, lib/, review excerpts
-                               verbatim + review sets consistent (content/reviews.ts)
+                               verbatim + review sets consistent (content/reviews.ts); note when
+                               the Trustpilot numbers (config/site.ts) are > 60 days old
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
   layout/                      Header (DesktopNav, MegaMenu, DropdownMenu, MobileMenu), Footer
@@ -77,6 +78,7 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
 | `/behandlinger/[slug]` | template `6c`, Botox `6bx` / Lip filler `mb` |
+| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with krem text, bronze accents, krem pills and a krem focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (Botox for mænd is listed). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
 | `/klinikker` | `6kl` / `mk` |
 | `/kontakt` | `6ko` / `mc` |
 | `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` |
@@ -166,6 +168,23 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   `reviews`).
   Each has "Se alle anmeldelser på Trustpilot →" (`AllReviewsLink`). No review structured data:
   reviews a business shows about itself are not eligible for review rich results.
+- **Treatment-page sections (October 2026, owner: "Trustpilot og priser … gør lidt bedre")** —
+  reviews: a sand band, heading + `components/treatment/TrustpilotScore` (white card: big 4,7,
+  Trustpilot squares, "Fremragende på Trustpilot", "Baseret på 172 anmeldelser", the
+  `AllReviewsLink`; one sr-only sentence for screen readers) left, the rotator `size="large"`
+  right (stacked below 1024px). Prices (`components/treatment/PriceSection`): one card on the
+  surface margin, a rose panel (heading, intro, "fra 999 kr", "Konsultation og kontrol er altid
+  gratis", "Book tid") beside white rows (from 1024px; lists of > 6 rows from 1536px, in two
+  columns from a 42rem rows panel) or above them; "Se alle priser →" to the /priser card the rows
+  come from. Copy: `content/pages/treatments.ts` → `reviews.score`, `prices.note`.
+  Rules (fix round): the big "fra" price only when a row has that amount (Laser for mænd lists
+  combined areas from 1.000 kr, so it shows none); the note is left out when the intro mentions
+  kontrol or the list has the free konsultation / kontrol rows, which fallback lists show full
+  width under the rows; "Book tid" in the card from 768px (below, the book bar). Row groups with a
+  small heading (`prices.groups`: Botox's single areas / Øvrige / Flere områder, lip filler's
+  "Andre ydelser") — two columns split between groups, never inside one. Every Trustpilot rating
+  in the reviews band is `components/ui/TrustpilotStars` (score card + each quote, rotator
+  `stars="trustpilot"`).
 
 ## Design tokens ("Støvet rosa & beige", 2026-10)
 
@@ -229,6 +248,36 @@ the mega menu's panel, "Om behandlingen" / "Klar til at booke?" bands, price box
 | `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail cards |
 
 The footer shows the black logo (`site.brand.logoDark`, as the header) and the `primary` button.
+
+**Footer newsletter and Trustpilot strip** (owner, 2026-10; copy in `content/layout.ts` →
+`footer.newsletter` / `footer.trust`). The footer block opens with a newsletter signup
+(`components/layout/FooterNewsletter`: eyebrow, heading, one line left; e-mail + "Tilmeld" and
+"Vi bruger kun din e-mail til nyhedsbrevet, og du kan altid afmelde dig. Læs vores
+privatlivspolitik." right from 1024px; stacked below, after the logo) and ends with a Trustpilot strip (`components/layout/FooterTrust`: "Fremragende", the hero's
+green squares, "4,7 ud af 5 · 172 anmeldelser på Trustpilot" from `config/site.ts` → `trustpilot`,
+one link to the profile in a new tab, a `footer-card` pill ≥ 44px, a full-width card below 768px).
+- The form is `components/ui/NewsletterForm` (client), shared with the /blog band
+  (`components/blog/NewsletterSignup`, `tone="band"`): inline validation, focus to the field on an
+  error, `role="alert"` on a failed POST, a focused `role="status"` on success. It posts `email`,
+  `source` (`footer:/path` or `blog:/blog`, where the visitor consented) and the honeypot to the
+  Netlify form `nyhedsbrev` (`public/__forms.html` declares all three). Without JavaScript (or before
+  hydration) the browser validates the field (`noValidate={useHydrated()}`, as in ContactForm) and
+  the form POSTs to `content/forms.ts` → `newsletterNoJsAction` (`public/__nyhedsbrev-tilmeldt.html`,
+  a meta-refresh to `routes.newsletterThanks`, `/nyhedsbrev/tak`, noindex, copy in
+  `content/layout.ts` → `newsletterThanks`; `check:market` rule 5 checks the forward), so the address
+  never lands in the URL.
+- Consent: no checkbox (nothing pre-ticked); the visitor's own signup after the text that says what
+  they get ("tilbud, nyheder og tips om vores behandlinger"), and the line under the field (same
+  wording on /blog) linking to the privacy policy's newsletter section (`routes.privacyNewsletter`,
+  `content/pages/legal.ts` → "12. Nyhedsbrev": purpose, legal basis, retention, processors,
+  unsubscribing; pending the owner's legal review). Newsletter offers must never promote Botox or
+  other prescription medicines.
+- The white field has a 1px border ≥ 3:1 against its surface (footer-accent 75%, band-accent 85%).
+- /blog: its band sits right above the footer, so it carries `data-newsletter-band` and the footer
+  signup hides itself on that page (`[body:has([data-newsletter-band])_&]:hidden`, CSS only); so
+  does `/nyhedsbrev/tak` (`data-newsletter-thanks`).
+- Trustpilot numbers are static: `config/site.ts` → `trustpilot.checked` is the day they were copied
+  from the profile; `check:market` prints a note after 60 days (owner option: Trustpilot's TrustBox).
 
 **Removed names.** The production names `plum`, `plum-deep`, `powder` and `blush`, the `light` /
 `lightInk` button variants, `tone="light"` / `"powder"` / `"plum"` on the primitives,
@@ -430,6 +479,15 @@ Every size sets `leading-[1.5]` (Poppins' "normal" line height, which these heig
 in; Figtree's is 1.2 and made every padded pill 4–6px shorter and the header 5–6px lower). With it
 the header measures 92.5px at 1024–1279 and 94 → 97.5px from 1280 (`scroll-padding-top` clears it
 by 13.5–15.5px).
+
+Hover, keyboard focus (`focus-visible`) and press (`active`) share one look per variant, always the
+brown accent, never black (owner, 2026-10: "Se alle behandlinger" turned black, it should turn brown
+like "Alle artikler om lip filler"): `primary` → `accent-deep`; `outline` / `outlineInk` → accent fill
++ krem text; `white` → accent border + text (not filled: the white chips are filters whose selected
+state is the accent fill); `textLink` → accent. The home "Se alle behandlinger" is now the accent
+`outline` at every width (the design's ink outline on desktop is gone). A page that recolours a pill
+at rest keeps the brown hover (hover / focus classes outrank a breakpoint class); never add
+`hover:bg-ink`.
 
 ### Type and UI rules (best practice; the only changes allowed below 1280)
 

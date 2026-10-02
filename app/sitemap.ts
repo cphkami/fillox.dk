@@ -16,8 +16,8 @@ const pathOf = (href: string) => href.split(/[?#]/)[0] || "/";
 /** Newest ISO date in a list (for the blog index), or undefined. */
 const newest = (dates: string[]) => dates.slice().sort().at(-1);
 
-/** Routes that are not listed: noindex pages (the contact form's thank-you page). */
-const unlisted: RouteKey[] = ["contactThanks"];
+/** Routes that are not listed: noindex pages (the contact form's and the newsletter's thank-you pages). */
+const unlisted: RouteKey[] = ["contactThanks", "newsletterThanks"];
 
 /** Legal text pages: rarely change, low priority. */
 const legal: RouteKey[] = ["terms", "privacy"];

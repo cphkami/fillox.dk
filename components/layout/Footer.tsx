@@ -9,6 +9,8 @@ import { layoutCopy } from "@/content/layout";
 import { footerNav, legalNav } from "@/content/navigation";
 import { routes } from "@/content/routes";
 import { ui } from "@/content/ui";
+import { FooterNewsletter } from "./FooterNewsletter";
+import { FooterTrust } from "./FooterTrust";
 import { NavLink } from "./NavLink";
 
 const contactCards = [
@@ -19,10 +21,14 @@ const contactCards = [
 /**
  * Footer block (design 6a bottom / mf bottom) on the light warm beige of the owner's "Støvet rosa &
  * beige" (`bg-footer`, one token in app/globals.css; production: plum), espresso text, the black
- * logo and the accent button: contact band with phone,
- * e-mail and "Book tid"; logo + tagline; one column per clinic; footer links;
- * copyright + legal links. Spans the fluid site canvas with the surface margin (like
- * every rounded band), its fr-based grids spread with the width.
+ * logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`); contact
+ * band with phone, e-mail and "Book tid"; logo + tagline; one column per clinic; footer links;
+ * copyright + legal links; the Trustpilot strip (owner, 2026-10; `FooterTrust`). Spans the fluid
+ * site canvas with the surface margin (like every rounded band), its fr-based grids spread with
+ * the width.
+ *
+ * Below 1024px the block is one column: logo + tagline, newsletter, contact cards + "Book tid",
+ * clinics, links, legal, Trustpilot.
  */
 export function Footer() {
   const clinicsHref = routes.clinics;
@@ -34,6 +40,10 @@ export function Footer() {
         data-surface="footer"
         className="flex flex-col gap-[22px] rounded-[24px] bg-footer px-[22px] pt-9 pb-7 text-footer-body md:px-10 lg:block lg:px-14 lg:pt-fluid-64 lg:pb-8 xl:px-16 2xl:px-20"
       >
+        {/* Newsletter (hidden on /blog, which has its own band right above the footer). Below lg
+            the dividers above and below set it apart from the logo and the contact cards. */}
+        <FooterNewsletter className="border-y border-footer-line py-7 lg:mb-10 lg:border-t-0 lg:pt-0 lg:pb-10" />
+
         {/* Contact band */}
         <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 lg:mb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:border-b lg:border-footer-line lg:pb-10">
           {contactCards.map((card) => (
@@ -155,6 +165,9 @@ export function Footer() {
             </nav>
           </div>
         </div>
+
+        {/* Trustpilot, the last line of the footer on every page. */}
+        <FooterTrust className="border-t border-footer-line pt-6 lg:mt-7 lg:pt-7" />
       </div>
     </footer>
   );
