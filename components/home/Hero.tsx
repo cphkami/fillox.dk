@@ -7,11 +7,12 @@ import { cn } from "@/lib/cn";
  * Front page hero (6a / mf): sand panel with eyebrow, H1, lead, CTAs, Trustpilot and
  * stats; photo on the right (desktop) or on top (mobile).
  *
- * Desktop height is set by the text column: the design's 120 / 72px padding around the
- * content (791px at 1024–1280). From xl the type grows with the scale (H1 64 → 76, lead,
- * stats, eyebrow, buttons), so the padding eases to 80 / 56px at 1600 to keep the panel at
- * ≈ 800px and leave the USP band visible above the fold on a 1710 × ~985 laptop viewport.
- * The photo's min-height (720 → 800px) is only a floor for shorter copy (other markets).
+ * Desktop height: from 1024 to ~1500px the text column sets it, the design's 120 / 72px
+ * padding around the content (773–776px). From xl the type grows with the scale (H1 64 → 76,
+ * lead, stats, eyebrow, buttons), so the padding eases to 80 / 56px at 1600 to keep the panel
+ * under ≈ 800px and leave the USP band visible above the fold on a 1710 × ~985 laptop
+ * viewport. From ~1500px the photo's min-height (720 → 800px) sets the panel height instead
+ * (800px at 1600) and the text column is centred in it (justify-center).
  *
  * Line height 1.5 on the section: the design's "normal" in Poppins. Figtree's own "normal" is
  * 1.2, which made the eyebrow, the "Se priser" link, the Trustpilot rating and the stat labels
@@ -64,15 +65,19 @@ export function Hero({ hero }: { hero: HomePage["hero"] }) {
           <TrustpilotRating size="sm" linked className="max-md:text-[13px] md:hidden" />
           <TrustpilotRating size="md" linked className="mb-11 max-md:hidden" />
 
-          {/* Below md the 12px labels need a 16px column gap to read as three stats (12px
-              below 360px, where 16 would push "Trustpilot" past the panel's padding). */}
-          <dl className="grid grid-cols-[repeat(3,minmax(max-content,1fr))] gap-2 border-t border-rule pt-3 max-[359px]:gap-x-3 min-[360px]:max-md:gap-x-4 md:flex md:gap-7 md:border-0 md:pt-0">
+          {/* Proof points, kept secondary to the H1, lead and CTA (owner): numbers at lead size
+              (16px below md, the size of the mobile lead; 18 → 20px from md), Poppins 500 in the
+              heading colour, not the accent of the CTA, over 12–13px labels, with 20px either
+              side of the dividers. Below md the 12px labels need a 16px column gap to read as
+              three stats (12px below 360px, where 16 would push "Trustpilot" past the panel's
+              padding). */}
+          <dl className="grid grid-cols-[repeat(3,minmax(max-content,1fr))] gap-2 border-t border-rule pt-3 max-[359px]:gap-x-3 min-[360px]:max-md:gap-x-4 md:flex md:gap-5 md:border-0 md:pt-0">
             {hero.stats.map((stat, i) => (
-              <div key={stat.label} className={cn("flex flex-col", i > 0 && "md:border-l md:border-rule md:pl-7")}>
-                <dt className="order-2 mt-0.5 text-[12px] tracking-[1px] text-muted uppercase max-[374px]:tracking-[.5px] md:mt-1 md:text-micro md:tracking-[2px]">
+              <div key={stat.label} className={cn("flex flex-col", i > 0 && "md:border-l md:border-rule md:pl-5")}>
+                <dt className="order-2 mt-1 text-[12px] leading-[1.4] tracking-[1px] text-muted uppercase max-[374px]:tracking-[.5px] md:text-micro md:tracking-[2px]">
                   {stat.label}
                 </dt>
-                <dd className="order-1 font-heading text-[21px] tracking-display text-accent md:text-stat">
+                <dd className="order-1 font-heading text-[16px] leading-[1.2] text-heading md:text-lead">
                   {stat.value}
                 </dd>
               </div>

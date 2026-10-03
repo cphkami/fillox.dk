@@ -14,7 +14,9 @@ const crumbLink = "relative -mx-1 px-1 py-[13px] underline-offset-4 hover:text-c
 /**
  * Hero of /behandlinger/for-maend: an espresso band on the surface margin (rounded like every
  * hero panel; straight hairlines inside). Breadcrumb on top, then the two-line H1 (second line
- * bronze) with the lead and buttons beside it from 1024px, bottom-aligned with the H1, and the
+ * bronze) with the lead and buttons beside it from 1024px, bottom-aligned with the H1. The lead
+ * opens with the page's wink (`leadHook`: one line per sentence, heading font, full krem), so
+ * it reads as a voice between the H1 and the plain lead, not as a second heading. Then the
  * three facts as a row of columns under a bronze rule (divided by hairlines). Below 1024px
  * everything stacks and the facts are a list. No photo: the page is typographic on purpose
  * (restrained imagery), and the layout leaves no empty quadrant to fill.
@@ -58,7 +60,21 @@ export function MenHero({ copy }: { copy: Pick<MenPage, "hero" | "breadcrumb" | 
           </h1>
 
           <div>
-            <p className="mt-5 text-[16px] leading-[1.7] text-cream/80 md:mt-6 md:max-w-[46ch] md:text-lead md:leading-[1.75] lg:mt-0">
+            {hero.leadHook.length ? (
+              <p className="mt-5 font-heading text-[19px] leading-[1.35] tracking-display text-cream md:mt-6 md:text-h4 lg:mt-0">
+                {hero.leadHook.map((line) => (
+                  <span key={line} className="block text-balance">
+                    {line}
+                  </span>
+                ))}
+              </p>
+            ) : null}
+            <p
+              className={cn(
+                "text-[16px] leading-[1.7] text-cream/80 md:max-w-[46ch] md:text-lead md:leading-[1.75]",
+                hero.leadHook.length ? "mt-3" : "mt-5 md:mt-6 lg:mt-0",
+              )}
+            >
               {hero.lead}
             </p>
             <div className="mt-7 flex flex-col gap-4 md:mt-9 md:flex-row md:flex-wrap md:items-center md:gap-x-7 md:gap-y-5 xl:mt-fluid-32">

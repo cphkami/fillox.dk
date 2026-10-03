@@ -49,7 +49,7 @@ export function MenTreatments({
         >
           {copy.title}
         </h2>
-        <p className="mt-4 max-w-[44ch] text-body leading-[1.7] text-muted md:leading-[1.75]">{copy.intro}</p>
+        <p className="mt-4 max-w-[44ch] text-body leading-[1.7] text-pretty text-muted md:leading-[1.75]">{copy.intro}</p>
       </div>
 
       <div>
@@ -67,7 +67,7 @@ export function MenTreatments({
                   <span className="block font-heading text-[22px] leading-[1.2] tracking-display text-heading transition-colors duration-200 group-hover:text-accent md:text-h3">
                     {row.name}
                   </span>
-                  <span className="mt-1.5 block text-body leading-[1.6] text-muted">{row.text}</span>
+                  <span className="mt-1.5 block text-body leading-[1.6] text-pretty text-muted">{row.text}</span>
                   {row.price ? (
                     <span className="mt-2 block text-ui-sm font-semibold text-ink md:hidden">
                       {row.price}
