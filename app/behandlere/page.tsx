@@ -14,23 +14,19 @@ const copy = practitionerPage.index;
 export const metadata: Metadata = pageMetadata(copy.meta, PATH);
 
 /**
- * /behandlere — every practitioner as a card linking to /behandlere/<slug>, laid out like
- * "Mød vores behandlere" on /om-os (6om / mo): the featured member (fagligt ansvarlig) as a
- * wide block, the others in a 4-column grid (2 on tablets). Below 768px every member is a
- * white card: one column, two from 640px. The grid's column gap lives in --team-gap-x
- * (28px, 32 from 1536px) so the featured block can use it from 1280px (see PractitionerCard).
- * The row gap (48px) and the extra space under the featured block (24px) grow from 1280px
- * with the photos (to 56 and 29px at 1600).
+ * /behandlere — every practitioner as an equal card linking to /behandlere/<slug>, laid out like
+ * "Mød vores behandlere" on /om-os: 3 columns from 1024px (six members = 2 rows of 3), 2 from
+ * 560px, 1 below (at most 26rem wide, centred with the heading, so the 4:5 portraits stay
+ * ≈ 500px high at most on large phones). Team order, so Dr. Tom (fagligt ansvarlig læge) comes first. Gaps: 16px between
+ * the white mobile cards; from 768px 28px between columns (32 from 1536px) and 48px between rows,
+ * growing to 56px at 1600.
  * Closes with the "Fagligt ansvarlig" band from /om-os (desktop only, as there).
  */
 export default function PractitionersIndexPage() {
-  const featured = team.filter((m) => m.featured);
-  const others = team.filter((m) => !m.featured);
-
   return (
     <>
       <Container as="section" aria-labelledby="behandlere-title" className="pt-8 pb-14 md:pt-fluid-64 md:pb-10 lg:pb-fluid-40">
-        <div className="mb-5 md:mb-fluid-56 md:text-center">
+        <div className="mb-5 max-[560px]:mx-auto max-[560px]:max-w-[26rem] md:mb-fluid-56 md:text-center">
           <Eyebrow className="mb-3 md:mb-3.5">{copy.eyebrow}</Eyebrow>
           <h1
             id="behandlere-title"
@@ -40,16 +36,10 @@ export default function PractitionersIndexPage() {
           </h1>
         </div>
 
-        <ul className="grid grid-cols-1 gap-4 [--team-gap-x:28px] sm:grid-cols-2 md:gap-x-(--team-gap-x) md:gap-y-12 lg:grid-cols-4 xl:gap-y-[clamp(48px,calc(16px+2.5vw),56px)] 2xl:[--team-gap-x:32px]">
-          {featured.map((member, i) => (
-            <li key={member.slug} className="flex md:col-span-2 md:mb-6 lg:col-span-4 xl:mb-fluid-24">
-              <PractitionerCard member={member} featured priority={i === 0} />
-            </li>
-          ))}
-          {others.map((member, i) => (
+        <ul className="grid grid-cols-1 gap-4 max-[560px]:mx-auto max-[560px]:max-w-[26rem] min-[560px]:grid-cols-2 md:gap-x-7 md:gap-y-12 lg:grid-cols-3 xl:gap-y-[clamp(48px,calc(16px+2.5vw),56px)] 2xl:gap-x-8">
+          {team.map((member, i) => (
             <li key={member.slug} className="flex">
-              {/* Without a featured member the first grid card is the top of the page. */}
-              <PractitionerCard member={member} priority={featured.length === 0 && i === 0} />
+              <PractitionerCard member={member} priority={i === 0} />
             </li>
           ))}
         </ul>

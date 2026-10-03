@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ButtonLink, Container, Eyebrow, ResponsiveText } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { CropPhoto } from "./CropPhoto";
-import { PORTRAIT_TOP_POSITION, type ResolvedProfile } from "./profile";
+import type { ResolvedProfile } from "./profile";
 
 type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
 
@@ -31,11 +31,16 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
   const hasFacts = profile.facts.length > 0;
   // The photo is half the surface band: 768px on the 1600px canvas (1600 − 2 × 32 surface
   // margin, halved), about 50vw − 24px below. The zoomed desktop crop draws the photo `zoom`
-  // times wider than its slot, so request that width to keep it sharp.
+  // times wider than its slot, so request that width to keep it sharp. At 768–1023px the slot is
+  // taller than the photo (≈ 360–488 × 640–680px), so the photo fills it by its height and is
+  // drawn ≈ 680px × its width / height wide.
   const zoom = profile.desktopImage.zoom ?? 1;
+  const { width, height } = profile.desktopImage;
+  const tabletWidth = Math.max(488, width && height ? (680 * width) / height : 488);
   const sizes = [
     `(min-width: 1600px) ${Math.ceil(768 * zoom)}px`,
-    zoom === 1 ? "(min-width: 768px) calc(50vw - 24px)" : `(min-width: 768px) calc((50vw - 24px) * ${zoom})`,
+    zoom === 1 ? "(min-width: 1024px) calc(50vw - 24px)" : `(min-width: 1024px) calc((50vw - 24px) * ${zoom})`,
+    `(min-width: 768px) ${Math.ceil(tabletWidth * zoom)}px`,
     "calc(100vw - 24px)",
   ].join(", ");
 
@@ -45,8 +50,8 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
         <CropPhoto
           mobile={profile.mobileImage}
           desktop={profile.desktopImage}
-          // 640–767px: the mobile slot turns landscape, so keep the top of the portrait.
-          sm={{ position: PORTRAIT_TOP_POSITION }}
+          // 640–767px: the mobile slot turns landscape (a crop of its own, from the face table).
+          sm={profile.smCrop}
           sizes={sizes}
           priority
           // From 1024px the slot keeps at least the design's 566:620 shape (height = photo

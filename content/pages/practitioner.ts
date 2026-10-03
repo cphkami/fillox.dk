@@ -57,10 +57,7 @@ export const practitionerPage = {
   fallback: {
     /** Hero + booking band button, e.g. "Book tid hos Dr. Tom". */
     bookCta: (name: string) => `Book tid hos ${name}`,
-    /**
-     * Closing booking band for a member with content sections but no `profile.booking`
-     * (members without sections close with `otherTeam` instead of repeating the hero CTA).
-     */
+    /** Closing booking band for a member without `profile.booking`. */
     // TODO: copy review (confirm the band sentence per practitioner)
     booking: {
       title: (name: string) => `Book tid hos ${name}`,
@@ -69,8 +66,8 @@ export const practitionerPage = {
   },
 
   /**
-   * Closing row on a profile without content sections of its own (the booking band would
-   * only repeat the hero's button): the other practitioners, in the 6a team-row style.
+   * Row before the booking band on a profile without content sections of its own (a new member
+   * whose details are not confirmed yet): the other practitioners, in the 6a team-row style.
    */
   // TODO: copy review (not in the design)
   otherTeam: {
@@ -92,9 +89,9 @@ export const practitionerPage = {
     eyebrow: "Teamet",
     title: "Mød vores behandlere",
     /**
-     * Card link to the profile when TeamMember.link points elsewhere (Dr. Tom's links to
-     * booking). Neutral, like the links of the members without offers in content/team.ts
-     * ("Se hvad X tilbyder" is only for a profile that lists treatments, i.e. Alberte's).
+     * Card link to the profile when TeamMember.link is missing or points elsewhere (no member at
+     * the moment: every card says "Se hvad X tilbyder"). Neutral, for a profile that lists no
+     * treatments ("Se hvad X tilbyder" is only for a profile with offers).
      */
     cardLinkLabel: (name: string) => `Læs mere om ${name}`,
   },

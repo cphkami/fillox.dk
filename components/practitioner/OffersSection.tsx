@@ -16,6 +16,21 @@ type OffersSectionProps = {
 };
 
 /**
+ * Grid placement of offer `i` of `count`.
+ * - 2 columns (768px+): an odd last card spans both.
+ * - 3 columns (72rem+, 6 tracks): full rows of thirds; 2 or 4 cards are halves; a last row of
+ *   2 (5, 8 … cards) is two halves, a last row of 1 (7, 10 …) turns the last 4 into 2 × 2 halves.
+ */
+function offerSpan(i: number, count: number): string {
+  const lastOdd = count % 2 === 1 && i === count - 1;
+  const rest = count % 3;
+  const half =
+    count === 2 || count === 4 || (rest === 2 && i >= count - 2) || (rest === 1 && count > 4 && i >= count - 4);
+  const span = count === 1 ? "min-[72rem]:col-span-6" : half ? "min-[72rem]:col-span-3" : "min-[72rem]:col-span-2";
+  return cn(lastOdd && "md:col-span-2", span);
+}
+
+/**
  * "Det tilbyder Alberte dig" (6alb / ma).
  * Desktop: 3-column white cards (name, description, price + "Book hos Alberte").
  * Mobile: compact rows (name, price, outlined "Book" pill).
@@ -34,15 +49,20 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
       </div>
 
       {/* 3 columns only where every card fits price + "Book hos …" on one row: from 1150px
-          ("fra 1.499 kr" wraps below that), so 72rem = 1152px (rem so it sorts after md:). */}
-      <ul className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6 min-[72rem]:grid-cols-3">
-        {offers.items.map((offer) => {
+          ("fra 1.499 kr" wraps below that), so 72rem = 1152px (rem so it sorts after md:). The
+          3 columns are a 6-track grid, so a list that doesn't fill its last row stays balanced
+          (offerSpan): no card is left alone in a row next to empty columns. */}
+      <ul className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6 min-[72rem]:grid-cols-6">
+        {offers.items.map((offer, i) => {
           const price = formatPriceValue(offer.price);
           const treatment = offer.treatmentSlug ? getTreatment(offer.treatmentSlug) : undefined;
           return (
             <li
               key={offer.name}
-              className="flex items-center justify-between gap-2.5 rounded-[18px] bg-white py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7 xl:px-fluid-30/36 xl:pt-fluid-30/36 xl:pb-fluid-28/32"
+              className={cn(
+                "flex items-center justify-between gap-2.5 rounded-[18px] bg-white py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7 xl:px-fluid-30/36 xl:pt-fluid-30/36 xl:pb-fluid-28/32",
+                offerSpan(i, offers.items.length),
+              )}
             >
               <div className="min-w-0">
                 <h3 className="font-heading text-[16px] text-heading md:mb-2 md:py-[.2em] md:text-h3 md:leading-[1.1] md:tracking-display">

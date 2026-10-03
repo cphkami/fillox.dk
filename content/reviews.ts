@@ -346,6 +346,16 @@ export const reviews: CustomerReview[] = [
     text: "Utrolig søde og tager hensyn til ens behov og er eksta omhyggelige. Vil til enhver tid anbefale fillox",
   },
   {
+    id: "tp-675324abe704b1fab9f1ca2f",
+    author: "Gitte Varming",
+    date: "2024-12-06",
+    rating: 5,
+    source: "Trustpilot",
+    url: "https://dk.trustpilot.com/reviews/675324abe704b1fab9f1ca2f",
+    text: "Utroligt god behandling \naf Maria ♥️ super dygtig. som sagt har aldrig har prøve det før,🙂resultat blev så flot \nKommer igen ",
+    practitioners: ["maria"],
+  },
+  {
     id: "tp-67373773339dd25ae582e74f",
     author: "Melissa Paludan",
     date: "2024-11-15",
@@ -453,12 +463,14 @@ export const reviewSets: ReviewSets = {
       "tp-685be49bf3450e262884e97d", // Miya Kisbye
       "tp-68362380ea90d5593d56ba95", // Luzan
       "tp-69764555ccd134a8d29b0a76", // Lærke
+      "tp-6853191b833081bb8e327156", // SZ
     ],
     maria: [
       "tp-66d4b791de24877a718f684b", // Sarah Mari Nielsen
       "tp-67373773339dd25ae582e74f", // Melissa Paludan
       "tp-677f6fed904b8496332316cb", // Camilla
       "tp-67ddc269c749041a519ad94f", // Sally Villumsen
+      "tp-675324abe704b1fab9f1ca2f", // Gitte Varming
     ],
     mike: [
       "tp-69eccd907b18c45698f3d2a5", // K.H
@@ -500,6 +512,15 @@ export const treatmentsWithoutReviews: readonly string[] = [
   "hyperhidrose",
   "traptox",
   "botox-for-maend",
+];
+
+/**
+ * General reviews that praise one unnamed person ("Rigtig sød og tryg behandler"). They may fill
+ * up a treatment page, but never a practitioner profile, where they would read as being about
+ * that practitioner: reviewsFor skips them when it fills up a `practitioner` selection.
+ */
+export const generalNotOnProfiles: readonly string[] = [
+  "tp-6a917e1429e5ba05aececf31", // Amy Schuurhof: "Rigtig sød og tryg behandler"
 ];
 
 const reviewById = new Map(reviews.map((review) => [review.id, review]));
@@ -547,9 +568,10 @@ type ReviewsForOptions = {
 
 /**
  * The reviews for a practitioner, a treatment or a named set: its own reviews (at most `max`),
- * filled up to `min` with general reviews, never the same review twice. A general review is
- * never counted as being about the practitioner or treatment (see `specificCount`). None for
- * a treatment in `treatmentsWithoutReviews`.
+ * filled up to `min` with general reviews, never the same review twice (and, for a practitioner,
+ * none of `generalNotOnProfiles`). A general review is never counted as being about the
+ * practitioner or treatment (see `specificCount`). None for a treatment in
+ * `treatmentsWithoutReviews`.
  */
 export function reviewsFor({ practitioner, treatment, set, min = 3, max = 6, seed }: ReviewsForOptions): ReviewSelection {
   if (treatment && treatmentsWithoutReviews.includes(treatment)) return { reviews: [], specificCount: 0, allSpecific: false };
@@ -562,6 +584,7 @@ export function reviewsFor({ practitioner, treatment, set, min = 3, max = 6, see
   const specificCount = set === "general" ? 0 : chosen.length;
   for (const review of rotateBy(reviewsById(reviewSets.general), seed)) {
     if (chosen.length >= Math.min(min, max)) break;
+    if (practitioner && generalNotOnProfiles.includes(review.id)) continue;
     if (!chosen.some((c) => c.id === review.id)) chosen.push(review);
   }
   return { reviews: chosen, specificCount, allSpecific: specificCount > 0 && specificCount === chosen.length };

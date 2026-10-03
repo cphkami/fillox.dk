@@ -61,8 +61,9 @@ export default async function PractitionerPage({ params }: Props) {
   const id = (part: string) => `${member.slug}-${part}`;
   // "Se behandlinger ↓" (#behandlinger) points at the offers section.
   const anchor = profile.secondaryCta?.href.startsWith("#") ? profile.secondaryCta.href.slice(1) : undefined;
-  // The closing booking band repeats the hero's button, so it only closes a page that has
-  // content between the two; a profile without sections ends with the rest of the team.
+  // A profile without sections of its own (a new member whose details are not confirmed yet)
+  // shows the rest of the team before the closing booking band, so the band never sits right
+  // under the hero's identical button.
   const hasSections = Boolean(
     profile.approach || profile.offers || profile.experience || profile.reviews.reviews.length > 0,
   );
@@ -108,11 +109,10 @@ export default async function PractitionerPage({ params }: Props) {
         {profile.reviews.reviews.length > 0 ? (
           <ReviewSection selection={profile.reviews} name={profile.name} titleId={id("reviews")} />
         ) : null}
-        {hasSections ? (
-          <BookingBand booking={profile.booking} titleId={id("booking")} />
-        ) : (
+        {hasSections ? null : (
           <TeamRow members={team.filter((m) => m.slug !== member.slug)} titleId={id("team")} />
         )}
+        <BookingBand booking={profile.booking} titleId={id("booking")} />
       </div>
     </>
   );

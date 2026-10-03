@@ -6,6 +6,8 @@ type ExperienceSectionProps = { experience: NonNullable<TeamProfile["experience"
 /**
  * "Erfaring & uddannelse" — a band with a period/text timeline (6alb / ma; plum in the design,
  * the dusty rose band now: on-band heading and periods, band-body text, band-line dividers).
+ * A period can be a word instead of a year ("Uddannelse", "Undervisning"): the mobile column is
+ * 6.5em (the design's 70px fits a year, not "Undervisning"), the desktop one 7.5em.
  */
 export function ExperienceSection({ experience, titleId }: ExperienceSectionProps) {
   return (
@@ -26,7 +28,7 @@ export function ExperienceSection({ experience, titleId }: ExperienceSectionProp
               key={`${item.period}-${item.text}`}
               className="flex gap-4 border-t border-band-line pt-3 text-[15px] md:grid md:grid-cols-[7.5em_minmax(0,1fr)] md:gap-6 md:py-[18px] md:text-body md:last:border-b"
             >
-              <dt className="w-[70px] flex-none font-semibold text-band-accent md:w-auto md:text-on-band">
+              <dt className="w-[6.5em] flex-none font-semibold text-band-accent md:w-auto md:text-on-band">
                 <ResponsiveText mobile={item.periodShort} desktop={item.period} />
               </dt>
               <dd className="text-on-band md:text-band-body">

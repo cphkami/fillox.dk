@@ -141,6 +141,12 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   with few reviews of its own is not mostly general ones. `allSpecific` tells the section whether its heading may name the
   practitioner / treatment; otherwise it says "Det siger vores kunder", so a general review is
   never presented as being about that person or treatment.
+  Practitioner profiles (`components/practitioner/profile.ts` → `ownReviews`): one rule for
+  everyone — at least one review that names the practitioner, filled up to 3 with general ones
+  (Dr. Tom: 1 + 2); none of their own, no reviews section at all (Kubra), because a section of
+  general reviews only would read as testimonials about a person no review names. The fill-up
+  on a profile also skips `generalNotOnProfiles` (general reviews that praise one unnamed
+  "behandler", which would read as being about that practitioner).
 - **Aggregate** — `config/site.ts` → `trustpilot` (`score`, `reviewCount`, `url`) and
   `ui.trustpilotLabel`; update them together from the profile. `TrustpilotRating` is linked
   (new tab, 44px hit area) in the home hero; `showSummary` adds "4,7 ud af 5 · 172 anmeldelser".
@@ -163,7 +169,9 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   (`start` on practitioner profiles: shorter reviews sit under the heading). Dates are
   formatted on the server (`lib/reviews.ts` → `toReviewSlides`, site.locale).
 - **Placements** — home testimonial (set `home`, rose split panel), practitioner profiles
-  (`components/practitioner/ReviewSection`), treatment pages after the results except the
+  with a review of their own (`components/practitioner/ReviewSection`; their offers say
+  "Rynkebehandling", not "Botox", next to the testimonials — the same open legal question),
+  treatment pages after the results except the
   Botox pages (`components/treatment/ReviewsSection`, copy in `content/pages/treatments.ts` →
   `reviews`).
   Each has "Se alle anmeldelser på Trustpilot →" (`AllReviewsLink`). No review structured data:
@@ -185,6 +193,25 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   "Andre ydelser") — two columns split between groups, never inside one. Every Trustpilot rating
   in the reviews band is `components/ui/TrustpilotStars` (score card + each quote, rotator
   `stars="trustpilot"`).
+
+## Team (practitioners)
+
+- **Data** — `content/team.ts` (order = display order: Dr. Tom, the fagligt ansvarlig læge,
+  first). Profiles (/behandlere/<slug>) follow Alberte's design (6alb / ma) with each
+  practitioner's own documented facts; the file's header lists the sources and what is left out.
+- **Grids** — home ("Mød dem, der behandler dig"), /om-os and /behandlere show every member as
+  an equal card: 3 columns from 1024px (home from 768px), so six members are 2 rows of 3 (the
+  owner, October 2026). No member is featured any more: `TeamMember.featured` (content/types.ts)
+  and `public/images/team/tom-wide.jpg` (6om's wide Dr. Tom block) are unused.
+- **Portraits** — framed from a face table in `content/team.ts` (nose line, eye and mouth lines
+  measured per photo; `framedPortrait(member, slot)`), so every face in a grid sits on one line
+  and at one size: `teamSlots.portrait` (4:5) for the /om-os and /behandlere cards from 768px
+  and the home scroll row, `teamSlots.square` (33:34, mo's cards) for the home grid and the
+  cards below 768px. The profile hero crops come from the same table
+  (`components/practitioner/profile.ts` → `HERO_SLOTS`), except Alberte's designed crop.
+  `sizes` multiplies the slot width by `drawnWidthScale` (cover × zoom). A new photo needs its
+  `faces` entry, and should be a portrait (crop a landscape photo to 4:5 first: Kubra's
+  original is `design-reference/uploads/kubra-original.jpg`).
 
 ## Design tokens ("Støvet rosa & beige", 2026-10)
 
@@ -522,6 +549,10 @@ at rest keeps the brown hover (hover / focus classes outrank a breakpoint class)
   in the middle. Photos keep their proportions as they grow (`aspect-*`, or
   `h-fluid-N`), so they never turn into letterboxes. Hero split panels keep the column
   ratio and grow modestly (`lg:min-h-fluid-720/800`).
+  Exception: the home team grid ("Mød dem, der behandler dig", `components/home/Team.tsx`)
+  stops at 64rem from 1280px, centred under its centred heading, with squarer 33:34
+  portraits: six members are two rows, and filling the panel with 4:5 portraits made the
+  section ≈ 1.7 screens tall at 1710px. The full team grids (/om-os, /behandlere) fill.
 - Centred headings + intros stay centred at their `ch` width; single-line rows (USP band,
   stats) spread across the width (`justify-between` / `justify-evenly`).
 - Section paddings use `*-fluid-N` in place of the design number (`lg:py-[84px]` →

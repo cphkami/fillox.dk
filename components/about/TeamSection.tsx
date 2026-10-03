@@ -6,18 +6,18 @@ import { TeamMemberCard } from "./TeamMemberCard";
 type TeamSectionProps = { copy: AboutPageCopy["team"]; members: TeamMember[]; titleId: string };
 
 /**
- * "Mød vores behandlere" (6om / mo). The featured member (fagligt ansvarlig) comes
- * first and spans the full width; the rest sit in a 4-column grid on desktop and
- * a 2×2 grid on tablets. Below 768px every member is a white card: one column,
- * two from 560px (the featured card then runs horizontally across both).
+ * "Mød vores behandlere" (6om / mo). Every member as an equal card, in team order (Dr. Tom, the
+ * fagligt ansvarlig læge, first): 3 columns from 1024px, so six members are 2 rows of 3 (the
+ * owner, replacing 6om's wide Dr. Tom block above a row of four). 2 columns from 560px (3 rows of
+ * 2; three columns at 768px would leave the bios ≈ 25 characters wide), 1 below, as in mo. The
+ * single column is at most 26rem wide (centred), so the portraits (33:34 below 768px, 4:5 from
+ * there, TeamMemberCard) stay ≈ 400px high at most on large phones.
+ * Dr. Tom's role as fagligt ansvarlig stays in his bio and in the ResponsibleBand under the grid.
  *
- * The column gap lives in --team-gap-x (28px, 32 xl, 40 2xl) so the featured block can
- * reuse it from 1280px: its photo then spans exactly the first two grid columns.
+ * Gaps: 16px between the white mobile cards; from 768px 28px between columns (32 xl, 40 2xl) and
+ * 48px between rows (56 xl).
  */
 export function TeamSection({ copy, members, titleId }: TeamSectionProps) {
-  const featured = members.filter((m) => m.featured);
-  const others = members.filter((m) => !m.featured);
-
   return (
     <Container
       as="section"
@@ -38,14 +38,9 @@ export function TeamSection({ copy, members, titleId }: TeamSectionProps) {
       {/* role="list": Safari drops list semantics from lists styled with list-style: none. */}
       <ul
         role="list"
-        className="grid grid-cols-1 gap-4 [--team-gap-x:28px] min-[560px]:grid-cols-2 md:gap-x-(--team-gap-x) md:gap-y-12 lg:grid-cols-4 xl:gap-y-14 xl:[--team-gap-x:32px] 2xl:[--team-gap-x:40px]"
+        className="grid grid-cols-1 gap-4 max-[560px]:mx-auto max-[560px]:max-w-[26rem] min-[560px]:grid-cols-2 md:gap-x-7 md:gap-y-12 lg:grid-cols-3 xl:gap-x-8 xl:gap-y-14 2xl:gap-x-10"
       >
-        {featured.map((member) => (
-          <li key={member.slug} className="flex min-[560px]:col-span-2 md:mb-6 lg:col-span-4">
-            <TeamMemberCard member={member} featured />
-          </li>
-        ))}
-        {others.map((member) => (
+        {members.map((member) => (
           <li key={member.slug} className="flex">
             <TeamMemberCard member={member} />
           </li>

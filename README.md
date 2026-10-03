@@ -136,6 +136,17 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       (`treatmentsWithoutReviews` i `content/reviews.ts`). Slå dem først til, når det er afklaret.
       Afklaringen skal også dække `/behandlinger/for-maend` (`content/pages/men.ts`): siden viser
       ingen anmeldelser, men nævner Botox for mænd først, med pris og et FAQ-svar.
+      Og **behandlersiderne**: Annika, Maria og Mike har kundeanmeldelser og et priskort for
+      Botox. Indtil det er afklaret, hedder kortet "Rynkebehandling" (som siden
+      fillox.dk/rynkebehandling) og linker til Botox-siden (`wrinkleOffer` i `content/team.ts`).
+      Marias titel, bio og faktakort nævner stadig "Fillers & Botox" (fra Om os på den
+      nuværende side).
+- [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Kubras tekster er et neutralt
+      udkast (titel, City2, fillers, rynkebehandling og hudforbedring) — få hendes egne ord og et
+      citat. Dr. Toms og Marias "Sådan arbejder …"-kort er skrevet i tredje person ud fra Om os.
+      `/klinikker` siger ikke længere "Samme behandlere" (`content/pages/clinics.ts`), da
+      behandlerne arbejder på bestemte klinikker — bekræft. Større originaler af `tom.jpg`
+      (509 × 800) og `maria.jpg` (533 × 800): de bliver forstørret i profilernes hero fra 1280px.
 - [ ] **Booking hos en bestemt behandler**: `/booking?behandler=<slug>` åbner Gecko-kalenderen
       uden filter. Kan Gecko forvælge en behandler (et kalender- eller ressource-id pr. behandler,
       som `geckoCalendarId` pr. klinik)? Indtil da åbner knapperne "Book tid hos …" på

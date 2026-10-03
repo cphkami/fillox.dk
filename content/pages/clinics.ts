@@ -60,9 +60,11 @@ export const clinicsPage = {
   hero: {
     eyebrow: "Find klinik",
     title: "Her finder du Fillox",
-    intro:
-      "Fire klinikker i og omkring København. Samme behandlere, samme priser og samme standard, uanset hvor du booker.",
-    introShort: "Fire klinikker i København og omegn. Samme behandlere, samme kvalitet.",
+    // TODO: copy review (owner): 6kl / mk say "Samme behandlere, …", but practitioners work at
+    // given clinics (Kubra in City2, content/team.ts), so the line only promises prices and
+    // standard. Restore it if the practitioners do work at every clinic.
+    intro: "Fire klinikker i og omkring København. Samme priser og samme standard, uanset hvor du booker.",
+    introShort: "Fire klinikker i København og omegn. Samme priser, samme kvalitet.",
   },
 
   /** Mobile map above the clinic cards (mk: "Kort øverst"). Hidden on desktop (6kl has none). */

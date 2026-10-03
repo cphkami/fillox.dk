@@ -22,6 +22,11 @@ type CropPhotoProps = {
   priority?: boolean;
   /** Sizes the container: a height or an aspect ratio, plus radius etc. */
   className?: string;
+  /**
+   * Extra classes on the <img>, e.g. a hover zoom. The crop's zoom uses the `scale` property, so
+   * a hover zoom must use `transform` (`group-hover:[transform:scale(1.03)]`), which multiplies.
+   */
+  imgClassName?: string;
 };
 
 const cropVars = (crop: Crop, suffix: string) => ({
@@ -38,7 +43,7 @@ const cropVars = (crop: Crop, suffix: string) => ({
  * - Different photos: a <picture> with a (min-width: 768px) <source> (art direction via
  *   getImageProps); the crop still switches with the same CSS variables.
  */
-export function CropPhoto({ mobile, desktop, sm, sizes, priority, className }: CropPhotoProps) {
+export function CropPhoto({ mobile, desktop, sm, sizes, priority, className, imgClassName: extraImgClassName }: CropPhotoProps) {
   const style = {
     ...cropVars(mobile, ""),
     ...(sm ? cropVars(sm, "-sm") : {}),
@@ -49,6 +54,7 @@ export function CropPhoto({ mobile, desktop, sm, sizes, priority, className }: C
     "object-cover [object-position:var(--crop-pos)] [transform-origin:var(--crop-pos)] [scale:var(--crop-zoom)]",
     sm && "sm:[object-position:var(--crop-pos-sm)] sm:[transform-origin:var(--crop-pos-sm)] sm:[scale:var(--crop-zoom-sm)]",
     "md:[object-position:var(--crop-pos-md)] md:[transform-origin:var(--crop-pos-md)] md:[scale:var(--crop-zoom-md)]",
+    extraImgClassName,
   );
   const loading = priority ? "eager" : undefined;
   const fetchPriority = priority ? "high" : undefined;
