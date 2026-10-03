@@ -103,7 +103,8 @@ export const menPage = {
     title: "Behandlinger til mænd.",
     titleAccent: "Uden dikkedarer.",
     /** The lead's opening wink, one line per sentence (heading font, full krem), above the lead. */
-    leadHook: ["Ryggen er svær at nå med en skraber.", "Laseren når hele vejen rundt."] as string[],
+    // The owner's own line (2026-10-03), approved for the hero.
+    leadHook: ["Ingen har nogensinde savnet en behåret ryg.", "Laseren når hele vejen rundt."] as string[],
     lead: "Først en konsultation, så en plan. Vi behandler kun, når det giver mening for dig.",
     primaryCta: { label: "Book gratis konsultation", href: site.booking.href } satisfies Link,
     secondaryCta: { label: "Se behandlingerne", href: "#behandlinger" } satisfies Link,
