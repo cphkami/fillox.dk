@@ -138,8 +138,8 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       ingen anmeldelser, men nævner Botox for mænd først, med pris og et FAQ-svar.
 - [ ] **Booking hos en bestemt behandler**: `/booking?behandler=<slug>` åbner Gecko-kalenderen
       uden filter. Kan Gecko forvælge en behandler (et kalender- eller ressource-id pr. behandler,
-      som `geckoCalendarId` pr. klinik)? Indtil da lover siden for mænd ikke "book direkte hos …"
-      (`content/pages/men.ts`); knapperne "Book tid hos …" på behandlerkortene åbner kalenderen.
+      som `geckoCalendarId` pr. klinik)? Indtil da åbner knapperne "Book tid hos …" på
+      behandlersiderne kalenderen uden filter.
 - [ ] **Båndet lige over footeren** ("Støvet rosa & beige"): designets lyse bånd ("Fagligt
       ansvarlig" på Om os, "Book tid hos …" på behandlersiderne) var i ét med den beige footer.
       Om os bruger nu sand (`components/about/ResponsibleBand.tsx`), behandlersiderne det

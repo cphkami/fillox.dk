@@ -1,6 +1,6 @@
 /**
  * Resolves the men's page copy (content/pages/men.ts) against /content: treatment links and
- * "fra" prices, the practitioners, the price rows. Pure functions, no React.
+ * "fra" prices, the price rows, the practitioners in "Dine behandlere". Pure functions, no React.
  */
 import type { MenPage } from "@/content/pages/men";
 import { treatmentPage } from "@/content/pages/treatments";
@@ -24,13 +24,15 @@ export type MenTreatmentRow = {
   priceNote?: string;
 };
 
-export type MenPractitioner = {
-  member: TeamMember;
-  profileHref: string;
-  bookingHref: string;
-};
-
 export type MenPriceRow = { label: string; note?: string; price: string };
+
+export type MenCarePerson = {
+  member: TeamMember;
+  /** The practitioner's profile, /behandlere/<slug>. */
+  profileHref: string;
+  /** Portrait crop (object-position) in the 4:5 slot. */
+  position: string;
+};
 
 /**
  * Note of the price-list row that sets a treatment's "fra" price: the cheapest row tagged with
@@ -60,20 +62,19 @@ export function menTreatmentRows(items: MenPage["treatments"]["items"]): MenTrea
   });
 }
 
-/** The practitioners shown on the page, in the copy's order. Throws on an unknown slug. */
-export function menPractitioners(slugs: readonly string[]): MenPractitioner[] {
-  return slugs.map((slug) => {
-    const member = getTeamMember(slug);
-    if (!member) throw new Error(`men: unknown team member "${slug}"`);
-    const profileHref = teamMemberHref(slug);
-    return { member, profileHref, bookingHref: member.bookingHref ?? profileHref };
-  });
-}
-
 /** Price rows, cheapest first (the price list keeps the live site's order). */
 export function menPriceRows(rows: readonly PriceListRow[]): MenPriceRow[] {
   const amount = (r: PriceListRow) => (r.price.kind === "amount" ? r.price.amount : Number.POSITIVE_INFINITY);
   return [...rows]
     .sort((a, b) => amount(a) - amount(b))
     .map((r) => ({ label: r.label, note: r.note, price: formatPriceValue(r.price) }));
+}
+
+/** The practitioners in "Dine behandlere", in the copy's order. Throws on an unknown slug. */
+export function menCarePeople(people: MenPage["care"]["people"]): MenCarePerson[] {
+  return people.map(({ slug, position }) => {
+    const member = getTeamMember(slug);
+    if (!member) throw new Error(`men: unknown team member "${slug}"`);
+    return { member, profileHref: teamMemberHref(slug), position };
+  });
 }

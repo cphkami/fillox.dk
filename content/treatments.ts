@@ -263,7 +263,7 @@ const prfHarAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
 const laserAbout: Pick<Detail, "about" | "goodFor" | "faq"> = {
   about: [
     "Vores diodelaser behandler hårsækkene målrettet. Et forløb består typisk af 6–8 behandlinger med 4–8 ugers mellemrum, så vi rammer hårene i den aktive vækstfase. AI-genkendelse hjælper os med at tilpasse indstillingerne til din hudtype og hårstruktur, og den indbyggede køling beskytter huden og gør behandlingen behagelig.",
-    "Alle laserbehandlinger udføres af personale, der er særligt uddannet gennem Fillox Academy. Behandlingen kan udføres på hele kroppen, også i ansigtet og på halsen, og du kan vælge mellem en mandlig og en kvindelig behandler.",
+    "Alle laserbehandlinger udføres af personale, der er særligt uddannet gennem Fillox Academy. Behandlingen kan udføres på hele kroppen, også i ansigtet og på halsen.",
   ],
   goodFor: ["Ansigt og hals", "Armhuler, arme og ben", "Bikini og brasil", "Ryg, skuldre og bryst"],
   faq: [
@@ -285,7 +285,7 @@ const laserAbout: Pick<Detail, "about" | "goodFor" | "faq"> = {
     {
       question: "Kan mænd også få laser hårfjerning?",
       answer:
-        "Ja. Behandlingen tilbydes både til kvinder og mænd, og du kan vælge mellem en mandlig og en kvindelig behandler. Til mænd har vi også faste priser på kombinerede områder som ryg, skuldre og bryst.",
+        "Ja. Behandlingen tilbydes både til kvinder og mænd. Til mænd har vi også faste priser på kombinerede områder som ryg, skuldre og bryst.",
     },
   ],
 };
@@ -975,9 +975,9 @@ export const treatments: Treatment[] = [
     categorySlug: "for-maend",
     priceFrom: lowestListPrice("laser-harfjerning"),
     mobileMenuName: "Laser hårfjerning",
-    short: "Laser hårfjerning på ryg, skuldre, bryst og resten af kroppen, med en mandlig behandler, hvis du ønsker det.",
+    short: "Laser hårfjerning på ryg, skuldre, bryst og resten af kroppen, med faste priser på kombinerede områder.", // TODO: copy review
     detail: {
-      lead: "Hårfjerning med diodelaser på ryg, skuldre, bryst og resten af kroppen. Du kan vælge mellem en mandlig og en kvindelig behandler.",
+      lead: "Hårfjerning med diodelaser på ryg, skuldre, bryst og resten af kroppen. Indstillingerne tilpasses din hudtype og hårstruktur.", // TODO: copy review
       heroImage: categoryImage("for-maend"),
       facts: laserFacts(lowestListPrice("laser-harfjerning")),
       ...laserAbout,

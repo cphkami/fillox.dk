@@ -78,6 +78,19 @@ export const layoutCopy = {
     clinicsLabel: "Vores klinikker",
 
     /**
+     * The third contact card next to "Ring til os" / "Skriv til os" (content/ui.ts → callUs,
+     * writeUs), linking to the booking page (config/site.ts → booking.href). Owner, 2026-10: the
+     * footer had two buttons ("Tilmeld" and "Book tid"); booking is now one of three equal ways
+     * to reach Fillox, so the newsletter's "Tilmeld" is the footer's only button. The arrow is
+     * added by the component.
+     */
+    // TODO: copy review (owner's request, not in the design)
+    bookingCard: {
+      label: "Book online",
+      value: "Find en tid",
+    },
+
+    /**
      * Newsletter signup at the top of the footer, on every page (owner, 2026-10: "så det er
      * fast"); hidden on /blog, which has its own band right above the footer. Form strings as
      * on /blog (content/pages/blog.ts → newsletter); posts to the same Netlify form.

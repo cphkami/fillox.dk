@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ButtonLink } from "@/components/ui/Button";
 import { HoursSummary } from "@/components/ui/HoursSummary";
 import { JoinedLines } from "@/components/ui/JoinedLines";
 import { site } from "@/config/site";
@@ -13,22 +12,77 @@ import { FooterNewsletter } from "./FooterNewsletter";
 import { FooterTrust } from "./FooterTrust";
 import { NavLink } from "./NavLink";
 
-const contactCards = [
+type ContactCard = {
+  label: string;
+  value: string;
+  href: string;
+  /** A page on the site: rendered with next/link and a trailing arrow ("Find en tid →"). */
+  internal?: boolean;
+};
+
+/** The contact band: three equal ways to reach Fillox (phone, e-mail, online booking). */
+const contactCards: ContactCard[] = [
   { label: ui.callUs, value: site.contact.phone, href: site.contact.phoneHref },
   { label: ui.writeUs, value: site.contact.email, href: site.contact.emailHref },
+  {
+    label: layoutCopy.footer.bookingCard.label,
+    value: layoutCopy.footer.bookingCard.value,
+    href: site.booking.href,
+    internal: true,
+  },
 ];
+
+const cardClasses =
+  "group block rounded-[18px] bg-footer-card px-5 py-4 transition-colors hover:bg-footer-card-hover focus-visible:bg-footer-card-hover lg:rounded-[20px] lg:px-7 lg:py-[22px]";
+
+function ContactCardLink({ card }: { card: ContactCard }) {
+  const content = (
+    <>
+      <span className="mb-1 block text-micro font-semibold tracking-[.12em] text-footer-accent uppercase lg:mb-1.5">
+        {card.label}
+      </span>
+      <span className="block text-[19px] font-semibold break-words text-on-footer lg:text-h3 lg:tracking-[-.01em]">
+        {card.value}
+        {card.internal ? (
+          <>
+            {" "}
+            <span
+              aria-hidden="true"
+              className="inline-block leading-none transition-transform duration-200 group-hover:translate-x-1 group-focus-visible:translate-x-1"
+            >
+              →
+            </span>
+          </>
+        ) : null}
+      </span>
+    </>
+  );
+
+  // Not prefetched, like the footer links: the header's "Book tid" already leads to the page.
+  return card.internal ? (
+    <Link href={card.href} prefetch={false} className={cardClasses}>
+      {content}
+    </Link>
+  ) : (
+    <a href={card.href} className={cardClasses}>
+      {content}
+    </a>
+  );
+}
 
 /**
  * Footer block (design 6a bottom / mf bottom) on the light warm beige of the owner's "Støvet rosa &
  * beige" (`bg-footer`, one token in app/globals.css; production: plum), espresso text, the black
- * logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`); contact
- * band with phone, e-mail and "Book tid"; logo + tagline; one column per clinic; footer links;
- * copyright + legal links; the Trustpilot strip (owner, 2026-10; `FooterTrust`). Spans the fluid
- * site canvas with the surface margin (like every rounded band), its fr-based grids spread with
- * the width.
+ * logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`, whose
+ * "Tilmeld" is the footer's only button); contact band with three equal cards: phone, e-mail and
+ * online booking ("Book online · Find en tid →", owner 2026-10: two buttons in the footer made no
+ * sense, the header keeps its sticky "Book tid"); logo + tagline; one column per clinic; footer
+ * links; copyright + legal links; the Trustpilot strip (owner, 2026-10; `FooterTrust`). Spans the
+ * fluid site canvas with the surface margin (like every rounded band), its fr-based grids spread
+ * with the width.
  *
- * Below 1024px the block is one column: logo + tagline, newsletter, contact cards + "Book tid",
- * clinics, links, legal, Trustpilot.
+ * Below 1024px the block is one column: logo + tagline, newsletter, the three contact cards
+ * (stacked below 768px, one row from 768px), clinics, links, legal, Trustpilot.
  */
 export function Footer() {
   const clinicsHref = routes.clinics;
@@ -44,30 +98,14 @@ export function Footer() {
             the dividers above and below set it apart from the logo and the contact cards. */}
         <FooterNewsletter className="border-y border-footer-line py-7 lg:mb-10 lg:border-t-0 lg:pt-0 lg:pb-10" />
 
-        {/* Contact band */}
-        <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 lg:mb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:border-b lg:border-footer-line lg:pb-10">
+        {/* Contact band: three equal cards (phone, e-mail, online booking), stacked below 768px. */}
+        <ul className="flex flex-col gap-2.5 md:grid md:grid-cols-3 lg:mb-10 lg:gap-6 lg:border-b lg:border-footer-line lg:pb-10">
           {contactCards.map((card) => (
-            <a
-              key={card.href}
-              href={card.href}
-              className="block rounded-[18px] bg-footer-card px-5 py-4 transition-colors hover:bg-footer-card-hover lg:rounded-[20px] lg:px-7 lg:py-[22px]"
-            >
-              <span className="mb-1 block text-micro font-semibold tracking-[.12em] text-footer-accent uppercase lg:mb-1.5">
-                {card.label}
-              </span>
-              <span className="block text-[19px] font-semibold break-words text-on-footer lg:text-h3 lg:tracking-[-.01em]">
-                {card.value}
-              </span>
-            </a>
+            <li key={card.href} className="flex flex-col *:flex-1">
+              <ContactCardLink card={card} />
+            </li>
           ))}
-          <ButtonLink
-            href={site.booking.href}
-            size="lg"
-            className="w-full md:col-span-2 lg:col-span-1 lg:h-auto lg:w-auto lg:px-9 lg:py-4 xl:px-fluid-36/40 xl:py-fluid-16/17"
-          >
-            {ui.bookCta}
-          </ButtonLink>
-        </div>
+        </ul>
 
         {/* Brand + clinics. Below lg the wrapper dissolves so the brand can move above the contact band. */}
         <div className="contents lg:grid lg:grid-cols-[minmax(0,1.3fr)_repeat(4,minmax(0,1fr))] lg:gap-10 lg:border-b lg:border-footer-line lg:pb-10">

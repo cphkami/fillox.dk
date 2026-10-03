@@ -4,6 +4,7 @@ import { formatPrice } from "@/lib/format";
 import { priceCards } from "../prices";
 import { routes } from "../routes";
 import { getTreatment } from "../treatments";
+import { treatmentPage } from "./treatments";
 
 /**
  * /behandlinger/for-maend — the landing page for men (the owner, round 3: "fewer treatments,
@@ -14,6 +15,10 @@ import { getTreatment } from "../treatments";
  *
  * No reviews on this page: it lists Botox for mænd, and the Botox pages show none
  * (content/reviews.ts → treatmentsWithoutReviews).
+ *
+ * Not about choosing a male practitioner (the owner, round 4: it is rather the opposite, men are
+ * glad that e.g. Alberte takes good care of them). The page says nothing about a practitioner's
+ * gender and offers no choice of practitioner; the "Dine behandlere" section is about care.
  *
  * Prices are read from the price list through the treatments (Treatment.priceFrom) and the
  * "Laserpakker for mænd" card (content/prices.ts → id "laser-maend"), never typed here. The
@@ -41,6 +46,9 @@ const from = (amount: number) => `fra ${formatPrice(amount)}`;
 const laserCard = priceCards.find((c) => c.id === LASER_CARD);
 if (!laserCard) throw new Error(`men: no price card "${LASER_CARD}"`);
 
+const menShareImage: ImageRef | undefined = treatmentPage.categoryImages[menCategorySlug];
+if (!menShareImage) throw new Error(`men: no category image "${menCategorySlug}"`);
+
 export const menPage = {
   path: routes.men,
 
@@ -48,19 +56,15 @@ export const menPage = {
   meta: {
     title: "Behandlinger til mænd",
     description:
-      "Botox, kæbelinje, hårtab og laser hårfjerning til mænd hos Fillox. Diskret og naturligt, med gratis konsultation og mulighed for en mandlig behandler.",
+      "Botox, kæbelinje, hårtab og laser hårfjerning til mænd hos Fillox. Diskret og naturligt, med gratis konsultation, gratis kontrol og vagtlæge 24/7.",
   },
 
   /**
-   * Share image: Dr. Tom in the clinic (the wide team photo, 1320 × 880; a 1.91 : 1 crop keeps
-   * his face). The default share image shows two women.
+   * Share image: the men's treatment pages' hero photo, the Fillox logo on the clinic wall
+   * (content/pages/treatments.ts → categoryImages["for-maend"], 800 × 533). Neutral: no person,
+   * so the card does not pick a practitioner for the page.
    */
-  shareImage: {
-    src: "/images/team/tom-wide.jpg",
-    alt: "Dr. Tom Haugland, æstetisk læge og daglig leder hos Fillox",
-    width: 1320,
-    height: 880,
-  } satisfies ImageRef,
+  shareImage: menShareImage,
 
   /** Accessible name of the breadcrumb <nav>. */
   breadcrumbLabel: "Brødkrumme",
@@ -82,9 +86,9 @@ export const menPage = {
     factsLabel: "Det kan du regne med",
     facts: [
       { title: "Gratis konsultation", text: "Vi vurderer dine ønsker, før vi behandler." },
-      // Not "book directly with": the booking calendar cannot preselect a practitioner yet
-      // (lib/booking.ts → practitionerBookingHref).
-      { title: "Mandlige behandlere", text: "Du kan bede om Dr. Tom eller Mike." },
+      // Botox and fillers only: live, laser is done by staff trained in Fillox Academy (as the
+      // /behandlinger intro, content/pages/treatments.ts → treatmentsOverview.intro).
+      { title: "Læger og sygeplejersker", text: "Udfører botox og fillers hos os." },
       { title: "Vagtlæge 24/7", text: "Også når du er kommet hjem." },
     ],
   },
@@ -123,11 +127,16 @@ export const menPage = {
     pricesLink: { label: "Se alle priser", href: routes.prices } satisfies Link,
   },
 
-  // TODO: copy review (step texts)
+  // TODO: copy review (intro, step texts)
   process: {
     id: "forloeb",
     eyebrow: "Forløbet",
     title: "Sådan foregår det",
+    /**
+     * Beside the heading from 1024px (under it below): sums up the steps, no new claims (the
+     * price is set in the plan, step 2; the follow-up is the free check, step 4).
+     */
+    intro: "Vi er med dig hele vejen: du kender planen og prisen, før vi går i gang, og vi følger op bagefter.",
     steps: [
       {
         title: "Konsultation",
@@ -149,21 +158,25 @@ export const menPage = {
   },
 
   /**
-   * Practitioners (content/team.ts): the male members of the team, as practitioners. Their
-   * booking links (/booking?behandler=<slug>, lib/booking.ts) do NOT preselect them: neither
-   * Gecko nor TIMMA reads the parameter, so the copy says "ask for", not "book directly with".
-   * The live site does not say who performs which treatment, so the copy only offers a male
-   * practitioner, it does not assign treatments.
+   * "Dine behandlere": care, not gender (see the header). Three practitioners from
+   * content/team.ts with their own quotes from fillox.dk/om-os: Alberte (the owner's example),
+   * Annika (the Botox page's practitioner) and Maria (fillers & Botox, the lip filler page's
+   * practitioner), so the people match the treatments on the list. Each card links to the
+   * practitioner's profile; no "Book tid hos …": the booking calendar cannot preselect a
+   * practitioner (lib/booking.ts → practitionerBookingHref). `position` is the portrait crop in
+   * the 4:5 slot (object-position: the faces sit at different heights in the photos).
    */
-  // TODO: copy review
-  practitioners: {
+  // TODO: copy review (title, intro)
+  care: {
     id: "behandlere",
     eyebrow: "Dine behandlere",
-    title: "Foretrækker du en mandlig behandler?",
-    intro: "Så kan du bede om Dr. Tom eller Mike, når du booker, eller ringe til os. Du kan også vælge en af vores andre behandlere.",
-    slugs: ["tom", "mike"],
-    bookLabel: (name: string) => `Book tid hos ${name}`,
-    profileLabel: (name: string) => `Læs mere om ${name}`,
+    title: "Du er i gode hænder",
+    intro: "Uanset hvem du møder hos os, tager vi os godt af dig. Målet er, at du går herfra tryg og tilfreds.",
+    people: [
+      { slug: "alberte", position: "50% 30%" },
+      { slug: "annika", position: "50% 42%" },
+      { slug: "maria", position: "50% 18%" },
+    ] as { slug: string; position: string }[],
     teamLink: { label: "Mød hele teamet", href: routes.aboutTeam } satisfies Link,
   },
 

@@ -17,8 +17,7 @@ const crumbLink = "relative -mx-1 px-1 py-[13px] underline-offset-4 hover:text-c
  * bronze) with the lead and buttons beside it from 1024px, bottom-aligned with the H1, and the
  * three facts as a row of columns under a bronze rule (divided by hairlines). Below 1024px
  * everything stacks and the facts are a list. No photo: the page is typographic on purpose
- * (restrained imagery; the practitioners' photos come further down), and the layout leaves no
- * empty quadrant to fill.
+ * (restrained imagery), and the layout leaves no empty quadrant to fill.
  */
 export function MenHero({ copy }: { copy: Pick<MenPage, "hero" | "breadcrumb" | "breadcrumbLabel"> }) {
   const { hero, breadcrumb } = copy;

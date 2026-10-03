@@ -245,9 +245,12 @@ the mega menu's panel, "Om behandlingen" / "Klar til at booke?" bands, price box
 | `footer-body` | `#3A2622` | running text, legal: 9.0:1 |
 | `footer-accent` | `#4F2A27` | uppercase labels, hours, link hover: 7.9:1 |
 | `footer-line` | `rgb(51 33 29 / .18)` | dividers (decorative) |
-| `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail cards |
+| `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail / booking cards |
 
-The footer shows the black logo (`site.brand.logoDark`, as the header) and the `primary` button.
+The footer shows the black logo (`site.brand.logoDark`, as the header). Its only button is the
+newsletter's "Tilmeld" (owner, round 4: two CTAs in the footer made no sense); booking is the
+third contact card ("Book online / Find en tid →", `content/layout.ts` → `footer.bookingCard`,
+links to `/booking`) next to phone and e-mail. The sticky header keeps "Book tid".
 
 **Footer newsletter and Trustpilot strip** (owner, 2026-10; copy in `content/layout.ts` →
 `footer.newsletter` / `footer.trust`). The footer block opens with a newsletter signup
