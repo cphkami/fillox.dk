@@ -11,6 +11,8 @@
 @source not "../CLAUDE.md";
 @source not "../README.md";
 @source not "../integrations";
+/* The dev-only colour tuner styles itself (plain CSS) and never ships: keep its classes out. */
+@source not "../components/dev";
 
 /*
  * Fillox design tokens: the design "Fillox Signature v2" (mobile spec + brand kit) in the owner's
@@ -74,7 +76,8 @@
   /* Shadows */
   --shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1); /* mega menu / dropdowns */
   --shadow-float: 0 10px 30px rgba(36, 39, 36, 0.18); /* floating book bar */
-  --shadow-photo: 0 10px 30px rgb(84 50 50 / 0.1); /* result photos (accent-tinted; was plum at 10%) */
+  /* result photos: the accent at 10% (was plum); follows --color-accent (the dev colour tuner) */
+  --shadow-photo: 0 10px 30px color-mix(in srgb, var(--color-accent) 10%, transparent);
 
   /* Letter-spacing (relaxed with the lighter 500 headings; production: -0.03em / -0.035em) */
   --tracking-display: -0.02em; /* H2, H3, card titles */

@@ -25,6 +25,11 @@ npm install
 npm run dev              # http://localhost:3000
 ```
 
+I `npm run dev` har hver side en rund **Farver**-knap nederst til højre: skift farverne live,
+se kontrasten (AA ✓/✗), og tryk "Kopiér farver" for at sende ændringerne videre. Ændringerne
+gemmes kun i din browser; de rigtige farver ændres i `app/globals.css`. Knappen findes ikke i
+det byggede site (se `ARCHITECTURE.md` → "Colour tuner").
+
 Tjek før commit:
 
 ```bash
@@ -49,7 +54,7 @@ npm run build            # kører check:market først (prebuild)
   (sidste adresselinje skal være `<postnr> <by>`, tider som `10–20`, dag-labels i
   `content/seo.ts` → `openingDays`);
 - der står æ, ø eller å i en streng i `app/`, `components/` eller `lib/` (tekst hører til i
-  `content/`).
+  `content/`; udviklerværktøjet i `components/dev/` er undtaget).
 
 Klinikker uden Gecko-kalender-id vises som en note (ikke en fejl), og det samme gør
 Trustpilot-tallene i `config/site.ts`, når `trustpilot.checked` er mere end 60 dage gammel.

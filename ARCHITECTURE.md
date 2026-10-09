@@ -50,8 +50,9 @@ lib/                           helpers (formatPrice, cn, …); metadata.ts build
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
                                redirect targets, no-JS form targets (contact, newsletter), Netlify form names,
                                booking provider ids, clinic address/hours parse for JSON-LD,
-                               no æ/ø/å strings in app/, components/, lib/, review excerpts
-                               verbatim + review sets consistent (content/reviews.ts); note when
+                               no æ/ø/å strings in app/, components/ (except components/dev/), lib/, review excerpts
+                               verbatim + review sets consistent (content/reviews.ts), components/dev/
+                               imported only by app/layout.tsx behind the NODE_ENV guard; note when
                                the Trustpilot numbers (config/site.ts) are > 60 days old
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
@@ -61,6 +62,8 @@ components/
                                ResponsiveText (mobile/desktop copy), JoinedLines, HoneypotField,
                                ReviewRotator (client), AllReviewsLink, TrustpilotRating, …
   seo/                         OrganizationJsonLd (root layout); JsonLd, absoluteUrl, breadcrumbList
+  dev/                         dev-only tools, never in a production build: ColorTuner ("Farver",
+                               see "Design tokens" → "Colour tuner")
   <page>/                      page-local components (owned by that page)
 app/                           routes (see below)
 design-reference/              the source design: screens/*.png, sections/*.html, uploads/
@@ -320,6 +323,34 @@ band's highlight: `data-surface="band"` on a band, `"band-lg"` on an element tha
 1024px only, `"band-md"` on a sand card that turns into a band from 768px (the band highlight is
 only 1.17:1 on sand, so the card keeps the light rose selection), `"footer"` on the footer block.
 
+**Colour tuner (dev only).** In `next dev` every page has a round "Farver" button bottom-right
+(`components/dev/ColorTuner`, mounted by `app/layout.tsx` only when `NODE_ENV` is `"development"`;
+a production build drops the import, so no code, script or CSS of it ships; `check:market` rule 13
+fails if anything else imports `components/dev`, or if the layout's import loses its guard). The
+panel lists the tokens above in Danish groups (Side & flader, Tekst, Knapper & links, Rosa bånd,
+Footer), plus Tailwind's `white` ("Hvid": white cards, menus, form fields; also the white stars in
+the Trustpilot boxes). Left out: a token Tailwind did not emit (no runtime value, e.g. the unused
+`band-card` / `band-card-hover`) and, on purpose, `trustpilot` / `trustpilot-empty` (Trustpilot's
+brand colours). Each row has a live swatch, a colour picker, a hex field (applied live once the
+code is complete, `#rrggbb` or `#rrggbbaa`; a short `#rgb` on Enter or leaving the field; a code
+without alpha keeps a translucent token's opacity), an opacity slider for the translucent tokens,
+"Nulstil" per row and the WCAG AA ratio of the text that sits on or in that colour: every surface
+row checks its weakest text (cream: taupe and placeholder too), and `heading` / `rule` / `cream`
+also check the For mænd page, where `heading` is the dark fill (`components/men/surface.ts`) with
+bronze `rule` and krem 75 % text on it. A line at the top counts every pair below AA and lists
+them. "Nulstil alle" asks first; the three "Forslag" only set their own token (Lysere rosa: `band`,
+Varmere footer: `footer`) and keep the other changes, asking before they replace a value the owner
+set; "Nuværende" is "Nulstil alle". A change writes `html:root { --color-<token>: … }` into one
+`<style>` in `<head>`, so every utility updates live (`shadow-photo` follows the accent too);
+overrides persist in localStorage (`fillox-color-tuner`) across navigation and reloads, applied
+before paint by an inline script. "Kopiér farver" copies the changes (Danish names, before → after,
+the AA summary and the contrast of every pair a change touches, the CSS lines for `@theme`) for the
+owner to paste to us; tokens change in `app/globals.css`, never in the tuner. Automated browsers
+(`navigator.webdriver`: screenshot scripts) get neither the button nor the overrides unless the
+URL has `?farver`; `?farver=0` turns it off in any browser (both stick for the tab). Its labels
+are inline (a dev tool, not copy: `check:market` rule 9 skips `components/dev/`), its styles are
+plain CSS in fixed neutral colours (`app/globals.css` keeps the folder out of Tailwind's scan).
+
 **Typography**
 
 - Figtree (`font-sans`, the body default): running text, nav, buttons, eyebrows, labels, prices,
@@ -372,7 +403,7 @@ component ported from an older branch or from fillox-no).
 | `focus-visible:outline-powder` and other ring overrides | remove (the accent ring fits every surface) |
 | `border-[rgba(243,237,228,.16)]` / `bg-[rgba(243,237,228,.16)]` / `border-[#f3ede4]` on a band | `border-band-line` / `bg-band-line` |
 | `border-[rgba(243,237,228,.45)]` (arrow circle on a band) | `border-on-band/40` |
-| `shadow-[0_10px_30px_rgba(107,56,64,.10)]` | `shadow-photo` |
+| `shadow-[0_10px_30px_rgba(107,56,64,.10)]` | `shadow-photo` (the accent at 10%, a `color-mix` of `--color-accent`) |
 
 - Shape: pill buttons (radius 100px; 52px high on mobile, secondary taps ≥ 44px),
   cards 18–24px radius, 12px margin on surfaces, 20px side margin on text (mobile).

@@ -25,13 +25,17 @@
  *    booking.timmaId (content/clinics.ts); with "gecko" clinics without a calendar id are listed;
  * 8. every open clinic's address and opening hours parse into the structured data
  *    (components/seo/OrganizationJsonLd.tsx), which otherwise silently drops them;
- * 9. no string in app/, components/ or lib/ contains æ, ø or å (copy belongs in content/);
+ * 9. no string in app/, components/ or lib/ contains æ, ø or å (copy belongs in content/); the
+ *    dev-only tools in components/dev/ (never in a production build) keep their labels inline;
  * 10. customer reviews (content/reviews.ts) are quoted verbatim: every excerpt (`short`) is whole
  *     sentences of its review's text, in order, with "…" wherever text is left out; every set
  *     lists existing reviews, and a practitioner / treatment set only reviews that name it;
  *     treatmentsWithoutReviews lists existing treatments that have no review set;
  * 12. no static page shadows a collection page: a folder like app/behandlinger/for-maend wins
- *     over app/behandlinger/[slug], so no treatment, team member or blog post may take its slug.
+ *     over app/behandlinger/[slug], so no treatment, team member or blog post may take its slug;
+ * 13. components/dev/ (the colour tuner) stays dev-only: rule 9 and Tailwind's scan skip it, so
+ *     only app/layout.tsx may import it, and only as a dynamic import() under
+ *     `process.env.NODE_ENV === "development"` (which a production build drops).
  *
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
@@ -225,7 +229,11 @@ function sourceFiles(dir) {
     return /\.(tsx?|mjs)$/.test(entry.name) ? [full] : [];
   });
 }
-for (const file of ["app", "components", "lib"].flatMap((dir) => sourceFiles(join(root, dir)))) {
+// components/dev/ (the colour tuner) is only mounted by `next dev`: its Danish labels are not market copy.
+const devOnlyDir = join(root, "components", "dev") + sep;
+for (const file of ["app", "components", "lib"]
+  .flatMap((dir) => sourceFiles(join(root, dir)))
+  .filter((file) => !file.startsWith(devOnlyDir))) {
   const source = ts.createSourceFile(file, readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);
   const visit = (node) => {
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isJsxText(node) ||
@@ -346,6 +354,62 @@ for (const slug of treatmentsWithoutReviews) {
         errors.push(`app${path}/page.tsx shadows the ${key} page "${slug}" (${base}/[slug]): rename one of them`);
       }
     }
+  }
+}
+
+// 13. components/dev/ is only reachable from app/layout.tsx, behind the NODE_ENV guard.
+{
+  const devDir = join(root, "components", "dev");
+  const inDevDir = (path) => path === devDir || path.startsWith(devDir + sep);
+  const layoutFile = join(appDir, "layout.tsx");
+  const DEV_GUARD = /^process\.env\.NODE_ENV\s*===\s*["']development["']$/;
+  /** The import() sits in the true branch of `NODE_ENV === "development" ? … : …` (or if / &&). */
+  const guarded = (node) => {
+    for (let child = node, parent = node.parent; parent; child = parent, parent = parent.parent) {
+      if (ts.isConditionalExpression(parent) && parent.whenTrue === child) return DEV_GUARD.test(parent.condition.getText().trim());
+      if (ts.isIfStatement(parent) && parent.thenStatement === child) return DEV_GUARD.test(parent.expression.getText().trim());
+      if (ts.isBinaryExpression(parent) && parent.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken && parent.right === child) {
+        return DEV_GUARD.test(parent.left.getText().trim());
+      }
+    }
+    return false;
+  };
+  const rootFiles = readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && /\.(tsx?|mjs)$/.test(entry.name))
+    .map((entry) => join(root, entry.name));
+  const files = [...rootFiles, ...["app", "components", "lib", "content", "config"].flatMap((dir) => sourceFiles(join(root, dir)))];
+  for (const file of files.filter((f) => !inDevDir(f))) {
+    const source = ts.createSourceFile(file, readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);
+    const where = (node) => `${relative(root, file)}:${source.getLineAndCharacterOfPosition(node.getStart()).line + 1}`;
+    const check = (node, specifier, dynamic) => {
+      if (!ts.isStringLiteralLike(specifier)) return;
+      const spec = specifier.text;
+      const target = spec.startsWith("@/") ? join(root, spec.slice(2)) : spec.startsWith(".") ? join(dirname(file), spec) : null;
+      if (!target || !inDevDir(target)) return;
+      if (file !== layoutFile) {
+        errors.push(`${where(node)}: imports the dev-only "${spec}"; only app/layout.tsx may (components/dev never ships)`);
+      } else if (!dynamic || !guarded(node)) {
+        errors.push(
+          `${where(node)}: "${spec}" must be a dynamic import() under process.env.NODE_ENV === "development" ` +
+            `(a static import would ship the dev-only tuner)`,
+        );
+      }
+    };
+    const visit = (node) => {
+      if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier) {
+        check(node, node.moduleSpecifier, false);
+      } else if (ts.isImportEqualsDeclaration(node) && ts.isExternalModuleReference(node.moduleReference)) {
+        check(node, node.moduleReference.expression, false);
+      } else if (ts.isCallExpression(node) && node.arguments.length) {
+        const dynamicImport = node.expression.kind === ts.SyntaxKind.ImportKeyword;
+        const required = ts.isIdentifier(node.expression) && node.expression.text === "require";
+        if (dynamicImport || required) check(node, node.arguments[0], dynamicImport);
+      } else if (ts.isImportTypeNode(node) && ts.isLiteralTypeNode(node.argument)) {
+        check(node, node.argument.literal, false);
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(source);
   }
 }
 

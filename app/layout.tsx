@@ -31,6 +31,14 @@ const poppins = Poppins({
 
 const { meta } = layoutCopy;
 
+/*
+ * Dev only: the live colour tuner ("Farver", components/dev). `next dev` runs with NODE_ENV
+ * "development"; a production build sees a constant false here, drops the import and ships none of
+ * the tuner (no server or client code, no CSS).
+ */
+const DevColorTuner =
+  process.env.NODE_ENV === "development" ? (await import("@/components/dev/ColorTunerMount")).ColorTunerMount : null;
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: meta.defaultTitle, template: meta.titleTemplate },
@@ -56,6 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={site.lang} className={`${figtree.variable} ${poppins.variable} h-full`}>
       <body className="flex min-h-full flex-col">
+        {DevColorTuner ? <DevColorTuner /> : null}
         <a
           href={`#${layoutCopy.mainId}`}
           className="fixed top-3 left-3 z-[100] -translate-y-[200%] rounded-full bg-accent px-5 py-3 text-[14px] text-on-accent transition-transform focus:translate-y-0"
