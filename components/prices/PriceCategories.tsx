@@ -22,7 +22,7 @@ export type PriceCategoryView = {
   title: string;
   /** Card label, e.g. "HYALURONSYRE". */
   eyebrow: string;
-  /** Mobile jump-chip label, e.g. "Botox". */
+  /** Mobile jump-chip label, e.g. "Fillers". */
   chipLabel: string;
   rows: PriceRowView[];
 };

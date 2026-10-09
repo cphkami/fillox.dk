@@ -42,8 +42,12 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/fillers/faq-om-fillers-behandling", destination: "/behandlinger#fillers", note: "FAQ om fillers" },
 
   /* ----------------------------------------------------- Rynkebehandling */
-  { source: "/rynkebehandling", destination: "/behandlinger/botox", note: "Rynkebehandling med Botox" },
-  { source: "/ovrige-botox-behandlinger", destination: "/behandlinger/botox", note: "Øvrige Botox behandlinger" },
+  { source: "/rynkebehandling", destination: "/behandlinger/rynkebehandling", note: "Rynkebehandling med Botox" },
+  {
+    source: "/ovrige-botox-behandlinger",
+    destination: "/behandlinger/andre-behandlingsmuligheder",
+    note: "Øvrige Botox behandlinger",
+  },
 
   /* ------------------------------------------------------- Hudforbedring */
   { source: "/hudforbedring", destination: "/behandlinger#hudforbedring", note: "Hudforbedring (oversigt)" },
@@ -94,4 +98,14 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/filler/nasolabiale-linjer", destination: "/behandlinger#fillers" },
   { source: "/filler/ansiktskulpturering", destination: "/behandlinger#fillers" },
   { source: "/filler-oslo/hender", destination: "/behandlinger#fillers" },
+
+  /* ------------- Pages of this site that were shown in previews and later merged (2026-10) */
+  // Replaced by the owner's two pages (content/treatments.ts); the anchors are sections of
+  // /behandlinger/andre-behandlingsmuligheder. Traptox and Botox for mænd have no section of their own.
+  { source: "/behandlinger/botox", destination: "/behandlinger/rynkebehandling", note: "Botox (preview)" },
+  { source: "/behandlinger/botox-for-maend", destination: "/behandlinger/rynkebehandling", note: "Botox for mænd (preview)" },
+  { source: "/behandlinger/lip-flip", destination: "/behandlinger/andre-behandlingsmuligheder#lip-flip", note: "Lip flip (preview)" },
+  { source: "/behandlinger/gummy-smile", destination: "/behandlinger/andre-behandlingsmuligheder#gummy-smile", note: "Gummy smile (preview)" },
+  { source: "/behandlinger/hyperhidrose", destination: "/behandlinger/andre-behandlingsmuligheder#svedtendens", note: "Hyperhidrose (preview)" },
+  { source: "/behandlinger/traptox", destination: "/behandlinger/andre-behandlingsmuligheder", note: "Traptox (preview)" },
 ];

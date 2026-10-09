@@ -500,19 +500,14 @@ export const reviewSets: ReviewSets = {
 };
 
 /**
- * Treatment pages that show no customer reviews: the botulinum-toxin treatments. Botox is a
- * prescription medicine, and customer testimonials on a page that markets it can count as
- * advertising it to the public; even general reviews read as Botox testimonials there.
+ * Treatment pages that show no customer reviews: the pages about wrinkle treatment and the other
+ * botulinum-toxin indications (the rynkebehandling hub, which replaced the Botox page, and Andre
+ * behandlingsmuligheder, which replaced lip flip, gummy smile, hyperhidrose, Traptox and Botox for
+ * mænd). Botox is a prescription medicine, and customer testimonials on a page about it can count
+ * as advertising it to the public; even general reviews would read as testimonials there.
  * Remove a slug only after a legal check (open question for the owner).
  */
-export const treatmentsWithoutReviews: readonly string[] = [
-  "botox",
-  "lip-flip",
-  "gummy-smile",
-  "hyperhidrose",
-  "traptox",
-  "botox-for-maend",
-];
+export const treatmentsWithoutReviews: readonly string[] = ["rynkebehandling", "andre-behandlingsmuligheder"];
 
 /**
  * General reviews that praise one unnamed person ("Rigtig sød og tryg behandler"). They may fill

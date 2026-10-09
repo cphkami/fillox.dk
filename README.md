@@ -46,6 +46,9 @@ npm run build            # kører check:market først (prebuild)
 
 - en rute i `content/routes.ts` ikke har en `app/<sti>/page.tsx` (eller omvendt), eller en
   redirect i `content/redirects.ts` peger på en side, der ikke findes;
+- en redirect eller en prisrække (`content/prices.ts` → `treatmentSlug` / `treatmentAnchor`) peger
+  på en behandling, der ikke findes, eller på et `#anker`, som siden ikke har (afsnit og kort på
+  de lange behandlingssider, fx `/behandlinger/andre-behandlingsmuligheder#lip-flip`);
 - en formular i `content/forms.ts` ikke er erklæret i `public/__forms.html` (eller omvendt), eller
   `public/__kontakt-sendt.html` / `public/__nyhedsbrev-tilmeldt.html` ikke sender videre til deres
   takkeside (`routes.contactThanks` / `routes.newsletterThanks`);
@@ -121,8 +124,15 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
         hele `/booking`-teksten
   - [ ] `content/pages/home.ts`: SEO-titel, alt-tekst, skjulte navne
   - [ ] `content/pages/about.ts`: meta-beskrivelse, alt-tekst
-  - [ ] `content/treatments.ts`: one-liners for behandlinger uden egen side og tekster i
-        Botox/Lip filler-siderne
+  - [ ] `content/pages/new-here.ts`: hele `/ny-hos-fillox` (oversat fra norsk, se "Ny hos
+        Fillox?" nedenfor) og de tekster, der ikke står i udkastet (meta, link-tekster, alt-tekster)
+  - [ ] `content/treatments.ts`: one-liners for behandlinger uden egen side, tekster på Lip
+        filler-siden, og på rynkesiderne kort-teksten, mega-menuens navn "Andre behandlinger" og
+        linket "Andre behandlingsmuligheder →" (se "Rynkesiderne" nedenfor)
+  - [ ] "rynkebehandling" i stedet for "Botox": `content/prices.ts` (priskortets etiket og chip,
+        /priser-metabeskrivelsen), `content/layout.ts` (sitets beskrivelse), `content/team.ts`
+        (Maria), `content/navigation.ts` ("For mænd"-noten), `content/pages/home.ts` og
+        `content/pages/men.ts`
   - [ ] `content/pages/treatments.ts`: fallback-tekster, FAQ'er, oversigtssiden `/behandlinger`
   - [ ] `content/pages/practitioner.ts`: behandlersider (tekst i booking-båndet pr. behandler)
   - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande — og **beslut, om desktop
@@ -135,17 +145,76 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       steder — vi bruger 1.499 kr (`content/treatments.ts`, bestsellers). Fillox bekræfter.
 - [ ] **Juridisk**: registreret adresse og mailadresse til databeskyttelse (`info@` på
       privatlivssiden, `kontakt@` i `config/site.ts`) — `content/pages/legal.ts`.
-- [ ] **Anmeldelser og Botox** (juridisk vurdering): Botox er receptpligtig medicin. Anmeldelser,
-      der nævner Botox, er udeladt, og de seks botulinumtoksin-sider (Botox, Lip flip, Gummy
-      smile, Hyperhidrose, Traptox, Botox for mænd) viser ingen kundeanmeldelser
-      (`treatmentsWithoutReviews` i `content/reviews.ts`). Slå dem først til, når det er afklaret.
-      Afklaringen skal også dække `/behandlinger/for-maend` (`content/pages/men.ts`): siden viser
-      ingen anmeldelser, men nævner Botox for mænd først, med pris og et FAQ-svar.
-      Og **behandlersiderne**: Annika, Maria og Mike har kundeanmeldelser og et priskort for
-      Botox. Indtil det er afklaret, hedder kortet "Rynkebehandling" (som siden
-      fillox.dk/rynkebehandling) og linker til Botox-siden (`wrinkleOffer` i `content/team.ts`).
-      Marias titel, bio og faktakort nævner stadig "Fillers & Botox" (fra Om os på den
-      nuværende side).
+- [ ] **Botox og markedsføring** (juridisk vurdering). Botox er receptpligtig medicin og må ikke
+      reklameres for over for offentligheden. Bureauets nye tekster (oktober 2026) løser
+      hovedparten: Botox-siden er erstattet af `/behandlinger/rynkebehandling` og
+      `/behandlinger/andre-behandlingsmuligheder` (bureauets tekster, ordret), som handler om
+      behandlingen og ikke om produktet. De gamle adresser (`/rynkebehandling`,
+      `/ovrige-botox-behandlinger`, `/behandlinger/botox`, `/behandlinger/lip-flip` …) sender
+      videre dertil (`content/redirects.ts`). Resten af sitet følger samme linje: menuer, kort,
+      priskortets etiket og mobil-chip ("MIMISKE RYNKER M.M." og "Rynkebehandling" i stedet for
+      "BOTOX" / "Botox"), metabeskrivelsen på `/priser`, sitets standardbeskrivelse og
+      strukturerede data (`content/layout.ts`), Marias titel, bio og faktakort og hendes afsnit på
+      lip filler-siden siger nu "rynkebehandling" (alle markeret `// TODO: copy review`).
+      Produktnavnet står kun, hvor bureauet selv har skrevet det: ét FAQ-svar på rynkesiden og én
+      sætning i Fillox Academy-afsnittet på Om os. De to rynkesider viser ingen anmeldelser,
+      resultater, blogindlæg eller "fra"-pris (`treatmentsWithoutReviews` i `content/reviews.ts`).
+      Stadig åbent:
+  - [ ] **Blogartikler**, der stadig nævner Botox som produkt: `/blog/botox-for-foerste-gang`,
+        `/blog/hvornaar-giver-det-mening-at-starte-med-botox`,
+        `/blog/de-foerste-24-timer-efter-botox` og filterknappen "Botox" på `/blog`
+        (`content/blog.ts`). Vi har ikke rørt dem: skal de skrives om (af bureauet) eller fjernes?
+  - [ ] **Priser**: alle rækker på priskortet "Rynkebehandling" er uændrede (områder, pakker,
+        tyggemuskler, hyperhidrose, Traptox). Konsultationskortet har stadig rækken
+        "Lægekonsultation før første botox" — forslag med bureauets ord: "Lægefaglig
+        forundersøgelse før første behandling". Traptox nævnes ikke på nogen side og er nu en
+        prisrække uden link: skal den have et afsnit?
+  - [ ] **"fra 799 kr" for rynkebehandling** står stadig i menuerne, på forsiden (bestseller #01),
+        på siden for mænd og i behandlernes priskort ("Rynkebehandling" lige over
+        kundeanmeldelserne hos Annika, Maria og Mike, `wrinkleOffer` i `content/team.ts`). Er en
+        pris ved siden af behandlingen i orden?
+  - [ ] **Siden for mænd** (`content/pages/men.ts`): FAQ-svaret "Hvor lang tid tager det?" bruger
+        nu rynkesidens ord (lægefaglig forundersøgelse, mindst to dages betænkningstid);
+        "cirka 15 minutter" og "Den er gratis" er taget ud. Skal det igen stå, at
+        lægekonsultationen er gratis?
+  - [ ] **Om os**: "Det er let at finde en klinik, der tilbyder botox, filler, laser …" er
+        bureauets sætning og står ordret. Behold den, eller bed bureauet om en ny formulering
+        (fx "rynkebehandling, filler, laser …") — ret den ikke selv.
+- [ ] **Ny hos Fillox?** (`/ny-hos-fillox`, `content/pages/new-here.ts`): bureauets udkast er på
+      norsk, og siden er en tro dansk oversættelse (samme indhold, intet tilføjet). **Bureauet
+      skal læse den igennem** før lancering. Desuden:
+  - [ ] Kortet om linjer og rynker viser Rynkebehandling, Microneedling og Andre
+        behandlingsmuligheder. Den sidste handler ikke om rynker (læber, sved, kæbespændinger) —
+        skal den byttes ud med PRF hud? (én linje i content-filen)
+  - [ ] Kortet viser ingen pris for de to rynkesider (kun på denne side, `pricesHiddenFor`;
+        deres egne sider og `/priser` er uændrede). Bekræft.
+  - [ ] Gecko kan ikke forvælge en behandling, så alle "Book tid"-knapper åbner den samme
+        kalender (to klik til kalenderen, ikke til behandlingen, som forfatterens anbefaling 1
+        forestiller sig).
+  - Siden linkes fra "Om os"-menuen (desktop og mobil) og fra footeren.
+- [ ] **Tekster, bureauet ikke har leveret endnu** (intet lagt ud): polynukleotider
+      ("laksesæd": kun en indledning, og forfatteren vil have produktdokumentationen tjekket før en
+      kategorisk forklaring — indtil da nævnes polynukleotider kun på priskortet "Hårtab &
+      hovedbund" og PolyPhil Hair-siden, som før); egne sider for de fire klinikker (kun billeder
+      i Drive; `/klinikker` er uændret); hårtab & hårvækst; skinboosters, microneedling og
+      laser-undersiderne (kun overskrifter).
+- [ ] **Rynkesiderne** (`content/treatments.ts`): (1) Linket "Andre behandlingsmuligheder →" på
+      rynkesiden er vores (ikke i bureauets tekst) — ønskes det? (2) Mega-menuen kalder den anden
+      side "Andre behandlinger" (det fulde navn er for bredt til kolonnen ved 1024px); alle andre
+      steder står "Andre behandlingsmuligheder". OK? (3) Sidens titel i søgeresultater er 61 tegn
+      (én over vores grænse) — forslag: "Andre kosmetiske og medicinske behandlinger".
+      (4) Forsidens resultatbillede med teksten "rynkebehandling, 2026" er det samme stockfoto
+      som rynkesidens topbillede.
+- [ ] **Om os** (`content/pages/about.ts`, bureauets nye tekst): (1) "Og du behøver ikke føle dig
+      hjemme i en eksklusiv luksusklinik for at føle dig hjemme hos os." står ordret, men lyder
+      oversat — bed bureauet se på den. (2) Dr. Toms titel: den nye tekst siger "grundlægger af
+      Fillox" og "den medicinsk ansvarlige læge", hans behandlerkort "Æstetisk læge · Daglig
+      leder" og "fagligt ansvarlig læge" (`content/team.ts`). Hvilken skal begge steder bruge?
+      (3) Dr. Toms portræt står to gange lige efter hinanden (lægeafsnittet og første
+      behandlerkort): vi mangler et andet foto af ham (fx når han underviser, mindst 1300 px
+      bredt). (4) Topbilledet er kun 800 × 533 og bliver blødt på store skærme: vi mangler en
+      større original (mindst 2200 × 1470; tjek `hero.imagePositionDesktop`, hvis den er beskåret
+      anderledes).
 - [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Kubras tekster er et neutralt
       udkast (titel, City2, fillers, rynkebehandling og hudforbedring) — få hendes egne ord og et
       citat. Dr. Toms og Marias "Sådan arbejder …"-kort er skrevet i tredje person ud fra Om os.
@@ -156,13 +225,15 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       uden filter. Kan Gecko forvælge en behandler (et kalender- eller ressource-id pr. behandler,
       som `geckoCalendarId` pr. klinik)? Indtil da åbner knapperne "Book tid hos …" på
       behandlersiderne kalenderen uden filter.
-- [ ] **Båndet lige over footeren** ("Støvet rosa & beige"): designets lyse bånd ("Fagligt
-      ansvarlig" på Om os, "Book tid hos …" på behandlersiderne) var i ét med den beige footer.
-      Om os bruger nu sand (`components/about/ResponsibleBand.tsx`), behandlersiderne det
-      rosa bånd. Vælg én løsning til begge sider.
+- [ ] **Båndet lige over footeren** ("Støvet rosa & beige"): designets lyse bånd var i ét med den
+      beige footer. Om os slutter nu med det rosa bånd "Velkommen til Fillox" (den nye tekst),
+      ligesom behandlersiderne ("Book tid hos …"). Kun `/behandlere` slutter stadig med det sand-
+      farvede "Fagligt ansvarlig"-bånd (`components/about/ResponsibleBand.tsx`). Skal det også være
+      rosa?
 - [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
-      `content/clinics.ts`), større original af Om os-billedet (`content/pages/about.ts`).
+      `content/clinics.ts`), større original af Om os-billedet og et andet foto af Dr. Tom (se
+      "Om os" ovenfor).
 - [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
 - [ ] **Østerbro**: når klinikken åbner, sæt `status: "open"`, adresse, åbningstider og
       Gecko-id i `content/clinics.ts`.

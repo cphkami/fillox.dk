@@ -12,7 +12,10 @@
  *    through a path literal);
  * 3. the collections linked as `${route}/<slug>` (treatments, practitioners, blog) have an
  *    app/<path>/[slug]/page.tsx;
- * 4. every redirect in content/redirects.ts lands on a route (or on a page of a collection);
+ * 4. every redirect in content/redirects.ts lands on a route (or on a page of a collection); one
+ *    to a treatment page names an existing treatment, and its #anchor (if any) is a section or
+ *    item id of that page's long-form content (content/types.ts → TreatmentSection); the same for
+ *    the price list's links (content/prices.ts → treatmentSlug / treatmentAnchor);
  * 5. the no-JavaScript form targets forward to their thank-you routes:
  *    public/__kontakt-sendt.html → routes.contactThanks, and the newsletter's
  *    (content/forms.ts → newsletterNoJsAction, public/__nyhedsbrev-tilmeldt.html) →
@@ -319,6 +322,41 @@ for (const slug of treatmentsWithoutReviews) {
   if (!treatmentSlugs.has(slug)) errors.push(`content/reviews.ts treatmentsWithoutReviews: "${slug}" is not in content/treatments.ts`);
   if (reviewSets.treatments[slug]?.length) {
     errors.push(`content/reviews.ts reviewSets.treatments.${slug}: the page shows no reviews (treatmentsWithoutReviews)`);
+  }
+}
+
+// 4 (continued). Links into treatment pages name a treatment that exists, and an anchor its page has.
+{
+  /** Section and item ids of a treatment's long-form content (detail.sections). */
+  const anchorsOf = (treatment) =>
+    new Set(
+      (treatment.detail?.sections ?? []).flatMap((section) => [
+        section.id,
+        ...(section.items ?? []).flatMap((item) => (item.id ? [item.id] : [])),
+      ]),
+    );
+  const checkTreatmentLink = (where, slug, anchor) => {
+    const treatment = treatments.find((t) => t.slug === slug);
+    if (!treatment) errors.push(`${where}: "${slug}" is not a treatment in content/treatments.ts`);
+    else if (anchor && !anchorsOf(treatment).has(anchor)) {
+      errors.push(`${where}: "#${anchor}" is not a section or item id of the "${slug}" page (detail.sections)`);
+    }
+  };
+  const treatmentsBase = routes.treatments;
+  for (const { source, destination } of legacyRedirects) {
+    const [path, anchor] = destination.split("#");
+    const match = path.match(new RegExp(`^${treatmentsBase}/([^/?]+)$`));
+    if (match) checkTreatmentLink(`redirect ${source} → ${destination}`, match[1], anchor);
+  }
+  const { priceCards } = await importSite("content/prices.ts");
+  for (const card of priceCards) {
+    for (const row of card.rows) {
+      if (row.treatmentAnchor && !row.treatmentSlug) {
+        errors.push(`content/prices.ts "${row.label}": treatmentAnchor without a treatmentSlug`);
+      } else if (row.treatmentSlug) {
+        checkTreatmentLink(`content/prices.ts "${row.label}"`, row.treatmentSlug, row.treatmentAnchor);
+      }
+    }
   }
 }
 

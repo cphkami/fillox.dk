@@ -50,7 +50,9 @@ export const posts: BlogPost[] = [
     // TODO: fact check (owner): the design's example article, written in Annika's voice; fillox.dk
     // has no article by her. Facts (time, training, longevity) match fillox.dk/rynkebehandling.
     authorSlug: "annika",
-    treatmentSlugs: ["botox"],
+    // The rynkebehandling hub replaced the Botox page (2026-10). This article and the two other
+    // "botox" posts still name Botox as a product: open question for the owner (legal review).
+    treatmentSlugs: ["rynkebehandling"],
     relatedPostSlugs: [
       "hvornaar-giver-det-mening-at-starte-med-botox",
       "de-foerste-24-timer-efter-botox",
@@ -78,7 +80,7 @@ export const posts: BlogPost[] = [
       },
       {
         type: "booking",
-        treatmentSlug: "botox",
+        treatmentSlug: "rynkebehandling",
         eyebrow: "Behandlingen i artiklen",
         note: "Gratis lægekonsultation før første behandling",
         hideNoteOnMobile: true,
@@ -175,7 +177,7 @@ export const posts: BlogPost[] = [
     },
     // The blog pages crop this portrait photo centred (6blog, 6art, mbl, mar).
     blogImagePosition: "50% 50%",
-    treatmentSlugs: ["botox"],
+    treatmentSlugs: ["rynkebehandling"],
   },
   {
     slug: "haevelse-og-blaa-maerker",
@@ -221,7 +223,7 @@ export const posts: BlogPost[] = [
     },
     // The blog pages crop this portrait photo centred (6blog, 6art, mbl, mar).
     blogImagePosition: "50% 50%",
-    treatmentSlugs: ["botox"],
+    treatmentSlugs: ["rynkebehandling"],
     // Not in the mobile list (design mbl shows 5 of the 6 posts).
     hideInMobileList: true,
   },

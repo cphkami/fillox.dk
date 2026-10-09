@@ -42,13 +42,16 @@ content/
   blog.ts                      blog posts
   prices.ts                    price list (Priser page)
   ui.ts                        shared UI strings ("Book tid", "Se priser", "Læs mere" …)
-  pages/<page>.ts              page-specific copy (home, about, prices, clinics, contact, blog …)
+  pages/<page>.ts              page-specific copy (home, about, prices, clinics, contact, blog, men,
+                               new-here …)
   redirects.ts                 legacy fillox.dk URLs → new routes
   routes.ts                    every route path; code, canonicals and the sitemap link through it
 lib/                           helpers (formatPrice, cn, …); metadata.ts builds every route's
                                metadata + Open Graph (pageMetadata), forms.ts posts to Netlify Forms
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
-                               redirect targets, no-JS form targets (contact, newsletter), Netlify form names,
+                               redirect targets (and the price list's treatment links: the treatment
+                               exists, an #anchor is a section / item id of its long-form page),
+                               no-JS form targets (contact, newsletter), Netlify form names,
                                booking provider ids, clinic address/hours parse for JSON-LD,
                                no æ/ø/å strings in app/, components/ (except components/dev/), lib/, review excerpts
                                verbatim + review sets consistent (content/reviews.ts), components/dev/
@@ -76,17 +79,117 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | `/` | `6a` / `mf` |
 | (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
-| `/om-os` | `6om` / `mo`. "Støvet rosa & beige": the closing "Fagligt ansvarlig" band (the design's powder, desktop only) is `sand` like the hero panel, because the secondary beige read as one block with the footer right under it (the page already has a rose band higher up). The practitioner pages solve the same case with the rose `band`; open for the owner to pick one (README → "Før lancering") |
+| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo has a desktop crop in content (`hero.imagePositionDesktop`, 15% from 1024px). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). "Støvet rosa & beige": the name (H1) takes `text-emphasis`; the closing "Book tid hos …" band (the design's powder) is the rose `band`, because the secondary beige read as one block with the footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
-| `/behandlinger/[slug]` | template `6c`, Botox `6bx` / Lip filler `mb` |
-| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with krem text, bronze accents, krem pills and a krem focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (Botox for mænd is listed). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
+| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row) |
+| `/behandlinger/rynkebehandling` | no design: a long-form page (`detail.sections`, see "Long-form treatment pages") with the owner's agency text, verbatim. Replaces the Botox page: `/behandlinger/botox`, `/behandlinger/botox-for-maend` and the live `/rynkebehandling` redirect here |
+| `/behandlinger/andre-behandlingsmuligheder` | no design: long-form page under the hub (breadcrumb via `detail.parentSlug`, compact H1). Replaces the live `/ovrige-botox-behandlinger` and the lip flip, gummy smile, hyperhidrose and Traptox pages, which redirect here (the first three to their sections `#lip-flip`, `#gummy-smile`, `#svedtendens`; Traptox has no section) |
+| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with krem text, bronze accents, krem pills and a krem focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
+| `/ny-hos-fillox` | no design: "Ny hos Fillox?", the guide for first-time visitors (`routes.newHere`; see "Ny hos Fillox?") |
 | `/klinikker` | `6kl` / `mk` |
 | `/kontakt` | `6ko` / `mc` |
 | `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` |
 | `/booking` | no design: intro band + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
 | `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style |
+
+## The owner's agency texts (2026-10)
+
+The owner's content agency writes new page texts in Google Drive (Fillox › Fillox.dk). Finished
+texts are used **verbatim** (Danish); the only edits are splitting them into the site's fields,
+turning the author's `[button placeholders]` into links / buttons, and typography (quotes, dashes,
+a no-break space before " – ", an invisible soft hyphen). Copy the site had to add (meta
+descriptions, accessible names, alt texts, link labels) is marked `// TODO: copy review`. Each
+content file's header names its source document and lists every deviation.
+
+| Page | Source | Content |
+|---|---|---|
+| `/behandlinger/rynkebehandling` | "Botox og rynkebehandling", tab 1 | `content/treatments.ts` (slug `rynkebehandling`) |
+| `/behandlinger/andre-behandlingsmuligheder` | "Botox og rynkebehandling", tab 2 | `content/treatments.ts` (slug `andre-behandlingsmuligheder`) |
+| `/om-os` | "Om Fillox" | `content/pages/about.ts` |
+| `/ny-hos-fillox` | "Om Fillox og klinikker", tab "Ny hos Fillox" (**Norwegian**) | `content/pages/new-here.ts`: a faithful Danish translation, pending the agency's review |
+
+Not published yet (not ready in the Drive): polynukleotider (the author asks for the product
+documentation to be checked first), the four clinic pages, hårtab & hårvækst, and the headings-only
+skinbooster / microneedling / laser sub-pages.
+
+### Prescription medicine (Botox)
+
+Botox (botulinumtoksin) is a prescription medicine and must not be advertised to the public
+(lægemiddellovens § 66). The site follows the agency's approach:
+
+- **The treatment, not the product.** Titles, menus, cards, CTAs, meta descriptions, alt texts and
+  structured data say "Rynkebehandling" / "rynkebehandling" (the hub's name), never "Botox". The
+  product is named only where an agency text names it: one FAQ answer on the hub ("Hvad er
+  forskellen på Botox og filler?") and one sentence in the Om os Academy paragraph.
+- **Changed for this (2026-10, each `// TODO: copy review`)**: the price card's eyebrow ("MIMISKE
+  RYNKER M.M.", the hub's term; "RYNKEBEHANDLING" would repeat the card title next to it) and
+  /priser's mobile chip ("Rynkebehandling") in `content/prices.ts` (the header "Priser" dropdown shows
+  the eyebrow on every page); the /priser meta description; `content/layout.ts` → `meta.description` (the
+  default description and the Organization JSON-LD); Maria's title, bio, profile and facts
+  (`content/team.ts`) and her block on the lip filler page; the mega menu's "For mænd" note; the
+  men's page; the home page's results caption (the bestseller #01 already said "Rynkebehandling").
+- **Unchanged on purpose**: every price-list row label and amount (the area rows, the area
+  packages, "Lægekonsultation før første botox" in the consultation card), the verbatim agency
+  sentences above, and the blog: three articles (`botox-for-foerste-gang`,
+  `hvornaar-giver-det-mening-at-starte-med-botox`, `de-foerste-24-timer-efter-botox`) and the
+  /blog filter chip "Botox" still name the product (open legal question, README).
+- **No reviews, results, blog posts or "fra" price** on the two wrinkle pages (long-form pages
+  show only what their content gives; `treatmentsWithoutReviews` is a second guard). Menus, cards
+  and the home page still show the hub's `priceFrom` (lowest row on the price card).
+
+### Long-form treatment pages
+
+A treatment whose `detail` has `sections` (`content/types.ts` → `TreatmentSection`) is a long-form
+page: `app/behandlinger/[slug]/page.tsx` renders the hero, `components/treatment/LongformSections`,
+the FAQ and a closing band, and **nothing else** — no fallback facts, "Om behandlingen" band,
+practitioner, results, price list, reviews or blog posts (`components/treatment/treatmentView.ts`
+→ `longform`). Today: `rynkebehandling` and `andre-behandlingsmuligheder`.
+
+- **Hero** (`TreatmentHero`): `detail.heading` (the H1 when it says more than `title`),
+  `headingAccent` (a second line, smaller, accent colour; the H1 reads "<heading> – <accent>"),
+  `headingSize: "compact"` (the article H1 size `text-h1-xs` from 768px, for a long H1 that would
+  otherwise be no larger than the H2s), `intro` (paragraphs after the lead), `primaryCta` /
+  `secondaryCta` only when set, and jump links (`jumpLabel`) to every section item with an `id`.
+  A very long word in the H1 may carry a soft hyphen: the hero sizes the H1 to the word's longest
+  part.
+- **Sections**: an H2 with `paragraphs`, optional `items` (H3 cards; an `id` makes one linkable and
+  outlined while it is the URL's `:target`), `closing` paragraphs and a `cta` (`style: "button"` =
+  a primary pill, the author's bold placeholders; default an arrow link). `surface`: `plain`
+  (heading left, text right from 1024px; consecutive plain sections divided by a hairline), `band`
+  (rose band, as "Om behandlingen"), `card` (sand card; consecutive cards side by side from 1024px).
+  Rich text runs (`RichText`) carry bold and links.
+- **Closing**: `detail.closing` replaces "Klar til at booke?"; its CTA is also the mobile book
+  bar's button. `parentSlug` puts the parent treatment in the breadcrumb instead of the category;
+  `metaDescription` when the lead is not a good description.
+- **Links into a page**: section and item ids are stable anchors. `content/redirects.ts` and the
+  price list (`content/prices.ts` → `treatmentSlug` + `treatmentAnchor`, e.g. "Lip flip" →
+  `/behandlinger/andre-behandlingsmuligheder#lip-flip` on /priser) point to them, and
+  `npm run check:market` fails when an anchor is not a section or item id of that page.
+- **Menus and cards**: the "Rynkebehandling" category (`content/navigation.ts`) lists the two pages;
+  the mega menu's "Rynker" column shows two links. The second page's `name` is "Andre
+  behandlinger" (the mega menu: its columns are ≈ 132px wide at 1024px and set on one line); the
+  mobile menu (`mobileMenuName`), cards, breadcrumb and book bar say "Andre behandlingsmuligheder"
+  (`detail.title`), and the H1 is the source's full title. On
+  /behandlinger a card without a price keeps an empty eyebrow line from 768px, so titles in a row
+  line up.
+
+### Ny hos Fillox?
+
+`/ny-hos-fillox` (`routes.newHere`; copy `content/pages/new-here.ts`, components
+`components/new-here/`, page `app/ny-hos-fillox/page.tsx`): hero (sand panel; in-page link to
+"Hvad ønsker du hjælp til?") → six need cards plus "Jeg ved ikke helt …" (each with 2–3 treatment
+rows and their "fra" price from `priceFrom`, a "Læs mere" link and "Book tid"; the lines-and-wrinkles
+card shows no prices — `pricesHiddenFor` — and says "Book konsultation") → the differences between
+the treatments → what to book the first time → what happens at a consultation → FAQ (FAQPage
+JSON-LD, `NewHereJsonLd`) → the rose closing band. Below 768px the treatment pages' book bar follows
+the page until the closing band. The author's five recommendations and how they are met are listed
+in the content file's header.
+
+Navigation: "Ny hos Fillox?" is the second item of the "Om os" menu (`content/navigation.ts` →
+`mainNav`: the header dropdown and the mobile menu's "Om os" accordion; on that page the "Om os"
+trigger is marked current) and a footer link (`footerNav`, after "Om os").
 
 ## Booking providers
 
@@ -134,10 +237,12 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   page — nothing about needles, anaesthesia or a "sygeplejerske", which a laser page or a
   doctor's profile would contradict). The file's header lists what is left out on purpose
   (reviews naming Botox, former staff, Fillox Oslo …).
-- **Botox pages** — `treatmentsWithoutReviews` (Botox, Lip flip, Gummy smile, Hyperhidrose,
-  Traptox, Botox for mænd) show no reviews section at all: Botox is a prescription medicine,
-  and even general reviews read as Botox testimonials on those pages. Open legal question for
-  the owner (README checklist); `check:market` validates the list.
+- **Wrinkle pages** — `treatmentsWithoutReviews` (`rynkebehandling`, `andre-behandlingsmuligheder`,
+  which replaced the Botox, lip flip, gummy smile, hyperhidrose, Traptox and Botox for mænd pages)
+  show no reviews section at all: Botox is a prescription medicine, and even general reviews would
+  read as testimonials for it there. Both are long-form pages, which show no reviews anyway; the
+  list keeps it that way if one becomes a template page. Remove a slug only after a legal check
+  (README checklist); `check:market` validates the list.
 - **Selection** — `reviewsFor({ practitioner | treatment | set, min = 3, max = 6, seed })`: the
   own reviews (≤ max), filled up to `min` with `general` ones (never twice; `seed` = page slug
   varies which). Treatment pages pass `min: 5`; practitioner profiles keep 3, so a profile
@@ -175,7 +280,7 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   with a review of their own (`components/practitioner/ReviewSection`; their offers say
   "Rynkebehandling", not "Botox", next to the testimonials — the same open legal question),
   treatment pages after the results except the
-  Botox pages (`components/treatment/ReviewsSection`, copy in `content/pages/treatments.ts` →
+  wrinkle pages (`components/treatment/ReviewsSection`, copy in `content/pages/treatments.ts` →
   `reviews`).
   Each has "Se alle anmeldelser på Trustpilot →" (`AllReviewsLink`). No review structured data:
   reviews a business shows about itself are not eligible for review rich results.
@@ -192,8 +297,8 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   combined areas from 1.000 kr, so it shows none); the note is left out when the intro mentions
   kontrol or the list has the free konsultation / kontrol rows, which fallback lists show full
   width under the rows; "Book tid" in the card from 768px (below, the book bar). Row groups with a
-  small heading (`prices.groups`: Botox's single areas / Øvrige / Flere områder, lip filler's
-  "Andre ydelser") — two columns split between groups, never inside one. Every Trustpilot rating
+  small heading (`prices.groups`: lip filler's "Andre ydelser"; the Botox page's groups went with
+  that page) — two columns split between groups, never inside one. Every Trustpilot rating
   in the reviews band is `components/ui/TrustpilotStars` (score card + each quote, rotator
   `stars="trustpilot"`).
 
@@ -520,7 +625,7 @@ tracking stay as they are. All tokens follow one formula, a → b:
   sits 2px under the header (dropdowns: `pt-[34px] xl:pt-fluid-35/36`).
 - Mega menu (the owner's design v2, `design-reference/mega-menu-v2.webp`, drawn on the 1180px
   canvas; copy in `content/navigation.ts` → `megaMenu`): four columns (uppercase eyebrow,
-  4 treatments, "Alle … →"), a hairline, the "For mænd" pill tag + note, and a rose band panel
+  up to 4 treatments — "Rynker" has the two wrinkle pages — "Alle … →"), a hairline, the "For mænd" pill tag + note, and a rose band panel
   (`bg-band`, the design's plum panel; 26.5% of the width, ≥ 272px; eyebrow, heading, text,
   accent button pinned to the bottom)
   flush right. It follows the type scale like the page text: links + "Alle" `text-ui-sm`
@@ -529,7 +634,8 @@ tracking stay as they are. All tokens follow one formula, a → b:
   40 / 32px, 36px top and bottom, columns 32px apart (×1.2 at 1600, `*-fluid-*`). Width: the
   surface band (as in the design) up to 1280px, centred on the canvas (a full 1536px band at
   1600 left the columns half empty). Panel height: 343px at 1024–1280, 368 at 1440, 393 at 1600.
-- Dropdowns: Priser 760px, Find klinik 360px, Om os ≥ 240px.
+- Dropdowns: Priser 760px, Find klinik 360px, Om os ≥ 240px (Om Fillox, Ny hos Fillox?, Vores
+  behandlere, Ledige stillinger, Kontakt; the mobile menu's "Om os" accordion lists the same).
 
 ### Buttons (components/ui/Button.tsx)
 

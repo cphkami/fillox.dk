@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AboutBand } from "@/components/treatment/AboutBand";
 import { BookingBand } from "@/components/treatment/BookingBand";
 import { FaqSection } from "@/components/treatment/FaqSection";
+import { LongformSections, endsOnPlainSection } from "@/components/treatment/LongformSections";
 import { MobileBookBar } from "@/components/treatment/MobileBookBar";
 import { PractitionerSection } from "@/components/treatment/PractitionerSection";
 import { PriceSection } from "@/components/treatment/PriceSection";
@@ -13,7 +14,6 @@ import { TreatmentHero } from "@/components/treatment/TreatmentHero";
 import { TreatmentJsonLd } from "@/components/treatment/TreatmentJsonLd";
 import { buildTreatmentView } from "@/components/treatment/treatmentView";
 import { getTreatment, treatments } from "@/content/treatments";
-import { ui } from "@/content/ui";
 import { pageMetadata } from "@/lib/metadata";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -40,6 +40,9 @@ const BOOKING_BAND_ID = "book";
  * design's unset line heights assume (Figtree's "normal" is 1.2). Text without its own leading
  * (price rows, "Godt til", hero facts, eyebrows, captions) keeps the design's spacing and the
  * 1.5 body minimum; headings, intros and FAQ answers set their own.
+ *
+ * A long-form page (content/types.ts → Treatment.detail.sections, e.g. rynkebehandling) renders
+ * its sections after the hero instead of "Om behandlingen", and only the sections its content gives.
  */
 export default async function TreatmentPage({ params }: Props) {
   const { slug } = await params;
@@ -48,12 +51,15 @@ export default async function TreatmentPage({ params }: Props) {
 
   const view = buildTreatmentView(treatment);
   const hasPlainSections = Boolean(view.practitioner || view.results || view.reviews || view.prices || view.posts);
+  // The FAQ panel keeps the surface margin above it unless page-level sections end right before it.
+  const faqAfterBand = !hasPlainSections && !endsOnPlainSection(view.sections);
 
   return (
     <>
       <TreatmentJsonLd view={view} />
       <TreatmentHero view={view} />
-      <AboutBand about={view.about} />
+      {view.about ? <AboutBand about={view.about} /> : null}
+      {view.sections?.length ? <LongformSections sections={view.sections} /> : null}
 
       {hasPlainSections ? (
         <div className="pt-12 md:pt-fluid-84">
@@ -65,14 +71,14 @@ export default async function TreatmentPage({ params }: Props) {
         </div>
       ) : null}
 
-      {view.faq?.length ? <FaqSection items={view.faq} afterBand={!hasPlainSections} /> : null}
+      {view.faq?.length ? <FaqSection items={view.faq} afterBand={faqAfterBand} /> : null}
 
       <BookingBand id={BOOKING_BAND_ID} title={view.booking.title} text={view.booking.text} cta={view.booking.cta} />
 
       <MobileBookBar
         name={view.title}
         price={view.priceFromText}
-        cta={{ label: ui.bookCta, href: view.booking.cta.href }}
+        cta={view.bookBarCta}
         hideAtId={BOOKING_BAND_ID}
       />
     </>

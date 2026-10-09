@@ -92,8 +92,9 @@ export const homePage = {
           alt: "To smilende kvinder foran en beige og rosa baggrund",
           position: "50% 50%",
         },
-        caption: "botox, 2026",
-        href: treatmentHref("botox"),
+        // TODO: copy review — the hub's name in place of "botox" (a prescription medicine; 2026-10).
+        caption: "rynkebehandling, 2026",
+        href: treatmentHref("rynkebehandling"),
       },
       {
         image: {

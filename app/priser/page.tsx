@@ -14,8 +14,12 @@ const { meta } = pricesPage;
 
 export const metadata: Metadata = pageMetadata(meta, PATH);
 
-/** Treatment page for a price row, when the row names one that has a page. */
-const rowHref = (slug: string | undefined) => (slug && getTreatment(slug) ? treatmentHref(slug) : undefined);
+/**
+ * Treatment page for a price row, when the row names one that has a page; with the row's
+ * `treatmentAnchor`, its section there (check:market verifies the id exists).
+ */
+const rowHref = (slug: string | undefined, anchor: string | undefined) =>
+  slug && getTreatment(slug) ? `${treatmentHref(slug)}${anchor ? `#${anchor}` : ""}` : undefined;
 
 /** Price cards with prices formatted on the server (lib/format), ready for the client component. */
 const categories: PriceCategoryView[] = priceCards.map((card) => ({
@@ -27,7 +31,7 @@ const categories: PriceCategoryView[] = priceCards.map((card) => ({
     label: row.label,
     note: row.note,
     price: formatPriceValue(row.price),
-    href: rowHref(row.treatmentSlug),
+    href: rowHref(row.treatmentSlug, row.treatmentAnchor),
   })),
 }));
 

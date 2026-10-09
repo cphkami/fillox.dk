@@ -1,20 +1,20 @@
 import { JsonLd, ORGANIZATION_ID, absoluteUrl, breadcrumbList } from "@/components/seo";
 import { site } from "@/config/site";
-import { getTreatment } from "@/content/treatments";
 import type { TreatmentView } from "./treatmentView";
 
 /**
  * schema.org Service + BreadcrumbList + FAQPage for a treatment page.
  * The Service is provided by the site-wide organisation node (root layout), whose clinics
- * carry the addresses; its Offer is the treatment's "fra" price (a minimum, not a fixed price).
- * The category crumb is only included when the category has a page of its own (For mænd →
- * /behandlinger/for-maend); otherwise it is an anchor on the overview (/behandlinger#fillers),
- * which search engines treat as the overview URL itself. The shared fallback FAQ is not
+ * carry the addresses; its Offer is the "fra" price the page shows (a minimum, not a fixed price;
+ * none on a long-form page, which shows no price). The category crumb is only included when it
+ * is a page of its own (For mænd → /behandlinger/for-maend, a long-form page's parent
+ * → /behandlinger/rynkebehandling); otherwise it is an anchor on the overview
+ * (/behandlinger#fillers), which search engines treat as the overview URL itself. The shared fallback FAQ is not
  * marked up (it would be the same FAQPage on every page without its own FAQ).
  */
 export function TreatmentJsonLd({ view }: { view: TreatmentView }) {
   const url = absoluteUrl(view.path);
-  const priceFrom = getTreatment(view.slug)?.priceFrom;
+  const { priceFrom } = view;
   const categoryPage =
     view.category && !view.category.href.includes("#") ? [{ label: view.category.name, href: view.category.href }] : [];
   const crumbs = [view.overviewLink, ...categoryPage, { label: view.title, href: view.path }];

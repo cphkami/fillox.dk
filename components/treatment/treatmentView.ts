@@ -1,7 +1,8 @@
 /**
  * Resolves a Treatment from /content into everything the treatment page renders,
  * applying the fallbacks from content/pages/treatments.ts for treatments that have
- * no `detail`. Pure data — no React, no copy of its own.
+ * no `detail`. A long-form page (`detail.sections`, content/types.ts) gets no fallbacks: it
+ * shows only what its content gives. Pure data — no React, no copy of its own.
  */
 import { site } from "@/config/site";
 import { treatmentCategories, treatmentCategoryHref, mainNav } from "@/content/navigation";
@@ -10,7 +11,7 @@ import { priceCards, type PriceListRow } from "@/content/prices";
 import { reviewsFor } from "@/content/reviews";
 import { routes } from "@/content/routes";
 import { team } from "@/content/team";
-import { getTreatment } from "@/content/treatments";
+import { getTreatment, treatmentHref } from "@/content/treatments";
 import type {
   BeforeAfter,
   BlogPost,
@@ -20,10 +21,11 @@ import type {
   Link,
   TeamMember,
   Treatment,
+  TreatmentSection,
 } from "@/content/types";
 import { ui } from "@/content/ui";
 import { formatPrice } from "@/lib/format";
-import { formatPriceFrom, formatPriceValue, relatedPostsForTreatment } from "@/lib/content";
+import { formatPriceFrom, formatPriceValue, postsBySlugs, relatedPostsForTreatment } from "@/lib/content";
 
 export type Fact = { label: string; value: string };
 
@@ -48,22 +50,43 @@ export type PriceGroup = {
 
 export type TreatmentView = {
   slug: string;
-  /** Display name: H1, breadcrumb, book band, book bar ("Lip Filler"). */
+  /** Display name: breadcrumb, book band, book bar ("Lip Filler"); the H1 unless `heading` says more. */
   title: string;
-  /** "fra 999 kr" when the treatment has a price. */
+  /** The H1 (detail.heading, else `title`). */
+  heading: string;
+  /** The H1's second part, on its own line (detail.headingAccent). */
+  headingAccent?: string;
+  /** "compact": the article H1 size from 768px (detail.headingSize). */
+  headingSize?: "compact";
+  /** True for a long-form page (detail.sections): no fallbacks, only its own content. */
+  longform: boolean;
+  /** "fra 999 kr" when the page shows the treatment's price (never on a long-form page). */
   priceFromText?: string;
-  /** Category crumb; omitted when the category has the same name as the treatment. */
+  /** The "fra" amount the page shows (the structured data's Offer), same rule as `priceFromText`. */
+  priceFrom?: number;
+  /**
+   * Category crumb (its section on /behandlinger, or its own page); the parent treatment page
+   * instead when the content names one (detail.parentSlug). Omitted when it has the page's name.
+   */
   category?: { name: string; href: string };
   overviewLink: Link;
   hero: {
     lead: string;
     mobileLead?: string;
+    /** Paragraphs after the lead (long-form pages). */
+    intro?: string[];
     image: ImageRef;
     facts: Fact[];
-    primaryCta: Link;
-    secondaryCta: Link;
+    /** Always on template pages ("Book tid"); on a long-form page only when the content sets one. */
+    primaryCta?: Link;
+    secondaryCta?: Link;
+    /** In-page links to the sections' items (long-form pages with `detail.jumpLabel`). */
+    jump?: { label: string; links: Link[] };
   };
-  about: {
+  /** Long-form body (detail.sections). */
+  sections?: TreatmentSection[];
+  /** "Om behandlingen" band; always on template pages, on a long-form page only with `detail.about`. */
+  about?: {
     paragraphs: string[];
     mobileParagraphs?: string[];
     listLabel: string;
@@ -111,7 +134,10 @@ export type TreatmentView = {
   faq?: FaqItem[];
   /** False when `faq` is the shared fallback (no FAQPage structured data for it). */
   faqIsOwn: boolean;
-  booking: { title: string; text: string; cta: Link };
+  /** Closing band: "Klar til at booke?" or a long-form page's own (detail.closing). */
+  booking: { title: string; text: string | string[]; cta: Link };
+  /** The mobile book bar's button: "Book tid", or the closing band's CTA on a long-form page. */
+  bookBarCta: Link;
   /** Canonical path of the page. */
   path: string;
   /** Meta description. */
@@ -143,7 +169,7 @@ function findPractitioner(treatment: Treatment, followAlias = true): TeamMember 
   return target ? findPractitioner(target, false) : undefined;
 }
 
-/** Name inside a sentence: "skinbooster", "botox for mænd"; brand names and acronyms unchanged. */
+/** Name inside a sentence: "skinbooster", "kæbelinje for mænd"; brand names and acronyms unchanged. */
 function nameInSentence(treatment: Treatment, name: string): string {
   if (copy.brandNames.includes(treatment.slug)) return name;
   const [first, second] = name;
@@ -225,13 +251,22 @@ function groupPriceItems(items: PriceItem[], key: string | undefined): PriceGrou
 /** Everything /behandlinger/[slug] renders for `treatment`, with the fallbacks applied. */
 export function buildTreatmentView(treatment: Treatment): TreatmentView {
   const d = treatment.detail;
+  const longform = Boolean(d?.sections?.length);
   const title = d?.title ?? treatment.name;
   const category = treatmentCategories.find((c) => c.slug === treatment.categorySlug);
-  const priceFromText = treatment.priceFrom !== undefined ? formatPriceFrom(treatment.priceFrom) : undefined;
+  const parent = d?.parentSlug ? getTreatment(d.parentSlug) : undefined;
+  if (d?.parentSlug && !parent) throw new Error(`treatments: "${treatment.slug}" has an unknown parentSlug "${d.parentSlug}"`);
+  // A long-form page says what a price depends on instead of a "fra" price (menus and cards keep it).
+  const shownPrice = longform ? undefined : treatment.priceFrom;
+  const priceFromText = shownPrice !== undefined ? formatPriceFrom(shownPrice) : undefined;
   const bookHref = site.booking.href;
 
-  /* Practitioner */
-  const member = findPractitioner(treatment);
+  /* Practitioner: on a long-form page only the one its content names */
+  const member = longform
+    ? d?.practitionerSlug
+      ? team.find((m) => m.slug === d.practitionerSlug)
+      : undefined
+    : findPractitioner(treatment);
   const practitioner: TreatmentView["practitioner"] = member
     ? {
         member,
@@ -250,8 +285,9 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
       }
     : undefined;
 
-  /* Prices: its own list, else the list of the treatment it is a variant of, else /priser rows */
-  const alias = aliasTarget(treatment);
+  /* Prices: its own list, else the list of the treatment it is a variant of, else /priser rows
+     (a long-form page: its own list only) */
+  const alias = longform ? undefined : aliasTarget(treatment);
   const listSource = d?.prices?.length ? d : alias?.detail?.prices?.length ? alias.detail : undefined;
   const allPricesLink = (cardId?: string): Link => ({
     label: copy.prices.allPricesLink.label,
@@ -295,7 +331,7 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
       mobileIntro: listSource.mobile?.pricesIntro,
       link: allPricesLink(sourceCard?.id),
     };
-  } else {
+  } else if (!longform) {
     const { items, extras, cardId } = priceRowsFromPriceList(treatment);
     if (items.length) {
       const intro = d?.pricesIntro ?? copy.prices.fallbackIntro;
@@ -308,8 +344,8 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     }
   }
 
-  /* Blog */
-  const postItems = relatedPostsForTreatment(treatment);
+  /* Blog (a long-form page: only the posts its content names) */
+  const postItems = longform ? postsBySlugs(d?.relatedPostSlugs).slice(0, 3) : relatedPostsForTreatment(treatment);
   const [firstPost] = postItems;
   const sharedCategory = firstPost?.categorySlug
     ? postItems.every((p) => p.categorySlug === firstPost.categorySlug)
@@ -329,7 +365,7 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     : undefined;
 
   /* Reviews: its own, filled up to 5 with general ones (the heading only names it when all are
-     its own); none on the Botox pages (content/reviews.ts → treatmentsWithoutReviews). */
+     its own); none on the rynkebehandling pages (content/reviews.ts → treatmentsWithoutReviews). */
   const reviewSelection = reviewsFor({ treatment: treatment.slug, seed: treatment.slug, min: 5 });
   const reviews: TreatmentView["reviews"] = reviewSelection.reviews.length
     ? {
@@ -343,47 +379,66 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     : undefined;
 
   const faqIsOwn = Boolean(d?.faq?.length);
-  const faq = d?.faq?.length ? d.faq : copy.faq.fallback;
+  const faq = d?.faq?.length ? d.faq : longform ? undefined : copy.faq.fallback;
 
   /* Fallback "Om behandlingen": one-liner + a sentence about its category (or its alias's). */
   const categoryText =
     (alias && copy.fallbackAbout.categoryText[alias.categorySlug]) ??
     copy.fallbackAbout.categoryText[treatment.categorySlug];
   const sameName = (a: string, b: string) => a.toLocaleLowerCase(site.locale) === b.toLocaleLowerCase(site.locale);
+  const crumb = parent
+    ? { name: parent.detail?.title ?? parent.name, href: treatmentHref(parent.slug) }
+    : category
+      ? // Its own page when it has one (For mænd), else its section on the overview.
+        { name: category.name, href: treatmentCategoryHref(category.slug) }
+      : undefined;
+
+  /* Jump links to the sections' items with an id ("Lip flip" → #lip-flip) */
+  const jumpLinks: Link[] = (d?.sections ?? []).flatMap((s) =>
+    (s.items ?? []).flatMap((item) => (item.id ? [{ label: item.navLabel ?? item.title, href: `#${item.id}` }] : [])),
+  );
+  const closing = longform ? d?.closing : undefined;
+  const bookingCta = { label: copy.booking.cta(title, priceFromText), href: bookHref };
 
   return {
     slug: treatment.slug,
     title,
+    heading: d?.heading ?? title,
+    headingAccent: d?.headingAccent,
+    headingSize: d?.headingSize,
+    longform,
     priceFromText,
-    category:
-      category && !sameName(category.name, title)
-        ? // Its own page when it has one (For mænd), else its section on the overview.
-          { name: category.name, href: treatmentCategoryHref(category.slug) }
-        : undefined,
+    priceFrom: shownPrice,
+    category: crumb && !sameName(crumb.name, title) ? crumb : undefined,
     overviewLink: { label: overviewLabel, href: overviewHref },
     hero: {
       lead: d?.lead ?? treatment.short,
       mobileLead: d?.mobile?.lead,
+      intro: d?.intro,
       image: d?.heroImage ?? copy.categoryImages[treatment.categorySlug] ?? copy.defaultImage,
-      facts: d?.facts?.length ? d.facts : copy.fallbackFacts(priceFromText),
-      primaryCta: { label: ui.bookCta, href: bookHref },
-      secondaryCta: d?.secondaryCta ?? copy.hero.secondaryCta,
+      facts: d?.facts?.length ? d.facts : longform ? [] : copy.fallbackFacts(priceFromText),
+      primaryCta: d?.primaryCta ?? (longform ? undefined : { label: ui.bookCta, href: bookHref }),
+      secondaryCta: d?.secondaryCta ?? (longform ? undefined : copy.hero.secondaryCta),
+      jump: d?.jumpLabel && jumpLinks.length ? { label: d.jumpLabel, links: jumpLinks } : undefined,
     },
+    sections: longform ? d?.sections : undefined,
     about: d?.about?.length
       ? {
           paragraphs: d.about,
           mobileParagraphs: d.mobile?.about,
           listLabel: copy.about.goodForLabel,
-          items: d.goodFor,
+          items: d.goodFor ?? [],
         }
-      : {
-          paragraphs: [
-            categoryText ? `${treatment.short} ${categoryText}` : treatment.short,
-            ...copy.fallbackAbout.paragraphs,
-          ],
-          listLabel: copy.fallbackAbout.listLabel,
-          items: copy.fallbackAbout.items,
-        },
+      : longform
+        ? undefined
+        : {
+            paragraphs: [
+              categoryText ? `${treatment.short} ${categoryText}` : treatment.short,
+              ...copy.fallbackAbout.paragraphs,
+            ],
+            listLabel: copy.fallbackAbout.listLabel,
+            items: copy.fallbackAbout.items,
+          },
     practitioner,
     results: d?.results?.length
       ? { title: d.resultsTitle ?? copy.results.title(title), intro: d.resultsIntro, items: d.results }
@@ -393,13 +448,16 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     posts,
     faq,
     faqIsOwn,
-    booking: {
-      title: copy.booking.title,
-      text: d?.bookingText ?? copy.booking.fallbackText,
-      cta: { label: copy.booking.cta(title, priceFromText), href: bookHref },
-    },
-    path: `${overviewHref}/${treatment.slug}`,
-    description: d?.lead ?? copy.metaDescription(treatment.short, priceFromText),
+    booking: closing
+      ? { title: closing.title, text: closing.paragraphs, cta: closing.cta }
+      : {
+          title: copy.booking.title,
+          text: d?.bookingText ?? copy.booking.fallbackText,
+          cta: bookingCta,
+        },
+    bookBarCta: closing?.cta ?? { label: ui.bookCta, href: bookingCta.href },
+    path: treatmentHref(treatment.slug),
+    description: d?.metaDescription ?? d?.lead ?? copy.metaDescription(treatment.short, priceFromText),
     metaTitle: treatment.metaTitle ?? title,
   };
 }

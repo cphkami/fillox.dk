@@ -2,7 +2,7 @@ import type { Bestseller, FaqItem, ImageRef, PriceRow, Treatment } from "./types
 import { routes } from "./routes";
 import { blogPage } from "./pages/blog";
 import { treatmentPage } from "./pages/treatments";
-import { BOTOX_PACKAGE_NOTE, priceCards } from "./prices";
+import { priceCards } from "./prices";
 import { practitionerBookingHref } from "@/lib/booking";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/config/site";
@@ -14,18 +14,27 @@ import { site } from "@/config/site";
  * (content/prices.ts, the live fillox.dk/priser), never typed here: `priceFrom` is the lowest
  * amount among the rows tagged with the treatment's slug.
  *
- * `detail`: Botox (6bx) and Lip filler (6c/mb) are designed in full. The other treatments with a
- * page on the live fillox.dk get a `detail` on the generic template (6c) with that page's facts
- * (behandlingstid, holdbarhed, restitution), "om behandlingen" and FAQ, adapted to the new tone.
+ * `detail`: Lip filler (6c/mb) is designed in full. The other treatments with a page on the live
+ * fillox.dk get a `detail` on the generic template (6c) with that page's facts (behandlingstid,
+ * holdbarhed, restitution), "om behandlingen" and FAQ, adapted to the new tone.
  * Sources (fetched 2026-10-01): fillox.dk/fillers/<kindben|kaebelinje|tear-trough|naesekorrektion|
- * lip-filler|ansigtskonturering>, /fillers/faq-om-fillers-behandling, /rynkebehandling,
- * /ovrige-botox-behandlinger, /skinbooster/<profhilo|ejal-40|sunekos>,
- * /hudforbedring/<infini-microneedling|infini-microneedling-copy (Signatur)>, /prf-hudbehandling,
- * /harfjerning, /prf-mod-hartab, /om-os/kontrol-eftertjek.
+ * lip-filler|ansigtskonturering>, /fillers/faq-om-fillers-behandling, /skinbooster/<profhilo|ejal-40|
+ * sunekos>, /hudforbedring/<infini-microneedling|infini-microneedling-copy (Signatur)>,
+ * /prf-hudbehandling, /harfjerning, /prf-mod-hartab, /om-os/kontrol-eftertjek.
  *
- * Without a live page (minimal content, generic fallbacks): hage, traptox, polyphil-hair,
- * botox-for-maend. Copy marked `// TODO: copy review` is not from the design or the live site
- * and needs a review by Fillox before launch.
+ * Rynkebehandling (the hub; it replaces the Botox page and the live /rynkebehandling) and Andre
+ * behandlingsmuligheder (it replaces the live /ovrige-botox-behandlinger and the lip flip, gummy
+ * smile, hyperhidrose, Traptox and Botox for mænd pages) are long-form pages (`detail.sections`,
+ * content/types.ts) with the owner's new copy, VERBATIM: Google Drive › Fillox › Fillox.dk ›
+ * "Botox og rynkebehandling" (the agency's Google Doc, tabs 1 and 2, 2026-10-09). The text is
+ * written not to advertise a prescription medicine (Botox / botulinumtoksin, lægemiddellovens
+ * § 66): the product is named only where the source does (one FAQ answer), and there are no
+ * prices, results, reviews or blog posts on these pages; the CTAs are the author's ("Book en
+ * konsultation", "Kontakt os"). Keep it that way when editing them.
+ *
+ * Without a live page (minimal content, generic fallbacks): hage, polyphil-hair. Copy marked
+ * `// TODO: copy review` is not from the design, the live site or the owner's documents and needs
+ * a review by Fillox before launch.
  */
 
 /* ------------------------------------------------------------------ helpers */
@@ -46,15 +55,6 @@ function listPrice(cardId: string, label: string): number {
   const price = priceCards.find((c) => c.id === cardId)?.rows.find((r) => r.label === label)?.price;
   if (price?.kind !== "amount") throw new Error(`treatments: no price for "${label}" in price card "${cardId}"`);
   return price.amount;
-}
-
-/** The one amount of several price-list rows shown as one row. Throws when they no longer share it. */
-function sharedListPrice(cardId: string, labels: string[]): number {
-  const [first, ...rest] = labels.map((label) => listPrice(cardId, label));
-  if (first === undefined || rest.some((amount) => amount !== first)) {
-    throw new Error(`treatments: price-list rows ${labels.join(", ")} no longer share one price`);
-  }
-  return first;
 }
 
 /** Lowest amount among the price-list rows tagged with a treatment: its "fra" price. */
@@ -120,7 +120,7 @@ const relatedPostsIntro =
 
 /** Price card ids in content/prices.ts. */
 const FILLERS = "fillers";
-const BOTOX = "rynkebehandling";
+const WRINKLES = "rynkebehandling";
 
 /** Fillers: fillox.dk/fillers/* and /fillers/faq-om-fillers-behandling. */
 const fillerFaq = {
@@ -151,38 +151,6 @@ const fillerFaq = {
     answer: "Vi bruger de velrenommerede filler-mærker Infini, Belotero og Juvéderm.",
   },
 } satisfies Record<string, FaqItem | ((text: string) => FaqItem)>;
-
-/** Botox: fillox.dk/rynkebehandling, /ovrige-botox-behandlinger and the /priser konsultation card. */
-const botoxFacts = {
-  duration: { label: "Varighed", value: "ca. 20–40 min" },
-  longevity: { label: "Holdbarhed", value: "ca. 3–5 mdr" },
-  performedBy: { label: "Udføres af", value: "Læge / sygeplejerske" },
-};
-
-const botoxFaq = {
-  training: {
-    question: "Kan jeg gå på arbejde bagefter?",
-    answer:
-      "Ja, du kan gå direkte tilbage til hverdagen. Vent 2 timer med let træning og 24 timer med hård træning.",
-  },
-  longevity: {
-    question: "Hvor længe holder effekten?",
-    answer: "Cirka 3–5 måneder. Derefter aftager effekten, og behandlingen kan gentages.",
-  },
-  doctor: {
-    question: "Hvorfor skal jeg til lægekonsultation først?",
-    answer:
-      "Botox er et receptpligtigt lægemiddel, så en læge skal vurdere dig, før du bliver behandlet første gang. Konsultationen er lovpligtig, tager ca. 15 minutter og er altid gratis hos os.",
-  },
-} satisfies Record<string, FaqItem>;
-
-/**
- * Lip flip, gummy smile and hyperhidrose share fillox.dk/ovrige-botox-behandlinger: no promises of
- * effect (the live page notes that medicines rules forbid advertising these indications as
- * effective), a thorough examination before any treatment.
- */
-const botoxConsultationText =
-  "Der findes ikke én behandling, der passer til alle, så vi behandler aldrig uden først at have undersøgt dig grundigt. Ved konsultationen gennemgår vi de muligheder, der er relevante for dig, og aftaler sammen et eventuelt forløb.";
 
 /** PRF (skin and hair): fillox.dk/prf-hudbehandling and /prf-mod-hartab. */
 const prfFaq = {
@@ -336,10 +304,12 @@ export const treatments: Treatment[] = [
         "Fugt og friskhed",
       ],
       practitionerSlug: "maria",
-      practitionerHeading: "Maria, sygeplejerske, ekspert i fillers & Botox",
+      // TODO: copy review — "rynkebehandling" in place of "Botox" (a prescription medicine; 2026-10),
+      // here and in practitionerText / mobile below, as on her team card (content/team.ts).
+      practitionerHeading: "Maria, sygeplejerske, ekspert i fillers & rynkebehandling",
       // fillox.dk/om-os (Maria). The live site does not say who performs lip filler, so no "udføres af".
       practitionerText:
-        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger og ekspert i både fillers og Botox. Hendes øje for kvalitet og sans for det naturlige resultat skinner igennem i alle behandlinger.",
+        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger og ekspert i både fillers og rynkebehandling. Hendes øje for kvalitet og sans for det naturlige resultat skinner igennem i alle behandlinger.",
       practitionerQuote: "At se mine tilfredse kunder smile er en af de største glæder, jeg har.",
       resultsTitle: "Resultater med lip filler",
       resultsIntro,
@@ -413,9 +383,9 @@ export const treatments: Treatment[] = [
         about: [
           "Lip filler er lavet af hyaluronsyre, et stof der findes naturligt i huden. Behandlingen giver diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
         ],
-        practitionerTitle: "Sygeplejerske · Fillers & Botox",
+        practitionerTitle: "Sygeplejerske · Fillers & rynkebehandling",
         practitionerText:
-          "Maria er en detaljeorienteret sygeplejerske med flere års erfaring og ekspert i både fillers og botox.",
+          "Maria er en detaljeorienteret sygeplejerske med flere års erfaring og ekspert i både fillers og rynkebehandling.",
         practitionerCta: { label: "Book hos Maria", href: bookWith("maria") },
         pricesIntro: "Mange starter med 0,5 ml. Din behandler anbefaler mængden ved konsultationen.",
       },
@@ -544,160 +514,350 @@ export const treatments: Treatment[] = [
       ],
     },
   },
-  // Rynkebehandling
+  // Rynkebehandling: long-form pages, the owner's copy verbatim (see the header).
   {
-    slug: "botox",
-    name: "Botox",
+    slug: "rynkebehandling",
+    name: "Rynkebehandling",
     categorySlug: "rynkebehandling",
-    priceFrom: lowestListPrice("botox"),
+    // The lowest row of the price list's Rynkebehandling card: menus, the /behandlinger card and
+    // the home bestseller show it; the page itself shows none (its "Priser" section links to /priser).
+    priceFrom: lowestListPrice("rynkebehandling"),
     short: "Mimiklinjer og udvalgte kosmetiske behandlingsområder.",
+    // TODO: copy review — search/share title: the H1 without "hos Fillox" (the title template
+    // already adds " · Fillox").
+    metaTitle: "Rynkebehandling – find den rette behandling",
     detail: {
-      lead: "Blødere linjer i panden, mellem brynene og omkring øjnene, uden at du mister din mimik. Du ser udhvilet ud, ikke behandlet.",
-      heroImage: {
-        src: IMG.duoColor.src,
-        alt: "To smilende kvinder foran en beige og rosa baggrund",
-        position: "50% 50%",
-        width: 1600,
-        height: 1096,
-      },
-      // fillox.dk/rynkebehandling: behandlingstid ca. 20–40 min, varighed cirka 3–5 måneder.
-      facts: [{ label: "Pris", value: from(lowestListPrice("botox")) }, botoxFacts.duration, botoxFacts.longevity, botoxFacts.performedBy],
-      secondaryCta: { label: "Gratis lægekonsultation", href: site.booking.href },
-      about: [
-        "Botox afslapper de små muskler, der skaber mimiske rynker. Huden glattes ud, og nye linjer forebygges. Effekten begynder efter 3–5 dage og er fuldt synlig efter to uger.",
-        "Før din første behandling har du en lovpligtig lægekonsultation, som altid er gratis. Vi doserer præcist, så dit udtryk bevares, og du kan booke en gratis kontrol cirka 14 dage efter.",
+      // The source's H1, "Rynkebehandling – find den rette behandling hos Fillox", in two lines.
+      headingAccent: "find den rette behandling hos Fillox",
+      lead: "Rynker og fine linjer er en naturlig del af livet. Nogle opstår, når vi smiler eller rynker panden, mens andre bliver mere synlige i takt med, at huden ændrer sig.",
+      intro: [
+        "Der findes forskellige muligheder for at behandle rynker, men hvilken behandling der er relevant, afhænger af både årsagen til rynkerne, hudens tilstand og dine ønsker.",
+        "Hos Fillox møder du behandlere med sundhedsfaglig baggrund, som arbejder efter fælles faglige standarder og får løbende undervisning gennem Fillox Academy. Vi hjælper dig med at forstå mulighederne og finde frem til, hvad der giver mening for dig.",
       ],
-      goodFor: ["Panderynker", "Bekymringsrynke", "Kragetæer", "Svedige armhuler"],
-      practitionerSlug: "annika",
-      practitionerHeading: "Annika, kosmetisk sygeplejerske",
-      // fillox.dk/om-os (Annika: bio and quote).
-      practitionerText:
-        "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden inden for det æstetiske felt og de forskellige kosmetiske behandlinger. Hun brænder for et naturligt resultat og for, at du føler dig tryg og hørt.",
-      practitionerQuote: "Jeg er først tilfreds, når du er glad og tilfreds.",
-      resultsTitle: "Resultater med botox",
-      resultsIntro,
-      results: [
+      // The source's second paragraph (it says what the page is about).
+      metaDescription:
+        "Der findes forskellige muligheder for at behandle rynker, men hvilken behandling der er relevant, afhænger af både årsagen til rynkerne, hudens tilstand og dine ønsker.",
+      primaryCta: { label: "Book en konsultation", href: site.booking.href },
+      sections: [
         {
-          ...pair(IMG.duoPink),
-          caption: "Pande · 2026",
+          id: "typer-af-rynker",
+          title: "Hvilke typer rynker kan behandles?",
+          paragraphs: [
+            "Det er ikke alle rynker, der opstår på samme måde. Derfor findes der heller ikke én behandling, som passer til alle.",
+          ],
+          items: [
+            {
+              id: "rynker-i-panden",
+              title: "Rynker i panden",
+              paragraphs: [
+                "Vandrette linjer i panden opstår ofte, når vi løfter øjenbrynene. Med tiden kan linjerne også være synlige, når ansigtet er afslappet.",
+              ],
+            },
+            {
+              id: "bekymringsrynken",
+              title: "Bekymringsrynken",
+              paragraphs: [
+                "De lodrette linjer mellem øjenbrynene opstår gennem musklernes bevægelser, blandt andet når vi koncentrerer os eller kniber øjnene sammen.",
+              ],
+            },
+            {
+              id: "smilerynker",
+              title: "Smilerynker omkring øjnene",
+              paragraphs: [
+                "Smilerynker, også kaldet kragetæer, viser sig typisk, når vi smiler. De kan med tiden blive mere fremtrædende.",
+              ],
+            },
+            {
+              id: "andre-linjer-og-rynker",
+              title: "Andre linjer og rynker",
+              paragraphs: [
+                "Linjer omkring munden, nedadvendte mundvige og forandringer i hudens struktur kan have andre årsager og kræve en anden tilgang.",
+              ],
+            },
+          ],
+          closing: [
+            "Ved en konsultation vurderer vi, hvilke muligheder der er relevante for netop det område, du ønsker rådgivning om.",
+          ],
+          // TODO: copy review — not in the source: the hub's only link to its sister page (mundvige,
+          // lip flip, svedtendens …), labelled with that page's name. Remove it if Fillox prefers the
+          // source as written.
+          cta: { label: "Andre behandlingsmuligheder", href: treatmentHref("andre-behandlingsmuligheder") },
         },
         {
-          ...pair(IMG.duoColor),
-          caption: "Kragetæer · 2026",
+          id: "vaelg-behandling",
+          title: "Hvilken behandling passer til dine rynker?",
+          surface: "band",
+          paragraphs: [
+            "Valget afhænger først og fremmest af, hvorfor rynkerne er opstået.",
+            [
+              { text: "Mimiske rynker", strong: true },
+              " skyldes gentagne bevægelser i ansigtets muskler. Her kan en læge vurdere, om muskelafslappende injektionsbehandling er relevant.",
+            ],
+            [
+              { text: "Linjer, der skyldes tab af volumen", strong: true },
+              ", kan i nogle tilfælde vurderes med henblik på fillerbehandling.",
+            ],
+            [
+              { text: "Fine linjer og ændringer i hudens kvalitet", strong: true },
+              " kan også være relevante at vurdere i forhold til hudforbedrende behandlinger som microneedling eller peeling.",
+            ],
+            "Behandlingerne har forskellige formål, effekter og risici. Det er derfor vigtigt at vælge ud fra en individuel vurdering frem for blot at vælge en behandling ud fra navnet.",
+          ],
         },
         {
-          ...pair(IMG.duoPink),
-          caption: "Bekymringsrynke · 2025",
+          id: "konsultation",
+          title: "Hvad sker der ved en konsultation?",
+          paragraphs: [
+            "Du behøver ikke at vide på forhånd, hvilken behandling du ønsker.",
+            "Under konsultationen gennemgår vi dine ønsker, relevante helbredsoplysninger og de muligheder, der kan være aktuelle for dig.",
+            "Du får information om forventet resultat, begrænsninger, mulige bivirkninger og eventuelle alternativer.",
+            "Hvis der er tale om en behandling med botulinumtoksin, foretages den nødvendige lægefaglige forundersøgelse, og de gældende regler om information, samtykke og betænkningstid følges.",
+            "Du kan også vælge ikke at gå videre med behandling.",
+          ],
         },
-      ],
-      pricesTitle: "Betal pr. område",
-      pricesIntro:
-        "Jo flere områder, jo lavere pris pr. område. Lægekonsultation og kontrol er altid inkluderet.",
-      // The /priser rows, areas with the same price on one row.
-      prices: [
-        row("Lip flip / Gummy smile / Bunny lines", sharedListPrice(BOTOX, ["Lip flip", "Gummy smile", "Bunny lines"])),
-        row("Brynløft / Nose slimming / Rygerynker", sharedListPrice(BOTOX, ["Brynløft", "Nose slimming", "Rygerynker"])),
-        row("Nedadgående mundvige", listPrice(BOTOX, "Nedadgående mundvige")),
-        row("Pande / Bekymringsrynke / Kragetæer", sharedListPrice(BOTOX, ["Pande", "Bekymringsrynke", "Kragetæer"])),
-        row("Platysmabånd / Nefertiti lift", sharedListPrice(BOTOX, ["Platysmabånd", "Nefertiti lift"])),
-        row("2 områder", listPrice(BOTOX, "2 områder"), { note: BOTOX_PACKAGE_NOTE }),
-        row("3 områder", listPrice(BOTOX, "3 områder"), { note: BOTOX_PACKAGE_NOTE }),
-        row("4 områder", listPrice(BOTOX, "4 områder"), { note: BOTOX_PACKAGE_NOTE }),
-        row("5 områder", listPrice(BOTOX, "5 områder"), { note: BOTOX_PACKAGE_NOTE }),
-        row("6 områder", listPrice(BOTOX, "6 områder"), { note: BOTOX_PACKAGE_NOTE }),
-        row("7 områder", listPrice(BOTOX, "7 områder"), { note: BOTOX_PACKAGE_NOTE }),
-        row("Hyperhidrose (svedige armhuler)", listPrice(BOTOX, "Hyperhidrose (overdreven sved)"), {
-          treatmentSlug: "hyperhidrose",
-        }),
+        {
+          id: "faglig-kompetence",
+          title: "Faglig kompetence hos Fillox",
+          paragraphs: [
+            "Hos Fillox er kompetence ikke kun noget, vi taler om. Det er en del af den måde, vi arbejder på.",
+            "Gennem Fillox Academy sørger vi for løbende faglig udvikling, fælles behandlingsstandarder og opfølgning af vores behandlere.",
+            "Vores ansvarlige læge er en aktiv del af det faglige arbejde og den løbende opfølgning.",
+            "Det betyder, at du skal kunne forvente en grundig og professionel vurdering, uanset hvilken af vores klinikker du besøger.",
+          ],
+          cta: { label: "Læs mere om Fillox og vores faglige arbejde", href: routes.about },
+        },
+        {
+          id: "priser",
+          title: "Priser på rynkebehandling",
+          surface: "card",
+          paragraphs: [
+            "Prisen afhænger af den konkrete behandling og det område, der skal vurderes.",
+            "Du kan se vores aktuelle priser i prisoversigten. Det endelige behandlingsvalg afhænger af den faglige vurdering.",
+          ],
+          // The price list's Rynkebehandling card.
+          cta: { label: "Se priser", href: `${routes.prices}#${WRINKLES}` },
+        },
+        {
+          id: "find-klinik",
+          title: "Find din Fillox-klinik",
+          surface: "card",
+          paragraphs: [
+            "Du kan besøge Fillox på Amager, Frederiksberg, Østerbro og i City2 Taastrup.",
+            "Se den enkelte kliniks behandlere, behandlingstilbud og muligheder for konsultation.",
+          ],
+          cta: { label: "Find din klinik", href: routes.clinics },
+        },
       ],
       faq: [
         {
-          question: "Gør det ondt?",
-          // TODO: copy review (not on the live site)
+          question: "Kan jeg få hjælp, hvis jeg aldrig har fået rynkebehandling før?",
           answer:
-            "De fleste beskriver det som et kort prik. Vi bruger en meget tynd nål, og selve injektionerne tager kun få minutter.",
+            "Ja. Du kan bestille en konsultation, selv om du ikke ved, hvilken behandling der kan være relevant. Vi gennemgår dine ønsker og muligheder sammen med dig.",
         },
         {
-          question: "Hvornår kan jeg se resultatet?",
-          // TODO: copy review (the effect timing is not on the live site; the check-up is)
+          question: "Hvad er forskellen på Botox og filler?",
           answer:
-            "Effekten begynder efter 3–5 dage og er fuldt synlig efter omkring to uger. Derfor kan du booke en gratis kontrol cirka 14 dage efter behandlingen.",
+            "Botox er et handelsnavn for et lægemiddel med botulinumtoksin, der påvirker aktiviteten i bestemte muskler. Fillers anvendes blandt andet til at tilføre volumen eller korrigere konturer. Det er forskellige behandlingsformer med forskellige risici og anvendelsesområder.",
         },
-        botoxFaq.longevity,
-        botoxFaq.training,
-        botoxFaq.doctor,
+        {
+          question: "Hvor længe holder en rynkebehandling?",
+          answer:
+            "Det afhænger af behandlingsformen og individuelle forhold. Ved konsultationen kan du få en mere præcis forventning til den behandling, der vurderes relevant.",
+        },
+        {
+          question: "Er der risici ved rynkebehandling?",
+          answer:
+            "Ja. Alle kosmetiske injektionsbehandlinger indebærer risici. Det kan blandt andet være lokale reaktioner, asymmetri eller andre komplikationer afhængigt af behandlingen. Du får information om de relevante risici, før du beslutter dig.",
+        },
+        {
+          question: "Skal jeg til konsultation, før jeg kan blive behandlet?",
+          answer:
+            "Ved kosmetisk behandling med botulinumtoksin kræves en lægefaglig forundersøgelse. Ved første behandling gælder som udgangspunkt mindst to dages betænkningstid, før der kan gives samtykke.",
+        },
       ],
-      relatedPostsTitle: "Læs mere om botox",
-      relatedPostsIntro,
-      relatedPostsLink: { label: "Alle artikler om botox", href: blogPage.filterHref("botox") },
-      relatedPostSlugs: [
-        "botox-for-foerste-gang",
-        "hvornaar-giver-det-mening-at-starte-med-botox",
-        "de-foerste-24-timer-efter-botox",
-      ],
-      bookingText: "Din første lægekonsultation er gratis.",
+      closing: {
+        title: "Er du i tvivl om, hvor du skal begynde?",
+        paragraphs: [
+          "Du behøver ikke selv finde alle svarene.",
+          "Vi hjælper dig med at forstå dine muligheder, så du kan tage stilling på et oplyst grundlag.",
+        ],
+        cta: { label: "Book en konsultation", href: site.booking.href },
+      },
     },
   },
   {
-    slug: "lip-flip",
-    name: "Lip flip",
+    slug: "andre-behandlingsmuligheder",
+    // TODO: copy review — the desktop mega menu's name: its columns are ≈ 132px wide at 1024px and
+    // set on one line, so "Andre behandlingsmuligheder" (≈ 187px) ran into the next column. The
+    // page's own short name (`detail.title`) is used everywhere else; the mobile menu has room.
+    name: "Andre behandlinger",
+    mobileMenuName: "Andre behandlingsmuligheder",
     categorySlug: "rynkebehandling",
-    priceFrom: lowestListPrice("lip-flip"),
-    short: "Små mængder botox langs overlæben, så læben ruller let opad og ser fyldigere ud.",
+    // No "fra" price: the page has none, and the price list's rows for these areas link to it.
+    // TODO: copy review — one-liner for cards (/behandlinger), from the page's intro wording.
+    short: "Vurdering af fx læbernes form, kraftig svedtendens eller spændinger i kæbemusklerne.",
+    // The source's own title, the H1. With " · Fillox" it is 61 characters, one over the ≤ 60 rule
+    // (`metaTitle`, content/types.ts): kept, as search results cut titles by width rather than by
+    // count. TODO: copy review — or shorten to "Andre kosmetiske og medicinske behandlinger".
+    metaTitle: "Andre kosmetiske og medicinske behandlingsmuligheder",
     detail: {
-      lead: "Lip flip giver læberne et fyldigere udseende uden filler. Små mængder botox i musklerne omkring overlæben får den til at rulle let opad.",
-      heroImage: categoryImage("rynkebehandling"),
-      facts: [{ label: "Pris", value: from(lowestListPrice("lip-flip")) }, botoxFacts.duration, botoxFacts.longevity, botoxFacts.performedBy],
-      about: [
-        "Ved at sprøjte små mængder botox ind i musklerne omkring overlæben afslappes de let, så overlæben krøller let opad og ser større ud. Effekten er midlertidig og varer typisk 3–5 måneder, hvorefter behandlingen kan gentages.",
-        `Før din første behandling med botox har du en lovpligtig lægekonsultation, som altid er gratis. ${botoxConsultationText}`,
+      // Breadcrumb, book bar, /behandlinger card; the H1 is the source's full title.
+      title: "Andre behandlingsmuligheder",
+      // The source's title with a soft hyphen (invisible; it reads the same): at the page H1 size
+      // "behandlingsmuligheder" alone filled the column, so the hero shrank the whole H1 below the
+      // page's H2s. It may now break as "behandlings-/muligheder", at the compact H1 size.
+      heading: "Andre kosmetiske og medicinske behandlings­muligheder",
+      headingSize: "compact",
+      // Under the rynkebehandling hub in the breadcrumb (Behandlinger → Rynkebehandling → …).
+      parentSlug: "rynkebehandling",
+      lead: "Ikke alle problemstillinger handler om rynker i panden eller omkring øjnene.",
+      intro: [
+        "Nogle ønsker en vurdering af læbernes form eller ansigtets konturer. Andre søger hjælp til gener som kraftig svedtendens eller spændinger i kæbemusklerne.",
+        "Hos Fillox tager vi udgangspunkt i den konkrete problemstilling. Der kan være forskellige årsager til det, du oplever, og det er ikke alle behandlinger, der er relevante for alle.",
       ],
-      goodFor: ["Et fyldigere udseende uden filler", "En overlæbe, der ruller let opad"],
-      faq: [botoxFaq.longevity, botoxFaq.training, botoxFaq.doctor],
-    },
-  },
-  {
-    slug: "gummy-smile",
-    name: "Gummy smile",
-    categorySlug: "rynkebehandling",
-    priceFrom: lowestListPrice("gummy-smile"),
-    short: "Behandling af synligt tandkød, når du smiler.",
-    detail: {
-      lead: "Viser du meget tandkød, når du smiler? Det er helt normalt og skyldes oftest en overaktiv muskel i overkæben, der trækker overlæben op.",
-      heroImage: categoryImage("rynkebehandling"),
-      facts: [{ label: "Pris", value: from(lowestListPrice("gummy-smile")) }, botoxFacts.duration, botoxFacts.longevity, botoxFacts.performedBy],
-      about: [
-        "Gummy smile, eller synligt tandkød, er helt normalt: cirka 14 % af alle kvinder og 7 % af alle mænd viser meget af tandkødet i overkæben, når de smiler. Årsagen er i de fleste tilfælde en overaktiv muskel, der trækker overlæben op.",
-        botoxConsultationText,
+      metaDescription:
+        "Nogle ønsker en vurdering af læbernes form eller ansigtets konturer. Andre søger hjælp til gener som kraftig svedtendens eller spændinger i kæbemusklerne.",
+      // TODO: copy review (image choice + alt text; the design has no photo for this page)
+      heroImage: {
+        src: "/images/hero/hero-3.jpg",
+        alt: "Kvinde med langt brunt hår i aftenlys",
+        position: "50% 35%",
+        width: 1200,
+        height: 1500,
+      },
+      // TODO: copy review — accessible name of the hero's jump links, and their short labels
+      // (`navLabel`, the items' own words).
+      jumpLabel: "Problemstillinger på siden",
+      // Item ids are linked from the price list (content/prices.ts → treatmentAnchor) and the legacy
+      // redirects (content/redirects.ts): keep them stable.
+      sections: [
+        {
+          id: "kosmetiske-problemstillinger",
+          title: "Kosmetiske problemstillinger",
+          items: [
+            {
+              id: "lip-flip",
+              title: "Lip flip – overlæbens form",
+              navLabel: "Lip flip",
+              paragraphs: [
+                "En lip flip er betegnelsen for en behandling, der har til formål at påvirke overlæbens stilling.",
+                "Den adskiller sig fra en fillerbehandling, hvor der tilføres volumen.",
+                "Hvilken løsning der eventuelt er relevant, afhænger blandt andet af læbernes anatomi og dine ønsker.",
+              ],
+            },
+            {
+              id: "gummy-smile",
+              title: "Gummy smile – synligt tandkød",
+              navLabel: "Gummy smile",
+              paragraphs: [
+                "Når en stor del af tandkødet bliver synligt ved smil, kaldes det ofte gummy smile.",
+                "Det kan skyldes flere forskellige forhold, blandt andet læbens bevægelse og placering, tandstilling eller tandkødets udformning.",
+                "En faglig vurdering er nødvendig for at afgøre årsagen og mulige behandlingsformer.",
+              ],
+            },
+            {
+              id: "nedadgaaende-mundvige",
+              title: "Nedadgående mundvige",
+              navLabel: "Mundvige",
+              paragraphs: [
+                "Mundvigenes placering påvirkes blandt andet af musklernes aktivitet, ansigtets anatomi og ændringer i huden over tid.",
+                "Der findes forskellige muligheder afhængigt af årsagen, men ikke alle er egnede til injektionsbehandling.",
+              ],
+            },
+            {
+              id: "tyggemuskler",
+              title: "Kraftige tyggemuskler og ansigtskontur",
+              navLabel: "Tyggemuskler",
+              paragraphs: [
+                "Tyggemusklernes størrelse kan påvirke ansigtets form og kæbens kontur.",
+                "Hvis du ønsker en vurdering af dette område, ser vi på både anatomi, muskelfunktion og eventuelle gener, før der tages stilling til relevante muligheder.",
+              ],
+            },
+            {
+              id: "platysma",
+              title: "Platysma – synlige halsbånd",
+              navLabel: "Platysma",
+              paragraphs: [
+                "Platysma er en overfladisk muskel på halsen, som hos nogle bliver tydeligere ved bevægelse eller med alderen.",
+                "Synlige halsbånd kan have forskellige årsager, og valg af behandling kræver en individuel vurdering.",
+              ],
+            },
+          ],
+        },
+        {
+          id: "medicinske-problemstillinger",
+          title: "Medicinske problemstillinger",
+          items: [
+            {
+              id: "svedtendens",
+              title: "Overdreven svedtendens",
+              navLabel: "Svedtendens",
+              paragraphs: [
+                "Kraftig svedtendens, også kaldet hyperhidrose, kan påvirke hverdagen betydeligt.",
+                "Svedtendens kan have forskellige årsager, og det er vigtigt at vurdere, om der er behov for yderligere undersøgelse eller behandling.",
+                "Vi kan vejlede om, hvilke muligheder der eventuelt er relevante, og om der er behov for en lægelig vurdering.",
+              ],
+            },
+            {
+              id: "taenderskaeren",
+              title: "Tænderskæren og spændinger i kæben",
+              navLabel: "Tænderskæren",
+              paragraphs: [
+                "Tænderskæren, også kaldet bruksisme, kan være forbundet med slid på tænderne, spændinger eller ubehag i kæben.",
+                "Der findes forskellige mulige årsager og behandlingsformer. Ved symptomer fra tænder eller kæbeled kan en tandlægelig vurdering være nødvendig.",
+              ],
+            },
+          ],
+        },
+        {
+          id: "individuel-vurdering",
+          title: "En individuel vurdering kommer først",
+          surface: "band",
+          paragraphs: [
+            "Det er ikke altid den behandling, man på forhånd har hørt om, der er den rette.",
+            "Hos Fillox lægger vi vægt på at forstå problemet, gennemgå mulighederne og afklare, hvad der er fagligt relevant.",
+            "Vi fortæller også, når en anden behandlingsform, yderligere undersøgelse eller henvisning er mere hensigtsmæssig.",
+          ],
+          cta: { label: "Kontakt os om konsultation", href: routes.contact, style: "button" },
+        },
+        {
+          id: "faglighed-og-ansvar",
+          title: "Faglighed og ansvar",
+          paragraphs: [
+            "Vores behandlere arbejder efter fælles faglige standarder med løbende undervisning og opfølgning gennem Fillox Academy.",
+            "Undersøgelse, behandlingsvalg og eventuel udførelse sker inden for de enkelte behandleres kompetencer og registreringer.",
+          ],
+        },
       ],
-      goodFor: ["Synligt tandkød, når du smiler", "En overaktiv muskel i overkæben"],
-      faq: [botoxFaq.longevity, botoxFaq.training, botoxFaq.doctor],
-    },
-  },
-  {
-    slug: "hyperhidrose",
-    name: "Hyperhidrose",
-    categorySlug: "rynkebehandling",
-    priceFrom: lowestListPrice("hyperhidrose"),
-    short: "Behandling af overdreven sved, fx i armhulerne.",
-    detail: {
-      lead: "Hyperhidrose er en svedtendens, der er så kraftig, at den ikke har nogen naturlig funktion for kroppen. Hos Fillox tilbyder vi behandling af svedige armhuler.",
-      heroImage: categoryImage("rynkebehandling"),
-      facts: [{ label: "Pris", value: from(lowestListPrice("hyperhidrose")) }, botoxFacts.duration, botoxFacts.longevity, botoxFacts.performedBy],
-      about: [
-        "Kraftig sved kan give nedsat livskvalitet, og mange undgår hverdagssituationer og sociale kontakter på grund af det.",
-        botoxConsultationText,
+      faq: [
+        {
+          question: "Er lip flip det samme som lip filler?",
+          answer:
+            "Nej. Det er to forskellige behandlingsprincipper. Lip filler tilfører volumen, mens lip flip har et andet formål og kræver en særskilt faglig vurdering.",
+        },
+        {
+          question: "Kan kraftige tyggemuskler behandles?",
+          answer:
+            "Det afhænger af årsagen, muskelaktiviteten og eventuelle gener. En vurdering skal afklare, om behandling er relevant.",
+        },
+        {
+          question: "Hvornår bør jeg søge læge ved overdreven svedtendens?",
+          answer:
+            "Hvis svedtendensen er nyopstået, uforklarlig eller ledsages af andre symptomer, bør du kontakte din læge for at undersøge mulige årsager.",
+        },
+        {
+          question: "Kan jeg bestille en konsultation, hvis jeg er usikker på behandlingen?",
+          answer: "Ja. Du kan kontakte os for at få afklaret, hvilke muligheder for vurdering der findes hos Fillox.",
+        },
       ],
-      goodFor: ["Svedige armhuler", "Overdreven svedtendens"],
-      faq: [botoxFaq.longevity, botoxFaq.training, botoxFaq.doctor],
+      closing: {
+        title: "Kontakt Fillox",
+        paragraphs: [
+          "Har du spørgsmål om en af problemstillingerne, hjælper vi dig gerne videre med information om relevante konsultationsmuligheder.",
+        ],
+        cta: { label: "Kontakt os", href: routes.contact },
+      },
     },
-  },
-  {
-    slug: "traptox",
-    name: "Traptox",
-    categorySlug: "rynkebehandling",
-    priceFrom: lowestListPrice("traptox"),
-    short: "Behandling af trapezmusklen, der kan give en blødere nakke- og skulderlinje.", // TODO: copy review (no live page)
   },
   // Hudforbedring
   {
@@ -937,13 +1097,7 @@ export const treatments: Treatment[] = [
     short: "Behandlingskur med polynukleotider til hovedbunden ved tyndt hår.", // TODO: copy review (no live page)
   },
   // For mænd: the live site has no pages of their own; facts from the treatment they are a variant of.
-  {
-    slug: "botox-for-maend",
-    name: "Botox for mænd",
-    categorySlug: "for-maend",
-    priceFrom: lowestListPrice("botox"),
-    short: "Rynkebehandling doseret efter mænds mimik og muskulatur.", // TODO: copy review (no live page)
-  },
+  // (The men's wrinkle treatment is the rynkebehandling hub: content/navigation.ts, content/pages/men.ts.)
   {
     slug: "kaebelinje-for-maend",
     name: "Kæbelinje for mænd",
@@ -1013,10 +1167,12 @@ function bestsellerCategory(categorySlug: string): Pick<Bestseller, "priceFrom" 
 export const bestsellers: Bestseller[] = [
   {
     number: "01",
-    name: "Botox",
+    // The hub's name, not the product's (the design said "Botox", a prescription medicine). Its
+    // "fra" price is the hub's: the lowest row of the price list's Rynkebehandling card.
+    name: "Rynkebehandling",
     description: "Mimiklinjer og udvalgte kosmetiske behandlingsområder.",
     mobileDescription: "Mimiklinjer og udvalgte behandlingsområder.",
-    ...bestsellerTreatment("botox"),
+    ...bestsellerTreatment("rynkebehandling"),
   },
   {
     number: "02",

@@ -7,7 +7,8 @@ import { blogPage } from "./blog";
 
 /**
  * Page copy for the treatment pages:
- * - /behandlinger/[slug] (design 6c template, 6bx Botox, mb mobile Lip filler)
+ * - /behandlinger/[slug] (design 6c template, mb mobile Lip filler; the long-form pages rynkebehandling
+ *   and andre-behandlingsmuligheder carry all their copy in content/treatments.ts)
  * - /behandlinger overview (no dedicated design; built from the same visual language)
  *
  * Per-treatment copy lives in content/treatments.ts (`detail`). Everything here is
@@ -23,7 +24,7 @@ export type PriceGroupCopy = { title: string; note?: string; labels: string[] };
 
 export const treatmentPage = {
   /**
-   * Ids of the section headings (aria-labelledby targets; linkable as /behandlinger/botox#priser).
+   * Ids of the section headings (aria-labelledby targets; linkable as /behandlinger/lip-filler#priser).
    * Market words, so they live here with the copy.
    */
   sectionIds: {
@@ -37,6 +38,13 @@ export const treatmentPage = {
 
   /** Accessible name of the breadcrumb <nav>. */
   breadcrumbLabel: "Brødkrumme", // TODO: copy review (accessible name, not in the design)
+
+  /**
+   * Between an H1 and its second line (detail.headingAccent), as in the source's H1
+   * ("Rynkebehandling – find den rette behandling hos Fillox"): the second line starts with the
+   * dash (the leading space only separates the two parts in the H1's text).
+   */
+  headingSeparator: " – ",
 
   hero: {
     /** Hero secondary CTA when the treatment has no `detail.secondaryCta`. */
@@ -76,7 +84,7 @@ export const treatmentPage = {
    * Rotating customer reviews (content/reviews.ts → reviewsFor({ treatment })), after the
    * results. The heading names the treatment only when every review shown is about it; when
    * general reviews fill the section up (fewer than 5 of its own), it says `generalTitle`.
-   * The Botox pages have no reviews section (content/reviews.ts → treatmentsWithoutReviews).
+   * The rynkebehandling pages have no reviews section (content/reviews.ts → treatmentsWithoutReviews).
    */
   // TODO: copy review (section not in the design)
   reviews: {
@@ -131,12 +139,11 @@ export const treatmentPage = {
     extraRowsCardId: "konsultation",
     extraRows: {
       fillers: ["Fillers konsultation", "Kontrol efter behandling"],
-      rynkebehandling: ["Lægekonsultation før første botox", "Kontrol efter behandling"],
       default: ["Kontrol efter behandling"],
     } as Record<string, string[]>,
     /**
      * Groups in a treatment's own price list, by the slug of the treatment whose `detail.prices`
-     * it is (Botox for mænd shows Botox's list). `labels` are row labels of that list
+     * it is (a variant in `priceAliases` shows its target's list). `labels` are row labels of that list
      * (content/treatments.ts), in display order; rows in no group come first, without a heading.
      * `title` is a small heading over the group; `note` is said once under it and replaces the
      * rows' own notes. Long lists (> 6 rows) run in two columns, split between two groups, never
@@ -144,28 +151,6 @@ export const treatmentPage = {
      */
     // TODO: copy review (group headings not in the design; /priser has them as one list)
     groups: {
-      // /priser lists single areas, the area packages ("gælder områderne ovenfor"), then the other
-      // Botox treatments. In two columns "ovenfor" pointed at nothing, so the packages are a group
-      // that names the areas it applies to. Hyperhidrose is not one of them (live: "Øvrige Botox
-      // behandlinger"); placed before the packages so the two columns are even (6 | 6 rows).
-      botox: [
-        {
-          title: "Enkelte områder",
-          labels: [
-            "Lip flip / Gummy smile / Bunny lines",
-            "Brynløft / Nose slimming / Rygerynker",
-            "Nedadgående mundvige",
-            "Pande / Bekymringsrynke / Kragetæer",
-            "Platysmabånd / Nefertiti lift",
-          ],
-        },
-        { title: "Øvrige behandlinger", labels: ["Hyperhidrose (svedige armhuler)"] },
-        {
-          title: "Flere områder",
-          note: "Frit valg blandt de enkelte områder",
-          labels: ["2 områder", "3 områder", "4 områder", "5 områder", "6 områder", "7 områder"],
-        },
-      ],
       // Hyalase dissolves filler: a service of its own, not an amount of lip filler (and cheaper
       // than the "fra" price, which is the 0,3 ml row).
       "lip-filler": [{ title: "Andre ydelser", labels: ["Opløsning af filler (Hyalase)"] }],
@@ -261,8 +246,6 @@ export const treatmentPage = {
     categoryText: {
       fillers:
         "Filleren er lavet af hyaluronsyre, et stof der findes naturligt i huden, og er tilsat lidocain, et bedøvelsesmiddel. Resultatet ses med det samme, og det endelige resultat ses, når hævelsen har lagt sig. Filleren kan opløses igen, hvis der er behov for det.",
-      rynkebehandling:
-        "Vi bruger botox, et receptpligtigt lægemiddel, som doseres præcist til det område, der skal behandles. Før din første behandling har du en lovpligtig lægekonsultation, som altid er gratis.",
       hudforbedring:
         "Mange får det bedste resultat med et forløb over flere behandlinger, og din behandler anbefaler, hvad der passer til netop din hud.",
       "laser-harfjerning":
@@ -355,7 +338,6 @@ export const treatmentPage = {
    * treatment they are a variant of.
    */
   priceAliases: {
-    "botox-for-maend": "botox",
     "kaebelinje-for-maend": "kaebelinje",
     "hartab-for-maend": "prf-har",
     "laser-for-maend": "laser-harfjerning",
@@ -394,14 +376,16 @@ export const treatmentsOverview = {
   meta: {
     title: "Behandlinger",
     description:
-      "Se alle behandlinger hos Fillox: fillers, botox, hudforbedring, laser hårfjerning og behandling af hårtab. Konsultation og kontrol er altid gratis.",
+      // "rynkebehandling" in place of "botox" (a prescription medicine), 2026-10.
+      "Se alle behandlinger hos Fillox: fillers, rynkebehandling, hudforbedring, laser hårfjerning og behandling af hårtab. Konsultation og kontrol er altid gratis.",
   },
   title: "Behandlinger",
   intro:
     // Not "… og laser, udført af læger og sygeplejersker": live, laser is done by staff trained in
-    // Fillox Academy (fillox.dk/harfjerning). Fillers and botox: fillox.dk/priser (konsultation
-    // v. kosmetisk sygeplejerske, specialist-tillæg v. læge) and /rynkebehandling (sygeplejerske/læge).
-    "Fillers, rynkebehandling, hudforbedring og laser. Fillers og botox udføres af læger og sygeplejersker, og vi starter altid med en gratis konsultation.",
+    // Fillox Academy (fillox.dk/harfjerning). Fillers and wrinkle treatment: fillox.dk/priser
+    // (konsultation v. kosmetisk sygeplejerske, specialist-tillæg v. læge) and /rynkebehandling
+    // (sygeplejerske/læge). TODO: copy review — "rynkebehandling" in place of "botox" (2026-10).
+    "Fillers, rynkebehandling, hudforbedring og laser. Fillers og rynkebehandling udføres af læger og sygeplejersker, og vi starter altid med en gratis konsultation.",
   /** Accessible name of the category jump links. */
   jumpLabel: "Hop til kategori",
   heroImage: {
@@ -412,7 +396,9 @@ export const treatmentsOverview = {
   /** One-line intro per category (by slug). */
   categoryIntros: {
     fillers: "Kontur, volumen og harmonisering af ansigtets proportioner.",
-    rynkebehandling: "Botox til rynker og mimiklinjer, og til lip flip, gummy smile, sved og en blødere skulderlinje.",
+    // TODO: copy review — new with the owner's two pages (2026-10); no product name.
+    rynkebehandling:
+      "Find den rette behandling af rynker og fine linjer, og læs om andre kosmetiske og medicinske behandlingsmuligheder.",
     hudforbedring: "Skinboosters, microneedling, PRF og ansigtsbehandlinger, der styrker huden.",
     "laser-harfjerning": "Laser til kvinder og mænd, pr. område eller med en samlet pris for hele kroppen.",
     hartab: "Behandlinger af hovedbunden ved tyndt hår og begyndende hårtab.",

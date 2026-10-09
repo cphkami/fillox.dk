@@ -14,6 +14,8 @@ export const mainNav: NavItem[] = [
     href: routes.about,
     items: [
       { label: "Om Fillox", href: routes.about },
+      // The guide for first-time visitors (content/pages/new-here.ts); its H1 is the label.
+      { label: "Ny hos Fillox?", href: routes.newHere },
       { label: "Vores behandlere", href: routes.aboutTeam },
       { label: "Ledige stillinger", href: routes.jobs },
       { label: "Kontakt", href: routes.contact },
@@ -37,10 +39,12 @@ export const treatmentCategories: TreatmentCategory[] = [
     treatments: ["lip-filler", "kindben", "kaebelinje", "hage", "tear-trough", "naesekorrektion"],
   },
   {
+    // The hub and the page for the other areas (lip flip, gummy smile, mundvige, tyggemuskler,
+    // platysma, svedtendens, tænderskæren), the owner's two pages. No product name in the menus:
+    // Botox is a prescription medicine (content/treatments.ts header).
     slug: "rynkebehandling",
     name: "Rynkebehandling",
-    mobileName: "Rynkebehandling (botox)",
-    treatments: ["botox", "lip-flip", "gummy-smile", "hyperhidrose", "traptox"],
+    treatments: ["rynkebehandling", "andre-behandlingsmuligheder"],
   },
   {
     slug: "hudforbedring",
@@ -60,7 +64,8 @@ export const treatmentCategories: TreatmentCategory[] = [
   {
     slug: "for-maend",
     name: "For mænd",
-    treatments: ["botox-for-maend", "kaebelinje-for-maend", "hartab-for-maend", "laser-for-maend"],
+    // The men's wrinkle treatment is the rynkebehandling hub (there is no page of its own).
+    treatments: ["rynkebehandling", "kaebelinje-for-maend", "hartab-for-maend", "laser-for-maend"],
   },
 ];
 
@@ -98,8 +103,10 @@ export const megaMenu: MegaMenuContent = {
       allLink: { label: "Alle fillers", href: categoryHref("fillers") },
     },
     {
+      // The category's two pages. Links to the other page's sections (…#lip-flip) would need the
+      // menu to take hrefs as well as treatment slugs (components/layout/menuData.ts).
       eyebrow: "Rynker",
-      treatmentSlugs: ["botox", "lip-flip", "hyperhidrose", "traptox"],
+      treatmentSlugs: ["rynkebehandling", "andre-behandlingsmuligheder"],
       allLink: { label: "Alle rynker", href: categoryHref("rynkebehandling") },
     },
     {
@@ -115,7 +122,8 @@ export const megaMenu: MegaMenuContent = {
   tag: {
     label: "For mænd",
     href: categoryHref("for-maend"),
-    text: "Botox, kæbelinje, hårtab og laser, tilpasset mænd",
+    // TODO: copy review — "Rynkebehandling" in place of "Botox" (a prescription medicine).
+    text: "Rynkebehandling, kæbelinje, hårtab og laser, tilpasset mænd",
   },
   promo: {
     eyebrow: "Gratis konsultation",
@@ -130,6 +138,7 @@ export const footerNav: Link[] = [
   { label: "Behandlinger", href: routes.treatments },
   { label: "Priser", href: routes.prices },
   { label: "Om os", href: routes.about },
+  { label: "Ny hos Fillox?", href: routes.newHere },
   { label: "Blog", href: routes.blog },
   { label: "Content creator", href: routes.creator },
   { label: "Ledige stillinger", href: routes.jobs },

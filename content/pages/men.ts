@@ -13,7 +13,7 @@ import { treatmentPage } from "./treatments";
  * bottom of that page). No design: built from the site's tokens in the darker neutrals
  * (espresso, sand, krem, bronze rules), no rose bands.
  *
- * No reviews on this page: it lists Botox for mænd, and the Botox pages show none
+ * No reviews on this page: it lists rynkebehandling, and the rynkebehandling pages show none
  * (content/reviews.ts → treatmentsWithoutReviews).
  *
  * Not about choosing a male practitioner (the owner, round 4: it is rather the opposite, men are
@@ -38,9 +38,9 @@ import { treatmentPage } from "./treatments";
  * Botox is a prescription medicine (lægemiddellovens § 66): the page calls it "rynkebehandling"
  * and never names the product, keeps it out of the promotional lines (meta description, teaser,
  * hero) and describes it soberly beside a factual price (no hype, no jokes, no offer or
- * financing wording). The row still links to the Botox for mænd page, and the ItemList in
- * components/men/MenJsonLd.tsx keeps the treatment pages' own names; both wait for the owner's
- * legal decision (README checklist).
+ * financing wording). Since 2026-10 the row links to the rynkebehandling hub (the owner's new
+ * page; the Botox for mænd page is gone), whose name the ItemList in components/men/MenJsonLd.tsx
+ * takes. The price beside it waits for the owner's legal decision (README checklist).
  *
  * Headings have no full stop (house style), except the H1: its two lines are a tagline
  * ("Behandlinger til mænd. / Uden dikkedarer."), and the stops keep the lines apart when the
@@ -122,7 +122,7 @@ export const menPage = {
   /**
    * The short list, in the owner's order (laser first). `slug` is the treatment page the row
    * links to (and its "fra" price); `name` drops "for mænd", which the page already says, and the
-   * Botox for mænd row is "Rynkebehandling" (see the header). The one-liners are this page's own
+   * wrinkle row is the rynkebehandling hub (see the header). The one-liners are this page's own
    * (content/treatments.ts → `short` is used by the menus and the overview); the laser line names
    * areas from the cheapest (lænd, hals: the "fra" price) up. `priceNote` is shown after the "fra"
    * price; without it the note of the price-list row that sets the price is used (kæbelinje:
@@ -152,9 +152,11 @@ export const menPage = {
         text: "Filler, der giver en skarpere kæbelinje og en mere markant profil. Formet efter dit ansigt, ikke efter en skabelon.",
       },
       {
-        slug: "botox-for-maend",
+        slug: "rynkebehandling",
         name: "Rynkebehandling",
-        text: "Vi doserer efter mænds mimik og muskulatur. Før din første behandling har du altid en konsultation hos en læge.",
+        // TODO: copy review — reworded 2026-10: the row now links to the rynkebehandling hub (more
+        // than the muscle-relaxing treatment), so it no longer speaks of dosing; the hub's wording.
+        text: "Rynker kan have forskellige årsager. Ved en konsultation finder vi frem til, hvad der giver mening for dig.",
         priceNote: "pr. område",
       },
     ] as { slug: string; name: string; text: string; priceNote?: string }[],
@@ -207,7 +209,7 @@ export const menPage = {
   /**
    * "Dine behandlere": care, not gender (see the header). Three practitioners from
    * content/team.ts with their own quotes from fillox.dk/om-os: Alberte (the owner's example),
-   * Annika (the Botox page's practitioner) and Maria (fillers & Botox, the lip filler page's
+   * Annika (who offers rynkebehandling) and Maria (fillers & Botox, the lip filler page's
    * practitioner), so the people match the treatments on the list. Each card links to the
    * practitioner's profile; no "Book tid hos …": the booking calendar cannot preselect a
    * practitioner (lib/booking.ts → practitionerBookingHref). `position` is the portrait crop in
@@ -228,7 +230,7 @@ export const menPage = {
 
   /**
    * Answers are conservative summaries of the site's facts (laser: content/treatments.ts →
-   * laserAbout; Botox: botoxFaq; fillers: fillerFaq and the jawline's 3–8 ml; PRF as a course:
+   * laserAbout; rynkebehandling: the hub; fillers: fillerFaq and the jawline's 3–8 ml; PRF as a course:
    * content/pages/treatments.ts). The first question is the page's honest line about discretion:
    * who is told is up to the reader, but redness, swelling or bruises can show (after fillers for
    * up to a week). The price answer gives the whole picture (course lengths, the jawline's usual
@@ -256,11 +258,16 @@ export const menPage = {
       {
         question: "Hvor lang tid tager det?",
         answer:
-          "Selve behandlingen tager typisk 20–40 minutter. Rynkebehandling sker med et receptpligtigt lægemiddel, så før den første behandling har du en lovpligtig lægekonsultation på cirka 15 minutter. Den er gratis.",
+          // TODO: copy review — reworded 2026-10 in the rynkebehandling hub's terms (the owner's new
+          // copy: "lægefaglig forundersøgelse", "mindst to dages betænkningstid"): not every
+          // rynkebehandling is a prescription medicine, and the first treatment is not given at the
+          // examination. Dropped: "cirka 15 minutter" and "Den er gratis" (not in the hub's text;
+          // Fillox confirms before they come back).
+          "Selve behandlingen tager typisk 20–40 minutter. Er der tale om rynkebehandling med et receptpligtigt lægemiddel, foretages først en lægefaglig forundersøgelse, og ved første behandling gælder som udgangspunkt mindst to dages betænkningstid.",
       },
       {
         question: "Hvad koster det?",
-        answer: `Laser hårfjerning koster ${from(priceFrom("laser-for-maend"))} pr. område, og et forløb er typisk 6–8 behandlinger. Til mænd er der også faste pakkepriser på kombinerede områder som ryg, skuldre og bryst. PRF mod hårtab koster ${from(priceFrom("hartab-for-maend"))} for én behandling og gives typisk som en kur over flere behandlinger. Kæbelinje koster ${formatPrice(priceFrom("kaebelinje-for-maend"))} for op til 1 ml, men ofte skal der mere filler til, og 3–8 ml kan være nødvendigt. Rynkebehandling koster ${from(priceFrom("botox-for-maend"))} pr. område. Ved konsultationen får du den endelige pris, også på et helt forløb.`,
+        answer: `Laser hårfjerning koster ${from(priceFrom("laser-for-maend"))} pr. område, og et forløb er typisk 6–8 behandlinger. Til mænd er der også faste pakkepriser på kombinerede områder som ryg, skuldre og bryst. PRF mod hårtab koster ${from(priceFrom("hartab-for-maend"))} for én behandling og gives typisk som en kur over flere behandlinger. Kæbelinje koster ${formatPrice(priceFrom("kaebelinje-for-maend"))} for op til 1 ml, men ofte skal der mere filler til, og 3–8 ml kan være nødvendigt. Rynkebehandling koster ${from(priceFrom("rynkebehandling"))} pr. område. Ved konsultationen får du den endelige pris, også på et helt forløb.`,
       },
     ] satisfies FaqItem[],
   },

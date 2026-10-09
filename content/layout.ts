@@ -14,9 +14,10 @@ export const layoutCopy = {
     defaultTitle: "Fillox · Æstetiske behandlinger udført af læger og sygeplejersker",
     /** `%s` is replaced by the page title. */
     titleTemplate: "%s · Fillox",
-    // TODO: copy review (expanded from the mf hero lead; not in the design)
+    // TODO: copy review (expanded from the mf hero lead; not in the design). "Rynkebehandling" in
+    // place of "botox" (a prescription medicine; 2026-10). Also the Organization JSON-LD description.
     description:
-      "Trygge behandlinger med botox, fillers og hudforbedring – udført af læger og sygeplejersker og tilpasset din anatomi. Klinikker i København og omegn.",
+      "Tryg rynkebehandling, fillers og hudforbedring – udført af læger og sygeplejersker og tilpasset din anatomi. Klinikker i København og omegn.",
     /** Default social sharing image (1200×630 crop is taken from the centre). */
     // TODO: copy review (alt text)
     ogImage: {

@@ -16,6 +16,11 @@ export type PriceListRow = {
   price: PriceValue;
   /** Treatment the row belongs to (optional link target). */
   treatmentSlug?: string;
+  /**
+   * Section or item id on that treatment's page when the row is about one part of it, e.g. "lip-flip"
+   * → /behandlinger/andre-behandlingsmuligheder#lip-flip (npm run check:market checks it exists).
+   */
+  treatmentAnchor?: string;
 };
 
 export type PriceCard = {
@@ -24,17 +29,30 @@ export type PriceCard = {
   title: string; // "Fillers"
   /** Right-aligned card label (desktop), e.g. "HYALURONSYRE" (stored as shown; already uppercase). */
   eyebrow: string;
-  /** Mobile jump-chip label, e.g. "Botox". */
+  /** Mobile jump-chip label, e.g. "Fillers". */
   chipLabel: string;
   /** Treatment category this card maps to (content/navigation.ts), if any. */
   categorySlug?: string;
   rows: PriceListRow[];
 };
 
-const kr = (amount: number, treatmentSlug?: string): Pick<PriceListRow, "price" | "treatmentSlug"> => ({
+const kr = (
+  amount: number,
+  treatmentSlug?: string,
+  treatmentAnchor?: string,
+): Pick<PriceListRow, "price" | "treatmentSlug" | "treatmentAnchor"> => ({
   price: { kind: "amount", amount },
   ...(treatmentSlug ? { treatmentSlug } : {}),
+  ...(treatmentAnchor ? { treatmentAnchor } : {}),
 });
+
+/**
+ * The two pages of the Rynkebehandling card (content/treatments.ts): the hub, and the page for the
+ * other areas, whose sections the rows point to (lip flip, gummy smile, mundvige, tyggemuskler,
+ * platysma, svedtendens). The hub's "fra" price is the lowest row tagged with it.
+ */
+const WRINKLES = "rynkebehandling";
+const OTHER = "andre-behandlingsmuligheder";
 
 const FREE: PriceValue = { kind: "free", label: "gratis" };
 
@@ -42,7 +60,7 @@ const FREE: PriceValue = { kind: "free", label: "gratis" };
  * Live: the Botox area packages are "Gældende for områderne: Pande, bekymringsrynke, kragetæer,
  * platysma bånd, nefertiti lift, gummy smile, lip flip, rygerynker, nedgående mundvige, nose
  * slimming, bunny lines & brynløft", i.e. the single areas listed above them, not the "Øvrige
- * Botox behandlinger" (tyggemuskler, hyperhidrose, Traptox) below. Also used on /behandlinger/botox.
+ * Botox behandlinger" (tyggemuskler, hyperhidrose, Traptox) below.
  * Notes never wrap: keep them short enough for a 320px screen.
  */
 export const BOTOX_PACKAGE_NOTE = "gælder områderne ovenfor";
@@ -100,31 +118,39 @@ export const priceCards: PriceCard[] = [
   {
     id: "rynkebehandling",
     title: "Rynkebehandling",
-    eyebrow: "BOTOX",
-    chipLabel: "Botox",
+    // TODO: copy review — no product name (Botox is a prescription medicine; 2026-10). The eyebrow
+    // is the agency's term from the hub ("Mimiske rynker"), not "RYNKEBEHANDLING", which would
+    // repeat the title right next to it; the chip is the card's title.
+    eyebrow: "MIMISKE RYNKER M.M.",
+    chipLabel: "Rynkebehandling",
     categorySlug: "rynkebehandling",
     rows: [
-      { label: "Pande", ...kr(999, "botox") },
-      { label: "Bekymringsrynke", ...kr(999, "botox") },
-      { label: "Kragetæer", ...kr(999, "botox") },
-      { label: "Platysmabånd", ...kr(999, "botox") },
-      { label: "Nefertiti lift", ...kr(999, "botox") },
-      { label: "Gummy smile", ...kr(799, "gummy-smile") },
-      { label: "Lip flip", ...kr(799, "lip-flip") },
-      { label: "Rygerynker", ...kr(799, "botox") },
-      { label: "Nedadgående mundvige", ...kr(799, "botox") },
-      { label: "Nose slimming", ...kr(799, "botox") },
-      { label: "Bunny lines", ...kr(799, "botox") },
-      { label: "Brynløft", ...kr(799, "botox") },
-      { label: "2 områder", note: BOTOX_PACKAGE_NOTE, ...kr(1499, "botox") },
-      { label: "3 områder", note: BOTOX_PACKAGE_NOTE, ...kr(1999, "botox") },
-      { label: "4 områder", note: BOTOX_PACKAGE_NOTE, ...kr(2499, "botox") },
-      { label: "5 områder", note: BOTOX_PACKAGE_NOTE, ...kr(2999, "botox") },
-      { label: "6 områder", note: BOTOX_PACKAGE_NOTE, ...kr(3499, "botox") },
-      { label: "7 områder", note: BOTOX_PACKAGE_NOTE, ...kr(3999, "botox") },
-      { label: "Reduktion af kraftige tyggemuskler", ...kr(1699) },
-      { label: "Hyperhidrose (overdreven sved)", ...kr(2499, "hyperhidrose") },
-      { label: "Traptox", ...kr(2999, "traptox") },
+      // Links (2026-10, the owner's new pages): wrinkle areas and the area packages → the hub; the
+      // areas the other page covers → its section. Traptox has no link: neither page mentions it
+      // (TODO: Fillox decides whether it belongs on a page; the old /behandlinger/traptox URL
+      // redirects to the other page, content/redirects.ts).
+      // Nefertiti lift treats the platysma along the jaw, so it points to "Platysma".
+      { label: "Pande", ...kr(999, WRINKLES) },
+      { label: "Bekymringsrynke", ...kr(999, WRINKLES) },
+      { label: "Kragetæer", ...kr(999, WRINKLES) },
+      { label: "Platysmabånd", ...kr(999, OTHER, "platysma") },
+      { label: "Nefertiti lift", ...kr(999, OTHER, "platysma") },
+      { label: "Gummy smile", ...kr(799, OTHER, "gummy-smile") },
+      { label: "Lip flip", ...kr(799, OTHER, "lip-flip") },
+      { label: "Rygerynker", ...kr(799, WRINKLES) },
+      { label: "Nedadgående mundvige", ...kr(799, OTHER, "nedadgaaende-mundvige") },
+      { label: "Nose slimming", ...kr(799, WRINKLES) },
+      { label: "Bunny lines", ...kr(799, WRINKLES) },
+      { label: "Brynløft", ...kr(799, WRINKLES) },
+      { label: "2 områder", note: BOTOX_PACKAGE_NOTE, ...kr(1499, WRINKLES) },
+      { label: "3 områder", note: BOTOX_PACKAGE_NOTE, ...kr(1999, WRINKLES) },
+      { label: "4 områder", note: BOTOX_PACKAGE_NOTE, ...kr(2499, WRINKLES) },
+      { label: "5 områder", note: BOTOX_PACKAGE_NOTE, ...kr(2999, WRINKLES) },
+      { label: "6 områder", note: BOTOX_PACKAGE_NOTE, ...kr(3499, WRINKLES) },
+      { label: "7 områder", note: BOTOX_PACKAGE_NOTE, ...kr(3999, WRINKLES) },
+      { label: "Reduktion af kraftige tyggemuskler", ...kr(1699, OTHER, "tyggemuskler") },
+      { label: "Hyperhidrose (overdreven sved)", ...kr(2499, OTHER, "svedtendens") },
+      { label: "Traptox", ...kr(2999) },
     ],
   },
   {
@@ -283,8 +309,9 @@ export const priceCards: PriceCard[] = [
 export const pricesPage = {
   meta: {
     title: "Priser",
+    // TODO: copy review — "rynkebehandling" in place of "botox" (a prescription medicine; 2026-10).
     description:
-      "Se alle priser på fillers, botox, hudforbedring, laser hårfjerning og hårtab. Konsultation og kontrol er altid gratis.",
+      "Se alle priser på fillers, rynkebehandling, hudforbedring, laser hårfjerning og hårtab. Konsultation og kontrol er altid gratis.",
   },
   eyebrow: "Priser",
   /** H1: desktop breaks the line before `titleAccent` and colours it plum; mobile runs it on one line. */

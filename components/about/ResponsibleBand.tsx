@@ -5,6 +5,8 @@ type ResponsibleBandProps = { copy: AboutPageCopy["responsible"] };
 
 /**
  * Sand band "Fagligt ansvarlig · Æstetisk læge Tom Haugland" + CTA (desktop 6om only; not in mo).
+ * Since the owner's new "Om Fillox" text (October 2026) it closes /behandlere only; on /om-os
+ * DoctorSection ("En læge, der er en del af hverdagen") introduces Dr. Tom instead.
  * The design set a pale rose band above a plum footer. It is `bg-sand` (like the hero panel), not
  * `bg-secondary`: the band sits ≈ 32px above the beige footer, and secondary (#E4D6CB) is only
  * 1.11:1 against it, so the page ended in two near-identical panels; sand is 1.28:1 and reads as

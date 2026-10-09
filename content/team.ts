@@ -37,8 +37,9 @@ import { formatDecimal } from "@/lib/format";
  *   never drift from /priser.
  * - An offer's `treatmentSlug` also makes treatment pages without a practitioner of their own
  *   pick the first member who offers it as "Din behandler" (components/treatment/treatmentView.ts).
- *   So only treatments whose page already has its practitioner (lip filler → Maria, botox →
- *   Annika, næsekorrektion → Tom, skinbooster and Alberte's offers → Alberte, who comes first)
+ *   So only treatments whose page already has its practitioner (lip filler → Maria, næsekorrektion
+ *   → Tom, skinbooster and Alberte's offers → Alberte, who comes first; the rynkebehandling hub is
+ *   a long-form page and shows no practitioner, content/types.ts)
  *   carry one; Tom's chin and contouring offers, the nurses' "Fillers i ansigtet" and Kubra's
  *   Profhilo are unlinked, so kindben, kæbelinje, hage and Profhilo keep their pages as they are.
  * - `experience` only where it is documented: Tom (education and roles on /om-os, and "Annika
@@ -121,13 +122,13 @@ const facialFillers: TeamOffer = {
 };
 
 /**
- * Botox as a priced offer, under its category's name ("Rynkebehandling", as the live page
- * fillox.dk/rynkebehandling and the menus), not the brand name. Botox is a prescription medicine,
- * and a priced "Botox" card right above customer testimonials can count as advertising it to the
- * public (content/reviews.ts header, `treatmentsWithoutReviews`). The card still links to the
- * Botox page. Open legal question for the owner: README → "Før lancering" → "Anmeldelser og Botox".
+ * Wrinkle treatment as a priced offer, under the hub's name ("Rynkebehandling"), not the brand
+ * name. Botox is a prescription medicine, and a priced "Botox" card right above customer
+ * testimonials can count as advertising it to the public (content/reviews.ts header,
+ * `treatmentsWithoutReviews`). The card links to the rynkebehandling hub. Open legal question for
+ * the owner: README → "Før lancering" → "Anmeldelser og Botox".
  */
-const wrinkleOffer: TeamOffer = treatmentOffer("botox", { name: "Rynkebehandling" });
+const wrinkleOffer: TeamOffer = treatmentOffer("rynkebehandling");
 
 /** "Gratis konsultation" card (price list: "Fillers konsultation, 30 min, v. kosmetisk sygeplejerske"). */
 const consultationOffer = (name: string): TeamOffer => ({
@@ -527,7 +528,8 @@ const members: TeamMember[] = [
         ],
       },
       // Her Trustpilot reviews (content/reviews.ts): lip filler, Botox, fillers and skinboosters
-      // (Sunekos). The Botox page already has her as "Din behandler" (treatments.ts).
+      // (Sunekos). The former Botox page had her as "Din behandler"; the rynkebehandling hub that
+      // replaced it shows no practitioner, so this offer only links to it.
       offers: {
         ...offersCopy("Annika"),
         items: [
@@ -550,9 +552,10 @@ const members: TeamMember[] = [
     slug: "maria",
     name: "Maria",
     role: "Sygeplejerske",
-    // mo / mb spell it "Fillers & botox"; the brand name is capitalised everywhere instead (live:
-    // "Fillers & Botox-behandlinger"), so the title matches the bio under it on the same card.
-    title: "Sygeplejerske · Fillers & Botox",
+    // mo / mb and the live /om-os say "Fillers & Botox". Botox is a prescription medicine, so the
+    // site names the treatment instead, as the owner's agency texts do (2026-10): title, bio, profile
+    // and facts say "rynkebehandling". TODO: copy review — "rynkebehandling" in place of "Botox".
+    title: "Sygeplejerske · Fillers & rynkebehandling",
     image: {
       src: "/images/team/maria.jpg",
       alt: "Maria, sygeplejerske hos Fillox",
@@ -570,20 +573,20 @@ const members: TeamMember[] = [
         height: 800,
       },
     },
-    bio: "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring. Hun er ekspert i både fillers og Botox, med sans for det naturlige resultat.",
-    bioShort: "Detaljeorienteret og holistisk, med flere års erfaring og ekspert i fillers og Botox.",
+    bio: "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring. Hun er ekspert i både fillers og rynkebehandling, med sans for det naturlige resultat.",
+    bioShort: "Detaljeorienteret og holistisk, med flere års erfaring og ekspert i fillers og rynkebehandling.",
     quote: "“At se mine tilfredse kunder smile er en af de største glæder, jeg har, både professionelt og personligt.”",
     link: { label: "Se hvad Maria tilbyder", href: profileHref("maria") },
     bookingHref: bookWith("maria"),
     profile: {
       intro:
-        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger. Hun er ekspert i både fillers og Botox og kombinerer behandlinger til skræddersyede løsninger, med sans for det naturlige resultat.",
+        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger. Hun er ekspert i både fillers og rynkebehandling og kombinerer behandlinger til skræddersyede løsninger, med sans for det naturlige resultat.",
       introShort:
-        "Maria er sygeplejerske med flere års erfaring og ekspert i både fillers og Botox, med sans for det naturlige resultat.",
+        "Maria er sygeplejerske med flere års erfaring og ekspert i både fillers og rynkebehandling, med sans for det naturlige resultat.",
       primaryCta: { label: "Book tid hos Maria", href: bookWith("maria") },
       secondaryCta: seeTreatments,
       facts: [
-        { label: "Specialer", value: "Fillers & Botox" },
+        { label: "Specialer", value: "Fillers & rynkebehandling" },
         { label: "Tilgang", value: "Holistisk & detaljeorienteret" },
         { label: "Fokus", value: "Skræddersyede løsninger" },
       ],

@@ -16,7 +16,7 @@ function Paragraphs({ items, className }: { items: string[]; className?: string 
  * "Om behandlingen" (6c/6bx: a rose band with a bordered "Godt til" box, the design's dark band
  * in the "Støvet rosa & beige" palette; mb: sand card with a white "Godt til" box).
  */
-export function AboutBand({ about }: { about: TreatmentView["about"] }) {
+export function AboutBand({ about }: { about: NonNullable<TreatmentView["about"]> }) {
   // Body copy 16px (`text-body`, 18 at 1600); the ch cap keeps lines readable on the wide canvas:
   // 52ch ≈ 73 characters of Figtree (1ch = the "0" glyph, 0.64em; an average letter is 0.46em) at
   // any font size, under the ~75-character best practice. From 768: the single-column tablet band

@@ -16,7 +16,13 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
         <p className="mb-1 text-[12px] font-bold tracking-[1.5px] text-accent uppercase md:mb-2.5 md:text-micro md:tracking-[2px]">
           {formatPriceFrom(treatment.priceFrom)}
         </p>
-      ) : null}
+      ) : (
+        // No price (Andre behandlingsmuligheder): an empty eyebrow line from 768px, where the cards
+        // sit side by side, so the names and texts in a row start at the same height.
+        <div aria-hidden="true" className="hidden font-bold md:mb-2.5 md:block md:text-micro">
+          {" "}
+        </div>
+      )}
       <h3 className="font-heading text-[17px] leading-[1.35] text-heading md:text-h4 md:leading-[1.3] md:tracking-display">
         <Link href={treatmentHref(treatment.slug)} className="after:absolute after:inset-0 after:content-['']">
           {name}

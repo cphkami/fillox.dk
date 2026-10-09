@@ -3,10 +3,11 @@ import type { Link } from "@/content/types";
 
 /**
  * Closing band "Klar til at booke?" (6c/6bx: 16×42 button; mb: full-width 52px button). Also used
- * on /behandlinger. A rose band with the primary (accent) button, as on every band ("Støvet rosa &
- * beige"; the design's dark band had a light pill).
+ * on /behandlinger and as a long-form page's own closing band (`text` as paragraphs). A rose band
+ * with the primary (accent) button, as on every band ("Støvet rosa & beige"; the design's dark
+ * band had a light pill).
  */
-export function BookingBand({ id, title, text, cta }: { id: string; title: string; text: string; cta: Link }) {
+export function BookingBand({ id, title, text, cta }: { id: string; title: string; text: string | string[]; cta: Link }) {
   return (
     <Container as="section" id={id} gutter="surface" aria-labelledby={`${id}-title`} className="mt-surface leading-[1.5]">
       <div
@@ -19,7 +20,16 @@ export function BookingBand({ id, title, text, cta }: { id: string; title: strin
         >
           {title}
         </h2>
-        <p className="text-body leading-[1.7] text-band-body md:mb-7 md:leading-[1.5]">{text}</p>
+        {typeof text === "string" ? (
+          <p className="text-body leading-[1.7] text-band-body md:mb-7 md:leading-[1.5]">{text}</p>
+        ) : (
+          // Several paragraphs: centred at a readable measure, 1.6 between their lines.
+          <div className="mx-auto grid max-w-[52ch] gap-2 text-body leading-[1.6] text-band-body md:mb-7">
+            {text.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        )}
         <ButtonLink
           href={cta.href}
           size="xl"

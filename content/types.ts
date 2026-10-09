@@ -100,7 +100,7 @@ export type Clinic = {
 export type TreatmentCategory = {
   slug: string; // used as anchor on /behandlinger (#slug)
   name: string; // "Fillers"
-  /** Label used in the mobile menu when it differs, e.g. "Rynkebehandling (botox)". */
+  /** Label used in the mobile menu when it differs from `name`. */
   mobileName?: string;
   /** Treatment slugs, in menu order. */
   treatments: string[];
@@ -142,9 +142,50 @@ export type TreatmentDetailMobile = {
   pricesIntro?: string;
 };
 
+/**
+ * A titled sub-item of a long-form section (TreatmentSection.items): an h3 with its paragraphs,
+ * set as a card. `id` makes it linkable (/behandlinger/andre-behandlingsmuligheder#lip-flip):
+ * keep it stable, the price list and redirects point to it (npm run check:market checks them).
+ */
+export type TreatmentSectionItem = {
+  /** Anchor id (ASCII, e.g. "nedadgaaende-mundvige"). */
+  id?: string;
+  title: string;
+  /** Short label for the page's jump links (detail.jumpLabel), e.g. "Lip flip"; defaults to `title`. */
+  navLabel?: string;
+  paragraphs: RichText[];
+};
+
+/**
+ * A section of a long-form treatment page (Treatment.detail.sections): an h2 with paragraphs,
+ * optional h3 items (cards), closing paragraphs and an optional link. Rendered by
+ * components/treatment/LongformSections in the order given.
+ */
+export type TreatmentSection = {
+  /** Anchor id of the section (ASCII, stable: /behandlinger/rynkebehandling#priser). */
+  id: string;
+  title: string;
+  /** Paragraphs under the heading (before the items). Bold runs: `{ text, strong: true }`. */
+  paragraphs?: RichText[];
+  /** Titled sub-items (h3), set as cards under the text. */
+  items?: TreatmentSectionItem[];
+  /** Paragraphs after the items. */
+  closing?: RichText[];
+  /**
+   * Link at the end of the section. `style`: "button" (a primary pill: the author's bold
+   * placeholders, "Book en konsultation") or "link" (default: an arrow link, "Se priser →").
+   */
+  cta?: Link & { style?: "button" | "link" };
+  /**
+   * Surface: "plain" (default, on the page; the text beside the heading from 1024px), "band" (a
+   * rose band, as "Om behandlingen") or "card" (a sand card; consecutive cards sit side by side).
+   */
+  surface?: "plain" | "band" | "card";
+};
+
 export type Treatment = {
   slug: string; // route: /behandlinger/[slug]
-  name: string; // "Botox"
+  name: string; // "Lip filler"
   categorySlug: string;
   /** Lowest price as a number in the market currency, used for "fra 799 kr". */
   priceFrom?: number;
@@ -154,26 +195,72 @@ export type Treatment = {
   mobileMenuName?: string;
   /**
    * Search/share title (before " · Fillox") when it should say more than the page title,
-   * e.g. "Botox i København – pris og behandling". Keep the full title ≤ 60 characters.
+   * e.g. "Lip filler i København – pris og behandling". Keep the full title ≤ 60 characters.
    */
   metaTitle?: string;
-  /** Detail-page content. Optional: treatments without it render the generic template with `short`. */
+  /**
+   * Detail-page content. Optional: treatments without it render the generic template with `short`.
+   *
+   * Long-form pages: a `detail` with `sections` shows ONLY what its content gives (hero, the
+   * sections, FAQ, the closing band): no fallback facts, "Om behandlingen" band, practitioner,
+   * price list, reviews fill-up or blog posts, and no "fra" price on the page (the treatment's
+   * `priceFrom` still shows in menus, cards and on the home page).
+   */
   detail?: {
-    /** Page title (H1, breadcrumb, book bar) when it differs from `name`, e.g. "Lip Filler". */
+    /** Page title (breadcrumb, book bar; the H1 unless `heading`) when it differs from `name`, e.g. "Lip Filler". */
     title?: string;
+    /**
+     * H1 when it says more than `title`, e.g. "Andre kosmetiske og medicinske behandlingsmuligheder".
+     * A very long word may carry a soft hyphen (`­`, invisible unless the line breaks there):
+     * the hero then sizes the H1 to fit the word's longest part, not the whole word.
+     */
+    heading?: string;
+    /**
+     * "compact": the H1 at the article H1 size from 768px (48 → 56px, `text-h1-xs`) in place of the
+     * page H1 (64 → 76px), for a long H1 that would otherwise fill the hero column, or be shrunk to
+     * fit a long word, and end up no larger than the page's H2s.
+     */
+    headingSize?: "compact";
+    /**
+     * Second part of the H1, set on its own line (smaller, accent colour); the H1 reads
+     * "<heading> – <headingAccent>", e.g. "Rynkebehandling" + "find den rette behandling hos Fillox".
+     */
+    headingAccent?: string;
     lead: string;
-    heroImage: ImageRef;
-    facts: { label: string; value: string }[]; // Pris, Varighed, Holdbarhed, Udføres af
-    /** Secondary hero CTA next to "Book tid", e.g. "Gratis konsultation". */
+    /** More hero paragraphs after `lead` (long-form pages). */
+    intro?: string[];
+    /** Hero photo; defaults to the category's (content/pages/treatments.ts → categoryImages). */
+    heroImage?: ImageRef;
+    /** Pris, Varighed, Holdbarhed, Udføres af. Omitted: the shared fallback facts (none on a long-form page). */
+    facts?: { label: string; value: string }[];
+    /**
+     * Hero button. Template pages default to "Book tid" (booking); a long-form page shows one only
+     * when this is set (e.g. "Book en konsultation").
+     */
+    primaryCta?: Link;
+    /** Secondary hero CTA next to "Book tid", e.g. "Gratis konsultation" (on a long-form page only when set). */
     secondaryCta?: Link;
-    about: string[]; // paragraphs
-    goodFor: string[];
+    /** Accessible name of the hero's jump links to the section items that have an `id` (long-form pages). */
+    jumpLabel?: string;
+    /** Long-form body (see `detail` above). */
+    sections?: TreatmentSection[];
+    /** Closing band of a long-form page (replaces "Klar til at booke?"); its CTA is also the mobile book bar's. */
+    closing?: { title: string; paragraphs: string[]; cta: Link };
+    /**
+     * Breadcrumb parent: the treatment page this page belongs under (e.g. the rynkebehandling hub),
+     * in place of its category's section on /behandlinger.
+     */
+    parentSlug?: string;
+    /** Meta description when it should not be `lead`. */
+    metaDescription?: string;
+    about?: string[]; // paragraphs
+    goodFor?: string[];
     practitionerSlug?: string; // team member featured on the page
     /** Practitioner section heading, e.g. "Annika, kosmetisk sygeplejerske". */
     practitionerHeading?: string;
     practitionerQuote?: string;
     practitionerText?: string;
-    /** Results section heading + intro, e.g. "Resultater med botox". */
+    /** Results section heading + intro, e.g. "Resultater med lip filler". */
     resultsTitle?: string;
     resultsIntro?: string;
     results?: BeforeAfter[];
