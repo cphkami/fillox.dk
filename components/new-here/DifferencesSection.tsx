@@ -4,7 +4,7 @@ import type { NewHerePage } from "@/content/pages/new-here";
 /**
  * "Hvad er forskellen på behandlingerne?": a sand panel on the surface margin (like the For mænd
  * steps). Heading left and the intro beside it from 1024px; the six kinds of treatment hang from
- * 2px bronze rules (decorative) in 1 / 2 / 3 columns, each with a link to the page that exists for
+ * 2px Sandbeige rules (decorative) in 1 / 2 / 3 columns, each with a link to the page that exists for
  * it. Under them, on a hairline, the draft's closing line and "Book konsultation".
  */
 export function DifferencesSection({ copy }: { copy: NewHerePage["differences"] }) {

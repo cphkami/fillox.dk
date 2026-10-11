@@ -100,7 +100,7 @@ export function TextBlocks({ blocks, className }: { blocks: TextBlock[]; classNa
               <address
                 key={i}
                 className={cn(
-                  "mt-2 rounded-[20px] bg-white px-5 py-[18px] text-body-lg text-muted not-italic md:mt-[18px] md:px-7 md:py-6 xl:px-fluid-28/32 xl:py-fluid-24/28 [h2+&]:mt-0",
+                  "mt-2 rounded-[20px] bg-white px-5 py-[18px] shadow-card text-body-lg text-muted not-italic md:mt-[18px] md:px-7 md:py-6 xl:px-fluid-28/32 xl:py-fluid-24/28 [h2+&]:mt-0",
                   measure,
                 )}
               >

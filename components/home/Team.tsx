@@ -42,8 +42,8 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
  *   member: the 4:5 team-card crop in the mobile row (150 × 188, as on /om-os and /behandlere),
  *   the square crop (teamSlots.square) from 768px.
  * - Names are Poppins (font-heading): accent on mobile, heading colour from 768px under a 1px
- *   accent rule. On hover the name is underlined (and turns accent): heading and accent are both
- *   dark browns (1.2:1 apart), so the colour change alone was barely visible.
+ *   accent rule. On hover the name is underlined (and turns accent): heading (espresso) and accent
+ *   (plum) are both dark (1.5:1 apart), so the colour change alone was barely visible.
  *
  * Line height 1.5 on the section: the design's "normal" in Poppins (Figtree's is 1.2). The card
  * link has 6px of padding under the role label, so the focus ring's rounded corner (radius 18 /

@@ -71,7 +71,7 @@ export default function BookingPage() {
       </Container>
 
       <Container gutter="surface" className="mt-surface">
-        <BookingEmbed className="overflow-hidden rounded-[24px] bg-white p-2 md:p-6 xl:p-fluid-24/32" />
+        <BookingEmbed className="overflow-hidden rounded-[24px] bg-white p-2 shadow-card md:p-6 xl:p-fluid-24/32" />
       </Container>
     </>
   );

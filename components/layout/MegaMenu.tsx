@@ -23,8 +23,8 @@ const eyebrowClasses = "text-micro leading-[1.25] font-bold tracking-[.2em] uppe
  * Desktop "Behandlinger" panel (the owner's design v2, design-reference/mega-menu-v2.webp, drawn
  * on the 1180px design canvas): four treatment columns with an "Alle … →" link, a hairline and
  * the "For mænd" tag with its note on the white side; a rose band panel (≈ 26.5% of the width,
- * at least 272px so its text and button fit at 1024; the design's plum panel in the owner's
- * "Støvet rosa & beige") flush right, with the button pinned to the bottom, level with the tag.
+ * at least 272px so its text and button fit at 1024; the design's plum panel in Lys Rosa, Anette's
+ * palette of 2026-10-10) flush right, with the button pinned to the bottom, level with the tag.
  *
  * Width (DesktopNav): the canvas's surface band, as in the design, up to 1280px (from 1328px
  * viewport), centred. Type follows the site's type scale like the page text: links and "Alle"

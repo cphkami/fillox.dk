@@ -4,8 +4,8 @@ import type { Link } from "@/content/types";
 /**
  * Closing band "Klar til at booke?" (6c/6bx: 16×42 button; mb: full-width 52px button). Also used
  * on /behandlinger and as a long-form page's own closing band (`text` as paragraphs). A rose band
- * with the primary (accent) button, as on every band ("Støvet rosa & beige"; the design's dark
- * band had a light pill).
+ * with the primary (accent) button, as on every band (Lys Rosa in Anette's palette; the design's
+ * dark band had a light pill).
  */
 export function BookingBand({ id, title, text, cta }: { id: string; title: string; text: string | string[]; cta: Link }) {
   return (

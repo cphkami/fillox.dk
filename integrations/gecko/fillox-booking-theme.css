@@ -54,41 +54,45 @@
    0. Tokens
    -------------------------------------------------------------------------- */
 :root {
-  --fx-accent: #543232;       /* accent (plum-brown): buttons, selected states, links, focus ring (10.0:1 on cream) */
-  --fx-accent-deep: #422424;  /* hover on accent */
-  --fx-cream: #F7F2EA;        /* page base, text on accent */
-  --fx-sand: #EFE6DC;         /* surfaces: headers, bars, cards */
-  --fx-secondary: #E4D6CB;    /* secondary surface (light beige), hover on sand */
-  --fx-blush: #EFE2DE;        /* soft rose highlight (selected service, waiting list) */
+  --fx-accent: #6B393F;       /* accent (plum): buttons, selected states, links, focus ring (9.2:1 on white, 8.3 on cream) */
+  --fx-accent-deep: #50292E;  /* hover on accent */
+  --fx-cream: #F4F3EE;        /* light fill inside the white card (open service group, pill tracks,
+                                 calendar, login card, alerts) and text on accent (8.3:1). Not the
+                                 site's offwhite #FAFAF8: Gecko has no offwhite page, and offwhite on
+                                 the white card is only ΔE 2 (Sandbeige 12 % on offwhite: ΔE 4.9) */
+  --fx-sand: #EBE8DF;         /* surfaces: headers, bars, cards */
+  --fx-secondary: #E1DCCF;    /* secondary surface (Sandbeige 50 %), hover on sand */
+  --fx-blush: #E7D3CE;        /* Lys Rosa highlight (selected service, waiting list) */
   --fx-ink: #242724;          /* text */
-  --fx-heading: #3B2A28;      /* headings (espresso, softer than ink: 12.2:1 on cream) */
+  --fx-heading: #3B2A28;      /* headings (espresso, softer than ink: 13.6:1 on white, 12.2 on cream) */
   --fx-muted: #5E4F4D;        /* secondary text */
-  --fx-line: #E2D5C5;         /* hairlines, chip and field borders */
-  --fx-rule: #BAA586;         /* bronze: field border on hover, the empty-day dash (decorative) */
-  --fx-taupe: #7A624F;        /* prices (4.6:1 on sand, 5.2:1 on cream) */
+  --fx-line: #E1DCCF;         /* hairlines, chip borders */
+  --fx-rule: #CDBEA7;         /* Sandbeige: the empty-day dash (decorative) */
+  --fx-field: #857B69;        /* form field borders: 4.2:1 on white, 3.4 on sand (WCAG 1.4.11) */
+  --fx-taupe: #7A624F;        /* prices (4.65:1 on sand, 5.1:1 on cream, 5.7:1 on white) */
   --fx-placeholder: #746A67;  /* placeholders (5.3:1 on white) */
   --fx-white: #FFFFFF;
   --fx-font: "Figtree", "Helvetica Neue", Helvetica, Arial, sans-serif;          /* text, buttons, fields, labels */
   --fx-font-heading: "Poppins", "Helvetica Neue", Helvetica, Arial, sans-serif;  /* headings, weight 500 */
   --fx-shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1);
-  --fx-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23543232' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --fx-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%236B393F' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 
   /* Gecko's own variables (booking_specific_css.css): progress steps */
-  --geckoLineColor: #E2D5C5;
-  --style-breadcrumb-visited-bg: #543232;
-  --style-breadcrumb-visited-color: #F7F2EA;
-  --style-breadcrumb-next-bg: #EFE6DC;
+  --geckoLineColor: #E1DCCF;
+  --style-breadcrumb-visited-bg: #6B393F;
+  --style-breadcrumb-visited-color: #FAFAF8;
+  --style-breadcrumb-next-bg: #EBE8DF;
   --style-breadcrumb-next-color: #5E4F4D;
 
   /* Gecko's own variables: calendar states. Gecko applies them with
      !important to week chips, month dates and day time slots. */
   --style-calendar-green-bg: #FFFFFF;   /* available: white chip */
   --style-calendar-green-color: #242724;
-  --style-calendar-yellow-bg: #EFE2DE;  /* waiting list: blush chip */
+  --style-calendar-yellow-bg: #E7D3CE;  /* waiting list: blush chip */
   --style-calendar-yellow-color: #242724;
-  --style-calendar-red-bg: #F7F2EA;     /* booked / unavailable: quiet */
+  --style-calendar-red-bg: #F4F3EE;     /* booked / unavailable: quiet (= --fx-cream) */
   --style-calendar-red-color: #5E4F4D;
-  --style-calendar-grey-bg: #EFE6DC;    /* closed */
+  --style-calendar-grey-bg: #EBE8DF;    /* closed */
   --style-calendar-grey-color: #5E4F4D;
   --style-calendar-previous: "\2190";   /* arrow left */
   --style-calendar-next: "\2192";       /* arrow right */
@@ -1216,15 +1220,15 @@ img.cal-info__image--small {
 }
 
 .uge__cal .cal-day__body a:hover {
-  --style-calendar-green-color: #543232;
-  --style-calendar-yellow-color: #543232;
+  --style-calendar-green-color: #6B393F;
+  --style-calendar-yellow-color: #6B393F;
   border-color: var(--fx-accent);
   filter: none;
 }
 
 .uge__cal .cal-day__body a:active {
-  --style-calendar-green-bg: #543232;
-  --style-calendar-green-color: #F7F2EA;
+  --style-calendar-green-bg: #6B393F;
+  --style-calendar-green-color: #FAFAF8;
   border-color: var(--fx-accent);
 }
 
@@ -1460,8 +1464,8 @@ img.cal-info__image--small {
 }
 
 .mcp .mcp-cell a:hover {
-  --style-calendar-green-color: #543232;
-  --style-calendar-yellow-color: #543232;
+  --style-calendar-green-color: #6B393F;
+  --style-calendar-yellow-color: #6B393F;
   border-color: var(--fx-accent);
   filter: none;
 }
@@ -1585,16 +1589,16 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
 }
 
 .cal-time__body .cal-time__row:hover .cal-time__cell {
-  --style-calendar-green-color: #543232;
-  --style-calendar-yellow-color: #543232;
+  --style-calendar-green-color: #6B393F;
+  --style-calendar-yellow-color: #6B393F;
   border-color: var(--fx-accent) !important;
 }
 
 /* Selected time (if Gecko keeps the choice on the page) */
 .cal-time__body .cal-time__row .cal-time__cell:has(input:checked),
 .cal-time__body .cal-time__row:active .cal-time__cell {
-  --style-calendar-green-bg: #543232;
-  --style-calendar-green-color: #F7F2EA;
+  --style-calendar-green-bg: #6B393F;
+  --style-calendar-green-color: #FAFAF8;
   border-color: var(--fx-accent) !important;
 }
 
@@ -1708,7 +1712,8 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
   color: var(--fx-ink);
 }
 
-/* Inputs: 16px text (no zoom on iPhone), at least 48px high, accent focus. */
+/* Inputs: 16px text (no zoom on iPhone), at least 48px high, a --fx-field border (≥ 3:1, so the
+   field's edge shows on white and on the cream login card), accent on hover and focus. */
 .form-control {
   height: auto;
   min-height: 52px;
@@ -1717,13 +1722,13 @@ form .control__bar .control__bar--cal-cell span:first-child .font-bold {
   line-height: 1.5;
   color: var(--fx-ink);
   background-color: var(--fx-white);
-  border: 1px solid var(--fx-line);
+  border: 1px solid var(--fx-field);
   border-radius: 16px;
   box-shadow: none;
 }
 
 .form-control:hover {
-  border-color: var(--fx-rule);
+  border-color: var(--fx-accent);
 }
 
 .form-control:focus {
@@ -1783,7 +1788,7 @@ textarea.form-control {
   font-weight: 500;
   color: var(--fx-accent) !important;
   background-color: var(--fx-sand) !important;
-  border: 1px solid var(--fx-line) !important;
+  border: 1px solid var(--fx-field) !important;
   border-left: 0 !important;
   border-radius: 0 16px 16px 0 !important;
   box-shadow: none;
@@ -1815,7 +1820,7 @@ textarea.form-control {
   font-size: 16px;
   color: var(--fx-accent) !important;
   background-color: var(--fx-white) !important;
-  border: 1px solid var(--fx-line) !important;
+  border: 1px solid var(--fx-field) !important;
   border-radius: 0 !important;
   box-shadow: none;
 }
@@ -2292,7 +2297,7 @@ textarea.form-control {
 
 /* Gecko's full-page spinner: inline grey backdrop and icon. */
 #worldSpinner {
-  background-color: rgba(247, 242, 234, 0.6) !important;
+  background-color: rgba(250, 250, 248, 0.6) !important;
 }
 
 #worldSpinner .fa {

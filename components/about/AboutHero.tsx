@@ -23,7 +23,7 @@ type AboutHeroProps = { hero: AboutPageCopy["hero"]; titleId: string };
  *   text (`text-body`, muted, 48ch ≈ 68 characters).
  * - Type: the H1 is the heading font (Poppins 500, espresso `text-heading`; -0.025em from 768px
  *   like the home H1); the rest is Figtree. "Mød vores team ↓" (the source's "[Mød vores team]")
- *   is the site's text link: ink over a deep-bronze underline, accent on hover. Beside the
+ *   is the site's text link: ink over a plum underline, accent on hover. Beside the
  *   button from 768px (6om); below 768px centred under the full-width button (mo has no such
  *   link, but the owner's text puts the team after five long sections, so phones get the jump
  *   too). Its 12px `after:` hit area keeps it ≥ 44px high without touching the button.

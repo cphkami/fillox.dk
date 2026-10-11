@@ -11,7 +11,7 @@ import { formatPriceFrom } from "@/lib/content";
 export function TreatmentCard({ treatment }: { treatment: Treatment }) {
   const name = treatment.detail?.title ?? treatment.name;
   return (
-    <article className="relative flex h-full flex-col rounded-[18px] bg-white py-4 pr-12 pl-[18px] transition-shadow hover:shadow-menu md:rounded-[24px] md:px-7 md:pt-[26px] md:pb-[30px] xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30">
+    <article className="relative flex h-full flex-col rounded-[18px] bg-white py-4 pr-12 pl-[18px] shadow-card transition-shadow hover:shadow-menu md:rounded-[24px] md:px-7 md:pt-[26px] md:pb-[30px] xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30">
       {treatment.priceFrom !== undefined ? (
         <p className="mb-1 text-[12px] font-bold tracking-[1.5px] text-accent uppercase md:mb-2.5 md:text-micro md:tracking-[2px]">
           {formatPriceFrom(treatment.priceFrom)}

@@ -71,9 +71,9 @@ function ContactCardLink({ card }: { card: ContactCard }) {
 }
 
 /**
- * Footer block (design 6a bottom / mf bottom) on the light warm beige of the owner's "Støvet rosa &
- * beige" (`bg-footer`, one token in app/globals.css; production: plum), espresso text, the black
- * logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`, whose
+ * Footer block (design 6a bottom / mf bottom) on Sandbeige, "some of the beige" in Anette's palette
+ * of 2026-10-10 (`bg-footer`, one token in app/globals.css; production: plum), espresso text, the
+ * black logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`, whose
  * "Tilmeld" is the footer's only button); contact band with three equal cards: phone, e-mail and
  * online booking ("Book online · Find en tid →", owner 2026-10: two buttons in the footer made no
  * sense, the header keeps its sticky "Book tid"); logo + tagline; one column per clinic; footer

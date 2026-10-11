@@ -160,7 +160,7 @@ export function TreatmentHero({ view }: { view: TreatmentView }) {
           {hero.facts.length ? (
             <dl className="order-5 grid grid-cols-2 gap-2 md:mb-[30px] md:gap-2.5 xl:mb-fluid-30">
               {hero.facts.map((fact) => (
-                <div key={fact.label} className="rounded-2xl bg-white px-4 py-3.5 md:p-[18px] xl:p-fluid-18">
+                <div key={fact.label} className="rounded-2xl bg-white px-4 py-3.5 max-md:shadow-card md:p-[18px] xl:p-fluid-18">
                   {/* 12px (the design's 11, raised to the minimum); tracking 1px below 375px so
                       "KONSULTATION" fits a 320px screen's tile. */}
                   <dt className="text-[12px] tracking-[1.5px] text-muted uppercase max-[374px]:tracking-[1px] md:mb-1.5 md:text-micro md:font-bold md:tracking-[2px] md:text-accent">

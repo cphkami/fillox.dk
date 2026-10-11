@@ -80,13 +80,13 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
 | `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo has a desktop crop in content (`hero.imagePositionDesktop`, 15% from 1024px). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
-| `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). "Støvet rosa & beige": the name (H1) takes `text-emphasis`; the closing "Book tid hos …" band (the design's powder) is the rose `band`, because the secondary beige read as one block with the footer right under it |
+| `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). Anette's palette: the name (H1) takes `text-emphasis` (plum); the closing "Book tid hos …" band (the design's powder) is the Lys Rosa `band`, because a beige panel reads as one block with the Sandbeige footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
 | `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row) |
 | `/behandlinger/rynkebehandling` | no design: a long-form page (`detail.sections`, see "Long-form treatment pages") with the owner's agency text, verbatim. Replaces the Botox page: `/behandlinger/botox`, `/behandlinger/botox-for-maend` and the live `/rynkebehandling` redirect here |
 | `/behandlinger/andre-behandlingsmuligheder` | no design: long-form page under the hub (breadcrumb via `detail.parentSlug`, compact H1). Replaces the live `/ovrige-botox-behandlinger` and the lip flip, gummy smile, hyperhidrose and Traptox pages, which redirect here (the first three to their sections `#lip-flip`, `#gummy-smile`, `#svedtendens`; Traptox has no section) |
-| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with krem text, bronze accents, krem pills and a krem focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
+| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with offwhite text, Sandbeige accents, offwhite pills (sand on hover) and an offwhite focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
 | `/ny-hos-fillox` | no design: "Ny hos Fillox?", the guide for first-time visitors (`routes.newHere`; see "Ny hos Fillox?") |
 | `/klinikker` | `6kl` / `mk` |
 | `/kontakt` | `6ko` / `mc` |
@@ -321,66 +321,93 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   `faces` entry, and should be a portrait (crop a landscape photo to 4:5 first: Kubra's
   original is `design-reference/uploads/kubra-original.jpg`).
 
-## Design tokens ("Støvet rosa & beige", 2026-10)
+## Design tokens (Anette's palette, 2026-10-10)
 
 The design was drawn in plum (`#6B3840`) with Poppins everywhere. In October 2026 the owner chose,
 from the /lab experiment, **Figtree** as the site font with **Poppins only for headings** ("not as
-thick, not as black") and the palette **"Støvet rosa & beige"** (lab palette `stoevet-rosa`, with a
-lighter footer beige than the lab's Senses `#B19784`). Layout, components and copy are unchanged.
-Every value lives in `app/globals.css` (`@theme`); components use the semantic names below and
-never a hex value. All text pairs are WCAG AA (ratios in the table).
+thick, not as black"). On **2026-10-10** Anette (Fillox) sent the team's palette, which replaced the
+interim "Støvet rosa & beige": **Offwhite `#FAFAF8`, Lys Rosa `#E7D3CE`, Plum `#6B393F`, Sandbeige
+≈ `#C9BFA7`** ("I like best: Lys Rosa and Plum. Can the background (krem) be a little cooler? And
+should we include some of the beige…?"). So: a cooler offwhite page, Lys Rosa as the brand surface
+(bands, panels), plum as the accent only (buttons, links, eyebrows, numbers, the H1's accent words;
+never a large surface: the team found plum too hard as a surface, and the earlier dusty rose
+`#D9A192` too orange), and a touch of Sandbeige (the footer, and lightened as hero panels, cards and
+dividers). Layout, components and copy are unchanged. Every value lives in `app/globals.css`
+(`@theme`); components use the semantic names below and never a hex value. All text pairs are WCAG
+AA (ratios in the tables; "offwhite" = `cream`).
 
 **Light surfaces and text**
 
 | Token | Value | Use |
 |---|---|---|
-| `cream` | `#F7F2EA` | page base (krem) |
-| `sand` | `#EFE6DC` | surfaces (hero panel, cards, icon circles) |
-| `secondary` | `#E4D6CB` | secondary surface (team panel, hovered arrow circles); was powder `#E8D3CE` |
-| `line` | `#E2D5C5` | hairlines on light |
-| `rule` | `#BAA586` | bronze dividers (hero stats). Decorative only (2.1:1), never text |
-| `rule-strong` | `#8A7455` | deep bronze: active nav underline, text-link underlines (`textLink`): 4.0:1 on cream |
+| `cream` | `#FAFAF8` | page base (Offwhite; the former krem was `#F7F2EA`) |
+| `sand` | `#EBE8DF` | surfaces: hero panel, cards, icon circles (Sandbeige 30 % on offwhite) |
+| `secondary` | `#E1DCCF` | secondary surface: team panel, hovered arrow circles (Sandbeige 50 %) |
+| `line` | `#E1DCCF` | hairlines on light; the edge of `shadow-card` |
+| `field` | `#857B69` | form field borders (Sandbeige deepened): 4.17:1 on white, 3.99 on offwhite, 3.40 on sand (WCAG 1.4.11) |
+| `rule` | `#CDBEA7` | Sandbeige dividers (hero stats, the 2px step rules). Decorative only (1.75:1 on offwhite), never text on light; text on the For mænd espresso (7.4:1) |
+| `rule-strong` | `#6B393F` | plum: active nav underline, text-link underlines (`textLink`): 8.8:1 on offwhite |
 | `ink` | `#242724` | body text |
-| `heading` | `#3B2A28` | headings (espresso): 12.2:1 on cream, 11.0 on sand |
-| `muted` | `#5E4F4D` | secondary text |
-| `taupe` | `#7A624F` | prices and price notes, the /priser hero eyebrow (design `#B39C89`, darkened to pass WCAG AA: 4.62:1 on sand) |
-| `placeholder` | `#746A67` | input placeholders, the only placeholder colour (design `#8A7F7C`, darkened: 4.71:1 on cream) |
-| `emphasis` | `#94544A` | the H1's accent words (large text: 4.7:1 on sand, 5.2 on cream) |
-| `selection` | `#E2C2B9` | text selection on light (ink on it 9.1:1) |
+| `heading` | `#3B2A28` | headings (espresso): 13.0:1 on offwhite, 11.1 on sand |
+| `muted` | `#5E4F4D` | secondary text: 7.4:1 on offwhite, 6.3 on sand, 5.7 on secondary |
+| `taupe` | `#7A624F` | prices and price notes on /priser and /ny-hos-fillox, the /priser hero eyebrow (design `#B39C89`, darkened to pass WCAG AA: 4.65:1 on sand, 5.45 on offwhite, 5.69 on white; never on secondary or the band, where it would fail) |
+| `placeholder` | `#746A67` | input placeholders, the only placeholder colour (design `#8A7F7C`, darkened: 5.0:1 on offwhite, 5.25 on white) |
+| `emphasis` | `#6B393F` | the H1's accent words (plum): 8.8:1 on offwhite, 7.5 on sand |
+| `selection` | `#E7D3CE` | text selection on light: Lys Rosa (ink on it 10.5:1) |
 
-**Accent** (the Fillox Academy plum-brown; was plum): buttons, links, eyebrows, numbers, checkmarks,
-the focus ring, on light surfaces AND on the rose bands and the footer.
+Sandbeige is used as `#CDBEA7`, not Anette's approximate `#C9BFA7`: the same lightness and the same
+contrast for every text on it, with its slight green cast removed (Lab a* −0.5 → +1.5), so the footer
+doesn't read olive right under a Lys Rosa band.
 
-| Token | Value | Use |
-|---|---|---|
-| `accent` | `#543232` | 10.0:1 on cream, 9.1 on sand, 5.0 on the band, 7.1 on the footer |
-| `accent-deep` | `#422424` | hover of accent buttons / links |
-| `on-accent` | `#F7F2EA` | text on accent (10.0:1; 12.5 on accent-deep) |
+**White cards on the page.** White is only 1.05:1 (ΔE 2) on the offwhite page, so a white card there
+carries `shadow-card` (`--shadow-card`: a 1px ring of `line` at 70 % plus a faint 1px drop). Use
+`max-md:` / `max-lg:` where a card is white only at that size (mobile bestsellers, the mobile
+testimonial, team cards in mobile rows). White cards on sand or on the band need no ring. A scroll
+row (`overflow-x-auto`) clips the ring: pad it 4px and cancel the padding with negative margins
+(`ResultsSection`, like the team rows). Light hover fills on white use `bg-band/40` (`#F5EDEB`, the
+header dropdown rows), never `bg-cream` (invisible on white).
 
-**Band** (dusty rose; every surface that was a plum band: USP band, bestseller list, review panels,
-the mega menu's panel, "Om behandlingen" / "Klar til at booke?" bands, price boxes, clinics USP strip …)
-
-| Token | Value | Use |
-|---|---|---|
-| `band` | `#D9A192` | the surface |
-| `on-band` | `#33211D` | headings, names, the quote, links: 6.9:1 |
-| `band-body` | `#3A2622` | running text: 6.4:1 |
-| `band-accent` | `#4F2A27` | eyebrows, prices, stars, hours, link hover: 5.6:1 |
-| `band-fine` | `#3F2824` | fine print: 6.1:1 |
-| `band-line` | `rgb(51 33 29 / .2)` | dividers (decorative) |
-| `band-highlight` | `#FBF8F4` | hovered / focused bestseller row, text selection on bands |
-| `band-card` / `band-card-hover` | white 30% / 45% | translucent cards on the band |
-
-**Footer** (a light warm beige; tune it with `--color-footer` alone, its text stays ≥ 7:1)
+**Accent** (Plum): buttons, links, eyebrows, numbers, checkmarks, the focus ring, on light surfaces
+AND on the rosa bands and the footer.
 
 | Token | Value | Use |
 |---|---|---|
-| `footer` | `#DCCBBB` | the footer block (chosen over `#D4C2B1` and `#E4D6CA`: clearly lighter than Senses `#B19784`, still a distinct beige next to cream / sand) |
-| `on-footer` | `#33211D` | clinic names, contact values, links: 9.7:1 |
-| `footer-body` | `#3A2622` | running text, legal: 9.0:1 |
-| `footer-accent` | `#4F2A27` | uppercase labels, hours, link hover: 7.9:1 |
+| `accent` | `#6B393F` | 8.8:1 on offwhite, 9.2 on white, 7.5 on sand, 6.4 on the band, 5.0 on the footer |
+| `accent-deep` | `#50292E` | hover of accent buttons / links |
+| `on-accent` | `#FAFAF8` | text on accent (offwhite, 8.8:1; 11.8 on accent-deep) |
+
+**Band** (Lys Rosa; every surface that was a plum band in the design: USP band, bestseller list,
+review panels, the mega menu's panel, "Om behandlingen" / "Klar til at booke?" bands, price boxes,
+clinics USP strip …)
+
+| Token | Value | Use |
+|---|---|---|
+| `band` | `#E7D3CE` | the surface |
+| `on-band` | `#33211D` | headings, names, the quote, links: 10.6:1 |
+| `band-body` | `#3A2622` | running text: 9.9:1 |
+| `band-accent` | `#6B393F` | eyebrows, prices, stars, hours, link hover (plum): 6.4:1 |
+| `band-fine` | `#3F2824` | fine print: 9.5:1 |
+| `band-line` | `rgb(107 57 63 / .18)` | dividers (plum, decorative) |
+| `band-highlight` | `#FFFFFF` | hovered / focused bestseller row, text selection on bands |
+| `band-card` / `band-card-hover` | white 45% / 65% | translucent cards on the band |
+
+**Footer** (Sandbeige; tune it with `--color-footer` alone, its text stays ≥ 5:1)
+
+| Token | Value | Use |
+|---|---|---|
+| `footer` | `#CDBEA7` | the footer block (1.27:1 against the band, 1.49 against sand, 1.33 against secondary). Don't go lighter than `#D5CEBB` (Sandbeige 75 %, the tuner's "Lys footer"): lighter, it merges with the secondary / sand panels that close some pages right above it |
+| `on-footer` | `#33211D` | clinic names, contact values, links: 8.4:1 |
+| `footer-body` | `#3A2622` | running text, legal: 7.8:1 |
+| `footer-accent` | `#6B393F` | uppercase labels, hours, link hover (plum): 5.0:1 (6.3 on footer cards) |
 | `footer-line` | `rgb(51 33 29 / .18)` | dividers (decorative) |
 | `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail / booking cards |
+
+**Not changed by the palette (yet).** Some stock photos have salmon backdrops (`hero/hero-1.jpg`
+on /behandlinger, `results/duo-pink.jpg` in the home testimonial, the lip-filler hero) close to the rejected
+dusty rose; they need re-exporting with the backdrop graded toward Lys Rosa (an image job: a CSS
+filter would shift skin tones too). The Gecko booking theme follows the palette in
+`integrations/gecko/` (its own light fill `#F4F3EE`, because Gecko sits on the white card, not on
+the offwhite page); the live booking keeps the old theme until the new CSS is pasted into Gecko.
 
 The footer shows the black logo (`site.brand.logoDark`, as the header). Its only button is the
 newsletter's "Tilmeld" (owner, round 4: two CTAs in the footer made no sense); booking is the
@@ -410,7 +437,8 @@ one link to the profile in a new tab, a `footer-card` pill ≥ 44px, a full-widt
   `content/pages/legal.ts` → "12. Nyhedsbrev": purpose, legal basis, retention, processors,
   unsubscribing; pending the owner's legal review). Newsletter offers must never promote Botox or
   other prescription medicines.
-- The white field has a 1px border ≥ 3:1 against its surface (footer-accent 75%, band-accent 85%).
+- The white field has a 1px border ≥ 3:1 against its surface (footer-accent 90% → 3.8:1, band-accent
+  85% → 4.2:1).
 - /blog: its band sits right above the footer, so it carries `data-newsletter-band` and the footer
   signup hides itself on that page (`[body:has([data-newsletter-band])_&]:hidden`, CSS only); so
   does `/nyhedsbrev/tak` (`data-newsletter-thanks`).
@@ -422,11 +450,12 @@ one link to the profile in a new tab, a `footer-card` pill ≥ 44px, a full-widt
 `surface="plum" | "plum-lg"` on the rotator and `data-surface="plum" | "plum-lg"` no longer exist:
 every use was converted (recipe below), so a leftover fails the type check or renders no colour.
 
-**Surfaces and focus.** The focus ring is the accent on every surface (≥ 5:1 everywhere), so no
-surface needs a ring of its own. `data-surface` now only marks where text selection switches to the
+**Surfaces and focus.** The focus ring is the accent on every surface (8.8:1 on offwhite, 7.5 on sand,
+6.4 on the band, 5.0 on the footer), so no surface needs a ring of its own (the For mænd espresso
+surface switches to an offwhite ring, 13.0:1). `data-surface` now only marks where text selection switches to the
 band's highlight: `data-surface="band"` on a band, `"band-lg"` on an element that is a band from
 1024px only, `"band-md"` on a sand card that turns into a band from 768px (the band highlight is
-only 1.17:1 on sand, so the card keeps the light rose selection), `"footer"` on the footer block.
+only 1.23:1 on sand, so the card keeps the light Lys Rosa selection), `"footer"` on the footer block.
 
 **Colour tuner (dev only).** In `next dev` every page has a round "Farver" button bottom-right
 (`components/dev/ColorTuner`, mounted by `app/layout.tsx` only when `NODE_ENV` is `"development"`;
@@ -442,10 +471,11 @@ without alpha keeps a translucent token's opacity), an opacity slider for the tr
 "Nulstil" per row and the WCAG AA ratio of the text that sits on or in that colour: every surface
 row checks its weakest text (cream: taupe and placeholder too), and `heading` / `rule` / `cream`
 also check the For mænd page, where `heading` is the dark fill (`components/men/surface.ts`) with
-bronze `rule` and krem 75 % text on it. A line at the top counts every pair below AA and lists
-them. "Nulstil alle" asks first; the three "Forslag" only set their own token (Lysere rosa: `band`,
-Varmere footer: `footer`) and keep the other changes, asking before they replace a value the owner
-set; "Nuværende" is "Nulstil alle". A change writes `html:root { --color-<token>: … }` into one
+Sandbeige `rule` and offwhite 75 % text on it; `field` checks 3:1 on white, offwhite and sand. A line
+at the top counts every pair below AA and lists them. "Nulstil alle" asks first; the "Forslag" only
+set their own token (Varm krem: `cream` back to the former `#F7F2EA`; Lys footer: `footer` `#D5CEBB`)
+and keep the other changes, asking before they replace a value the owner set; "Nuværende" is
+"Nulstil alle". A change writes `html:root { --color-<token>: … }` into one
 `<style>` in `<head>`, so every utility updates live (`shadow-photo` follows the accent too);
 overrides persist in localStorage (`fillox-color-tuner`) across navigation and reloads, applied
 before paint by an inline script. "Kopiér farver" copies the changes (Danish names, before → after,
@@ -650,7 +680,7 @@ by 13.5–15.5px).
 Hover, keyboard focus (`focus-visible`) and press (`active`) share one look per variant, always the
 brown accent, never black (owner, 2026-10: "Se alle behandlinger" turned black, it should turn brown
 like "Alle artikler om lip filler"): `primary` → `accent-deep`; `outline` / `outlineInk` → accent fill
-+ krem text; `white` → accent border + text (not filled: the white chips are filters whose selected
++ offwhite text; `white` → accent border + text (not filled: the white chips are filters whose selected
 state is the accent fill); `textLink` → accent. The home "Se alle behandlinger" is now the accent
 `outline` at every width (the design's ink outline on desktop is gone). A page that recolours a pill
 at rest keeps the brown hover (hover / focus classes outrank a breakpoint class); never add

@@ -60,7 +60,7 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
             <li
               key={offer.name}
               className={cn(
-                "flex items-center justify-between gap-2.5 rounded-[18px] bg-white py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7 xl:px-fluid-30/36 xl:pt-fluid-30/36 xl:pb-fluid-28/32",
+                "flex items-center justify-between gap-2.5 rounded-[18px] bg-white shadow-card py-3.5 pr-3.5 pl-[18px] md:flex-col md:items-stretch md:justify-start md:gap-0 md:rounded-[24px] md:px-[30px] md:pt-[30px] md:pb-7 xl:px-fluid-30/36 xl:pt-fluid-30/36 xl:pb-fluid-28/32",
                 offerSpan(i, offers.items.length),
               )}
             >

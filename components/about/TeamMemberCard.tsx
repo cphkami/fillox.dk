@@ -18,7 +18,7 @@ import { cn } from "@/lib/cn";
  * - Type follows the fluid scale from 1280px (name 24 → 28, bio 16 → 18, title 14 → 15, link
  *   14 → 16 at 1600). Names are the heading font in the accent; titles, bios, quotes and links are
  *   Figtree. The quote rule and the link use the accent; the link's underline (from 768px) is the
- *   deep bronze of the text links.
+ *   plum underline of the text links.
  * - `quote` (6om spec note: "et personligt citat") renders as a small blockquote when set; a member
  *   without one (Kubra) simply has a shorter text block, and the links still line up at the
  *   bottom of each row (`mt-auto`).
@@ -42,7 +42,7 @@ export function TeamMemberCard({ member }: { member: TeamMember }) {
   const stretched = "after:absolute after:inset-0 after:rounded-[24px]";
 
   return (
-    <article className="relative flex w-full flex-col rounded-[24px] bg-white px-2.5 pt-2.5 pb-5 md:rounded-none md:bg-transparent md:p-0">
+    <article className="relative flex w-full flex-col rounded-[24px] bg-white px-2.5 pt-2.5 pb-5 max-md:shadow-card md:rounded-none md:bg-transparent md:p-0">
       <CropPhoto
         mobile={square}
         desktop={portrait}

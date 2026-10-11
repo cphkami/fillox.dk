@@ -18,7 +18,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
   return (
     <article
       className={cn(
-        "group relative grid overflow-hidden rounded-[24px] bg-white lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]",
+        "group relative grid overflow-hidden rounded-[24px] bg-white shadow-card lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]",
         cardFocusRing,
       )}
     >

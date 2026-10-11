@@ -37,7 +37,7 @@ const HOVER_SWITCH_DELAY = 120;
 
 /**
  * Top-level label style: `text-ui` (15px at 1024–1279, 16 → 17px from 1280) muted; the current
- * section / open menu = ink with a 1px deep-bronze underline (rule-strong, 4.0:1 on cream; hover
+ * section / open menu = ink with a 1px plum underline (rule-strong, 8.8:1 on offwhite; hover
  * only darkens the text). The
  * `before:` box is an invisible hit area (8px to the sides, 10px above and below: ≥ 44px high)
  * that leaves the underline where it is; `after:` is taken by the mega menu's hover bridge.

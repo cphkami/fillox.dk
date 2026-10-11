@@ -14,7 +14,8 @@ type TeamRowProps = { members: TeamMember[]; titleId: string };
  * portrait links to that practitioner's profile.
  *
  * The panel is sand, not the home row's secondary beige: it sits right on top of the footer, and
- * secondary (#E4D6CB) next to the footer's #DCCBBB (1.11:1) reads as one muddy block (see BookingBand).
+ * sand (#EBE8DF) is 1.49:1 against the Sandbeige footer (#CDBEA7) where secondary (#E1DCCF) is
+ * only 1.33:1, so the two read as separate blocks (see BookingBand).
  *
  * Names: the home row's 20px up to 1280px, then 20 → 25px at 1600 (the portraits here are
  * much taller than the home row's, ≈ 326×460 at 1600); no token runs 20 → 25, hence the clamp

@@ -6,7 +6,7 @@ const number = (i: number) => String(i + 1).padStart(2, "0");
 
 /**
  * "Sådan foregår det": four steps on a sand panel (the surface margin, rounded like every
- * panel). Each step hangs from a 2px bronze rule (decorative), with a taupe number, a heading-
+ * panel). Each step hangs from a 2px Sandbeige rule (decorative), with a taupe number, a heading-
  * font title and a short text. 1 column below 768px, 2 on tablets, 4 from 1024px.
  *
  * The one-line intro sits under the heading below 1024px and beside it from 1024px, bottom-

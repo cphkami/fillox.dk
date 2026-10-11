@@ -142,7 +142,7 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
                 aria-labelledby={titleId}
                 // Focus target of the chip jumps (not in the tab order).
                 tabIndex={-1}
-                className="rounded-[22px] bg-white px-5 pt-[22px] pb-1.5 focus:outline-none md:rounded-[20px] md:px-9 md:py-8 xl:px-fluid-36/48 xl:py-fluid-32/40"
+                className="rounded-[22px] bg-white px-5 pt-[22px] pb-1.5 shadow-card focus:outline-none md:rounded-[20px] md:px-9 md:py-8 xl:px-fluid-36/48 xl:py-fluid-32/40"
               >
                 {/* Mobile: label always under the title (mp's header shape), so every card header
                     has the same form whatever the title length; from 768px a baseline row (6b). */}

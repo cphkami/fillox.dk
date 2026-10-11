@@ -17,7 +17,7 @@ const NAME_INDENT = "pl-[calc(2rem+0.75rem)] md:pl-[calc(3.5rem+1.5rem)]";
  * page: number · name + one-liner · "fra" price · arrow circle. From 1024px the heading sits in
  * a left column beside the list (the 1 : 1.6 split), as the price lists do.
  *
- * Hover / focus: the name turns accent and the arrow circle fills (accent, krem arrow).
+ * Hover / focus: the name turns accent and the arrow circle fills (accent, offwhite arrow).
  * Below 768px the price moves under the one-liner, so the name keeps the full width. The price
  * carries its note ("op til 1 ml"), so a "fra" price never reads lower than it is.
  *

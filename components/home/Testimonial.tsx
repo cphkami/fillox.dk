@@ -5,7 +5,8 @@ import { toReviewSlides } from "@/lib/reviews";
 /**
  * Customer reviews, rotating (content/reviews.ts, set "home"). Desktop (6a): split panel, the
  * quote left-aligned on the rose band half (the design's plum) and a photo on the right. Mobile
- * (mf): centred white card without the photo. Under the rotator's controls: "Se alle anmeldelser på
+ * (mf): centred white card without the photo (with `shadow-card`: white is only 1.05:1 on the
+ * offwhite page). Under the rotator's controls: "Se alle anmeldelser på
  * Trustpilot →".
  *
  * The band half's padding is the team panel's and the footer's (56 → 64 → 80px), so the quote
@@ -19,9 +20,9 @@ import { toReviewSlides } from "@/lib/reviews";
 export function Testimonial({ testimonial }: { testimonial: HomePage["testimonial"] }) {
   return (
     <Container as="section" gutter="surface" className="leading-[1.5] lg:mt-surface">
-      <div className="grid overflow-hidden rounded-[24px] bg-white lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:bg-band">
+      <div className="grid overflow-hidden rounded-[24px] bg-white max-lg:shadow-card lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:bg-band">
         {/* data-surface: the band's text selection from 1024px for the rotator AND the link under it
-            (the accent focus ring needs no override: 5:1 on the band). */}
+            (the accent focus ring needs no override: 6.4:1 on the band). */}
         <div data-surface="band-lg" className="flex flex-col justify-center px-[22px] py-8 lg:px-14 lg:py-fluid-84 xl:px-16 2xl:px-20">
           <ReviewRotator
             reviews={toReviewSlides(testimonial.reviews)}

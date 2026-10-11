@@ -78,7 +78,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
             <li key={post.slug} className="flex">
               <article
                 className={cn(
-                  "relative flex w-full flex-col overflow-hidden rounded-[18px] bg-white px-[18px] py-4 transition-shadow hover:shadow-menu md:rounded-[24px] md:p-0",
+                  "relative flex w-full flex-col overflow-hidden rounded-[18px] bg-white px-[18px] py-4 shadow-card transition-shadow hover:shadow-menu md:rounded-[24px] md:p-0",
                   layout.card,
                 )}
               >

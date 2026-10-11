@@ -25,7 +25,7 @@ type FinancingBoxProps = {
  * The H2 is balanced (`text-balance`): with the relaxed tracking it no longer fits one 390px
  * line, and an unbalanced wrap would leave "rater" alone on the second.
  * `data-surface="band-md"`: the band's text selection from 768px only; the mobile sand card
- * keeps the light selection (the band's near-white highlight is ~1.2:1 on sand).
+ * keeps the light selection (the band's white highlight is 1.23:1 on sand).
  *
  * Wide screens (≥1280px): the panel spans the fluid canvas on the surface margin; the
  * text column's padding follows the footer's top block, the H2 and the text use the fluid

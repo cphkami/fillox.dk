@@ -7,9 +7,10 @@ type BookingBandProps = { booking: NonNullable<TeamProfile["booking"]>; titleId:
  * Closing "Book tid hos Alberte" band (desktop 6alb). The mobile design (ma) has no band — the
  * hero already carries a full-width book button — so it is hidden below 768px.
  *
- * The design's light pink (powder) band is the dusty rose band in "Støvet rosa & beige", like the
- * treatment pages' closing "Klar til at booke?" band: it sits right on top of the beige footer, and
- * the secondary beige (#E4D6CB) next to the footer's #DCCBBB read as one muddy block.
+ * The design's light pink (powder) band is the Lys Rosa `band` (Anette's palette, 2026-10-10), like
+ * the treatment pages' closing "Klar til at booke?" band: it sits right on top of the Sandbeige
+ * footer (#CDBEA7, 1.27:1 against the band), and a beige panel there would read as one block with
+ * the footer (the secondary #E1DCCF is only 1.33:1 against it).
  */
 export function BookingBand({ booking, titleId }: BookingBandProps) {
   return (

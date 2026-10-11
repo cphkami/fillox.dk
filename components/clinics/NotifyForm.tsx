@@ -12,8 +12,10 @@ type Status = "closed" | "open" | "sending" | "success";
 type RequiredField = "name" | "email";
 type FocusTarget = "name" | "email" | "toggle" | "success";
 
+/** Offwhite fields on the white card: the --color-field border (3.99:1 on offwhite, 4.17 on white)
+ * marks their edge (WCAG 1.4.11; the fill alone is 1.05:1 on white). Plum on hover and focus. */
 const inputClasses =
-  "block w-full rounded-[16px] border border-line bg-cream px-5 py-4 text-body text-ink transition-colors placeholder:text-placeholder hover:border-rule focus:border-accent aria-[invalid=true]:border-accent";
+  "block w-full rounded-[16px] border border-field bg-cream px-5 py-4 text-body text-ink transition-colors placeholder:text-placeholder hover:border-accent focus:border-accent aria-[invalid=true]:border-accent";
 
 type NotifyFormProps = {
   /** Netlify form name; field names must match public/__forms.html. */
@@ -244,7 +246,8 @@ export function NotifyForm({ formName, copy }: NotifyFormProps) {
           aria-disabled={sending || undefined}
           className={cn(
             buttonClasses({ variant: "primary", size: "mdTight", mobileSize: "lg", fullWidth: "mobile" }),
-            sending && "cursor-progress opacity-70",
+            // 80%, not 70%: "Sender…" (the only progress feedback) stays ≥ 5:1 on every surface.
+            sending && "cursor-progress opacity-80",
           )}
         >
           {sending ? copy.sending : copy.submit}

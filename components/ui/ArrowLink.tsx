@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 type ArrowLinkProps = ComponentPropsWithoutRef<typeof Link> & {
   /**
-   * - "accent" (default) on light surfaces: accent text (10:1 on cream), accent-deep on hover.
+   * - "accent" (default) on light surfaces: accent text (8.8:1 on offwhite), accent-deep on hover.
    * - "band" on a rose band: on-band text, band-accent on hover.
    * - "ink": ink text, accent on hover.
    */

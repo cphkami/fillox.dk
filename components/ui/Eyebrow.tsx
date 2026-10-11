@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 const tones = {
-  /** The default on light surfaces (10:1 on cream, 9:1 on sand). */
+  /** The default on light surfaces (plum: 8.8:1 on offwhite, 7.5:1 on sand). */
   accent: "text-accent",
   muted: "text-muted",
-  /** On a rose band (5.6:1). */
+  /** On a rosa band (6.4:1). */
   band: "text-band-accent",
-  /** In the footer (7.9:1). */
+  /** In the footer (5.0:1). */
   footer: "text-footer-accent",
   taupe: "text-taupe",
 } as const;

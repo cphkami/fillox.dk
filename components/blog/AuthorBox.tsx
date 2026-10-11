@@ -15,7 +15,7 @@ export function AuthorBox({ author }: { author: TeamMember }) {
   return (
     <aside
       aria-labelledby={titleId}
-      className="mt-2 flex items-center gap-3.5 rounded-[20px] bg-white p-5 md:mt-9 md:gap-[18px] md:p-6 xl:p-fluid-24"
+      className="mt-2 flex items-center gap-3.5 rounded-[20px] bg-white p-5 shadow-card md:mt-9 md:gap-[18px] md:p-6 xl:p-fluid-24"
     >
       <Photo
         image={{ ...author.image, alt: "" }}

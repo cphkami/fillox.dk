@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 220" width="350" height="220" preserveAspectRatio="xMidYMid slice">
   <!-- Stylised, not-to-scale map of Copenhagen and surroundings (/klinikker, mobile). Pins are drawn by the page. -->
-  <rect width="350" height="220" fill="#EFE6DC"/>
+  <rect width="350" height="220" fill="#EBE8DF"/>
 
   <!-- Parks -->
-  <g fill="#E7DDD0">
+  <g fill="#E1DCCF">
     <path d="M34 58c12-12 38-14 50-2s4 32-16 36-40-2-42-16c-1-8 2-12 8-18z"/>
     <path d="M168 34c10-8 26-7 30 2s-4 18-16 19-20-4-20-11c0-4 2-7 6-10z"/>
     <path d="M226 42c9-7 24-6 28 3s-4 18-16 18-20-4-19-11c0-4 2-7 7-10z"/>
@@ -12,17 +12,17 @@
   </g>
 
   <!-- Water: Øresund, the harbour, the lakes -->
-  <g fill="#E4D4CB">
+  <g fill="#E7D3CE">
     <path d="M298 0H350V220H328C334 184 328 146 314 118C304 100 292 92 280 90L272 88C281 66 290 36 298 0Z"/>
     <ellipse cx="163" cy="118" rx="8" ry="4.5" transform="rotate(-18 163 118)"/>
     <rect x="221" y="72" width="16" height="6" rx="3" transform="rotate(-58 229 75)"/>
     <rect x="214" y="83" width="15" height="6" rx="3" transform="rotate(-58 221.5 86)"/>
     <rect x="208" y="94" width="13" height="6" rx="3" transform="rotate(-58 214.5 97)"/>
   </g>
-  <path d="M277 88C266 98 258 112 252 128S240 160 232 180 220 206 214 220" fill="none" stroke="#E4D4CB" stroke-width="8" stroke-linecap="round"/>
+  <path d="M277 88C266 98 258 112 252 128S240 160 232 180 220 206 214 220" fill="none" stroke="#E7D3CE" stroke-width="8" stroke-linecap="round"/>
 
   <!-- S-train line -->
-  <path d="M0 134C60 130 120 126 178 120S222 113 236 112" fill="none" stroke="#DCCABF" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <path d="M0 134C60 130 120 126 178 120S222 113 236 112" fill="none" stroke="#D5CEBB" stroke-width="1.2" stroke-dasharray="3 3"/>
 
   <!-- Roads -->
   <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">

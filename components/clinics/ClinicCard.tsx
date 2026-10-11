@@ -37,7 +37,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
     <article
       id={clinic.slug}
       aria-labelledby={titleId}
-      className="flex h-full flex-col overflow-hidden rounded-[22px] bg-white md:rounded-[24px]"
+      className="flex h-full flex-col overflow-hidden rounded-[22px] bg-white shadow-card md:rounded-[24px]"
     >
       {/* 200px (md) / 260px (lg) as in 6kl; from 1280px the photo keeps its 7:3 shape as the card
           grows with the canvas (604 × 259 at 1280 → 752 × 322 on the 1600px canvas). */}
@@ -139,7 +139,7 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
                 pills are 52px high (border-box), per the mobile spec. From 768px "Rutevejledning →" is
                 a text link with an invisible ≥ 48px-high hit area (after:) that leaves the underline
                 in place, at the pill's size and in the textLink button's colours (ink over a
-                deep-bronze underline, accent on hover), as beside a pill on /. */}
+                plum underline, accent on hover), as beside a pill on /. */}
             <div className="grid grid-cols-[1fr_1fr] items-start gap-2 md:mt-auto md:flex md:flex-wrap md:items-center md:gap-x-[18px] md:gap-y-3">
               <Link
                 href={clinic.bookingHref ?? site.booking.href}

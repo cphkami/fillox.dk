@@ -17,6 +17,8 @@ const panelPrefetch = (open: boolean) => (open ? null : false);
  * Menu type is fixed from 1024px up and shared by every header panel (MegaMenu too), all Figtree
  * (menus are UI text, not headings): titles 16px/600, links 15px, secondary text 14px, uppercase micro labels 12px, "Se alle →" 15px/600
  * (ArrowLink size "menu"). Frame: white, 20px radius, 12px inset, 28px text inset.
+ * Row hover: Lys Rosa at 40% (`bg-band/40`, #F5EDEB on the white panel: ink 13.1:1, muted 6.7,
+ * plum 8.0); the offwhite page colour would be invisible on white (1.05:1).
  */
 
 /** Desktop "Find klinik" dropdown: open clinics with address + hours, coming-soon clinics with their note. */
@@ -43,7 +45,7 @@ export function ClinicsDropdown({
               prefetch={prefetch}
               onClick={onNavigate}
               aria-current={ariaCurrent(c.href)}
-              className="group block rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
+              className="group block rounded-[14px] px-4 py-3 transition-colors hover:bg-band/40"
             >
               <span className="block text-[16px] font-semibold text-ink transition-colors group-hover:text-accent">
                 {c.name}
@@ -97,7 +99,7 @@ export function LinksDropdown({
               prefetch={prefetch}
               onClick={onNavigate}
               aria-current={ariaCurrent(item.href)}
-              className="block rounded-[12px] px-4 py-2.5 text-[15px] whitespace-nowrap text-ink transition-colors hover:bg-cream hover:text-accent"
+              className="block rounded-[12px] px-4 py-2.5 text-[15px] whitespace-nowrap text-ink transition-colors hover:bg-band/40 hover:text-accent"
             >
               {item.label}
             </Link>
@@ -134,7 +136,7 @@ export function PricesDropdown({
                 href={c.href}
                 prefetch={prefetch}
                 onClick={onNavigate}
-                className="group flex h-full flex-col rounded-[14px] px-4 py-3 transition-colors hover:bg-cream"
+                className="group flex h-full flex-col rounded-[14px] px-4 py-3 transition-colors hover:bg-band/40"
               >
                 {/* Title first in the DOM so the link's name starts with it; the eyebrow is shown on top. */}
                 <span className="mt-1 text-[16px] font-semibold text-ink transition-colors group-hover:text-accent">

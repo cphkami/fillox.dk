@@ -17,7 +17,7 @@ export const metadata: Metadata = pageMetadata(copy.meta, copy.path, copy.shareI
  * more masculine page with fewer treatments). A static route: it wins over
  * /behandlinger/[slug], whose generateStaticParams never yields "for-maend".
  *
- * Darker neutrals only: espresso hero and closing band (krem text, bronze accents, krem
+ * Darker neutrals only: espresso hero and closing band (offwhite text, Sandbeige accents, offwhite
  * buttons), cream sections on straight hairlines, one sand panel. No rose bands, no reviews
  * (Botox for mænd is on the list; see content/pages/men.ts).
  *

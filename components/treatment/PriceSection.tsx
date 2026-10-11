@@ -175,7 +175,7 @@ export function PriceSection({ prices }: { prices: NonNullable<TreatmentView["pr
       aria-labelledby={copy.sectionIds.prices}
       className="pb-12 leading-[1.5] md:pb-fluid-96"
     >
-      <div className={cn("grid overflow-hidden rounded-[24px] bg-white", layout.card)}>
+      <div className={cn("grid overflow-hidden rounded-[24px] bg-white shadow-card", layout.card)}>
         <div
           data-surface="band"
           className={cn(

@@ -8,7 +8,7 @@ type MethodsBandProps = { copy: AboutPageCopy["methods"] };
  * "Den rigtige behandling kræver mere end ét værktøj": the page's rose band (`bg-band`), at every
  * width. Heading left and paragraphs right from 1024px (1 : 1.15, as the cream sections); the bold
  * sentence closes the band as a pull statement under a full-width hairline (`band-line`).
- * Colours: heading and statement `on-band` (6.9:1), text `band-body` (6.4:1).
+ * Colours: heading and statement `on-band` (10.6:1), text `band-body` (9.9:1).
  * `data-surface="band"` switches the text selection to the band highlight (app/globals.css).
  */
 export function MethodsBand({ copy }: MethodsBandProps) {

@@ -38,7 +38,7 @@ export function NeedsSection({ copy, needs }: { copy: NewHerePage["needs"]; need
             <li
               key={need.id}
               id={need.id}
-              className="row-span-3 mb-3 grid grid-rows-subgrid rounded-[18px] bg-white px-5 pt-6 pb-6 md:mb-6 md:rounded-[24px] md:px-7 md:pt-8 md:pb-8 xl:px-fluid-32 xl:pt-fluid-32 xl:pb-fluid-32"
+              className="row-span-3 mb-3 grid grid-rows-subgrid rounded-[18px] bg-white shadow-card px-5 pt-6 pb-6 md:mb-6 md:rounded-[24px] md:px-7 md:pt-8 md:pb-8 xl:px-fluid-32 xl:pt-fluid-32 xl:pb-fluid-32"
             >
               <div>
                 <h3

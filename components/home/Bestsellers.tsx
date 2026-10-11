@@ -27,16 +27,17 @@ const divider = cn(
 
 /**
  * "Vores bestsellers". Desktop (6a): numbered rows on a band panel (the design's plum panel, in
- * the rose band colours). Mobile (mf): white cards with a round arrow.
+ * the Lys Rosa band colours). Mobile (mf): white cards with a round arrow and `shadow-card` (white
+ * alone is only 1.05:1 on the offwhite page).
  *
  * 6a draws the Skinbooster row highlighted with a filled arrow: that is the row's hover state,
  * not a permanent highlight. From lg every row rests on the band (on-band name, band-body text,
- * band-accent number and price, outlined arrow) and turns band-highlight (near white) on hover,
+ * band-accent number and price, outlined arrow) and turns band-highlight (white) on hover,
  * keyboard focus and press (heading-colour name, muted description, ink number and price, arrow
  * filled in the accent), fading over 200ms. Tailwind's `hover:` only applies on devices that can
  * hover, so touch screens only show the press. The panel is a band from lg only, so it is marked
  * data-surface="band-lg" (the band's text selection from 1024px; the white mobile cards keep the
- * light one). The accent focus ring needs no override: 5:1 on the band, 11:1 on the active row.
+ * light one). The accent focus ring needs no override: 6.4:1 on the band, 9.2:1 on the active row.
  *
  * Line height 1.5 on the section (numbers, prices): the design's "normal" in Poppins; Figtree's
  * own "normal" is 1.2.
@@ -78,7 +79,7 @@ export function Bestsellers({ copy, items }: { copy: HomePage["bestsellers"]; it
               <Link
                 href={item.href}
                 className={cn(
-                  "group relative flex items-center gap-3.5 rounded-[20px] bg-white py-[18px] pr-[18px] pl-5",
+                  "group relative flex items-center gap-3.5 rounded-[20px] bg-white py-[18px] pr-[18px] pl-5 max-lg:shadow-card",
                   "lg:grid lg:grid-cols-[56px_1.1fr_1.4fr_auto_48px] lg:gap-6 lg:py-fluid-28",
                   "xl:col-span-full xl:grid-cols-subgrid",
                   "lg:-mx-7 lg:bg-transparent lg:px-7 xl:-mx-9 xl:px-9 2xl:-mx-13 2xl:px-13",

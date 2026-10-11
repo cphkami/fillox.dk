@@ -28,6 +28,7 @@ export type TokenId =
   | "white"
   | "secondary"
   | "line"
+  | "field"
   | "rule"
   | "rule-strong"
   | "selection"
@@ -97,9 +98,10 @@ const text = (fg: TokenId, bg: Backdrop, label: string, what: string, min: 4.5 |
 
 /**
  * The For mænd page's dark surface is the `heading` colour used as a fill (components/men/surface.ts:
- * hero, closing booking band, the teaser on /behandlinger), with bronze (`rule`) and krem text on it.
+ * hero, closing booking band, the teaser on /behandlinger), with Sandbeige (`rule`) and offwhite
+ * ("krem") text on it.
  */
-const menBronze = text("rule", "heading", "For mænd: bronze", "Bronze-tekst på den mørke For mænd-flade");
+const menSandbeige = text("rule", "heading", "For mænd: sandbeige", "Sandbeige-tekst på den mørke For mænd-flade");
 const menCream = text("cream", "heading", "For mænd: krem 75 %", "Krem-tekst (75 %) på den mørke For mænd-flade", 4.5, 0.75);
 
 export const groups: TokenGroup[] = [
@@ -161,23 +163,34 @@ export const groups: TokenGroup[] = [
       {
         id: "line",
         name: "Linjer (hårstreger)",
-        hint: "Tynde skillelinjer og kanter på lyse flader (kun pynt)",
+        hint: "Tynde skillelinjer og kanter på lyse flader (kun pynt); kanten om hvide kort på krem",
         preview: { kind: "line", on: "cream" },
         pairs: [],
       },
       {
+        id: "field",
+        name: "Feltkanter",
+        hint: "Kanten om formularfelterne (kontakt, Få besked); skal kunne ses: 3:1",
+        preview: { kind: "line", on: "white" },
+        pairs: [
+          text("field", "white", "på hvid", "Feltkant på hvidt felt (grafik: 3:1)", 3),
+          text("field", "cream", "på krem", "Feltkant på krem (grafik: 3:1)", 3),
+          text("field", "sand", "på sand", "Feltkant på sand (grafik: 3:1)", 3),
+        ],
+      },
+      {
         id: "rule",
-        name: "Bronze-streger",
+        name: "Sandbeige-streger",
         hint: "Skillelinjer på lyse flader (pynt); tekst på den mørke For mænd-flade (H1-linje 2, eyebrows, tal)",
         preview: { kind: "line", on: "sand" },
-        pairs: [text("rule", "heading", "tekst på For mænd", "Bronze-tekst på den mørke For mænd-flade")],
+        pairs: [text("rule", "heading", "tekst på For mænd", "Sandbeige-tekst på den mørke For mænd-flade")],
       },
       {
         id: "rule-strong",
-        name: "Mørk bronze",
+        name: "Plum-streg",
         hint: "Aktiv menu-streg, understregning af tekst-links",
         preview: { kind: "line", on: "cream" },
-        pairs: [text("rule-strong", "cream", "på krem", "Mørk bronze-streg på krem (grafik: 3:1)", 3)],
+        pairs: [text("rule-strong", "cream", "på krem", "Plum-streg på krem (grafik: 3:1)", 3)],
       },
       {
         id: "selection",
@@ -200,7 +213,7 @@ export const groups: TokenGroup[] = [
         pairs: [
           text("heading", "cream", "på krem", "Overskrifter på krem"),
           text("heading", "sand", "på sand", "Overskrifter på sand"),
-          menBronze,
+          menSandbeige,
           menCream,
         ],
       },
@@ -444,7 +457,9 @@ export const tokenIds = new Set<string>(tokens.map((token) => token.id));
 /**
  * One-click suggestions. A suggestion only sets its own tokens and keeps the owner's other changes
  * (it asks before it replaces a value the owner set on one of its tokens); every text pair stays AA
- * (Lysere rosa: tekst 8.2:1, accent 6.0:1; Varmere footer: tekst 9.2:1, accent 6.7:1).
+ * (Varm krem: the page before 2026-10-10, heading 12.2:1, muted 7.0:1; Lys footer: Sandbeige 75 %
+ * #D5CEBB, tekst 9.7:1, accent 5.9:1, still 1.28:1 against sand; not the secondary #E1DCCF, which
+ * would merge with the secondary / sand panels right above the footer).
  * "Nuværende" (`resetAll`) is the site's colours: it clears every change and asks first, as
  * "Nulstil alle" does.
  */
@@ -459,8 +474,8 @@ export type Preset = {
 
 export const presets: Preset[] = [
   { id: "current", label: "Nuværende", hint: "Sitets farver: nulstiller alle dine ændringer", overrides: {}, resetAll: true },
-  { id: "lighter-rose", label: "Lysere rosa", hint: "Kun det rosa bånd (#E3B3A6)", overrides: { band: "#e3b3a6" } },
-  { id: "warmer-footer", label: "Varmere footer", hint: "Kun footeren (#DCC5B0)", overrides: { footer: "#dcc5b0" } },
+  { id: "warm-cream", label: "Varm krem", hint: "Kun sidens baggrund: den tidligere krem (#F7F2EA)", overrides: { cream: "#f7f2ea" } },
+  { id: "light-footer", label: "Lys footer", hint: "Kun footeren: lysere sandbeige (#D5CEBB)", overrides: { footer: "#d5cebb" } },
 ];
 
 /**

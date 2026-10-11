@@ -8,11 +8,12 @@ type ResponsibleBandProps = { copy: AboutPageCopy["responsible"] };
  * Since the owner's new "Om Fillox" text (October 2026) it closes /behandlere only; on /om-os
  * DoctorSection ("En læge, der er en del af hverdagen") introduces Dr. Tom instead.
  * The design set a pale rose band above a plum footer. It is `bg-sand` (like the hero panel), not
- * `bg-secondary`: the band sits ≈ 32px above the beige footer, and secondary (#E4D6CB) is only
- * 1.11:1 against it, so the page ended in two near-identical panels; sand is 1.28:1 and reads as
- * its own block. The name reads as a heading (Poppins 500, espresso: 11.0:1 on sand), the eyebrow
- * and button keep the accent (9.1:1). The practitioner pages solve the same case (their closing
- * "Book tid hos …" band) with the rose `band`; README → "Før lancering" asks the owner to pick one.
+ * `bg-secondary`: the band sits ≈ 32px above the Sandbeige footer (#CDBEA7), and secondary
+ * (#E1DCCF) is only 1.33:1 against it, so the page would end in two near-identical panels; sand
+ * (#EBE8DF) is 1.49:1 and reads as its own block. The name reads as a heading (Poppins 500,
+ * espresso: 11.1:1 on sand), the eyebrow and button keep the accent (plum, 7.5:1). The practitioner
+ * pages solve the same case (their closing "Book tid hos …" band) with the rosa `band`; README →
+ * "Før lancering" asks the owner to pick one.
  */
 export function ResponsibleBand({ copy }: ResponsibleBandProps) {
   return (

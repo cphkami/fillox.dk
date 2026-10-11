@@ -27,11 +27,11 @@ export type NewsletterFormCopy = {
 };
 
 /**
- * Colours of the surface the form sits on: the rose band (/blog) or the beige footer.
+ * Colours of the surface the form sits on: the rosa band (/blog) or the Sandbeige footer.
  * `field`: the white field's 1px border, ≥ 3:1 against the surface at rest (WCAG 1.4.11; the white
- * alone is 1.6:1 on the footer, 2.2:1 on the band). The border is drawn over the field's white, so
- * the alpha is mixed with white: footer-accent 75% → 3.7:1 on the footer, band-accent 85% → 3.5:1
- * on the band. Full accent on hover; the accent ring on focus.
+ * alone is 1.8:1 on the footer, 1.4:1 on the band). The border is drawn over the field's white, so
+ * the alpha is mixed with white: footer-accent 90% → 3.8:1 on the footer (7.0:1 against the
+ * field), band-accent 85% → 4.2:1 on the band. Full accent on hover; the accent ring on focus.
  */
 const tones = {
   band: {
@@ -43,7 +43,7 @@ const tones = {
     successText: "text-band-body",
   },
   footer: {
-    field: "border-footer-accent/75 hover:border-footer-accent",
+    field: "border-footer-accent/90 hover:border-footer-accent",
     error: "text-footer-accent",
     note: "text-footer-body",
     link: "text-on-footer hover:text-footer-accent",
@@ -194,7 +194,8 @@ export function NewsletterForm({ copy, tone, placement, describedBy, className }
           className={cn(
             buttonClasses({ variant: "primary", size: "mdTight", mobileSize: "lg", fullWidth: "mobile" }),
             "md:py-[15px]!",
-            sending && "cursor-progress opacity-70",
+            // 80%, not 70%: "Sender…" (the only progress feedback) stays ≥ 5:1 on every surface.
+            sending && "cursor-progress opacity-80",
           )}
         >
           {sending ? copy.sending : copy.submit}

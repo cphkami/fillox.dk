@@ -4,7 +4,7 @@ import type { MenPage } from "@/content/pages/men";
 
 /**
  * Compact FAQ on the page base (no panel): the heading in the left column of the page's 1 : 1.6
- * split from 1024px and the treatment pages' accordion (FaqAccordion: Poppins questions, bronze
+ * split from 1024px and the treatment pages' accordion (FaqAccordion: Poppins questions, Sandbeige
  * hairlines, first answer open on phones) on the right. It follows "Dine behandlere" (MenCare),
  * whose bottom padding is the space above, so it only pads its bottom.
  */

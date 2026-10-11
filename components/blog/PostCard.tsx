@@ -31,7 +31,7 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
         "group relative flex h-full items-center gap-3.5 rounded-[6px]",
         variant === "list" && "max-md:border-b max-md:border-line max-md:pb-3.5",
         cardFocusRing,
-        "md:flex-col md:items-stretch md:gap-0 md:overflow-hidden md:rounded-[20px] md:bg-white md:transition-shadow md:duration-200 md:hover:shadow-menu",
+        "md:flex-col md:items-stretch md:gap-0 md:overflow-hidden md:rounded-[20px] md:bg-white md:shadow-card md:transition-shadow md:duration-200 md:hover:shadow-menu",
         className,
       )}
     >

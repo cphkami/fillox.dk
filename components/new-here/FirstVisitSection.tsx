@@ -15,7 +15,7 @@ export function FirstVisitSection({ copy }: { copy: NewHerePage["firstVisit"] })
       <ul className="grid gap-3 md:grid-cols-2 md:gap-fluid-24">
         {copy.blocks.map((block, i) => (
           <li key={block.title} className="flex">
-            <div className="flex w-full flex-col rounded-[18px] bg-white px-5 py-7 md:rounded-[24px] md:px-8 md:py-9 lg:px-10 xl:px-fluid-40 xl:py-fluid-40">
+            <div className="flex w-full flex-col rounded-[18px] bg-white shadow-card px-5 py-7 md:rounded-[24px] md:px-8 md:py-9 lg:px-10 xl:px-fluid-40 xl:py-fluid-40">
               <h3 className="font-heading text-[22px] leading-[1.25] text-balance tracking-display text-heading md:text-h3-md">
                 {block.title}
               </h3>

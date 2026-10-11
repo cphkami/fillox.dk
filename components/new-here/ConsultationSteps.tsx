@@ -6,7 +6,7 @@ const number = (i: number) => String(i + 1).padStart(2, "0");
 
 /**
  * "Hvad sker der på en konsultation?": the four steps on a sand panel, as the For mænd page's
- * "Sådan foregår det" (components/men/MenProcess): each step hangs from a 2px bronze rule with a
+ * "Sådan foregår det" (components/men/MenProcess): each step hangs from a 2px Sandbeige rule with a
  * taupe number, a heading-font title and its text; 1 column below 768px, 2 up to 1279px, 4 from
  * 1280px (the steps are about twice as long as MenProcess's: four columns at 1024 wrapped them
  * into ≈ 25-character lines). "Book konsultation" sits beside the heading from 1024px and under

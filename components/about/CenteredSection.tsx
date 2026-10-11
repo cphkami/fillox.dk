@@ -8,7 +8,7 @@ type CenteredSectionProps = { copy: AboutPageCopy["consistency"] };
  * "Samme kompetence. Uanset hvilken Fillox du besøger.": one centred column on cream, between the
  * two-column sections around it. The heading is centred (balanced lines); the paragraphs are
  * left-aligned at the reading measure (52ch) in the middle of the page; the bold sentence is a
- * centred pull statement between two bronze hairlines (`rule` at 50%, decorative), and the
+ * centred pull statement between two Sandbeige hairlines (`rule` at 50%, decorative), and the
  * closing sentence follows it.
  * Spacing: 56px above and below on phones, 80px on tablets, 96 → 115px from 1024px.
  */

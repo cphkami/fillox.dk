@@ -50,7 +50,8 @@ const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 const SWIPE_DISTANCE = 40;
 
 // Inactive dots are the only visual of a control: ≥ 3:1 against the surface (WCAG 1.4.11).
-// accent/65 = 4.0 : 1 on white, 3.8 : 1 on cream; band-accent/75 = 3.5 : 1 on the rose band.
+// accent/75 = 4.65 : 1 on white, 4.55 on offwhite, 4.1 on sand; band-accent/75 = 3.7 : 1 on the
+// rosa band. (accent/65 was only 3.3 : 1 on sand with Anette's palette.)
 // The large quote is a heading (Poppins, text-heading / text-on-band); the compact one is card
 // text (Figtree, ink): `quote` is the large quote's colour, `compactQuote` the compact one's.
 const surfaces = {
@@ -60,7 +61,7 @@ const surfaces = {
     compactQuote: "text-ink",
     caption: "text-muted",
     button: "border-accent/30 text-accent hover:border-accent hover:bg-accent hover:text-on-accent",
-    dot: "bg-accent/65 group-hover:bg-accent/85",
+    dot: "bg-accent/75 group-hover:bg-accent/90",
     dotActive: "bg-accent",
   },
   band: {
@@ -79,7 +80,7 @@ const surfaces = {
     caption: "text-muted lg:tracking-[2px] lg:text-band-body lg:uppercase",
     button:
       "border-accent/30 text-accent hover:border-accent hover:bg-accent hover:text-on-accent lg:border-band-accent/40 lg:text-band-accent",
-    dot: "bg-accent/65 group-hover:bg-accent/85 lg:bg-band-accent/75 lg:group-hover:bg-band-accent/90",
+    dot: "bg-accent/75 group-hover:bg-accent/90 lg:bg-band-accent/75 lg:group-hover:bg-band-accent/90",
     dotActive: "bg-accent lg:bg-band-accent",
   },
 } as const;

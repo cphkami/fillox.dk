@@ -8,7 +8,7 @@ import type { MenCarePerson } from "./menView";
  * gender, and no choice of practitioner: see content/pages/men.ts → care). The heading, a short
  * intro and "Mød hele teamet" sit in the left column of the page's 1 : 1.6 split from 1024px;
  * three practitioners share the right one, each with a square-cornered 4:5 portrait (the page's
- * straighter look), name, title and their own quote under a bronze rule (decorative).
+ * straighter look), name, title and their own quote under a Sandbeige rule (decorative).
  *
  * Each card links to the practitioner's profile: the name is the link, and its ::after covers
  * the card (the <li> is the positioned box), so the whole card is the hit area; hovering the

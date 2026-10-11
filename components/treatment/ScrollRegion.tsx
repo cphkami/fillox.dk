@@ -6,10 +6,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * Horizontal scroll row that becomes a keyboard stop (tabIndex 0, role="group" with an
  * accessible name) only while its content actually overflows, i.e. on mobile. Where the
  * content fits (the desktop grid) it is a plain <div>.
+ *
+ * Starts as scrollable, so the server HTML (and a page without JavaScript, or before hydration)
+ * already has the keyboard stop on mobile; the observer drops it where the row fits.
  */
 export function ScrollRegion({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [scrollable, setScrollable] = useState(false);
+  const [scrollable, setScrollable] = useState(true);
 
   useEffect(() => {
     const el = ref.current;

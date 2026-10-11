@@ -47,7 +47,7 @@ export function ContactChannels({ channels, label }: ContactChannelsProps) {
               href={channel.href}
               className={cn(
                 "group relative flex items-center justify-between gap-4 rounded-[20px] px-5 py-[18px] transition-colors md:flex-wrap md:gap-y-1 md:px-7 md:py-[22px] xl:px-fluid-28 xl:py-fluid-22",
-                accent ? "bg-sand md:bg-band" : "bg-white",
+                accent ? "bg-sand md:bg-band" : "bg-white shadow-card",
                 // Hover: the band a shade deeper (8% on-band mixed in; the band text stays ≥ 5:1).
                 accent && linked && "md:hover:bg-[color-mix(in_oklab,var(--color-band)_92%,var(--color-on-band))]",
               )}

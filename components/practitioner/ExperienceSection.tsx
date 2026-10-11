@@ -5,7 +5,7 @@ type ExperienceSectionProps = { experience: NonNullable<TeamProfile["experience"
 
 /**
  * "Erfaring & uddannelse" — a band with a period/text timeline (6alb / ma; plum in the design,
- * the dusty rose band now: on-band heading and periods, band-body text, band-line dividers).
+ * the Lys Rosa band now: on-band heading and periods, band-body text, band-line dividers).
  * A period can be a word instead of a year ("Uddannelse", "Undervisning"): the mobile column is
  * 6.5em (the design's 70px fits a year, not "Undervisning"), the desktop one 7.5em.
  */

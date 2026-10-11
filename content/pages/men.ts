@@ -11,7 +11,7 @@ import { treatmentPage } from "./treatments";
  * cleaner, a more masculine look"; it replaces the "For mænd" section at the bottom of
  * /behandlinger, which the menus linked to as /behandlinger#for-maend and so opened at the
  * bottom of that page). No design: built from the site's tokens in the darker neutrals
- * (espresso, sand, krem, bronze rules), no rose bands.
+ * (espresso, sand, offwhite, Sandbeige rules), no rosa bands.
  *
  * No reviews on this page: it lists rynkebehandling, and the rynkebehandling pages show none
  * (content/reviews.ts → treatmentsWithoutReviews).
@@ -99,10 +99,10 @@ export const menPage = {
   ] satisfies Link[],
 
   hero: {
-    /** H1, in two lines: the second in bronze. Full stops on purpose (a tagline, see the header). */
+    /** H1, in two lines: the second in Sandbeige. Full stops on purpose (a tagline, see the header). */
     title: "Behandlinger til mænd.",
     titleAccent: "Uden dikkedarer.",
-    /** The lead's opening wink, one line per sentence (heading font, full krem), above the lead. */
+    /** The lead's opening wink, one line per sentence (heading font, full offwhite), above the lead. */
     // The owner's own line (2026-10-03), approved for the hero.
     leadHook: ["Ingen har nogensinde savnet en behåret ryg.", "Laseren når hele vejen rundt."] as string[],
     lead: "Først en konsultation, så en plan. Vi behandler kun, når det giver mening for dig.",

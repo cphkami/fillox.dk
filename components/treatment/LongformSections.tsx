@@ -155,9 +155,9 @@ function ItemCards({ items, className }: { items: TreatmentSectionItem[]; classN
           id={item.id}
           aria-labelledby={item.id ? titleId(item.id) : undefined}
           className={cn(
-            "rounded-[18px] bg-white px-5 py-5 md:rounded-[24px] md:px-7 md:pt-[26px] md:pb-7 xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-28",
+            "rounded-[18px] bg-white px-5 py-5 shadow-card md:rounded-[24px] md:px-7 md:pt-[26px] md:pb-7 xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-28",
             // Where a jump link lands (the hero chips, a shared link or a redirect to #lip-flip …):
-            // a bronze outline while the card is the URL's #fragment.
+            // a plum outline while the card is the URL's #fragment.
             "target:ring-2 target:ring-rule-strong",
             itemSpan(i, count),
           )}

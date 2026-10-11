@@ -73,12 +73,14 @@ export function ResultsSection({ results }: { results: NonNullable<TreatmentView
       />
       <ScrollRegion
         label={copy.results.scrollLabel}
-        className="-mr-5 snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:mr-0 md:overflow-visible [&::-webkit-scrollbar]:hidden"
+        // 4px of padding (cancelled by the negative margins) so the scroll box doesn't clip the
+        // mobile cards' shadow-card edge; scroll-pl-1 keeps the snapped card on the gutter.
+        className="-my-1 -mr-5 -ml-1 snap-x snap-mandatory scroll-pl-1 overflow-x-auto py-1 pl-1 [scrollbar-width:none] md:m-0 md:overflow-visible md:p-0 [&::-webkit-scrollbar]:hidden"
       >
         <ul className="flex w-max gap-3 pr-5 md:grid md:w-auto md:grid-cols-3 md:gap-fluid-24 md:pr-0">
           {results.items.map((item, i) => (
             <li key={i} className="w-[300px] flex-none snap-start md:w-auto">
-              <figure className="rounded-[20px] bg-white p-2.5 md:rounded-none md:bg-transparent md:p-0">
+              <figure className="rounded-[20px] bg-white p-2.5 max-md:shadow-card md:rounded-none md:bg-transparent md:p-0">
                 <div className="grid grid-cols-2 gap-1.5 md:h-[300px] md:gap-[3px] md:overflow-hidden md:rounded-[24px] md:bg-cream lg:h-fluid-400/520">
                   <Half image={item.before} label={copy.results.before} tone="before" />
                   <Half image={item.after} label={copy.results.after} tone="after" />

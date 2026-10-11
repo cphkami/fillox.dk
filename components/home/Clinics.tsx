@@ -7,16 +7,17 @@ import { ArrowCircle } from "./ArrowCircle";
 
 /**
  * "Her finder du Fillox". Desktop (6a): four white cards. Mobile (mf): stacked cards
- * with a round arrow; the clinic that is not open yet shows its opening note instead.
+ * with a round arrow; the clinic that is not open yet shows its opening note instead. The cards
+ * carry `shadow-card`: white alone is only 1.05:1 on the offwhite page.
  *
  * Hover on an open card underlines the name and turns it accent: the heading colour and the
- * accent are both dark browns (1.2:1 apart), and from lg the card has no arrow, so the colour
+ * accent are both dark (1.5:1 apart), and from lg the card has no arrow, so the colour
  * change alone was barely visible. Line height 1.5 on the section: the design's "normal" in
  * Poppins (Figtree's is 1.2).
  *
  * The opening hours (from lg) and the opening note are the accent, as 6a sets them in the plum
  * and as the Find klinik dropdown sets the hours. The accent and the muted address are close
- * (1.4:1 apart), so from lg the hours are medium weight to stand apart from the address above.
+ * (1.2:1 apart), so from lg the hours are medium weight to stand apart from the address above.
  */
 export function Clinics({
   copy,
@@ -28,7 +29,7 @@ export function Clinics({
   /** Find klinik page; each open card links to `${clinicsHref}#${slug}`. */
   clinicsHref: string;
 }) {
-  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] lg:block lg:p-7 xl:p-fluid-28";
+  const card = "flex h-full items-center justify-between gap-3 rounded-[20px] bg-white px-5 py-[18px] shadow-card lg:block lg:p-7 xl:p-fluid-28";
 
   return (
     <Container as="section" aria-labelledby="home-clinics-title" className="pt-14 pb-11 leading-[1.5] lg:py-fluid-84">

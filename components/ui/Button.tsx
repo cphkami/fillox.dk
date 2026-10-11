@@ -3,20 +3,21 @@ import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/cn";
 
 /**
- * Pill buttons from the design (radius 100px), in the "Støvet rosa & beige" palette.
+ * Pill buttons from the design (radius 100px), in Anette's palette (2026-10-10).
  *
- * - primary   accent (plum-brown) bg + krem text: THE button, on light surfaces, on the rose bands
- *             and in the footer alike (krem on accent 10:1; accent on the band 5:1)
+ * - primary   accent (plum) bg + offwhite text: THE button, on light surfaces, on the rosa bands
+ *             and in the footer alike (offwhite on accent 8.8:1; accent on the band 6.4:1, on the
+ *             footer 5.0:1)
  * - outline   1px accent border + accent text
  * - outlineInk 1px ink border + ink text
  * - white     white bg + 1px line border (chips, secondary on sand)
- * - textLink  ink text over a 1px deep-bronze underline ("Se priser")
+ * - textLink  ink text over a 1px plum underline (rule-strong; "Se priser")
  *
  * Hover, keyboard focus and press share one look per variant, and it is always the brown accent,
  * never black (owner, 2026-10: "Se alle behandlinger" turned black on hover; it should turn brown
  * like "Alle artikler om lip filler"):
  * - primary              → accent-deep fill
- * - outline / outlineInk → accent fill + krem text (the "Alle artikler om …" look)
+ * - outline / outlineInk → accent fill + offwhite text (the "Alle artikler om …" look)
  * - white                → accent border + accent text. Not filled: the white pills are mostly
  *                          filter chips, whose selected state IS the accent fill (primary), so a
  *                          filled hover would look selected.
@@ -63,7 +64,7 @@ const base =
  */
 const forcedColorsBorder = "forced-colors:border forced-colors:border-[color:ButtonText]";
 
-/** The brown fill of outline pills on hover, keyboard focus and press (krem on accent 10:1). */
+/** The plum fill of outline pills on hover, keyboard focus and press (offwhite on accent 8.8:1). */
 const accentFill = [
   "hover:border-accent hover:bg-accent hover:text-on-accent",
   "focus-visible:border-accent focus-visible:bg-accent focus-visible:text-on-accent",

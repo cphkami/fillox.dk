@@ -39,7 +39,7 @@ export function PractitionerCard({ member, headingLevel: Heading = "h2", priorit
   const squareZoom = drawnWidthScale(square, teamSlots.square.aspect);
 
   return (
-    <article className="relative flex w-full flex-col rounded-[24px] bg-white px-2.5 pt-2.5 pb-5 md:bg-transparent md:p-0">
+    <article className="relative flex w-full flex-col rounded-[24px] bg-white px-2.5 pt-2.5 pb-5 max-md:shadow-card md:bg-transparent md:p-0">
       <CropPhoto
         mobile={square}
         desktop={portrait}
@@ -74,7 +74,7 @@ export function PractitionerCard({ member, headingLevel: Heading = "h2", priorit
             className={cn(
               "inline-flex h-11 items-center text-[15px] font-semibold whitespace-nowrap text-accent transition-colors hover:text-accent-deep",
               "after:absolute after:inset-0 after:rounded-[24px]",
-              // The site's text link from 768px: deep-bronze underline (Button textLink).
+              // The site's text link from 768px: plum underline (Button textLink).
               "md:inline md:h-auto md:border-b md:border-rule-strong md:pb-[3px] md:text-ui-sm md:font-normal md:hover:border-accent-deep",
             )}
           >

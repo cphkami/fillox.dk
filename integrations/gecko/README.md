@@ -2,13 +2,14 @@
 
 `fillox-booking-theme.css` er et CSS-tema, der får den online booking på
 [fillox.dk/booking](https://fillox.dk/booking) til at ligne resten af fillox.dk: skriften
-Figtree med Poppins i overskrifterne, farverne fra "Støvet rosa & beige" (den mørke
-plum-brune knapfarve, creme, sand og beige), pille-knapper, afrundede kort, klinikker og tider
-som "chips" og tydelige valgte tilstande.
+Figtree med Poppins i overskrifterne, Anettes farver fra 10. oktober 2026 (plum #6B393F på
+knapper og valgte tilstande, Lys Rosa #E7D3CE, en lys sandbeige og offwhite), pille-knapper,
+afrundede kort, klinikker og tider som "chips" og tydelige valgte tilstande.
 
 > **Nyt tema (oktober 2026).** Temaet følger nu hjemmesidens nye stil: Figtree som skrift,
-> Poppins (tyndere, i en varm mørkebrun) i overskrifterne og den plum-brune farve #543232 i
-> stedet for den gamle plum. Har I allerede sat det gamle tema ind i Gecko, skal det udskiftes:
+> Poppins (tyndere, i en varm mørkebrun) i overskrifterne og Anettes farver fra 10. oktober
+> 2026: plum #6B393F på knapper, links og valgte tilstande, Lys Rosa #E7D3CE, sandbeige og
+> offwhite. Felterne i formularerne har fået en tydeligere kant (#857B69), så man kan se dem. Har I allerede sat det gamle tema ind i Gecko, skal det udskiftes:
 > følg "Sådan sætter du det ind" nedenfor, men erstat alt fra `<style>` til og med `</style>`
 > med den nye fil (trin 5 og 6). Indtil da viser bookingen det gamle look.
 
@@ -50,7 +51,7 @@ med Cmd/Ctrl + Shift + R) og gå igennem:
 
 - [ ] Menuen øverst (Book ny tid / Log ind / ...) og trin 1–4
 - [ ] Vælg klinik (chips) og åbn/luk nogle ydelsesgrupper. Radioknapperne (de runde
-      cirkler ved klinikker og ydelser) er 24 px og får en plum-brun prik, når de er valgt
+      cirkler ved klinikker og ydelser) er 24 px og får en plum prik, når de er valgt
 - [ ] Tryk på **i**'et ved en ydelse: beskrivelsen i vinduet skal stå med samme skrift
       (Figtree) som resten (se "Ydelsesbeskrivelser" nedenfor)
 - [ ] Vælg en ydelse, se "Du har valgt", tryk **Videre**
@@ -61,7 +62,7 @@ med Cmd/Ctrl + Shift + R) og gå igennem:
 - [ ] **Tilmeld venteliste → Opret**: tryk i felterne **Mellem d.** og **og d.**, så
       kalenderen (datovælgeren) åbner
 - [ ] Tastatur: tryk Tab gennem en formular. Knapper, felter og afkrydsningsfelter (fx
-      betingelser og nyhedsbrev) skal få en plum-brun ramme, når de har fokus
+      betingelser og nyhedsbrev) skal få en plum ramme, når de har fokus
 - [ ] **På en telefon inde på fillox.dk/booking**, ikke kun via det direkte link. Inde på
       hjemmesiden er bookingen kun ca. 350 px bred (ca. 280 px på en lille telefon). Tjek især
       ugevisningen på en uge efter den første (knapperne "7 Dage tilbage" og "7 Dage frem")
@@ -102,8 +103,8 @@ indhold ind, du gemte i trin 5) og gem. Bookingen ser ud som før med det samme.
   stå som de er. Ændrer du dem, kan enkelte dele skifte farve igen.
 - **Farver pr. ydelse** sættes på hver ydelse i Gecko og kan ikke ændres med CSS. Bookingen
   viser ikke de farver; alle ydelser vises i Fillox-farverne.
-- **Kalenderfarver**: ledig tid = hvid chip, venteliste = lyserød chip, optaget/lukket = gennemstreget.
-  I datovælgeren på ventelisten har dagen i dag en plum-brun ring, og den valgte dag er plum-brun.
+- **Kalenderfarver**: ledig tid = hvid chip, venteliste = lyserød chip (Lys Rosa), optaget/lukket = gennemstreget på en lys sandbeige.
+  I datovælgeren på ventelisten har dagen i dag en plum ring, og den valgte dag er plum.
 - **Ydelsesbeskrivelser** (i'et ved en ydelse): Geckos teksteditor har gemt beskrivelserne med
   skriften Times New Roman og sort tekst. Temaet overstyrer skriften, så de vises i Figtree.
   Det er alligevel en god idé at fjerne formateringen i beskrivelserne i Gecko (marker teksten og
@@ -119,7 +120,7 @@ indhold ind, du gemte i trin 5) og gem. Bookingen ser ud som før med det samme.
 - **Tastatur**: Gecko laver ydelsesrækker og tider på "Vælg en tid"-siden som klikbare felter,
   ikke som knapper, så de kan ikke nås med Tab-tasten. Det kan CSS ikke rette. Alt, der kan nås
   med Tab (knapper, links, felter, afkrydsningsfelter og radioknapper), får med temaet en synlig
-  plum-brun fokusramme. Den fjerner Gecko ellers.
+  plum fokusramme. Den fjerner Gecko ellers.
 - **Skrifterne Figtree og Poppins** hentes fra Google Fonts (linjen med `@import` øverst). Det
   betyder, at besøgendes browser kontakter Google (IP-adresse) på bookingsiderne. Hjemmesiden
   selv henter ikke skrifter fra Google. Vil I undgå det, kan `@import`-linjen slettes; så
@@ -145,4 +146,4 @@ gennemsigtig, så kortet er baggrunden, og der skal ikke ændres noget på hjemm
 | Fil | Indhold |
 |---|---|
 | `fillox-booking-theme.css` | Temaet, der indsættes i Gecko. Kommentarerne i filen forklarer hver sektion. |
-| `preview/` | Skærmbilleder af den rigtige booking med temaet: desktop 1280 px (vist i 75 %), mobil 390 px, 350 og 280 px (så bred er bookingen inde på fillox.dk på en telefon på 390 og 320 px) og fillox.dk/booking. `11-...-simuleret` viser antal-vælgeren (Geckos egen kode, som normalt er skjult) og et rabatkodefelt bygget efter Geckos mønster, uden for den rigtige formular. Opdateret med det nye tema i oktober 2026: trin 1, log ind og Ny kunde er taget på den rigtige booking; trinnene efter **Videre** (uge, måned, tider, venteliste, datovælger) er gemte kopier af de rigtige sider fra 1. oktober med det nye tema, så der ikke blev valgt en ydelse i den rigtige kalender. I `3b` er "7 Dage tilbage" slået til i kopien, så begge knapper ses. |
+| `preview/` | Skærmbilleder af den rigtige booking med temaet: desktop 1280 px (vist i 75 %), mobil 390 px, 350 og 280 px (så bred er bookingen inde på fillox.dk på en telefon på 390 og 320 px) og fillox.dk/booking. `11-...-simuleret` viser antal-vælgeren (Geckos egen kode, som normalt er skjult) og et rabatkodefelt bygget efter Geckos mønster, uden for den rigtige formular. Opdateret med det nye tema i oktober 2026: trin 1, log ind og Ny kunde er taget på den rigtige booking; trinnene efter **Videre** (uge, måned, tider, venteliste, datovælger) er gemte kopier af de rigtige sider fra 1. oktober med det nye tema, så der ikke blev valgt en ydelse i den rigtige kalender. I `3b` er "7 Dage tilbage" slået til i kopien, så begge knapper ses. **Anettes farver (11. oktober 2026):** `1-tjenester-*`, `1c`, `2`, `8`, `9` og `fillox-dk-booking-*` er taget igen på den rigtige booking med de nye farver. Billederne `3`–`7`, `10` og `11` er stadig fra før farveskiftet (plum-brun, varm creme, lyse feltkanter): kopierne af siderne efter **Videre** findes ikke længere, og vi vælger ikke en ydelse i den rigtige kalender for at tage dem igen. Layoutet er det samme; kun farverne er ændret. |

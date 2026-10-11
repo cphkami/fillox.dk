@@ -14,10 +14,10 @@ const crumbLink = "relative -mx-1 px-1 py-[13px] underline-offset-4 hover:text-c
 /**
  * Hero of /behandlinger/for-maend: an espresso band on the surface margin (rounded like every
  * hero panel; straight hairlines inside). Breadcrumb on top, then the two-line H1 (second line
- * bronze) with the lead and buttons beside it from 1024px, bottom-aligned with the H1. The lead
- * opens with the page's wink (`leadHook`: one line per sentence, heading font, full krem), so
+ * Sandbeige) with the lead and buttons beside it from 1024px, bottom-aligned with the H1. The lead
+ * opens with the page's wink (`leadHook`: one line per sentence, heading font, full offwhite), so
  * it reads as a voice between the H1 and the plain lead, not as a second heading. Then the
- * three facts as a row of columns under a bronze rule (divided by hairlines). Below 1024px
+ * three facts as a row of columns under a Sandbeige rule (divided by hairlines). Below 1024px
  * everything stacks and the facts are a list. No photo: the page is typographic on purpose
  * (restrained imagery), and the layout leaves no empty quadrant to fill.
  */

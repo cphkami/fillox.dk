@@ -38,11 +38,14 @@ const MOBILE_QUERY = "(max-width: 47.99rem)";
  * the body text (`text-body`, 18px at 1600) while the fields grow 59 → 64px (textarea
  * 120 → 132px) so the text keeps its inset. Placeholders are 15px on mobile as in mc, which
  * does not trigger the zoom.
+ * Border: --color-field (Sandbeige deepened), ≥ 3:1 so the field's edge is visible (WCAG 1.4.11):
+ * 3.40:1 against the sand card on mobile, 3.99 on the offwhite desktop field (whose fill is only
+ * 1.05:1 on the white card). The design's hairline (line) was 1.1–1.4:1. Plum on hover and focus.
  */
 const fieldBase =
-  "block w-full border border-line bg-white px-5 text-[16px] text-ink transition-colors hover:border-rule focus:border-accent aria-[invalid=true]:border-accent md:bg-cream xl:text-body";
+  "block w-full border border-field bg-white px-5 text-[16px] text-ink transition-colors hover:border-accent focus:border-accent aria-[invalid=true]:border-accent md:bg-cream xl:text-body";
 /**
- * One placeholder colour everywhere, --color-placeholder (4.7:1 on cream, 5.3:1 on white).
+ * One placeholder colour everywhere, --color-placeholder (5.0:1 on offwhite, 5.25:1 on white).
  * The design's lighter desktop grey (6ko, #9a8b87) failed WCAG AA and is gone.
  */
 const placeholderColor = "placeholder:text-placeholder max-md:placeholder:text-[15px]";
@@ -115,7 +118,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           ref={successRef}
           tabIndex={-1}
           role="status"
-          className="rounded-[18px] bg-white px-5 py-5 focus:outline-none md:rounded-[16px] md:bg-cream md:px-6 md:py-6 xl:p-fluid-24"
+          className="rounded-[18px] bg-white px-5 py-5 focus:outline-none md:rounded-[16px] md:bg-cream md:px-6 md:py-6 md:shadow-card xl:p-fluid-24"
         >
           <p className="font-heading text-lead tracking-display text-heading">{copy.success.title}</p>
           <p className="mt-2 text-body-sm leading-[1.7] text-pretty text-muted">{copy.success.text}</p>
@@ -131,7 +134,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
             }}
             className="group mt-4 inline-flex items-center text-ui-sm text-ink transition-colors hover:text-accent max-md:mt-2 max-md:min-h-11 md:relative md:after:absolute md:after:-inset-x-1 md:after:-inset-y-2.5"
           >
-            {/* Text-link underline as Button "textLink": deep bronze, the accent on hover. */}
+            {/* Text-link underline as Button "textLink": plum (rule-strong), the accent on hover. */}
             <span className="border-b border-rule-strong pb-[3px] transition-colors group-hover:border-accent">
               {copy.success.again}
             </span>
@@ -394,7 +397,8 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           className={cn(
             buttonClasses({ variant: "primary", size: "md", mobileSize: "lg", fullWidth: true }),
             "md:col-span-2 md:mt-1.5",
-            sending && "cursor-progress opacity-70",
+            // 80%, not 70%: "Sender…" (the only progress feedback) stays ≥ 5:1 on every surface.
+            sending && "cursor-progress opacity-80",
           )}
         >
           {sending ? copy.sending : copy.submit}

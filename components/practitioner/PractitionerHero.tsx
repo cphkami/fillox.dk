@@ -21,8 +21,8 @@ type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
  *   6px more between lines when a name wraps ("Dr. Tom Haugland": 1.1 at 76px, 1.14 at 52px):
  *   line-height 1.02em + 6px with −3px margins. Whole px, not em, so the line box stays on
  *   Chrome's 1/64px layout grid and a single line renders pixel-identical.
- * - Type and colour ("Støvet rosa & beige"): the name is the page's accent, as in the design (plum
- *   there), so the H1 takes the H1 accent colour (`text-emphasis`) in the heading font. Fact
+ * - Type and colour (Anette's palette, 2026-10-10): the name is the page's accent, as in the design
+ *   (plum), so the H1 takes the H1 accent colour (`text-emphasis`, plum) in the heading font. Fact
  *   values are card titles from 768px (heading font, `text-heading`) and data rows below
  *   (Figtree, as the rest of the body).
  */
@@ -129,7 +129,7 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
           {profile.facts.map((fact) => (
             <div
               key={fact.label}
-              className="flex justify-between gap-3 rounded-2xl bg-white px-[18px] py-3.5 text-[15px] md:flex-col md:justify-start md:gap-0 md:rounded-[24px] md:px-6 md:py-6 lg:px-[30px] lg:py-7 xl:px-fluid-30 xl:py-fluid-28"
+              className="flex justify-between gap-3 rounded-2xl bg-white shadow-card px-[18px] py-3.5 text-[15px] md:flex-col md:justify-start md:gap-0 md:rounded-[24px] md:px-6 md:py-6 lg:px-[30px] lg:py-7 xl:px-fluid-30 xl:py-fluid-28"
             >
               <dt className="text-muted md:mb-2 md:text-micro md:font-bold md:tracking-[2px] md:text-accent md:uppercase">
                 {fact.label}

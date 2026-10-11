@@ -2,7 +2,8 @@
 
 Marketingsitet for Fillox Danmark: behandlinger, priser, klinikker, behandlere, blog og
 online booking. Bygget ud fra Claude Design-filen **"Fillox Signature v2"** (Bold & Bordeaux,
-designmanual 2026 — kilden ligger i `design-reference/`).
+designmanual 2026 — kilden ligger i `design-reference/`), i Anettes farver fra 10. oktober 2026:
+offwhite baggrund, Lys Rosa og plum, med lidt sandbeige (se `ARCHITECTURE.md` → "Design tokens").
 
 Søsterrepoet `fillox-no` (fillox.no) laves ud fra dette repo ved at bytte markedsdata ud —
 se [Rebranding til fillox.no](#rebranding-til-filloxno). Arkitekturen og reglerne for koden
@@ -115,8 +116,9 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
 - [ ] **Gecko-kalender-id'er** på City2, Amager Centret og Frederiksberg i `content/clinics.ts`
       (`booking.geckoCalendarId`), så klinik-links vælger klinikken i kalenderen.
 - [ ] **Gecko-tema**: sæt den nye `integrations/gecko/fillox-booking-theme.css` (Figtree,
-      Poppins-overskrifter, den plum-brune farve) ind i Gecko i stedet for det gamle tema, se
-      `integrations/gecko/README.md`. Ellers er kalenderen på `/booking` stadig plum med Poppins.
+      Poppins-overskrifter, Anettes farver fra 10. oktober) ind i Gecko i stedet for det gamle
+      tema, se `integrations/gecko/README.md`. Ellers er kalenderen på `/booking` stadig plum med
+      Poppins.
 - [ ] **Copy review** — alle `// TODO: copy review` i `content/**` (tekster, der ikke står i
       designet og er skrevet i designets tone):
   - [ ] `content/layout.ts`: SEO-titel/-beskrivelse, alt-tekst på delingsbillede, skjulte
@@ -225,15 +227,18 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       uden filter. Kan Gecko forvælge en behandler (et kalender- eller ressource-id pr. behandler,
       som `geckoCalendarId` pr. klinik)? Indtil da åbner knapperne "Book tid hos …" på
       behandlersiderne kalenderen uden filter.
-- [ ] **Båndet lige over footeren** ("Støvet rosa & beige"): designets lyse bånd var i ét med den
-      beige footer. Om os slutter nu med det rosa bånd "Velkommen til Fillox" (den nye tekst),
+- [ ] **Båndet lige over footeren**: designets lyse bånd var i ét med den beige footer. Om os slutter nu med det rosa bånd "Velkommen til Fillox" (den nye tekst),
       ligesom behandlersiderne ("Book tid hos …"). Kun `/behandlere` slutter stadig med det sand-
       farvede "Fagligt ansvarlig"-bånd (`components/about/ResponsibleBand.tsx`). Skal det også være
       rosa?
 - [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
       `content/clinics.ts`), større original af Om os-billedet og et andet foto af Dr. Tom (se
-      "Om os" ovenfor).
+      "Om os" ovenfor). Nogle stockfotos har en laksefarvet baggrund, der ligger tæt på den
+      støvede rosa, I fravalgte (`public/images/hero/hero-1.jpg` på /behandlinger, `results/duo-pink.jpg`
+      i anmeldelserne på forsiden, lip filler-heroen): få dem farvekorrigeret mod Lys Rosa
+      (ca. −20 % mætning, lidt lysere og køligere baggrund), eller vælg andre billeder ved de rosa
+      flader.
 - [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
 - [ ] **Østerbro**: når klinikken åbner, sæt `status: "open"`, adresse, åbningstider og
       Gecko-id i `content/clinics.ts`.

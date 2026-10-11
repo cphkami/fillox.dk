@@ -16,55 +16,65 @@
 
 /*
  * Fillox design tokens: the design "Fillox Signature v2" (mobile spec + brand kit) in the owner's
- * palette "Støvet rosa & beige" (2026-10; ported from the /lab experiment's "stoevet-rosa").
+ * palette of 2026-10-10 (Anette, Fillox): Offwhite #FAFAF8, Lys Rosa #E7D3CE, Plum #6B393F and
+ * Sandbeige ≈ #C9BFA7 (used as #CDBEA7: the same lightness, a touch less green, so it does not
+ * read olive next to Lys Rosa). Lys Rosa carries the bands, Plum is the accent (buttons, links,
+ * numbers, the H1's accent words; never a large surface), the cooler offwhite is the page,
+ * Sandbeige the footer and (lightened) the hero panels and cards. White cards on the offwhite
+ * page carry `shadow-card` (white is only 1.05:1 on offwhite).
  * Use them as Tailwind utilities: bg-accent, text-heading, bg-band, text-on-band, border-line …
  * Every text pair is WCAG AA (ratios below); ARCHITECTURE.md → "Design tokens" has the table.
  */
 @theme {
   /* Light surfaces */
-  --color-cream: #f7f2ea; /* page base (krem) */
-  --color-sand: #efe6dc; /* surfaces: hero panel, cards, icon circles */
-  --color-secondary: #e4d6cb; /* secondary surface: team panel, hovered arrow circles (light Senses beige) */
-  --color-line: #e2d5c5; /* hairlines on light */
-  --color-rule: #baa586; /* bronze: dividers (hero stats). Decorative only: 2.1:1 on cream, never text */
-  --color-rule-strong: #8a7455; /* deep bronze: active nav underline, text-link underlines (4.0:1 on cream) */
+  --color-cream: #fafaf8; /* page base (Offwhite; cooler than the former krem #f7f2ea) */
+  --color-sand: #ebe8df; /* surfaces: hero panel, cards, icon circles (Sandbeige 30 % on offwhite) */
+  --color-secondary: #e1dccf; /* secondary surface: team panel, hovered arrow circles (Sandbeige 50 %) */
+  --color-line: #e1dccf; /* hairlines on light */
+  --color-rule: #cdbea7; /* Sandbeige: dividers (hero stats). Decorative only: 1.75:1 on offwhite, 1.5 on sand, never text */
+  --color-rule-strong: #6b393f; /* plum: active nav underline, text-link underlines (8.8:1 on offwhite) */
 
   /* Text on light */
   --color-ink: #242724; /* body text */
-  --color-heading: #3b2a28; /* headings (espresso, softer than ink): 12.2:1 on cream, 11.0 on sand */
-  --color-muted: #5e4f4d; /* secondary text */
+  --color-heading: #3b2a28; /* headings (espresso, softer than ink): 13.0:1 on offwhite, 11.1 on sand */
+  --color-muted: #5e4f4d; /* secondary text: 7.4:1 on offwhite, 6.3 on sand, 5.7 on secondary */
   /* Taupe and placeholder are darkened versions of the design's #b39c89 / #8a7f7c (same hue) so
-     they pass WCAG AA (4.5:1) as body-size text: taupe 4.62 on sand, 5.11 on cream, 5.69 on white;
-     placeholder 4.71 on cream, 5.25 on white. */
+     they pass WCAG AA (4.5:1) as body-size text: taupe 4.65 on sand, 5.45 on offwhite, 5.69 on
+     white; placeholder 5.02 on offwhite, 5.25 on white. */
   --color-taupe: #7a624f; /* prices and price notes, the /priser hero eyebrow */
   --color-placeholder: #746a67; /* input placeholder text (the only placeholder colour) */
-  --color-emphasis: #94544a; /* the H1's accent words (large text only: 4.7:1 on sand, 5.2 on cream) */
+  /* Form field borders (Sandbeige deepened): ≥ 3:1 so a field's edge is visible (WCAG 1.4.11):
+     4.17:1 on white, 3.99 on offwhite, 3.40 on sand. Hover and focus turn the border plum. */
+  --color-field: #857b69;
+  --color-emphasis: #6b393f; /* the H1's accent words (plum): 8.8:1 on offwhite, 7.5 on sand */
 
-  /* Accent: the Fillox Academy plum-brown. Buttons, links, eyebrows, numbers, focus ring, on light
-     AND on the rose bands (10.0:1 on cream, 9.1 on sand, 5.0 on band). */
-  --color-accent: #543232;
-  --color-accent-deep: #422424; /* hover of accent buttons / links */
-  --color-on-accent: #f7f2ea; /* text on accent (krem): 10.0:1, 12.5 on accent-deep */
-  --color-selection: #e2c2b9; /* text selection on light (ink on it 9.1:1) */
+  /* Accent: Plum. Buttons, links, eyebrows, numbers, focus ring, on light AND on the rosa bands
+     (8.8:1 on offwhite, 7.5 on sand, 6.4 on band, 5.0 on the footer). */
+  --color-accent: #6b393f;
+  --color-accent-deep: #50292e; /* hover of accent buttons / links */
+  --color-on-accent: #fafaf8; /* text on accent (offwhite): 8.8:1, 11.8 on accent-deep */
+  --color-selection: #e7d3ce; /* text selection on light: Lys Rosa (ink on it 10.5:1) */
 
-  /* Band: dusty rose surfaces (was plum): USP band, bestseller list, review panels, mega-menu
-     panel, "Om behandlingen" / CTA bands, price boxes … Mark the element data-surface="band". */
-  --color-band: #d9a192;
-  --color-on-band: #33211d; /* headings, names, the quote, links: 6.9:1 */
-  --color-band-body: #3a2622; /* running text: 6.4:1 */
-  --color-band-accent: #4f2a27; /* eyebrows, prices, stars, hours, link hover: 5.6:1 */
-  --color-band-fine: #3f2824; /* fine print: 6.1:1 */
-  --color-band-line: rgb(51 33 29 / 0.2); /* dividers on the band (decorative) */
-  --color-band-highlight: #fbf8f4; /* hovered / focused bestseller row, text selection on bands */
-  --color-band-card: rgb(255 255 255 / 0.3); /* translucent cards on the band */
-  --color-band-card-hover: rgb(255 255 255 / 0.45);
+  /* Band: Lys Rosa surfaces: USP band, bestseller list, review panels, mega-menu panel,
+     "Om behandlingen" / CTA bands, price boxes … Mark the element data-surface="band". */
+  --color-band: #e7d3ce;
+  --color-on-band: #33211d; /* headings, names, the quote, links: 10.6:1 */
+  --color-band-body: #3a2622; /* running text: 9.9:1 */
+  --color-band-accent: #6b393f; /* eyebrows, prices, stars, hours, link hover (plum): 6.4:1 */
+  --color-band-fine: #3f2824; /* fine print: 9.5:1 */
+  --color-band-line: rgb(107 57 63 / 0.18); /* dividers on the band (plum, decorative) */
+  --color-band-highlight: #ffffff; /* hovered / focused bestseller row, text selection on bands */
+  --color-band-card: rgb(255 255 255 / 0.45); /* translucent cards on the band */
+  --color-band-card-hover: rgb(255 255 255 / 0.65);
 
-  /* Footer: a light warm beige (the owner: Senses #b19784 was far too dark). Tune the footer with
-     --color-footer alone: its text tokens are espresso and stay ≥ 7:1 on any of the candidates. */
-  --color-footer: #dccbbb;
-  --color-on-footer: #33211d; /* clinic names, contact values, links: 9.7:1 */
-  --color-footer-body: #3a2622; /* running text, legal: 9.0:1 */
-  --color-footer-accent: #4f2a27; /* labels, hours, link hover: 7.9:1 */
+  /* Footer: Sandbeige (Anette's "some of the beige"), #CDBEA7: Anette's #C9BFA7 at the same
+     lightness with its slight green cast removed (1.27:1 against the rosa band, 1.49 against
+     sand). Tune the footer with --color-footer alone: its text tokens stay ≥ 5:1 on it; don't go
+     lighter than #D5CEBB (it would merge with the secondary / sand panels above it). */
+  --color-footer: #cdbea7;
+  --color-on-footer: #33211d; /* clinic names, contact values, links: 8.4:1 */
+  --color-footer-body: #3a2622; /* running text, legal: 7.8:1 */
+  --color-footer-accent: #6b393f; /* labels, hours, link hover (plum): 5.05:1 (6.3 on footer cards) */
   --color-footer-line: rgb(51 33 29 / 0.18); /* dividers (decorative) */
   --color-footer-card: rgb(255 255 255 / 0.35); /* phone / e-mail cards */
   --color-footer-card-hover: rgb(255 255 255 / 0.5);
@@ -76,7 +86,10 @@
   /* Shadows */
   --shadow-menu: 0 18px 40px rgba(36, 39, 36, 0.1); /* mega menu / dropdowns */
   --shadow-float: 0 10px 30px rgba(36, 39, 36, 0.18); /* floating book bar */
-  /* result photos: the accent at 10% (was plum); follows --color-accent (the dev colour tuner) */
+  /* White cards on the offwhite page: a hairline edge (the line colour at 70%) and a faint drop,
+     because white is only 1.05:1 / ΔE 2 on #fafaf8. Not needed on sand or the band. */
+  --shadow-card: 0 0 0 1px color-mix(in srgb, var(--color-line) 70%, transparent), 0 1px 3px rgb(59 42 40 / 0.04);
+  /* result photos: the accent (plum) at 10%; follows --color-accent (the dev colour tuner) */
   --shadow-photo: 0 10px 30px color-mix(in srgb, var(--color-accent) 10%, transparent);
 
   /* Letter-spacing (relaxed with the lighter 500 headings; production: -0.03em / -0.035em) */
@@ -352,8 +365,8 @@
     background-color: var(--color-selection);
     color: var(--color-ink);
   }
-  /* On a rose band (data-surface="band"; "band-lg" = a band from 1024px only) and in the footer
-     the light selection would vanish: the band's near-white highlight instead. */
+  /* On a rosa band (data-surface="band"; "band-lg" = a band from 1024px only) and in the footer
+     the light selection (Lys Rosa) would vanish: the band's white highlight instead. */
   :is([data-surface="band"], [data-surface="footer"])::selection,
   :is([data-surface="band"], [data-surface="footer"]) ::selection {
     background-color: var(--color-band-highlight);
@@ -376,8 +389,10 @@
     }
   }
 
-  /* Visible focus ring in the accent on every surface: 10:1 on cream, 9:1 on sand, 5:1 on the
-     rose band, 7:1 on the footer, so the bands and the footer need no ring of their own. */
+  /* Visible focus ring in the accent (plum) on every surface: 8.8:1 on offwhite, 7.5 on sand,
+     9.2 on white, 6.4 on the rosa band, 5.0 on the footer (6.3 on footer cards), so the bands and
+     the footer need no ring of their own. The For mænd espresso surface switches to an offwhite
+     ring (13.0:1; components/men/surface.ts). */
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;

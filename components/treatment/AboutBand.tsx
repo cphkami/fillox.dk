@@ -13,8 +13,8 @@ function Paragraphs({ items, className }: { items: string[]; className?: string 
 }
 
 /**
- * "Om behandlingen" (6c/6bx: a rose band with a bordered "Godt til" box, the design's dark band
- * in the "Støvet rosa & beige" palette; mb: sand card with a white "Godt til" box).
+ * "Om behandlingen" (6c/6bx: a rosa band with a bordered "Godt til" box, the design's dark band
+ * in Anette's palette, Lys Rosa; mb: sand card with a white "Godt til" box).
  */
 export function AboutBand({ about }: { about: NonNullable<TreatmentView["about"]> }) {
   // Body copy 16px (`text-body`, 18 at 1600); the ch cap keeps lines readable on the wide canvas:

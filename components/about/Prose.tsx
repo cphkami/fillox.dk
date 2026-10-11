@@ -7,8 +7,8 @@ import { cn } from "@/lib/cn";
  * Text building blocks of /om-os: the owner's long text in readable paragraphs, its bold
  * sentences as pull statements, its inline bold and links.
  *
- * - `tone`: "ink" on cream and sand (muted text, 7.4:1 on cream; bold runs in ink), "band" on a
- *   rose band (band-body text 6.4:1, bold runs in on-band).
+ * - `tone`: "ink" on cream and sand (muted text, 7.4:1 on offwhite; bold runs in ink), "band" on
+ *   a rosa band (band-body text 9.9:1, bold runs in on-band).
  */
 type Tone = "ink" | "band";
 
@@ -77,7 +77,7 @@ export function Prose({
 }
 
 const statementTones = {
-  /** The H1 accent colour (5.2:1 on cream, 4.7 on sand: AA at every size used here). */
+  /** The H1 accent colour (plum: 8.8:1 on offwhite, 7.5 on sand). */
   ink: "text-emphasis",
   band: "text-on-band",
 } as const;

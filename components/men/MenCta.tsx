@@ -7,7 +7,7 @@ import { espresso, kremButton } from "./surface";
 
 /**
  * Closing booking band: espresso like the hero (the page's bookends), so it also stays distinct
- * from the beige footer right under it. Title + text left, the krem button and the phone number
+ * from the beige footer right under it. Title + text left, the offwhite button and the phone number
  * right from 768px; stacked and centred below.
  */
 export function MenCta({ copy }: { copy: MenPage["cta"] }) {
