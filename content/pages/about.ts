@@ -86,8 +86,9 @@ export const aboutPage = {
   academy: {
     id: "fillox-academy",
     title: "Vi uddanner vores egne specialister",
+    // Updated in the agency's Drive doc on 2026-10-15.
     statement:
-      "Det vigtigste ved en behandling er ikke selve behandlingen. Det er mennesket, der udfører den.",
+      "Et godt resultat kræver den rette behandling. Men endnu vigtigere er behandlerens kompetence til at vælge og udføre den korrekt.",
     paragraphs: [
       "Det er let at finde en klinik, der tilbyder botox, filler, laser eller hudforbedrende behandlinger. Men det kræver erfaring og faglig forståelse at vide, hvilken behandling der er den rigtige\u00A0– og hvornår en anden løsning vil give et bedre resultat.",
       "Derfor investerer vi målrettet i vores behandleres kompetencer.",
