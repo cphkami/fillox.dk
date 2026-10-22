@@ -231,6 +231,13 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       ligesom behandlersiderne ("Book tid hos …"). Kun `/behandlere` slutter stadig med det sand-
       farvede "Fagligt ansvarlig"-bånd (`components/about/ResponsibleBand.tsx`). Skal det også være
       rosa?
+- [ ] **Før/efter-billeder fra Drive** (mappen "Før/efter - Hjemmeside", lagt op af Alberte
+      20/10-2026): FILLER har 3 billeder af læber ("FILLOX Lip Enhancement Comparison.png",
+      "Billede 28.jpg" og "Billede 28-kopi.jpg"); BOTOX, SUNEKOS, SKINBOOSTER og POLYNUKLEOTIDER
+      er tomme. De er ikke lagt på siden endnu: bekræft (1) skriftligt samtykke fra kunden til brug
+      på hjemmesiden, (2) at reglerne for markedsføring af kosmetisk behandling tillader billederne,
+      og (3) hvilken side de skal på (lip filler-siden). Botox-billeder må ikke bruges i
+      markedsføring (receptpligtig medicin).
 - [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
       `content/clinics.ts`), større original af Om os-billedet og et andet foto af Dr. Tom (se
