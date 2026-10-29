@@ -239,9 +239,10 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       og (3) hvilken side de skal på (lip filler-siden). Botox-billeder må ikke bruges i
       markedsføring (receptpligtig medicin). Nyt 24/10-2026 (lagt op af Annika): 13 billeder
       mere i FILLER og 6 i BOTOX (bl.a. HEIC-filer, som skal konverteres); samme tre spørgsmål
-      gælder, og BOTOX-billederne bruges ikke.
+      gælder, og BOTOX-billederne bruges ikke. Nyt 27/10-2026 (lagt op af Alberte): 1 billede i
+      SUNEKOS ("Billede 11.PNG"); samme tre spørgsmål gælder (Sunekos-siden).
 - [ ] **"Profesionelle billeder" i Drive** (ny mappe under Fillox.dk, lagt op af Alberte
-      22/10-2026, 15 billeder): ikke lagt på siden. Fortæl hvad de forestiller, og hvor de skal
+      22/10-2026, 15 billeder; +1 "IMG_1191.jpg" 27/10-2026): ikke lagt på siden. Fortæl hvad de forestiller, og hvor de skal
       bruges (behandlere, klinikker, Om os, forsiden); viser de kunder, kræver det samtykke.
 - [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
