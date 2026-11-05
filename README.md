@@ -240,7 +240,14 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       markedsføring (receptpligtig medicin). Nyt 24/10-2026 (lagt op af Annika): 13 billeder
       mere i FILLER og 6 i BOTOX (bl.a. HEIC-filer, som skal konverteres); samme tre spørgsmål
       gælder, og BOTOX-billederne bruges ikke. Nyt 27/10-2026 (lagt op af Alberte): 1 billede i
-      SUNEKOS ("Billede 11.PNG"); samme tre spørgsmål gælder (Sunekos-siden).
+      SUNEKOS ("Billede 11.PNG"); samme tre spørgsmål gælder (Sunekos-siden). Nyt 3/11-2026
+      (Alberte): alle billederne fra FILLER er flyttet til en ny mappe "FØR/EFTER - Nord
+      Magasin" (FILLER er nu tom) sammen med et nyt "Before and After Eye Enhancement.png", og
+      6 nye "Kopi af …"-billeder i BOTOX. Er Nord Magasin-billederne stadig til hjemmesiden, eller
+      kun til Nord Magasin? BOTOX-billederne bruges ikke.
+- [ ] **Farveprøver i Drive/Website** (7 PNG'er lagt op 2/11-2026: 6B3840, 5C3F38, 6A2630,
+      6E4038, 74483C, 7A4B51, 57353A): ikke brugt. Skal en af dem erstatte plum (#6B3840) på
+      sitet? Paletten ændres kun efter din besked.
 - [ ] **"Profesionelle billeder" i Drive** (ny mappe under Fillox.dk, lagt op af Alberte
       22/10-2026, 15 billeder; +1 "IMG_1191.jpg" 27/10-2026): ikke lagt på siden. Fortæl hvad de forestiller, og hvor de skal
       bruges (behandlere, klinikker, Om os, forsiden); viser de kunder, kræver det samtykke.
