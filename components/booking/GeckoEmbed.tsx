@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 import { useEffect, useRef } from "react";
+import { preconnect } from "react-dom";
 
 type GeckoEmbedProps = {
   /** Gecko Booking host, e.g. "filloxdanmark.app4.geckobooking.dk" (site.booking.geckoHost). */
@@ -18,8 +19,13 @@ type GeckoEmbedProps = {
  * `gecko_<icCode>` container + Gecko's iframe.js, which injects the booking iframe.
  * The iframe arrives with Gecko's own marketing title, so it is renamed to `title` as
  * soon as it appears (screen readers announce a frame by its title).
+ *
+ * The calendar loads as a chain from Gecko's host (iframe.js → the iframe document → its JS and
+ * CSS), so the page opens the connection to that host up front (`<link rel="preconnect">` in the
+ * server HTML's <head>): DNS and TLS are done before iframe.js is requested.
  */
 export function GeckoEmbed({ host, icCode, title, className }: GeckoEmbedProps) {
+  preconnect(`https://${host}`);
   const src = `https://${host}/site/iframe.js?icCode=${icCode}`;
   const containerId = `gecko_${icCode}`;
   const containerRef = useRef<HTMLDivElement>(null);

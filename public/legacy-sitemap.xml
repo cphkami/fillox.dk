@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The old WordPress URLs of fillox.dk (wp-sitemap.xml: pages + users, 2026-11), each of which
+  now answers with a 308 to its new page (content/redirects.ts). Listed for a few months after
+  launch so search engines recrawl the old URLs and pick up the redirects sooner; submit it in
+  Google Search Console next to /sitemap.xml and delete this file about 3 months after launch
+  (README: "Efter lancering"). The home page is not listed: it is unchanged and in /sitemap.xml.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://fillox.dk/author/admin/</loc></url>
+  <url><loc>https://fillox.dk/author/adminfillox-dk/</loc></url>
+  <url><loc>https://fillox.dk/booking/</loc></url>
+  <url><loc>https://fillox.dk/fillers/</loc></url>
+  <url><loc>https://fillox.dk/fillers/ansigtskonturering/</loc></url>
+  <url><loc>https://fillox.dk/fillers/faq-om-fillers-behandling/</loc></url>
+  <url><loc>https://fillox.dk/fillers/haender/</loc></url>
+  <url><loc>https://fillox.dk/fillers/kaebelinje/</loc></url>
+  <url><loc>https://fillox.dk/fillers/kindben/</loc></url>
+  <url><loc>https://fillox.dk/fillers/lip-filler/</loc></url>
+  <url><loc>https://fillox.dk/fillers/marionettelinjer/</loc></url>
+  <url><loc>https://fillox.dk/fillers/naesekorrektion/</loc></url>
+  <url><loc>https://fillox.dk/fillers/nasolabiale-linjer/</loc></url>
+  <url><loc>https://fillox.dk/fillers/tear-trough/</loc></url>
+  <url><loc>https://fillox.dk/finansiering/</loc></url>
+  <url><loc>https://fillox.dk/handelsbetingelser/</loc></url>
+  <url><loc>https://fillox.dk/harfjerning/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/belotero-revive/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/hyalual-electri/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/infini-microneedling-copy/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/infini-microneedling/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/kemisk-peeling/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/prf-behandling/</loc></url>
+  <url><loc>https://fillox.dk/hudforbedring/xela-rederm/</loc></url>
+  <url><loc>https://fillox.dk/hudpleje/</loc></url>
+  <url><loc>https://fillox.dk/kontakt/</loc></url>
+  <url><loc>https://fillox.dk/medlem/</loc></url>
+  <url><loc>https://fillox.dk/morpheus8/</loc></url>
+  <url><loc>https://fillox.dk/om-os/</loc></url>
+  <url><loc>https://fillox.dk/om-os/kontrol-eftertjek/</loc></url>
+  <url><loc>https://fillox.dk/ovrige-botox-behandlinger/</loc></url>
+  <url><loc>https://fillox.dk/prf-hudbehandling/</loc></url>
+  <url><loc>https://fillox.dk/prf-mod-hartab/</loc></url>
+  <url><loc>https://fillox.dk/priser/</loc></url>
+  <url><loc>https://fillox.dk/privatlivspolitik/</loc></url>
+  <url><loc>https://fillox.dk/rynkebehandling/</loc></url>
+  <url><loc>https://fillox.dk/skinbooster/</loc></url>
+  <url><loc>https://fillox.dk/skinbooster/ejal-40/</loc></url>
+  <url><loc>https://fillox.dk/skinbooster/profhilo/</loc></url>
+  <url><loc>https://fillox.dk/skinbooster/sunekos/</loc></url>
+  <url><loc>https://fillox.dk/skinbooster/v20/</loc></url>
+  <url><loc>https://fillox.dk/skinbooster/v5/</loc></url>
+  <url><loc>https://fillox.dk/tradloft/</loc></url>
+</urlset>

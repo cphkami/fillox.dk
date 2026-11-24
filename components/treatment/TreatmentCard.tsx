@@ -23,7 +23,11 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
           {" "}
         </div>
       )}
-      <h3 className="font-heading text-[17px] leading-[1.35] text-heading md:text-h4 md:leading-[1.3] md:tracking-display">
+      {/* Below 768px (one card per row) a word too long for the card, e.g. "Andre
+          behandlingsmuligheder" with enlarged text spacing (WCAG 1.4.12), breaks instead of widening
+          the card past a 320px screen. Not from 768px: there the word runs a few px into the card's
+          padding at 1024px, which reads better than a lone "r" on its own line. */}
+      <h3 className="font-heading text-[17px] leading-[1.35] text-heading max-md:wrap-anywhere md:text-h4 md:leading-[1.3] md:tracking-display">
         <Link href={treatmentHref(treatment.slug)} className="after:absolute after:inset-0 after:content-['']">
           {name}
         </Link>

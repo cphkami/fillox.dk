@@ -85,9 +85,18 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/author/:slug", destination: "/blog", note: "WordPress forfatterarkiver" },
   { source: "/wp-sitemap.xml", destination: "/sitemap.xml", note: "WordPress sitemap" },
   { source: "/sitemap_index.xml", destination: "/sitemap.xml", note: "Yoast sitemap-sti" },
+  // The old index's two sub-sitemaps → the old URLs (public/legacy-sitemap.xml), so crawlers that
+  // refetch them find the redirects above. Remove with that file, ~3 months after launch.
+  { source: "/wp-sitemap-posts-page-1.xml", destination: "/legacy-sitemap.xml", note: "WordPress-sitemap (sider)" },
+  { source: "/wp-sitemap-users-1.xml", destination: "/legacy-sitemap.xml", note: "WordPress-sitemap (forfattere)" },
   { source: "/feed", destination: "/blog", note: "WordPress RSS-feed (standard-sti)" },
   { source: "/comments/feed", destination: "/blog", note: "WordPress kommentar-feed" },
   { source: "/blog/feed", destination: "/blog", note: "RSS-feed under /blog" },
+
+  /* ----------------- Well-known paths some clients request without a <link> */
+  // The touch icon is app/apple-icon.png (linked from every page as /apple-icon.png).
+  { source: "/apple-touch-icon.png", destination: "/apple-icon.png", note: "Touch-ikon (standardsti)" },
+  { source: "/apple-touch-icon-precomposed.png", destination: "/apple-icon.png", note: "Touch-ikon (ældre iOS)" },
 
   /* ------------------ Norske stier, som det gamle danske site linkede til */
   { source: "/filler/leppefiller", destination: "/behandlinger/lip-filler" },

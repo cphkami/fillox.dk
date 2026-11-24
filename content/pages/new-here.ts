@@ -99,6 +99,8 @@ export const newHerePage = {
   // TODO: copy review (not in the draft: built from its subtitle and intro)
   meta: {
     title: "Ny hos Fillox? Find en behandling, der passer til dig",
+    /** The title names Fillox already: no " · Fillox" after it (lib/metadata.ts → pageMetadata). */
+    absoluteTitle: true,
     description:
       "Usikker på, hvor du skal begynde? Fortæl os, hvad du ønsker hjælp til, så vurderer vi mulighederne sammen. Se, hvad der sker på en konsultation.",
   },

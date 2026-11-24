@@ -10,6 +10,13 @@ import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
 import type { ImageRef } from "@/content/types";
 
+/**
+ * The page base colour (`--color-cream` in app/globals.css): the browser UI tint (root layout
+ * `viewport.themeColor`) and the web app manifest's theme / background colour (app/manifest.ts).
+ * Change it together with the token.
+ */
+export const pageColor = "#fafaf8";
+
 /** Site name + Open Graph locale ("da-DK" → "da_DK"), shared by every route's openGraph. */
 export const sharedOpenGraph = {
   siteName: site.name,
@@ -34,21 +41,24 @@ export function shareImage(image: ImageRef) {
  * Metadata of an ordinary route: title (through the root layout's template), description,
  * canonical `path` and a "website" Open Graph block. The share image defaults to the site's
  * (content/layout.ts → meta.ogImage).
+ *
+ * `absoluteTitle`: the title already names the brand ("Ny hos Fillox? …"), so it is used as it
+ * is, without the template's " · Fillox" (no brand twice, and it stays within ~60 characters).
  */
 export function pageMetadata(
-  meta: { title: string; description: string },
+  meta: { title: string; description: string; absoluteTitle?: boolean },
   path: string,
   image: ImageRef = layoutCopy.meta.ogImage,
 ): Metadata {
   return {
-    title: meta.title,
+    title: meta.absoluteTitle ? { absolute: meta.title } : meta.title,
     description: meta.description,
     alternates: { canonical: path },
     openGraph: {
       type: "website",
       ...sharedOpenGraph,
       url: path,
-      title: shareTitle(meta.title),
+      title: meta.absoluteTitle ? meta.title : shareTitle(meta.title),
       description: meta.description,
       images: [shareImage(image)],
     },

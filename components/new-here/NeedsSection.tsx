@@ -62,7 +62,9 @@ export function NeedsSection({ copy, needs }: { copy: NewHerePage["needs"]; need
                   {need.treatments.map((row) => (
                     <li key={row.slug} className="border-b border-line">
                       <Link href={row.href} className="group flex min-h-12 items-center justify-between gap-3 py-2.5">
-                        <span className="text-body leading-[1.35] font-semibold text-ink transition-colors group-hover:text-accent">
+                        {/* wrap-anywhere: a long name ("Andre behandlingsmuligheder") may break inside a
+                            word rather than push the price off a narrow screen (enlarged text spacing). */}
+                        <span className="text-body leading-[1.35] font-semibold wrap-anywhere text-ink transition-colors group-hover:text-accent">
                           {row.name}
                         </span>{" "}
                         <span className="flex shrink-0 items-center gap-2.5 text-ui-sm whitespace-nowrap text-taupe">

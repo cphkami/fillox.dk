@@ -24,9 +24,17 @@ in `README.md` → "Rebranding til fillox.no".
 - Tailwind CSS v4 (`@theme` tokens in `app/globals.css`).
 - Fonts via `next/font/google` (`app/layout.tsx`): Figtree (variable) for running text and UI,
   Poppins 500 for headings only (see "Design tokens" → "Typography").
-- `next/image` for all photos.
+- `next/image` for all photos; `next.config.ts` asks for AVIF, then WebP (`images.formats`; on
+  Netlify the Image CDN negotiates the format itself). No `X-Powered-By` header.
 - Static generation for every route (`generateStaticParams` for dynamic routes).
-- Deploy target: Netlify (`netlify.toml`).
+- Metadata: `lib/metadata.ts` → `pageMetadata` (title through the root template "… · Fillox",
+  unless the copy sets `absoluteTitle` because the title already names the brand, as
+  `/ny-hos-fillox`). The root layout sends `robots: max-image-preview:large` (a route's own
+  `robots`, e.g. noindex, replaces it). Icons: `app/favicon.ico`, `app/icon.png`,
+  `app/apple-icon.png`; `app/manifest.ts` serves `/manifest.webmanifest` (name from
+  `config/site.ts`, colours = `pageColor` in `lib/metadata.ts`).
+- Deploy target: Netlify (`netlify.toml`: Node 22, security headers incl. a report-only CSP that
+  allows only Gecko's hosts; README → "Deploy til Netlify").
 
 ## Directory layout
 
@@ -83,14 +91,14 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). Anette's palette: the name (H1) takes `text-emphasis` (plum); the closing "Book tid hos …" band (the design's powder) is the Lys Rosa `band`, because a beige panel reads as one block with the Sandbeige footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
-| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row) |
+| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row). The design's before/after section (`ResultsSection`) is built but shown on no page: its lip filler pairs were one stock photo with invented captions, so they were removed before launch until real photos with consent exist (`content/treatments.ts`, README) |
 | `/behandlinger/rynkebehandling` | no design: a long-form page (`detail.sections`, see "Long-form treatment pages") with the owner's agency text, verbatim. Replaces the Botox page: `/behandlinger/botox`, `/behandlinger/botox-for-maend` and the live `/rynkebehandling` redirect here |
 | `/behandlinger/andre-behandlingsmuligheder` | no design: long-form page under the hub (breadcrumb via `detail.parentSlug`, compact H1). Replaces the live `/ovrige-botox-behandlinger` and the lip flip, gummy smile, hyperhidrose and Traptox pages, which redirect here (the first three to their sections `#lip-flip`, `#gummy-smile`, `#svedtendens`; Traptox has no section) |
 | `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with offwhite text, Sandbeige accents, offwhite pills (sand on hover) and an offwhite focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
 | `/ny-hos-fillox` | no design: "Ny hos Fillox?", the guide for first-time visitors (`routes.newHere`; see "Ny hos Fillox?") |
 | `/klinikker` | `6kl` / `mk` |
 | `/kontakt` | `6ko` / `mc` |
-| `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` |
+| `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar`. A post without its written article (`content/blog.ts` → `hasArticleBody`) gets an excerpt page (noindex, not in the sitemap) and shows no reading time anywhere: article header, blog cards, "Læs også" and the treatment pages' article cards (`components/blog/postView.ts` → `readingTime`, `shortReadingTime`) |
 | `/booking` | no design: intro band + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
 | `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style |
 
@@ -199,7 +207,7 @@ type `ClinicBookingIds`).
 
 | Provider | Market | Config | Per clinic | /booking |
 |---|---|---|---|---|
-| `gecko` | fillox.dk | `href`, `geckoHost`, `geckoIcCode` | `geckoCalendarId` (optional) | Gecko's `iframe.js` injects ONE calendar for every clinic (`GeckoEmbed`), capped at 1184px and centred in the white card (min-height 640px) |
+| `gecko` | fillox.dk | `href`, `geckoHost`, `geckoIcCode` | `geckoCalendarId` (optional) | Gecko's `iframe.js` injects ONE calendar for every clinic (`GeckoEmbed`, which also preconnects to `geckoHost`), capped at 1184px and centred in the white card (min-height 640px) |
 | `timma` | fillox.no | `href`, `timmaBaseUrl` (`https://bestill.timma.no/reservation/`) | `timmaId` (required on open clinics) | clinic picker (a button per open clinic with a `timmaId`) + that clinic's TIMMA page in an iframe at full width (`TimmaEmbed`) |
 
 - `components/booking/BookingEmbed.tsx` (server) switches on `site.booking.provider` and
@@ -310,7 +318,8 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
 - **Grids** — home ("Mød dem, der behandler dig"), /om-os and /behandlere show every member as
   an equal card: 3 columns from 1024px (home from 768px), so six members are 2 rows of 3 (the
   owner, October 2026). No member is featured any more: `TeamMember.featured` (content/types.ts)
-  and `public/images/team/tom-wide.jpg` (6om's wide Dr. Tom block) are unused.
+  is unused, and 6om's wide Dr. Tom photo (`tom-wide.jpg`, `tom.jpg` with blurred side bands)
+  was deleted before launch (2026-11).
 - **Portraits** — framed from a face table in `content/team.ts` (nose line, eye and mouth lines
   measured per photo; `framedPortrait(member, slot)`), so every face in a grid sits on one line
   and at one size: `teamSlots.portrait` (4:5) for the /om-os and /behandlere cards from 768px
@@ -730,6 +739,10 @@ at rest keeps the brown hover (hover / focus classes outrank a breakpoint class)
   (min-width: 1024px) 50vw, 100vw"`; a 3-column content grid with 24px gaps →
   `(1440 − 48) / 3 = 464px` → `"(min-width: 1600px) 464px, (min-width: 1024px) 30vw, …"`.
   Source files are limited (hero JPGs are 1200 × 1500): don't upscale files.
+  A photo hidden below a breakpoint (`max-lg:hidden`) ends its `sizes` with `1px`, so phones
+  fetch the tiniest variant (an eager / high-priority photo is still fetched and preloaded while
+  hidden). Its `vw` values then go in `calc()` (`calc(44vw)`): a bare `44vw` makes next/image drop
+  every width below 44 % of 640px from the srcset, and the 1px slot gets the 384px file.
 - Breakpoints are Tailwind's defaults: `md` 768, `lg` 1024, `xl` 1280, `2xl` 1536.
 
 ## Verifying against the design

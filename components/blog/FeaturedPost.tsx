@@ -5,7 +5,7 @@ import { blogPage as copy } from "@/content/pages/blog";
 import { getTeamMember } from "@/content/team";
 import type { BlogPost } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { cardFocusRing, joinMeta, shortReadingTime, stretchedLink } from "./postView";
+import { cardFocusRing, joinMeta, readingTime, shortReadingTime, stretchedLink } from "./postView";
 import { Responsive } from "./Responsive";
 
 /**
@@ -35,7 +35,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
         <Eyebrow>
           <Responsive
             mobile={joinMeta(post.category, post.kind, shortReadingTime(post))}
-            desktop={joinMeta(post.category, post.kind, post.readingTime)}
+            desktop={joinMeta(post.category, post.kind, readingTime(post))}
           />
         </Eyebrow>
 

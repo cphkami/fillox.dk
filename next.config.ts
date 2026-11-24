@@ -9,7 +9,17 @@ const nextConfig: NextConfig = {
    */
   skipTrailingSlashRedirect: true,
 
+  /** No "X-Powered-By: Next.js" header on the responses. */
+  poweredByHeader: false,
+
   images: {
+    /**
+     * AVIF first (about 20–30 % smaller photos than WebP, so a faster LCP image on phones), WebP for
+     * browsers without AVIF. Applies where Next optimises the images itself (`next start`); on
+     * Netlify, /_next/image is served by Netlify Image CDN, which picks the format by the
+     * browser's Accept header on its own.
+     */
+    formats: ["image/avif", "image/webp"],
     /**
      * Next's defaults plus 1440 and 1600, the content width and the canvas of the wide layout
      * (ARCHITECTURE.md → Wide layout). Without them every need between 1200 and 1920px (wide

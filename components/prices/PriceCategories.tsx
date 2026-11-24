@@ -174,10 +174,12 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
                         {row.note ? (
                           <>
                             {" "}
-                            {/* Never split a note; on mobile it gets its own line under the label. */}
+                            {/* Never split a note next to its label (from 768px); on mobile it gets its own
+                                line under the label, which fits it at the normal text size even at 320px
+                                (content/prices.ts), and wraps only when it cannot (user text spacing, WCAG 1.4.12). */}
                             {/* 12px up to 1280, then 12 → 14px at 1600 so the note keeps the design's
                                 note / row ratio (12 / 14) next to the 14 → 16px row (no token has this step). */}
-                            <span className="text-micro whitespace-nowrap text-taupe max-md:mt-0.5 max-md:block xl:text-[clamp(12px,calc(4px+0.625vw),14px)]">
+                            <span className="text-micro text-taupe max-md:mt-0.5 max-md:block md:whitespace-nowrap xl:text-[clamp(12px,calc(4px+0.625vw),14px)]">
                               {row.note}
                             </span>
                           </>

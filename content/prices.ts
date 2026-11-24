@@ -61,7 +61,8 @@ const FREE: PriceValue = { kind: "free", label: "gratis" };
  * platysma bånd, nefertiti lift, gummy smile, lip flip, rygerynker, nedgående mundvige, nose
  * slimming, bunny lines & brynløft", i.e. the single areas listed above them, not the "Øvrige
  * Botox behandlinger" (tyggemuskler, hyperhidrose, Traptox) below.
- * Notes never wrap: keep them short enough for a 320px screen.
+ * Notes never wrap next to their label (from 768px); on phones a note has its own line, so keep it
+ * short enough for a 320px screen (it wraps there only when the user enlarges text spacing).
  */
 export const BOTOX_PACKAGE_NOTE = "gælder områderne ovenfor";
 
@@ -69,8 +70,10 @@ export const BOTOX_PACKAGE_NOTE = "gælder områderne ovenfor";
 const AREAS_4ML = "kindben, hage, kæbelinjer m.fl.";
 
 /**
- * The price list of the live fillox.dk/priser (fetched 2026-10-01): every priced row, in the
- * live order, in the design's card structure. The live sub-headings ("Andre fillerpriser (op til
+ * The price list of the live fillox.dk/priser (fetched 2026-10-01; every amount re-checked
+ * against the live list on 2026-11-24, after it changed on 2026-11-17: Hyalase 899 → 999,
+ * Microneedling 999 / 2.499 → 1.200 / 3.000): every priced row, in the live order, in the
+ * design's card structure. The live sub-headings ("Andre fillerpriser (op til
  * 1 ml)", "Øvrige Botox behandlinger", "Ansigt", "Arme" …) have no place in a card, so their
  * rows follow each other in the same order, with the sub-heading's condition as a note where it
  * changes the price ("op til 1 ml", the area packages). The live "Mænd" and "Pakkepriser" laser
@@ -103,7 +106,7 @@ export const priceCards: PriceCard[] = [
       { label: "Lip filler · Revanesse 0,7 ml", ...kr(1399, "lip-filler") },
       { label: "Lip filler · Revanesse 1,0 ml", ...kr(1599, "lip-filler") },
       { label: "Ansigtskonturering · 4 ml", note: AREAS_4ML, ...kr(3999) },
-      { label: "Opløsning af filler (Hyalase)", note: "pr. område", ...kr(899) },
+      { label: "Opløsning af filler (Hyalase)", note: "pr. område", ...kr(999) },
       { label: "Marionettelinjer", note: "op til 1 ml", ...kr(1699) },
       { label: "Nasolabiale linjer", note: "op til 1 ml", ...kr(1699) },
       { label: "Hage", note: "op til 1 ml", ...kr(1699, "hage") },
@@ -179,8 +182,8 @@ export const priceCards: PriceCard[] = [
       { label: "PolyPhil classic · 3\u00a0behandlinger", ...kr(4500) },
       { label: "PolyPhil med HA · 1\u00a0behandling", ...kr(1800) },
       { label: "PolyPhil med HA · 3\u00a0behandlinger", ...kr(4500) },
-      { label: "Microneedling · 1\u00a0behandling", ...kr(999, "microneedling") },
-      { label: "Microneedling · 3\u00a0behandlinger", ...kr(2499, "microneedling") },
+      { label: "Microneedling · 1\u00a0behandling", ...kr(1200, "microneedling") },
+      { label: "Microneedling · 3\u00a0behandlinger", ...kr(3000, "microneedling") },
       { label: "Microneedling med NCTF 135 HA · 1\u00a0behandling", ...kr(1699, "microneedling") },
       { label: "Microneedling med NCTF 135 HA · 3\u00a0behandlinger", ...kr(4249, "microneedling") },
       { label: "NCTF 135 HA injektion · 1\u00a0behandling", ...kr(1699) },

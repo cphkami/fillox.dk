@@ -46,7 +46,8 @@ npm run build            # kører check:market først (prebuild)
 `npm run check:market` stopper buildet, hvis:
 
 - en rute i `content/routes.ts` ikke har en `app/<sti>/page.tsx` (eller omvendt), eller en
-  redirect i `content/redirects.ts` peger på en side, der ikke findes;
+  redirect i `content/redirects.ts` peger på en side, der ikke findes (eller på en fil, sitet ikke
+  serverer: `/sitemap.xml`, et ikon i `app/` eller en fil i `public/`, fx `/legacy-sitemap.xml`);
 - en redirect eller en prisrække (`content/prices.ts` → `treatmentSlug` / `treatmentAnchor`) peger
   på en behandling, der ikke findes, eller på et `#anker`, som siden ikke har (afsnit og kort på
   de lange behandlingssider, fx `/behandlinger/andre-behandlingsmuligheder#lip-flip`);
@@ -66,13 +67,24 @@ Trustpilot-tallene i `config/site.ts`, når `trustpilot.checked` er mere end 60 
 ## Deploy til Netlify
 
 `netlify.toml` bygger med `npm run build` (inkl. `check:market`) og udgiver `.next` med
-Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16) — sæt evt.
-`NODE_VERSION` i Netlify, hvis standardversionen er ældre.
+Netlifys Next.js-runtime. Ingen miljøvariabler at sætte i Netlify: Node-versionen står i
+`netlify.toml` (`NODE_VERSION = "22"`; Next 16 kræver Node ≥ 20.9, se `engines` i `package.json`).
+
+`netlify.toml` sætter også sikkerheds-headers på alle svar: HSTS (som det gamle site),
+`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy` og en
+Content-Security-Policy, der i første omgang kun rapporterer (`Content-Security-Policy-Report-Only`,
+se "Efter lancering"). Den tillader kun Gecko (script + kalender-iframe) og de betalingssider, Gecko
+kan åbne i iframen (Nets Easy, OnPay). Lægger I et nyt tredjepartsscript eller en ny iframe på
+sitet, skal værten med i CSP'en.
 
 1. Forbind repoet i Netlify → build-indstillingerne læses fra `netlify.toml`.
 2. Domæne: `fillox.dk` (+ `www`) → Netlify, HTTPS via Let's Encrypt.
 3. Gamle WordPress-URL'er sendes videre med 308 (`content/redirects.ts`, via `next.config.ts`).
-4. Efter første deploy: indsend `https://fillox.dk/sitemap.xml` i Google Search Console.
+   WordPress' sitemaps sender videre til `/sitemap.xml` (indekset) og `/legacy-sitemap.xml` (de to
+   undersitemaps): `public/legacy-sitemap.xml` lister de 44 gamle adresser, der nu redirecter, så
+   Google finder redirects hurtigere.
+4. Efter første deploy: indsend `https://fillox.dk/sitemap.xml` **og**
+   `https://fillox.dk/legacy-sitemap.xml` i Google Search Console (se "Efter lancering").
 
 ## Formularer via Netlify Forms
 
@@ -143,8 +155,23 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
   - [ ] `content/pages/blog.ts` og `content/blog.ts`: artikeldatoer og -tekster, nyhedsbrev
   - [ ] `content/pages/jobs.ts` og `content/pages/creator.ts`: hele siderne (ikke i designet)
   - [ ] `content/pages/legal.ts`: meta-beskrivelser og "Juridisk"-eyebrow
-- [ ] **Pris**: Skinbooster står "fra 999 kr" på forsiden i designet, men 1.499 kr alle andre
-      steder — vi bruger 1.499 kr (`content/treatments.ts`, bestsellers). Fillox bekræfter.
+- [x] **Pris**: Skinbooster står "fra 999 kr" på forsiden i designet, men 1.499 kr alle andre
+      steder — vi bruger 1.499 kr (`content/treatments.ts`, bestsellers). Afklaret: live /priser
+      (ændret 17/11-2026) starter skinboosters ved Ejal 40 til 1.499 kr (Microneedling, nu 1.200 kr,
+      er ikke en skinbooster).
+- [ ] **Priser ændret i WordPress efter kopien** (live /priser ændret 17/11-2026; `content/prices.ts`
+      er kopieret 1/10-2026). Rettet 24/11-2026 efter live: Opløsning af filler (Hyalase) 899 → 999 kr,
+      Microneedling 999 / 2.499 → 1.200 / 3.000 kr (følger med på behandlingssiden, i menuerne, på
+      `/ny-hos-fillox` og i Albertes og Kubras priskort). Alle 111 rækker er ellers ens. Åbent:
+  - [ ] Aftal et **content-freeze** på priserne i WordPress frem til lanceringen. På
+        lanceringsdagen: hent https://fillox.dk/priser/ igen, sammenlign række for række med
+        `content/prices.ts`, og ret afvigelser dér.
+  - [ ] Live hedder overskriften nu **"Microneedling & Exosomer"**. Skal rækkerne på det nye site
+        nævne exosomer? (Vi skriver ikke selv en ny etiket.)
+- [ ] **Trustpilot-tallene på lanceringsdagen**: 4,7 og 172 anmeldelser er aflæst 1/10-2026 og står i
+      forsidens hero, footer-strimlen og profilernes fakta. Aflæs score og antal på
+      https://dk.trustpilot.com/review/fillox.dk, og opdatér `score`, `reviewCount` og `checked` i
+      `config/site.ts` samtidig (Trustpilot afviser automatiske opslag, så det skal gøres i en browser).
 - [ ] **Juridisk**: registreret adresse og mailadresse til databeskyttelse (`info@` på
       privatlivssiden, `kontakt@` i `config/site.ts`) — `content/pages/legal.ts`.
 - [ ] **Botox og markedsføring** (juridisk vurdering). Botox er receptpligtig medicin og må ikke
@@ -251,7 +278,16 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
 - [ ] **"Profesionelle billeder" i Drive** (ny mappe under Fillox.dk, lagt op af Alberte
       22/10-2026, 15 billeder; +1 "IMG_1191.jpg" 27/10-2026): ikke lagt på siden. Fortæl hvad de forestiller, og hvor de skal
       bruges (behandlere, klinikker, Om os, forsiden); viser de kunder, kræver det samtykke.
-- [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`), foto +
+- [x] **Lip filler-siden viste en usand påstand**: afsnittet "Resultater med lip filler" havde tre
+      "før/efter"-par, hvor begge halvdele var det samme stockfoto, med teksterne "Lip filler · 0,5 ml ·
+      2026" osv. under introen "Rigtige kunder … delt med samtykke og uden filtre". Afsnittet er
+      fjernet (24/11-2026) og kommer først igen med rigtige billeder (punktet nedenfor).
+- [ ] **Forsidens resultatbilleder** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` →
+      `results`): stockfotos med billedtekster som "lip filler, 2026", der linker til behandlingerne
+      og kan læses som resultater. Behold dem som stemningsbilleder (uden behandling og årstal i
+      teksten), erstat dem med rigtige billeder med samtykke, eller fjern afsnittet?
+- [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`: lip filler-
+      siden har intet resultat-afsnit, før de findes), foto +
       alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
       `content/clinics.ts`), større original af Om os-billedet og et andet foto af Dr. Tom (se
       "Om os" ovenfor). Nogle stockfotos har en laksefarvet baggrund, der ligger tæt på den
@@ -260,10 +296,62 @@ Netlifys Next.js-runtime. Ingen miljøvariabler. Kræver Node ≥ 20.9 (Next 16)
       (ca. −20 % mætning, lidt lysere og køligere baggrund), eller vælg andre billeder ved de rosa
       flader.
 - [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
-- [ ] **Østerbro**: når klinikken åbner, sæt `status: "open"`, adresse, åbningstider og
-      Gecko-id i `content/clinics.ts`.
-- [ ] `npm run build` er grønt, og de gamle URL'er redirecter (stikprøve fra
-      `content/redirects.ts`).
+- [ ] **Østerbro**: `/klinikker` siger stadig "Åbner 1. november" (`content/clinics.ts` →
+      `openingNote` og `note`), og datoen er passeret. Er klinikken åben (så sæt `status: "open"`,
+      adresse, åbningstider og Gecko-id), eller hvad er den nye dato?
+- [ ] **City2: adresse og weekendtider** (`content/clinics.ts`): fillox.dk/kontakt siger både
+      "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop, centrets egen adresse); weekend
+      10–17 (desktop) eller 10–19 (mobil). Centrets egen side (city2.dk, uge 48) siger man–tor 10–19,
+      fre 10–21, lør–søn 10–19. Hvad er klinikkens adresse og tider (som i Google-profilen)?
+- [ ] **Amager Centret: åbningstider**: sitet viser lør–søn 10–17 (samme tider som City2). Centrets
+      egen side (amagercentret.dk, uge 48) siger lør 10–18 og søndag lukket. Hvilke tider gælder?
+- [ ] **Afbud og udeblivelse**: live /priser siger 500 kr ved udeblivelse, handelsbetingelserne 100 %
+      af bookingen (også ved afbud senere end 6 timer før). Reglen på /priser om, at kun hverdage
+      tæller (en mandagstid skal aflyses fredagen før), står ikke på det nye site
+      (`content/pages/legal.ts`, kommentaren i `content/prices.ts`). Hvad gælder?
+- [ ] **Kontrol efter behandling**: det nye site siger "Konsultation og kontrol er altid gratis".
+      Live-politikken (fillox.dk/om-os/kontrol-eftertjek, som nu sender videre til
+      `/priser#konsultation`) siger også: én kontrol pr. behandling, du booker den selv ca. 14 dage
+      efter, og retten bortfalder efter 21 dage. Skal de betingelser stå på det nye site (fx på
+      `/handelsbetingelser`)?
+- [ ] **Sundhed+**: live /finansiering tilbyder finansiering via Sundhed+ (Sundhed+ Kredit). Det nye
+      `/priser#finansiering` siger kun "Spørg i klinikken eller ved booking" (`content/prices.ts` →
+      `financing`). Skal Sundhed+ nævnes eller linkes?
+- [ ] **Premium medlemskab**: live /medlem (500 kr/md., 6.000 kr til behandlinger om året, 20 %
+      rabat) findes ikke på det nye site, og /medlem sender videre til `/priser`. Tilbydes
+      medlemskabet stadig? (Handelsbetingelserne nævner stadig abonnement.)
+- [ ] **"Kun læger & sygeplejersker"** (trust-chippen på `/priser`) og "udført af læger og
+      sygeplejersker" (sitets titel og beskrivelse, `content/layout.ts`, forsiden): gælder det også
+      laser hårfjerning og Alberte (se næste punkt)? Ellers skal formuleringen ændres (af jer eller
+      bureauet).
+- [ ] **Alberte** (`content/team.ts`): titel, uddannelse og klinikker er ikke bekræftet (live giver
+      hende ingen titel). Hendes priskort viser bl.a. Skinbooster og PRF (injektioner). Bekræft, hvad
+      hun er uddannet som, og hvad hun udfører.
+- [ ] **"10.000+ behandlinger"** i forsidens hero (`content/pages/home.ts` → `stats`) kommer fra
+      designet. Hvad bygger tallet på?
+- [ ] **Instagram**: sitet linker til instagram.com/fillox_dk (`config/site.ts`), Amager Centrets side
+      til instagram.com/fillox.dk. Hvilken konto er klinikkens?
+- [x] `npm run build` er grønt, og de gamle URL'er redirecter: tjekket 24/11-2026 (produktionsbuild,
+      `check:market` ok). Alle 45 adresser i WordPress' sitemap og de 24 menulinks på det live site,
+      med og uden skråstreg til sidst og med store bogstaver, giver 200 eller ét 308-hop til en side
+      med 200; alle `#ankre` findes; 0 brudte interne links.
+
+## Efter lancering
+
+- [ ] **Første Netlify-deploy (preview)**: alt ovenfor er målt på `next start`. På Netlify kører
+      billeder gennem Netlify Image CDN og HTML/JS gennem Netlifys edge, så tjek på preview-URL'en:
+      Lighthouse mobil + desktop på de vigtigste sider; at `/_next/image` svarer med `image/avif`
+      eller `image/webp` (med `Accept: image/avif,image/webp`) og lang cache; at HTML og JS er
+      brotli-komprimeret; at headers fra `netlify.toml` er med (`curl -I`); ingen konsolfejl eller
+      404'er.
+- [ ] **CSP**: i lanceringsugen er den kun rapporterende. Lav en hel testbooking i Gecko, inkl.
+      betalingstrinnet, i Safari, Chrome og Firefox, og tjek, at konsollen ikke viser CSP-brud. Omdøb
+      så `Content-Security-Policy-Report-Only` til `Content-Security-Policy` i `netlify.toml`.
+- [ ] **Google Search Console**: indsend `/sitemap.xml` og `/legacy-sitemap.xml`. Slet
+      `public/legacy-sitemap.xml` og de to `wp-sitemap-…`-redirects i `content/redirects.ts` ca. 3
+      måneder efter lanceringen.
+- [ ] **Hastighed i praksis**: se feltdata (Core Web Vitals) for fillox.dk i PageSpeed Insights ca.
+      28 dage efter lanceringen.
 
 ## Rebranding til fillox.no
 
@@ -282,6 +370,8 @@ skal du rette en tekst i en komponent, hører teksten til i `content/`.
 | `public/__kontakt-sendt.html` | Videresender til `routes.contactThanks` (fx `/kontakt/takk`) |
 | `public/__nyhedsbrev-tilmeldt.html` | Videresender til `routes.newsletterThanks` (fx `/nyhetsbrev/takk`); filnavnet er `content/forms.ts` → `newsletterNoJsAction` |
 | `public/images/**` | Fotos; **klinikkortet** `public/images/clinics/kort.svg` er et København-kort |
+| `public/legacy-sitemap.xml` | De gamle fillox.dk-adresser: slet filen (og de to `wp-sitemap-…`-redirects), eller erstat den med fillox.no's gamle URL'er |
+| `netlify.toml` | CSP'en nævner Geckos værter: til TIMMA `frame-src https://bestill.timma.no` og ingen Gecko-script-vært |
 | `ARCHITECTURE.md`, `README.md` | Rutetabel og tekst for NO |
 
 `config/types.ts` og `content/types.ts` er fælles kontrakter — TypeScript tjekker det norske

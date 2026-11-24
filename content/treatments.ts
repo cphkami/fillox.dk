@@ -82,37 +82,23 @@ const categoryImage = (categorySlug: string): ImageRef =>
 /** Booking link that preselects a practitioner: /booking?behandler=<slug> (lib/booking.ts). */
 const bookWith = practitionerBookingHref;
 
-/** Photos with their intrinsic size (the results section sizes each half from its aspect). */
+/** Photos with their intrinsic size. */
 type Img = Required<Pick<ImageRef, "src" | "width" | "height">>;
 
 const IMG = {
   duoPink: { src: "/images/results/duo-pink.jpg", width: 2000, height: 1228 },
-  duoColor: { src: "/images/results/duo-color.jpg", width: 1600, height: 1096 },
-  lipsA: { src: "/images/results/before-after-2.jpg", width: 900, height: 1125 }, // design: ba-1654374504608.jpg
-  lipsB: { src: "/images/results/before-after-1.jpg", width: 900, height: 638 }, // design: ba-1643630661247.jpg
 } satisfies Record<string, Img>;
 
-/** What each placeholder photo actually shows (same wording as its other uses in /content). */
-const placeholderAlt: Record<string, string> = {
-  [IMG.duoPink.src]: "To smilende kvinder foran en rosa baggrund",
-  [IMG.duoColor.src]: "To smilende kvinder foran en beige og rosa baggrund",
-  [IMG.lipsA.src]: "Nærbillede af læber",
-  [IMG.lipsB.src]: "Nærbillede af læber og hage",
-};
-
-/**
- * The design's before/after pairs are placeholders: both halves crop the same stock photo.
- * Their alt text describes that photo, not a treatment result it does not show.
- * TODO: real before/after photos (shared with the patient's consent) from Fillox; then give
- * each half its own alt, e.g. "Læber før behandling med lip filler, 0,5 ml".
+/*
+ * Before/after results (detail.resultsTitle / resultsIntro / results, components/treatment/
+ * ResultsSection): no page has them. The design's lip filler pairs were placeholders (both halves
+ * cropped the same stock photo, under "real customers, shared with consent, no filters" and
+ * "0,5 ml · 2026"-style captions), so the section was taken out before launch (2026-11).
+ * TODO: real before/after photos from Fillox, with the patient's written consent and a legal OK
+ * (README → "Før lancering"); then add `results` back, each half with its own alt, e.g.
+ * "Læber før behandling med lip filler, 0,5 ml". The section only renders when `results` has items.
  */
-const pair = (img: Img): { before: ImageRef; after: ImageRef } => ({
-  before: { ...img, alt: placeholderAlt[img.src] ?? "", position: "50% 50%" },
-  after: { ...img, alt: placeholderAlt[img.src] ?? "", position: "50% 50%" },
-});
 
-const resultsIntro =
-  "Rigtige kunder, samme lys og samme vinkel før og efter. Alle billeder er delt med samtykke og uden filtre.";
 const relatedPostsIntro =
   "Alt det, du gerne vil vide før din første behandling, skrevet af vores behandlere.";
 
@@ -311,26 +297,8 @@ export const treatments: Treatment[] = [
       practitionerText:
         "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger og ekspert i både fillers og rynkebehandling. Hendes øje for kvalitet og sans for det naturlige resultat skinner igennem i alle behandlinger.",
       practitionerQuote: "At se mine tilfredse kunder smile er en af de største glæder, jeg har.",
-      resultsTitle: "Resultater med lip filler",
-      resultsIntro,
-      results: [
-        {
-          ...pair(IMG.lipsA),
-          caption: "Lip filler · 0,5 ml · 2026",
-          mobileCaption: "0,5 ml · 2026",
-        },
-        {
-          ...pair(IMG.lipsB),
-          caption: "Lip filler · 1,0 ml · 2026",
-          // The mobile design (mb) labels this pair "0,5 ml · 2026"; kept consistent with desktop.
-          mobileCaption: "1,0 ml · 2026",
-        },
-        {
-          ...pair(IMG.lipsA),
-          caption: "Lip filler · 0,7 ml · 2025",
-          mobileCaption: "0,7 ml · 2025",
-        },
-      ],
+      // No results section until Fillox delivers real before/after photos (see "Before/after
+      // results" above): the design's three pairs were one stock photo with invented captions.
       pricesTitle: "Vælg din mængde",
       pricesIntro:
         "Din behandler anbefaler mængden ved konsultationen. Mange starter med 0,5 ml og bygger på senere.",

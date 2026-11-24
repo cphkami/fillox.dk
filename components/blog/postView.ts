@@ -2,7 +2,7 @@
  * Small pure helpers shared by the blog overview and article components.
  * No copy of their own: labels come from content/pages/blog.ts.
  */
-import { sortedPosts } from "@/content/blog";
+import { hasArticleBody, sortedPosts } from "@/content/blog";
 import { blogPage } from "@/content/pages/blog";
 import type { BlogPost } from "@/content/types";
 import { postsBySlugs } from "@/lib/content";
@@ -12,8 +12,18 @@ export function postFilterSlugs(post: BlogPost): string[] {
   return Array.from(new Set([post.categorySlug, ...(post.tags ?? [])].filter((s): s is string => Boolean(s))));
 }
 
-/** "4 min" (mobile / compact lists); falls back to the full reading time. */
-export function shortReadingTime(post: BlogPost): string {
+/**
+ * "4 min læsning" (desktop meta), or undefined while the post has no written article: an
+ * excerpt-only post claims no reading time anywhere (content/blog.ts → hasArticleBody), the
+ * same rule as the article header.
+ */
+export function readingTime(post: BlogPost): string | undefined {
+  return hasArticleBody(post) ? post.readingTime : undefined;
+}
+
+/** "4 min" (mobile / compact lists); falls back to the full reading time; undefined as above. */
+export function shortReadingTime(post: BlogPost): string | undefined {
+  if (!hasArticleBody(post)) return undefined;
   return post.readingMinutes ? blogPage.minutes(post.readingMinutes) : post.readingTime;
 }
 

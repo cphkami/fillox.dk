@@ -12,7 +12,9 @@
  *    through a path literal);
  * 3. the collections linked as `${route}/<slug>` (treatments, practitioners, blog) have an
  *    app/<path>/[slug]/page.tsx;
- * 4. every redirect in content/redirects.ts lands on a route (or on a page of a collection); one
+ * 4. every redirect in content/redirects.ts lands on a route (or on a page of a collection, or on
+ *    a file the site serves: the generated /sitemap.xml, a metadata file in app/ such as
+ *    /apple-icon.png, or a file in public/ such as /legacy-sitemap.xml); one
  *    to a treatment page names an existing treatment, and its #anchor (if any) is a section or
  *    item id of that page's long-form content (content/types.ts → TreatmentSection); the same for
  *    the price list's links (content/prices.ts → treatmentSlug / treatmentAnchor);
@@ -43,7 +45,7 @@
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import nodeModule from "node:module";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -131,8 +133,16 @@ for (const { source, destination } of legacyRedirects) {
   const path = pathOf(destination);
   const onRoute = routePaths.has(path);
   const onCollection = collectionBases.some((base) => new RegExp(`^${base}/[^/]+$`).test(path));
-  // Non-page targets served by the app itself (the generated sitemap).
-  const isFile = path === "/sitemap.xml";
+  // Non-page targets the site serves: the generated sitemap, metadata images in app/
+  // (apple-icon.png, icon.png) and static files in public/ (legacy-sitemap.xml).
+  const isServedFile = (dir) => {
+    const file = join(dir, ...path.split("/").filter(Boolean));
+    return existsSync(file) && statSync(file).isFile();
+  };
+  const isFile =
+    path === "/sitemap.xml" ||
+    (/\.(png|ico|jpe?g|svg)$/i.test(path) && isServedFile(appDir)) ||
+    (/\.[a-z0-9]+$/i.test(path) && isServedFile(join(root, "public")));
   if (!onRoute && !onCollection && !isFile) {
     errors.push(`redirect ${source} → ${destination}: "${path}" is not a route in content/routes.ts`);
   }

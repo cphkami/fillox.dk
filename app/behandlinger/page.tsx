@@ -73,10 +73,13 @@ export default function TreatmentsOverviewPage() {
             </nav>
           </div>
           {/* Height grows with the column (440 → 600px from 1280 to 1600) so the portrait keeps
-              the design's ≈ 1.1 : 1 crop (face, chin and neck) on wide screens. */}
+              the design's ≈ 1.1 : 1 crop (face, chin and neck) on wide screens. Hidden below
+              1024px: the 1px slot makes phones fetch (and preload) the tiniest variant, as on
+              /klinikker. The vw is wrapped in calc() on purpose: a bare "44vw" makes next/image
+              leave every width under 44 % of 640px out of the srcset, so phones got the 384px file. */}
           <Photo
             image={copy.heroImage}
-            sizes="(min-width: 1600px) 668px, (min-width: 1024px) 44vw, 1px"
+            sizes="(min-width: 1600px) 668px, (min-width: 1024px) calc(44vw), 1px"
             priority
             className="min-h-fluid-440/600 max-lg:hidden"
           />

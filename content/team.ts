@@ -431,9 +431,9 @@ const members: TeamMember[] = [
       offers: {
         ...offersCopy("Alberte"),
         // Prices from the price list (https://fillox.dk/priser/): laser from 500 (Overlæbe, Hage …),
-        // Microneedling 1 behandling 999, skinboosters from 1.499 (Ejal 40), Signatur behandling
-        // 999, PRF Hud 1 behandling 2.499; the fillers consultation (v. kosmetisk sygeplejerske)
-        // is free.
+        // Microneedling 1 behandling 1.200 (999 until the live list changed, 2026-11-17),
+        // skinboosters from 1.499 (Ejal 40), Signatur behandling 999, PRF Hud 1 behandling 2.499;
+        // the fillers consultation (v. kosmetisk sygeplejerske) is free.
         items: [
           // Live (/harfjerning): diode laser, settings adapted to the skin type and hair.
           treatmentOffer("laser-harfjerning", {

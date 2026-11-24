@@ -151,8 +151,8 @@ export const treatmentPage = {
      */
     // TODO: copy review (group headings not in the design; /priser has them as one list)
     groups: {
-      // Hyalase dissolves filler: a service of its own, not an amount of lip filler (and cheaper
-      // than the "fra" price, which is the 0,3 ml row).
+      // Hyalase dissolves filler: a service of its own, not an amount of lip filler (not tagged
+      // "lip-filler" in content/prices.ts, so it never sets the "fra" price, the 0,3 ml row).
       "lip-filler": [{ title: "Andre ydelser", labels: ["Opløsning af filler (Hyalase)"] }],
     } as Record<string, PriceGroupCopy[]>,
   },

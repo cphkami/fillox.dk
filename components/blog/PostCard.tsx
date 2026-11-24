@@ -4,7 +4,7 @@ import { blogPostHref } from "@/content/blog";
 import { blogPage as copy } from "@/content/pages/blog";
 import type { BlogPost } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { cardFocusRing, joinMeta, shortReadingTime, stretchedLink } from "./postView";
+import { cardFocusRing, joinMeta, readingTime, shortReadingTime, stretchedLink } from "./postView";
 
 type PostCardProps = {
   post: BlogPost;
@@ -23,8 +23,10 @@ type PostCardProps = {
  * Blog post teaser. Below 768px a compact row (88px thumbnail, "Filler · 4 min",
  * title); from 768px a white card (220px photo, growing on wide screens, "FILLER · 4 MIN
  * LÆSNING", title, "Læs artiklen →"). The whole card is clickable through the title link.
+ * A post without its written article shows the category alone (no reading time).
  */
 export function PostCard({ post, variant = "list", headingLevel: Heading = "h3", className }: PostCardProps) {
+  const time = readingTime(post);
   return (
     <article
       className={cn(
@@ -50,8 +52,12 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
         <p className="text-[12px] text-muted md:hidden">{joinMeta(post.category, shortReadingTime(post))}</p>
         <p className="text-micro font-bold tracking-[2px] text-accent uppercase max-md:hidden">
           {post.category}
-          {copy.separator}
-          <span className="font-semibold text-muted">{post.readingTime}</span>
+          {time ? (
+            <>
+              {copy.separator}
+              <span className="font-semibold text-muted">{time}</span>
+            </>
+          ) : null}
         </p>
 
         {/* 19px (6blog / 6art), from 1280px growing to 22px at 1600 (19 → 22, the token formula):

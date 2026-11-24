@@ -2,5 +2,32 @@
   command = "npm run build"
   publish = ".next"
 
+[build.environment]
+  # Next 16 needs Node >= 20.9 (package.json → engines); 22 is the current LTS line.
+  NODE_VERSION = "22"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Security headers on every response (pages, assets, /_next/image).
+# - HSTS as the old WordPress site sent it (fillox.dk is on the preload list).
+# - X-Frame-Options / frame-ancestors: only fillox.dk may frame its own pages.
+# - Permissions-Policy turns off what no page uses. Leave `payment` and
+#   `publickey-credentials-get` alone: the Gecko booking iframe (and its card payment) may need them.
+# - The CSP ships as Report-Only first (violations appear in the browser console, nothing is
+#   blocked). The site loads nothing from other hosts except Gecko on /booking: Gecko's iframe.js
+#   (script), its calendar iframe (with an inline onload handler, hence 'unsafe-inline' next to
+#   Next's own inline scripts) and, in the booking flow, the payment pages Gecko may open inside
+#   that iframe (Nets Easy / OnPay). After a full test booking incl. the payment step in Safari,
+#   Chrome and Firefox without violations, rename the key to Content-Security-Policy (README →
+#   "Efter lancering"). fillox.no (TIMMA): frame-src https://bestill.timma.no instead of Gecko's
+#   hosts, and no Gecko script host.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://filloxdanmark.app4.geckobooking.dk; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src https://*.geckobooking.dk https://checkout.dibspayment.eu https://onpay.io https://*.onpay.io; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"

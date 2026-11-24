@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ButtonLink, Container, Eyebrow, Photo } from "@/components/ui";
-import { blogPostHref } from "@/content/blog";
+import { blogPostHref, hasArticleBody } from "@/content/blog";
 import { treatmentPage as copy } from "@/content/pages/treatments";
 import { cn } from "@/lib/cn";
 import type { TreatmentView } from "./treatmentView";
@@ -74,6 +74,8 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
       <ul className={cn("flex flex-col gap-4 md:grid md:gap-fluid-24", layout.grid)}>
         {posts.items.map((post) => {
           const kind = post.kind ?? post.category;
+          // An excerpt-only post claims no reading time (content/blog.ts → hasArticleBody).
+          const hasBody = hasArticleBody(post);
           return (
             <li key={post.slug} className="flex">
               <article
@@ -102,10 +104,11 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
                         columns: from the 1180px design canvas). */}
                     <span className={layout.longMetaFrom === "md" ? "md:hidden" : "min-[73.75rem]:hidden"}>
                       {kind}
-                      {post.readingMinutes ? ` · ${post.readingMinutes} ${copy.posts.minutes}` : ""}
+                      {hasBody && post.readingMinutes ? ` · ${post.readingMinutes} ${copy.posts.minutes}` : ""}
                     </span>
                     <span className={layout.longMetaFrom === "md" ? "max-md:hidden" : "hidden min-[73.75rem]:inline"}>
-                      {kind} · {post.readingTime}
+                      {kind}
+                      {hasBody ? ` · ${post.readingTime}` : ""}
                     </span>
                   </p>
                   {/* The single wide card's title grows 20 → 26px from 1280 (one step above the
