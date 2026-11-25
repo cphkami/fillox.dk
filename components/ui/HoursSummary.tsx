@@ -18,6 +18,8 @@ export function HoursSummary({
   as?: "p" | "span";
   className?: string;
 }) {
+  // No hours known yet (a newly opened clinic): render nothing rather than an empty line.
+  if (parts.length === 0) return null;
   if (parts.length < 2) return <Tag className={className}>{parts[0]}</Tag>;
   return (
     <Tag className={cn("flex flex-wrap gap-x-[.75em] overflow-hidden", className)}>

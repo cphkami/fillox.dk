@@ -95,7 +95,6 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
 |---|---|---|
 | Kontakt | `kontakt` | `/kontakt` |
 | Nyhedsbrev | `nyhedsbrev` | footeren på alle sider + `/blog` |
-| "Få besked" (Østerbro) | `osterbro-besked` | vises ikke siden 25/11-2026 (Østerbro er åben); fjernes helt, når klinikken har sin adresse (se kommentaren ved `notify` i `content/pages/clinics.ts`) |
 
 - Netlify finder formularerne ved deploy i `public/__forms.html` (skjult, aldrig linket).
   Feltnavnene dér skal matche det, komponenterne sender.
@@ -434,14 +433,13 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
         er databehandlere eller selvstændigt dataansvarlige.
   - [ ] **Kontaktformularen** måles ikke i GA4 på det nye site (se punkt 4). Skal sitet sende et
         event til GTM, når en besked er sendt? (En lille kodeændring.)
-- [ ] **Østerbro** (du, 25/11-2026: "østerbro er åbent"): adressen findes ikke på fillox.dk, i
-      Drive eller på Geckos offentlige side (Gecko kender behandlingsstedet "Fillox - Østerbro",
-      id 14667, uden adresse). Indtil da står Østerbro som "Ny klinik" med "Fillox Østerbro er vores
-      nyeste klinik. Adresse og åbningstider kommer her snart." (`content/clinics.ts`,
-      `content/pages/clinics.ts`), uden adresse, tider, bookingknap, kortlink og strukturerede data,
-      og "Få besked, når Østerbro åbner" er fjernet. **Send**: gadeadresse og postnummer,
-      åbningstider, Google Maps-link (klinikkens sted) og Østerbros Gecko-kalender-id. Så sættes
-      `status: "open"` (fremgangsmåden står i kommentaren i `content/clinics.ts`).
+- [ ] **Østerbro** er åben (du, 25/11-2026) på **Nordre Frihavnsgade 13A, 2100 København Ø**
+      (postnummer og kortplacering tjekket mod OpenStreetMap). Den står nu som åben klinik på
+      /klinikker, i menuerne, i footeren, på /kontakt, på forsiden og i de strukturerede data, og
+      "Få besked"-formularen er fjernet helt. **Mangler**: åbningstider (indtil da vises ingen tider
+      for Østerbro), linket til klinikkens Google Maps-sted ("Rutevejledning" søger i dag på
+      adressen) og Østerbros Gecko-kalender-id (Gecko kender behandlingsstedet "Fillox - Østerbro",
+      id 14667). Alt sættes i `content/clinics.ts`.
 - [ ] **City2: adresse og weekendtider** (`content/clinics.ts`): fillox.dk/kontakt siger både
       "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop, centrets egen adresse); weekend
       10–17 (desktop) eller 10–19 (mobil). Centrets egen side (city2.dk, uge 48) siger man–tor 10–19,

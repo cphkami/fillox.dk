@@ -36,22 +36,13 @@ export default function ClinicsPage() {
       </section>
 
       <section aria-label={clinicsPage.listLabel} className={cn(containerClasses("surface"), "md:pt-surface")}>
-        {/* Cards in a row stretch to the same height (buttons at the bottom, as in 6kl). While the
-            "Få besked" form is open, its row partner keeps its own height instead, so no blank gap
-            opens above that card's buttons. */}
-        <ul
-          className={cn(
-            "flex flex-col gap-2.5 md:grid md:grid-cols-2 md:gap-surface",
-            "md:[&>li:nth-child(odd):has(+li_[data-notify-open])]:self-start",
-            "md:[&>li:nth-child(odd):has([data-notify-open])+li]:self-start",
-          )}
-        >
+        {/* Cards in a row stretch to the same height (buttons at the bottom, as in 6kl). */}
+        <ul className="flex flex-col gap-2.5 md:grid md:grid-cols-2 md:gap-surface">
           {clinics.map((clinic, i) => (
             <li key={clinic.slug}>
               <ClinicCard
                 clinic={clinic}
                 copy={clinicsPage.card}
-                notifyCopy={clinicsPage.notify}
                 comingSoon={clinicsPage.comingSoon[clinic.slug]}
                 priorityPhoto={i < 2}
               />

@@ -5,13 +5,11 @@ import { site } from "@/config/site";
 import type { ClinicsPageCopy } from "@/content/pages/clinics";
 import type { Clinic } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { NotifyForm } from "./NotifyForm";
 
 type ClinicCardProps = {
   clinic: Clinic;
   copy: ClinicsPageCopy["card"];
-  notifyCopy: ClinicsPageCopy["notify"];
-  /** Mobile wording for a coming-soon clinic (badge, note) and its signup form. */
+  /** Mobile wording for a coming-soon clinic (badge, note). */
   comingSoon?: ClinicsPageCopy["comingSoon"][string];
   /** Load the photo eagerly (first row on desktop). */
   priorityPhoto?: boolean;
@@ -29,7 +27,7 @@ type ClinicCardProps = {
  * and the directions link fit on one line in every card and neighbouring cards'
  * action rows line up.
  */
-export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto }: ClinicCardProps) {
+export function ClinicCard({ clinic, copy, comingSoon, priorityPhoto }: ClinicCardProps) {
   const soon = clinic.status === "coming-soon";
   const titleId = `${clinic.slug}-title`;
 
@@ -79,16 +77,9 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
         </div>
 
         {soon ? (
-          <>
-            <p className="text-[15px] leading-[1.6] text-muted md:mb-[22px] md:text-body md:leading-[1.75] xl:mb-fluid-22 xl:max-w-[56ch] xl:text-pretty">
-              <ResponsiveText mobile={comingSoon?.noteShort} desktop={clinic.note} />
-            </p>
-            {comingSoon?.formName ? (
-              <div className="md:mt-auto xl:max-w-[640px]">
-                <NotifyForm formName={comingSoon.formName} copy={notifyCopy} />
-              </div>
-            ) : null}
-          </>
+          <p className="text-[15px] leading-[1.6] text-muted md:mb-[22px] md:text-body md:leading-[1.75] xl:mb-fluid-22 xl:max-w-[56ch] xl:text-pretty">
+            <ResponsiveText mobile={comingSoon?.noteShort} desktop={clinic.note} />
+          </p>
         ) : (
           <>
             {/* Address, then hours (6kl). From 1440px (a common laptop width) the card body is
@@ -107,24 +98,27 @@ export function ClinicCard({ clinic, copy, notifyCopy, comingSoon, priorityPhoto
                 ))}
               </address>
 
-              <div className="md:mt-[18px] md:mb-[22px] xl:mt-fluid-18 xl:mb-fluid-22 min-[90rem]:my-0">
-                <h3 className="sr-only">{copy.hoursLabel}</h3>
-                {/* The two auto columns share the width (6kl); from 1280px the list stops at the
-                    design's 480px text width, so the hours don't drift to the middle of a wide card,
-                    and from 1440px (next to the address) the columns hug their content. Next to the
-                    address the hours step up to text-body-sm (15.5 → 16px against its 17 → 18px, the
-                    design's 16:14 ratio), so the opening hours don't read smaller than the address. */}
-                <dl className="rounded-[14px] bg-sand px-4 py-3 text-small leading-[1.7] md:grid md:grid-cols-[auto_auto] md:gap-x-6 md:gap-y-1 md:rounded-none md:bg-transparent md:p-0 md:leading-normal md:text-muted xl:max-w-[480px] min-[90rem]:justify-start min-[90rem]:gap-x-10 min-[90rem]:gap-y-0 min-[90rem]:text-body-sm min-[90rem]:leading-[calc(var(--text-body)*1.75)]">
-                  {clinic.hours.map((h) => (
-                    <div key={h.days} className="flex justify-between gap-4 md:contents">
-                      <dt>
-                        <ResponsiveText mobile={copy.daysLong[h.days]} desktop={h.days} />
-                      </dt>
-                      <dd className="font-semibold md:text-ink">{h.hours}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
+              {/* A clinic whose hours are not known yet (Østerbro, 25/11-2026) shows no hours box. */}
+              {clinic.hours.length > 0 ? (
+                <div className="md:mt-[18px] md:mb-[22px] xl:mt-fluid-18 xl:mb-fluid-22 min-[90rem]:my-0">
+                  <h3 className="sr-only">{copy.hoursLabel}</h3>
+                  {/* The two auto columns share the width (6kl); from 1280px the list stops at the
+                      design's 480px text width, so the hours don't drift to the middle of a wide card,
+                      and from 1440px (next to the address) the columns hug their content. Next to the
+                      address the hours step up to text-body-sm (15.5 → 16px against its 17 → 18px, the
+                      design's 16:14 ratio), so the opening hours don't read smaller than the address. */}
+                  <dl className="rounded-[14px] bg-sand px-4 py-3 text-small leading-[1.7] md:grid md:grid-cols-[auto_auto] md:gap-x-6 md:gap-y-1 md:rounded-none md:bg-transparent md:p-0 md:leading-normal md:text-muted xl:max-w-[480px] min-[90rem]:justify-start min-[90rem]:gap-x-10 min-[90rem]:gap-y-0 min-[90rem]:text-body-sm min-[90rem]:leading-[calc(var(--text-body)*1.75)]">
+                    {clinic.hours.map((h) => (
+                      <div key={h.days} className="flex justify-between gap-4 md:contents">
+                        <dt>
+                          <ResponsiveText mobile={copy.daysLong[h.days]} desktop={h.days} />
+                        </dt>
+                        <dd className="font-semibold md:text-ink">{h.hours}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ) : null}
             </div>
 
             {/* Transport / parking note. Not drawn in mk, shown on mobile too: it is what people

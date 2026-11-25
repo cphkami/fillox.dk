@@ -96,28 +96,26 @@ export const clinics: Clinic[] = withBookingLinks([
     geo: { latitude: 55.6781581, longitude: 12.5351565 },
   },
   {
-    // The owner says Østerbro is open (25 November 2026), but its address is not known yet: it is
-    // not on fillox.dk (sitemap, /kontakt, footer; checked 25/11-2026) or in the Drive folder ("Om
-    // Fillox og klinikker" has the heading only), and Gecko's public booking page lists the clinic
-    // ("Fillox - Østerbro", behandlingssted id 14667) without an address. So it stays
-    // "coming-soon" (no address, hours, booking button, map link or structured data), with neutral
-    // wording instead of the passed "Åbner 1. november".
-    // TODO (owner): street address + postcode, opening hours, Google Maps link (the clinic's place,
-    // as for the other clinics) and the Gecko calendar id. Then set status "open", fill address,
-    // hours, hoursSummary, booking, directionsHref and geo like Frederiksberg above, drop
-    // openingNote and note (or make note a transport note), and delete `comingSoon.osterbro` in
-    // content/pages/clinics.ts.
     slug: "osterbro",
     name: "Østerbro",
     fullName: "Fillox Østerbro",
-    address: [],
+    // From the owner, 25 November 2026: "Nordre Frihavnsgade 13A", "2100 København Ø" (postcode and
+    // the map position below checked against OpenStreetMap: Indre Østerbro).
+    address: ["Nordre Frihavnsgade 13A", "2100 København Ø"],
+    // TODO (owner): opening hours. Until then the clinic shows no hours (the card, menus and footer
+    // leave the hours out, and the structured data has no openingHoursSpecification).
     hours: [],
-    status: "coming-soon",
-    // TODO: copy review (neutral until the address is known; also shown in the menus, footer,
-    // /kontakt and on the home page)
-    openingNote: "Ny klinik",
-    // TODO: copy review
-    note: "Fillox Østerbro er vores nyeste klinik. Adresse og åbningstider kommer her snart.",
+    // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to
+    // preselect it. Gecko's public booking page lists the clinic as "Fillox - Østerbro"
+    // (behandlingssted id 14667).
+    booking: {},
+    // TODO (owner): the clinic's Google Maps place link (as for City2 and Frederiksberg). Until
+    // then "Rutevejledning" searches Google Maps for the address.
+    directionsHref:
+      "https://www.google.com/maps/search/?api=1&query=Fillox%20%C3%98sterbro%2C%20Nordre%20Frihavnsgade%2013A%2C%202100%20K%C3%B8benhavn%20%C3%98",
+    status: "open",
+    // OpenStreetMap (Nominatim) for Nordre Frihavnsgade 13A, 2100 København Ø.
+    geo: { latitude: 55.700637, longitude: 12.579201 },
   },
 ]);
 

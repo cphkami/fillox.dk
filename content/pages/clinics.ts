@@ -1,8 +1,5 @@
-import type { ImageRef, Link } from "../types";
-import { site } from "@/config/site";
-import { legalNav } from "../navigation";
+import type { ImageRef } from "../types";
 import { ui } from "../ui";
-import type { FormName } from "@/lib/forms";
 import { photos as clinicPhotos } from "../photos";
 
 /**
@@ -21,33 +18,6 @@ export type ClinicMapPin = {
   /** Which side of the pin the name label sits on. */
   labelSide: "left" | "right";
 };
-
-/** Copy for the "Få besked" signup on a coming-soon clinic card. */
-export type NotifyCopy = {
-  /** Toggle button that reveals the form (design: "Få besked"). */
-  toggle: string;
-  /** Accessible name of the form. */
-  formLabel: string;
-  fields: {
-    name: { label: string; placeholder: string };
-    email: { label: string; placeholder: string };
-    phone: { label: string; optional: string; placeholder: string };
-  };
-  errors: {
-    nameRequired: string;
-    emailRequired: string;
-    emailInvalid: string;
-    /** Submit failed: lead text, then the phone number as a tel: link, then `end`. */
-    submit: { text: string; phone: Link; end: string };
-  };
-  privacy: { text: string; link: Link };
-  submit: string;
-  sending: string;
-  cancel: string;
-  success: { title: string; text: string };
-};
-
-const privacyLink = legalNav.find((l) => l.href.includes("privat")) ?? legalNav[legalNav.length - 1];
 
 export const clinicsPage = {
   meta: {
@@ -137,58 +107,13 @@ export const clinicsPage = {
     } as Record<string, string>,
   },
 
-  /** Mobile wording for coming-soon clinics (mk), keyed by clinic slug. */
-  comingSoon: {
-    // Østerbro is open (owner, 25/11-2026) but has no address on the site yet (content/clinics.ts),
-    // so its card keeps the coming-soon layout with neutral wording. No `formName`: the "Få besked,
-    // når Østerbro åbner" signup is not shown any more, as the clinic has opened.
-    osterbro: {
-      /** Badge next to the name on mobile. Desktop shows `Clinic.openingNote` on the photo. */
-      // TODO: copy review
-      openingNoteShort: "Ny klinik",
-      // TODO: copy review
-      noteShort: "Vores nyeste klinik. Adresse og åbningstider kommer her snart.",
-    },
-  } as Record<string, { openingNoteShort?: string; noteShort?: string; formName?: FormName }>,
-
-  // TODO: copy review — only the toggle ("Få besked") is in the design; the form
-  // itself is not designed. Labels/placeholders follow the 6ko contact form.
-  // Not shown anywhere since 25/11-2026 (no coming-soon clinic has a `formName`). Remove it end to
-  // end together with forms.notifyOsterbro once Østerbro has its address: this copy, the type
-  // NotifyCopy, components/clinics/NotifyForm.tsx, ClinicCard's `notifyCopy` prop, the
-  // `notifyCopy` prop and `data-notify-open` selectors in app/klinikker/page.tsx, the
-  // "osterbro-besked" form in public/__forms.html and its row in README.md.
-  notify: {
-    toggle: ui.notifyMe,
-    formLabel: "Få besked, når Østerbro åbner",
-    fields: {
-      name: { label: "Navn", placeholder: "Dit navn" },
-      email: { label: "E-mail", placeholder: "din@email.dk" },
-      phone: { label: "Telefon", optional: "(valgfri)", placeholder: "+45" },
-    },
-    errors: {
-      nameRequired: "Skriv dit navn.",
-      emailRequired: "Skriv din e-mail.",
-      emailInvalid: "Tjek, at e-mailen er skrevet rigtigt.",
-      /** Rendered as `{text} <a href={phone.href}>{phone.label}</a>{end}`, so the number is tappable. */
-      submit: {
-        text: "Vi kunne ikke sende din tilmelding. Prøv igen, eller ring til os på",
-        phone: { label: site.contact.phone, href: site.contact.phoneHref },
-        end: ".",
-      },
-    },
-    privacy: {
-      text: "Vi bruger kun dine oplysninger til at give dig besked, når vi åbner.",
-      link: privacyLink,
-    },
-    submit: "Skriv mig op",
-    sending: "Sender …",
-    cancel: "Annuller",
-    success: {
-      title: "Tak, du er skrevet op",
-      text: "Vi giver dig besked, så snart du kan booke tid på Østerbro.",
-    },
-  } satisfies NotifyCopy,
+  /**
+   * Mobile wording for coming-soon clinics (mk), keyed by clinic slug: the badge next to the name
+   * (desktop shows `Clinic.openingNote` on the photo) and a shorter note. Every clinic is open
+   * since 25/11-2026 (Østerbro), so it is empty; a new clinic that is announced before it opens
+   * gets an entry here and `status: "coming-soon"` in content/clinics.ts.
+   */
+  comingSoon: {} as Record<string, { openingNoteShort?: string; noteShort?: string }>,
 
   /** Plum USP strip under the cards (6kl; not in the mobile design). */
   usps: [
