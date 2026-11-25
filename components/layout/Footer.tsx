@@ -10,6 +10,7 @@ import { layoutCopy } from "@/content/layout";
 import { footerNav, legalNav } from "@/content/navigation";
 import { routes } from "@/content/routes";
 import { ui } from "@/content/ui";
+import { containerClasses } from "@/components/ui/Container";
 import { FooterNewsletter } from "./FooterNewsletter";
 import { FooterTrust } from "./FooterTrust";
 import { NavLink } from "./NavLink";
@@ -77,16 +78,18 @@ function ContactCardLink({ card }: { card: ContactCard }) {
 }
 
 /**
- * Footer block (design 6a bottom / mf bottom) on Sandbeige, "some of the beige" in Anette's palette
- * of 2026-10-10 (`bg-footer`, one token in app/globals.css; production: plum), espresso text, the
- * black logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`, whose
+ * Footer block (design 6a bottom / mf bottom) in the header's colour (the owner, 2026-11-25:
+ * "footer har den samme farve som header, lidt lysere beige"; it was a Sandbeige band): offwhite
+ * like the page, opened by a hairline and set on the content gutter like the header, so its text
+ * lines up with every section's; the beige is in its cards (`footer-card` = sand). Tokens in
+ * app/globals.css (`--color-footer*`), espresso text, the dark logo and the accent button: newsletter signup (owner, 2026-10; `FooterNewsletter`, whose
  * "Tilmeld" is the footer's only button); contact band with three equal cards: phone, e-mail and
  * online booking ("Book online · Find en tid →", owner 2026-10: two buttons in the footer made no
  * sense, the header keeps its sticky "Book tid"); logo + tagline; one column per clinic; footer
  * links; copyright + legal links + the "Cookieindstillinger" button (reopens the cookie banner,
  * components/consent); the Trustpilot strip (owner, 2026-10; `FooterTrust`). Spans the
- * fluid site canvas with the surface margin (like every rounded band), its fr-based grids spread
- * with the width.
+ * fluid site canvas with the content gutter (like the header), its fr-based grids spread with the
+ * width.
  *
  * Below 1024px the block is one column: logo + tagline, newsletter, the three contact cards
  * (stacked below 768px, one row from 768px), clinics, links, legal, Trustpilot.
@@ -96,10 +99,10 @@ export function Footer() {
   const copyright = `© ${site.name} · ${site.company.registrationLabel} ${site.company.registrationNumber}`;
 
   return (
-    <footer className="mx-auto w-full max-w-canvas p-surface">
+    <footer className={`${containerClasses("content")} mt-surface bg-footer`}>
       <div
         data-surface="footer"
-        className="flex flex-col gap-[22px] rounded-[24px] bg-footer px-[22px] pt-9 pb-7 text-footer-body md:px-10 lg:block lg:px-14 lg:pt-fluid-64 lg:pb-8 xl:px-16 2xl:px-20"
+        className="flex flex-col gap-[22px] border-t border-footer-line pt-9 pb-7 text-footer-body lg:block lg:pt-fluid-64 lg:pb-8"
       >
         {/* Newsletter (hidden on /blog, which has its own band right above the footer). Below lg
             the dividers above and below set it apart from the logo and the contact cards. */}
@@ -117,8 +120,8 @@ export function Footer() {
         {/* Brand + clinics. Below lg the wrapper dissolves so the brand can move above the contact band. */}
         <div className="contents lg:grid lg:grid-cols-[minmax(0,1.3fr)_repeat(4,minmax(0,1fr))] lg:gap-10 lg:border-b lg:border-footer-line lg:pb-10">
           <div className="order-first flex flex-col gap-[22px] text-small leading-[1.6] lg:order-none lg:gap-5 lg:leading-[1.7]">
-            {/* The black logo (the header's): the sand one has too little contrast on the beige. In
-                Windows high contrast it keeps a white plate (a dark canvas would swallow it), as in the header. */}
+            {/* The dark logo (the header's). In Windows high contrast it keeps a white plate (a dark
+                canvas would swallow it), as in the header. */}
             <Image
               src={site.brand.logoDark}
               alt={site.name}

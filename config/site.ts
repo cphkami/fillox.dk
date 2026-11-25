@@ -105,7 +105,9 @@ export const site: SiteConfig = {
   },
 
   brand: {
-    logoDark: "/brand/fillox-logo-black.png",
+    // Koks #3D3D3D (the owner, 2026-11-25: "ikke er helt mørk … #222222 agtig"; it was ink #242724,
+    // which #222222 would not visibly change): 10.4:1 on the offwhite header and footer.
+    logoDark: "/brand/fillox-logo-koks.png",
     logoLight: "/brand/fillox-logo-sand.png",
     /** Intrinsic size of the logo PNGs (both variants share it). */
     logoWidth: 603,

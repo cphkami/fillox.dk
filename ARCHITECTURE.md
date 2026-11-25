@@ -665,8 +665,8 @@ interim "Støvet rosa & beige": **Offwhite `#FAFAF8`, Lys Rosa `#E7D3CE`, Plum `
 should we include some of the beige…?"). So: a cooler offwhite page, Lys Rosa as the brand surface
 (bands, panels), plum as the accent only (buttons, links, eyebrows, numbers, the H1's accent words;
 never a large surface: the team found plum too hard as a surface, and the earlier dusty rose
-`#D9A192` too orange), and a touch of Sandbeige (the footer, and lightened as hero panels, cards and
-dividers). Layout, components and copy are unchanged. Every value lives in `app/globals.css`
+`#D9A192` too orange), and a touch of Sandbeige (lightened as hero panels, cards, the footer's cards
+and dividers). Layout, components and copy are unchanged. Every value lives in `app/globals.css`
 (`@theme`); components use the semantic names below and never a hex value. All text pairs are WCAG
 AA (ratios in the tables; "offwhite" = `cream`).
 
@@ -706,7 +706,7 @@ AND on the rosa bands and the footer.
 
 | Token | Value | Use |
 |---|---|---|
-| `accent` | `#6B393F` | 8.8:1 on offwhite, 9.2 on white, 7.5 on sand, 6.4 on the band, 5.0 on the footer |
+| `accent` | `#6B393F` | 8.8:1 on offwhite, 9.2 on white, 7.5 on sand, 6.4 on the band, 8.8 on the footer |
 | `accent-deep` | `#50292E` | hover of accent buttons / links |
 | `on-accent` | `#FAFAF8` | text on accent (offwhite, 8.8:1; 11.8 on accent-deep) |
 
@@ -725,16 +725,28 @@ clinics USP strip …)
 | `band-highlight` | `#FFFFFF` | hovered / focused bestseller row, text selection on bands |
 | `band-card` / `band-card-hover` | white 45% / 65% | translucent cards on the band |
 
-**Footer** (Sandbeige; tune it with `--color-footer` alone, its text stays ≥ 5:1)
+**Footer** (the header's colour since 2026-11-25, the owner: "footer har den samme farve som header,
+lidt lysere beige"; it was a Sandbeige `#CDBEA7` band). Offwhite like the page, so it is no longer a
+rounded band on the surface margin: `components/layout/Footer.tsx` sets it on the content gutter (its
+text lines up with every section and the header logo) and opens it with a `footer-line` hairline; the
+beige lives in its cards.
 
 | Token | Value | Use |
 |---|---|---|
-| `footer` | `#CDBEA7` | the footer block (1.27:1 against the band, 1.49 against sand, 1.33 against secondary). Don't go lighter than `#D5CEBB` (Sandbeige 75 %, the tuner's "Lys footer"): lighter, it merges with the secondary / sand panels that close some pages right above it |
-| `on-footer` | `#33211D` | clinic names, contact values, links: 8.4:1 |
-| `footer-body` | `#3A2622` | running text, legal: 7.8:1 |
-| `footer-accent` | `#6B393F` | uppercase labels, hours, link hover (plum): 5.0:1 (6.3 on footer cards) |
-| `footer-line` | `rgb(51 33 29 / .18)` | dividers (decorative) |
-| `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail / booking cards |
+| `footer` | `#FAFAF8` | the footer (= `cream`, the header) |
+| `on-footer` | `#33211D` | clinic names, contact values, links: 14.6:1 (12.5 on the cards) |
+| `footer-body` | `#3A2622` | running text, legal: 13.6:1 |
+| `footer-accent` | `#6B393F` | uppercase labels, hours, link hover (plum): 8.8:1 (7.5 on the cards, 6.7 on hover) |
+| `footer-line` | `#E1DCCF` | the top hairline and dividers (= `line`, decorative) |
+| `footer-card` / `footer-card-hover` | `#EBE8DF` / `#E1DCCF` | phone / e-mail / booking cards, the Trustpilot pill (= `sand` / `secondary`) |
+
+Text selection in the footer is the default Lys Rosa (the band's white highlight would vanish on
+offwhite).
+
+**Logo.** `public/brand/fillox-logo-koks.png` (`site.brand.logoDark`: header, mobile menu, footer,
+Organization JSON-LD) is koks `#3D3D3D` (the owner, 2026-11-25: "ikke er helt mørk … #222222 agtig";
+the former file was ink `#242724`, which #222222 would not visibly change): 10.4:1 on offwhite.
+`fillox-logo-sand.png` is unchanged.
 
 **Not changed by the palette (yet).** The stock photos with salmon backdrops are gone (November
 2026: the clinic's own photos, see "Photos"; their rose-beige walls sit well with Lys Rosa). The
@@ -866,7 +878,7 @@ component ported from an older branch or from fillox-no).
 | `hover:bg-plum-deep`, `text-plum-deep` | `hover:bg-accent-deep`, `text-accent-deep` |
 | `text-cream` on an accent fill | `text-on-accent` |
 | `bg-powder` (secondary surface) | `bg-secondary` |
-| a powder block directly above the footer (/blog newsletter, practitioner "Book tid hos …") | `bg-band` + `data-surface="band"`, so it stays distinct from the beige footer |
+| a powder block directly above the footer (/blog newsletter, practitioner "Book tid hos …") | `bg-band` + `data-surface="band"`, so it stays distinct from the footer |
 | the H1's accent words `text-plum` | `text-emphasis` |
 | `focus-visible:outline-powder` and other ring overrides | remove (the accent ring fits every surface) |
 | `border-[rgba(243,237,228,.16)]` / `bg-[rgba(243,237,228,.16)]` / `border-[#f3ede4]` on a band | `border-band-line` / `bg-band-line` |

@@ -20,7 +20,7 @@
  * Sandbeige ≈ #C9BFA7 (used as #CDBEA7: the same lightness, a touch less green, so it does not
  * read olive next to Lys Rosa). Lys Rosa carries the bands, Plum is the accent (buttons, links,
  * numbers, the H1's accent words; never a large surface), the cooler offwhite is the page,
- * Sandbeige the footer and (lightened) the hero panels and cards. White cards on the offwhite
+ * Sandbeige (lightened) the hero panels, cards and the footer's cards. White cards on the offwhite
  * page carry `shadow-card` (white is only 1.05:1 on offwhite).
  * Use them as Tailwind utilities: bg-accent, text-heading, bg-band, text-on-band, border-line …
  * Every text pair is WCAG AA (ratios below); ARCHITECTURE.md → "Design tokens" has the table.
@@ -49,7 +49,7 @@
   --color-emphasis: #6b393f; /* the H1's accent words (plum): 8.8:1 on offwhite, 7.5 on sand */
 
   /* Accent: Plum. Buttons, links, eyebrows, numbers, focus ring, on light AND on the rosa bands
-     (8.8:1 on offwhite, 7.5 on sand, 6.4 on band, 5.0 on the footer). */
+     (8.8:1 on offwhite, 7.5 on sand, 6.4 on band, 8.8 on the footer). */
   --color-accent: #6b393f;
   --color-accent-deep: #50292e; /* hover of accent buttons / links */
   --color-on-accent: #fafaf8; /* text on accent (offwhite): 8.8:1, 11.8 on accent-deep */
@@ -67,17 +67,17 @@
   --color-band-card: rgb(255 255 255 / 0.45); /* translucent cards on the band */
   --color-band-card-hover: rgb(255 255 255 / 0.65);
 
-  /* Footer: Sandbeige (Anette's "some of the beige"), #CDBEA7: Anette's #C9BFA7 at the same
-     lightness with its slight green cast removed (1.27:1 against the rosa band, 1.49 against
-     sand). Tune the footer with --color-footer alone: its text tokens stay ≥ 5:1 on it; don't go
-     lighter than #D5CEBB (it would merge with the secondary / sand panels above it). */
-  --color-footer: #cdbea7;
-  --color-on-footer: #33211d; /* clinic names, contact values, links: 8.4:1 */
-  --color-footer-body: #3a2622; /* running text, legal: 7.8:1 */
-  --color-footer-accent: #6b393f; /* labels, hours, link hover (plum): 5.05:1 (6.3 on footer cards) */
-  --color-footer-line: rgb(51 33 29 / 0.18); /* dividers (decorative) */
-  --color-footer-card: rgb(255 255 255 / 0.35); /* phone / e-mail cards */
-  --color-footer-card-hover: rgb(255 255 255 / 0.5);
+  /* Footer: the header's colour (the owner, 2026-11-25: "footer har den samme farve som header,
+     lidt lysere beige"; it was Sandbeige #CDBEA7). Offwhite like the page, so the footer is not a
+     band any more: a hairline on the content gutter opens it (components/layout/Footer.tsx), and
+     the beige lives in its cards (sand, hover secondary). Every text pair is ≥ 6.7:1. */
+  --color-footer: #fafaf8; /* = cream, the header */
+  --color-on-footer: #33211d; /* clinic names, contact values, links: 14.6:1 (12.5 on the cards) */
+  --color-footer-body: #3a2622; /* running text, legal: 13.6:1 */
+  --color-footer-accent: #6b393f; /* labels, hours, link hover (plum): 8.8:1 (7.5 on the cards, 6.7 on hover) */
+  --color-footer-line: #e1dccf; /* dividers and the top hairline (= line; decorative) */
+  --color-footer-card: #ebe8df; /* phone / e-mail / booking cards, the Trustpilot pill (= sand) */
+  --color-footer-card-hover: #e1dccf; /* (= secondary) */
 
   /* Trustpilot */
   --color-trustpilot: #00b67a;
@@ -365,10 +365,11 @@
     background-color: var(--color-selection);
     color: var(--color-ink);
   }
-  /* On a rosa band (data-surface="band"; "band-lg" = a band from 1024px only) and in the footer
-     the light selection (Lys Rosa) would vanish: the band's white highlight instead. */
-  :is([data-surface="band"], [data-surface="footer"])::selection,
-  :is([data-surface="band"], [data-surface="footer"]) ::selection {
+  /* On a rosa band (data-surface="band"; "band-lg" = a band from 1024px only) the light selection
+     (Lys Rosa) would vanish: the band's white highlight instead. The footer (offwhite) keeps the
+     default. */
+  [data-surface="band"]::selection,
+  [data-surface="band"] ::selection {
     background-color: var(--color-band-highlight);
     color: var(--color-on-band);
   }
@@ -390,7 +391,7 @@
   }
 
   /* Visible focus ring in the accent (plum) on every surface: 8.8:1 on offwhite, 7.5 on sand,
-     9.2 on white, 6.4 on the rosa band, 5.0 on the footer (6.3 on footer cards), so the bands and
+     9.2 on white, 6.4 on the rosa band, 8.8 on the footer (7.5 on footer cards), so the bands and
      the footer need no ring of their own. The For mænd espresso surface switches to an offwhite
      ring (13.0:1; components/men/surface.ts). */
   :focus-visible {

@@ -27,11 +27,11 @@ export type NewsletterFormCopy = {
 };
 
 /**
- * Colours of the surface the form sits on: the rosa band (/blog) or the Sandbeige footer.
- * `field`: the white field's 1px border, ≥ 3:1 against the surface at rest (WCAG 1.4.11; the white
- * alone is 1.8:1 on the footer, 1.4:1 on the band). The border is drawn over the field's white, so
- * the alpha is mixed with white: footer-accent 90% → 3.8:1 on the footer (7.0:1 against the
- * field), band-accent 85% → 4.2:1 on the band. Full accent on hover; the accent ring on focus.
+ * Colours of the surface the form sits on: the rosa band (/blog) or the footer (offwhite, the
+ * header's colour). `field`: the white field's 1px border, ≥ 3:1 against the surface at rest (WCAG
+ * 1.4.11; the white alone is 1.05:1 on the footer, 1.4:1 on the band). The border is drawn over the
+ * field's white, so the alpha is mixed with white: footer-accent 90% → about 7:1 on the footer and
+ * against the field, band-accent 85% → 4.2:1 on the band. Full accent on hover; the accent ring on focus.
  */
 const tones = {
   band: {
