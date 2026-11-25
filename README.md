@@ -472,8 +472,9 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       hun er uddannet som, og hvad hun udfører.
 - [x] **"10.000+ behandlinger"** i forsidens hero (`content/pages/home.ts` → `stats`): bekræftet
       25/11-2026 ("10.000+ behandlinger er det vi har lavet indtil videre").
-- [ ] **Instagram**: sitet linker til instagram.com/fillox_dk (`config/site.ts`), Amager Centrets side
-      til instagram.com/fillox.dk. Hvilken konto er klinikkens?
+- [x] **Instagram**: kontoen er @fillox.dk (tidligere @fillox_dk), bekræftet af ejeren 25/11-2026.
+      `config/site.ts` → `social.instagram`; /content-creator, footeren og de strukturerede data
+      læser derfra.
 - [x] `npm run build` er grønt, og de gamle URL'er redirecter: tjekket 24/11-2026 (produktionsbuild,
       `check:market` ok). Alle 45 adresser i WordPress' sitemap og de 24 menulinks på det live site,
       med og uden skråstreg til sidst og med store bogstaver, giver 200 eller ét 308-hop til en side

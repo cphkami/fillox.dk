@@ -38,7 +38,8 @@ export const site: SiteConfig = {
   },
 
   social: {
-    instagram: "https://www.instagram.com/fillox_dk/",
+    // The clinic's account since 2026-11 (owner, 2026-11-25: "fillox.dk", formerly "fillox_dk").
+    instagram: "https://www.instagram.com/fillox.dk/",
   },
 
   // As shown on https://dk.trustpilot.com/review/fillox.dk: TrustScore 4,7 "Fremragende"

@@ -16,7 +16,7 @@ import { photos } from "../photos";
 // the public), and cosmetic treatment marketing has its own Danish rules, so any such
 // wording must come from the client, approved, before it is added here.
 
-/** Instagram handle shown on the page, from the profile URL in config/site.ts ("@fillox_dk"). */
+/** Instagram handle shown on the page, from the profile URL in config/site.ts ("@fillox.dk"). */
 const instagramHandle = `@${new URL(site.social.instagram).pathname.replaceAll("/", "")}`;
 
 /** Other collaborations (brands, events …): Annika, by e-mail (owner, 2026-10-01). */
