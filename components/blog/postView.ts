@@ -2,14 +2,55 @@
  * Small pure helpers shared by the blog overview and article components.
  * No copy of their own: labels come from content/pages/blog.ts.
  */
-import { hasArticleBody, sortedPosts } from "@/content/blog";
-import { blogPage } from "@/content/pages/blog";
-import type { BlogPost } from "@/content/types";
+import { hasArticleBody, postFilterSlugs, sortedPosts } from "@/content/blog";
+import { blogArticle, blogPage } from "@/content/pages/blog";
+import { getTeamMember, teamMemberHref } from "@/content/team";
+import type { BlogPost, ImageRef, Link, TeamMember } from "@/content/types";
 import { postsBySlugs } from "@/lib/content";
 
 /** Every filter chip slug a post matches (besides "alle"): its category plus its tags. */
-export function postFilterSlugs(post: BlogPost): string[] {
-  return Array.from(new Set([post.categorySlug, ...(post.tags ?? [])].filter((s): s is string => Boolean(s))));
+export { postFilterSlugs };
+
+/**
+ * Who signed a post, as the bylines, the author box and the structured data show it: a
+ * practitioner (`authorSlug`, content/team.ts) or the team ("Fillox-holdet",
+ * content/pages/blog.ts → blogArticle.teamAuthor), which has no portrait (the Fillox mark).
+ */
+export type PostAuthor = {
+  /** "annika" for a practitioner, "team" for the team: the author box's heading id. */
+  id: string;
+  /** "Annika" / "Fillox-holdet". */
+  name: string;
+  /** Second line in the /blog featured card (practitioners only): title from 768px, role below. */
+  title?: string;
+  role?: string;
+  /** One line in the author box (desktop). */
+  bio?: string;
+  /** The author box's link: the practitioner's profile, or the team on /om-os. */
+  link: Link;
+  /** Portrait; undefined for the team (components/blog/AuthorAvatar.tsx draws the Fillox mark). */
+  image?: ImageRef;
+  /** The practitioner (structured data: Person); undefined for the team (the Organization). */
+  member?: TeamMember;
+};
+
+/** The post's author: its practitioner, or the team when it names none (or an unknown slug). */
+export function postAuthor(post: BlogPost): PostAuthor {
+  const member = post.authorSlug ? getTeamMember(post.authorSlug) : undefined;
+  if (member) {
+    return {
+      id: member.slug,
+      name: member.name,
+      title: member.title,
+      role: member.role,
+      bio: member.authorBio,
+      link: member.link ?? { label: member.name, href: teamMemberHref(member.slug) },
+      image: member.image,
+      member,
+    };
+  }
+  const team = blogArticle.teamAuthor;
+  return { id: "team", name: team.name, bio: team.bio, link: team.link };
 }
 
 /**

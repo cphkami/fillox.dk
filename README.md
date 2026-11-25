@@ -14,8 +14,10 @@ står i `ARCHITECTURE.md`.
 - **Next.js 16** (App Router, React 19, TypeScript) — alle sider genereres statisk
 - **Tailwind CSS v4** — design-tokens i `app/globals.css`
 - **Netlify** — hosting (`netlify.toml`, Next.js-runtime)
-- **Netlify Forms** — kontaktformular, nyhedsbrev og "Få besked" (ingen backend)
+- **Netlify Forms** — kontaktformular og nyhedsbrev (ingen backend)
 - **Gecko Booking** — online booking på `/booking` (TIMMA understøttes til fillox.no)
+- **Cookiebanner + Google Tag Manager** — statistik og marketing indlæses først efter samtykke
+  (se "Cookiebanner og måling")
 
 Ingen database og ingen miljøvariabler.
 
@@ -73,9 +75,10 @@ Netlifys Next.js-runtime. Ingen miljøvariabler at sætte i Netlify: Node-versio
 `netlify.toml` sætter også sikkerheds-headers på alle svar: HSTS (som det gamle site),
 `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy` og en
 Content-Security-Policy, der i første omgang kun rapporterer (`Content-Security-Policy-Report-Only`,
-se "Efter lancering"). Den tillader kun Gecko (script + kalender-iframe) og de betalingssider, Gecko
-kan åbne i iframen (Nets Easy, OnPay). Lægger I et nyt tredjepartsscript eller en ny iframe på
-sitet, skal værten med i CSP'en.
+se "Efter lancering"). Den tillader kun Gecko (script + kalender-iframe), de betalingssider, Gecko
+kan åbne i iframen (Nets Easy, OnPay), og værterne for taggene i GTM-containeren (Google Tag
+Manager, Google Analytics, Google Ads, Meta Pixel; de indlæses kun efter samtykke). Lægger I et nyt
+tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal værten med i CSP'en.
 
 1. Forbind repoet i Netlify → build-indstillingerne læses fra `netlify.toml`.
 2. Domæne: `fillox.dk` (+ `www`) → Netlify, HTTPS via Let's Encrypt.
@@ -92,7 +95,7 @@ sitet, skal værten med i CSP'en.
 |---|---|---|
 | Kontakt | `kontakt` | `/kontakt` |
 | Nyhedsbrev | `nyhedsbrev` | footeren på alle sider + `/blog` |
-| "Få besked" (Østerbro) | `osterbro-besked` | `/klinikker` |
+| "Få besked" (Østerbro) | `osterbro-besked` | vises ikke siden 25/11-2026 (Østerbro er åben); fjernes helt, når klinikken har sin adresse (se kommentaren ved `notify` i `content/pages/clinics.ts`) |
 
 - Netlify finder formularerne ved deploy i `public/__forms.html` (skjult, aldrig linket).
   Feltnavnene dér skal matche det, komponenterne sender.
@@ -106,6 +109,24 @@ sitet, skal værten med i CSP'en.
   aldrig reklamere for Botox eller andre receptpligtige lægemidler.
 - Spam: honeypot-feltet `bot-field`.
 - Notifikationer (e-mail ved ny besked) sættes op i Netlify under **Forms → Form notifications**.
+
+## Cookiebanner og måling
+
+- Første besøg: et banner nederst på siden ("Accepter alle", "Afvis alle" og "Tilpas" med
+  Statistik og Marketing, intet sat til på forhånd). Indtil et ja indlæses **intet** fra Google
+  eller Meta: Google Tag Manager (`config/site.ts` → `analytics.gtmId`, GTM-KDBJMVF2) hentes først,
+  når Statistik eller Marketing er valgt, efter Google Consent Mode v2 (alt afvist som standard,
+  så valget som `update`). "Afvis alle" sletter de gamle `_ga`/`_gcl_*`/`_fbp`-cookies fra
+  WordPress-sitet.
+- Valget gemmes i browseren (`fillox-consent` i localStorage) i 12 måneder; banneret spørger igen,
+  når `consentVersion` i `config/site.ts` ændres. "Cookieindstillinger" i footeren åbner banneret
+  igen; trækkes et samtykke tilbage, slettes cookies, og siden genindlæses.
+- Tekster og cookielisten (privatlivspolitikken → "13. Cookies") står i `content/consent.ts`.
+  **Nyt tag i containeren** (Hotjar, TikTok, Google Ads-remarketing …): samtykkeindstilling på
+  tagget i GTM, værterne i CSP'en (`netlify.toml`), en linje i cookielisten og en ny
+  `consentVersion`, så alle bliver spurgt igen.
+- Indtil containerens Meta Pixel-tags har et samtykketjek (se "Før lancering"), blokerer sitet alle
+  Custom HTML-tags uden Marketing (`analytics.blockCustomHtmlWithoutMarketing`).
 
 ## Booking via Gecko
 
@@ -152,7 +173,10 @@ sitet, skal værten med i CSP'en.
   - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande — og **beslut, om desktop
         også skal have samtykke-feltet** (kun i mobildesignet)
   - [ ] `content/pages/clinics.ts`: meta, skjulte navne, "Få besked"-formularen
-  - [ ] `content/pages/blog.ts` og `content/blog.ts`: artikeldatoer og -tekster, nyhedsbrev
+  - [ ] `content/pages/blog.ts` og `content/blog.ts`: de fire nye artikler, bloggens intro og
+        nyhedsbrev (se "Blog" nedenfor)
+  - [ ] `content/consent.ts`: cookiebanneret og afsnittet "13. Cookies" i privatlivspolitikken
+        (nye tekster, se "Cookiebanner og måling" nedenfor)
   - [ ] `content/pages/jobs.ts` og `content/pages/creator.ts`: hele siderne (ikke i designet)
   - [ ] `content/pages/legal.ts`: meta-beskrivelser og "Juridisk"-eyebrow
 - [x] **Pris**: Skinbooster står "fra 999 kr" på forsiden i designet, men 1.499 kr alle andre
@@ -189,14 +213,15 @@ sitet, skal værten med i CSP'en.
       sætning i Fillox Academy-afsnittet på Om os. De to rynkesider viser ingen anmeldelser,
       resultater, blogindlæg eller "fra"-pris (`treatmentsWithoutReviews` i `content/reviews.ts`).
       Stadig åbent:
-  - [ ] **Blogartikler**, der stadig nævner Botox som produkt: `/blog/botox-for-foerste-gang`,
+  - [ ] **Blogartikler om Botox** (`/blog/botox-for-foerste-gang`,
         `/blog/hvornaar-giver-det-mening-at-starte-med-botox`,
-        `/blog/de-foerste-24-timer-efter-botox` og filterknappen "Botox" på `/blog`
-        (`content/blog.ts`). Vi har ikke rørt dem: skal de skrives om (af bureauet) eller fjernes?
-        Desuden står "Botox for første gang" med Annika som navngiven forfatter (hendes portræt
-        står ved artiklen og i de strukturerede data). En sundhedsperson, der anbefaler et
-        lægemiddel i en reklame, er forbudt (BEK 253/2025 § 10, stk. 1, nr. 7): skal artiklen
-        stå uden forfatter, eller skrives om, så den ikke handler om produktet?
+        `/blog/de-foerste-24-timer-efter-botox`): **sat på pause 25/11-2026** (`published: false` i
+        `content/blog.ts`): ingen side (404), ikke på `/blog`, i "Læs også", på behandlingssiderne
+        eller i sitemap, og filterknappen "Botox" vises ikke. Teksterne ligger der stadig. Skal de
+        skrives om (af bureauet), så de handler om behandlingen og ikke om produktet, eller slettes?
+        Kommer de tilbage, signeres de "Fillox-holdet" (ikke Annika: en sundhedsperson, der
+        anbefaler et lægemiddel i en reklame, er forbudt, BEK 253/2025 § 10, stk. 1, nr. 7) og får
+        en rigtig dato; `check:market` afviser en udgivet artikel med en behandler som forfatter.
   - [ ] **Priser**: alle rækker på priskortet "Rynkebehandling" er uændrede (områder, pakker,
         tyggemuskler, hyperhidrose, Traptox). Konsultationskortet har stadig rækken
         "Lægekonsultation før første botox" — forslag med bureauets ord: "Lægefaglig
@@ -349,9 +374,74 @@ sitet, skal værten med i CSP'en.
       alle fire kort samme behandlingsrum), og gerne større originaler af jeres fotos (se
       "Opløsning" ovenfor).
 - [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
-- [ ] **Østerbro**: `/klinikker` siger stadig "Åbner 1. november" (`content/clinics.ts` →
-      `openingNote` og `note`), og datoen er passeret. Er klinikken åben (så sæt `status: "open"`,
-      adresse, åbningstider og Gecko-id), eller hvad er den nye dato?
+- [ ] **Blog** (du, 25/11-2026: "lave bloggen. skriv et par artikler", signeret "Fillox-holdet"):
+      fire nye artikler, dateret 25/11-2026 — "Lip filler for første gang", "0,5 eller 1 ml?",
+      "Hævelse og blå mærker" og "Skinbooster eller Profhilo". Alle fakta (priser, mængder, forløb,
+      vagttelefon) kommer fra sitets eget indhold eller fra fillox.dk; kilden står ved hver blok i
+      `content/blog.ts`. Artiklerne har ingen navngiven forfatter og intet portræt (Fillox-mærket i
+      stedet; de strukturerede data nævner Fillox som forfatter).
+  - [ ] **Fagligt tjek af en læge** før lancering: alle blokke markeret `TODO: fagligt tjek
+        (læge)` (bl.a. hævelse, blå mærker og hvornår man skal ringe).
+  - [ ] Copy review af artiklerne, link-teksterne under dem og bloggens intro ("Ærlige svar om
+        behandlinger, forløb og efterpleje fra Fillox-holdet").
+  - [ ] Bloggens overskrift er stadig designets **"Viden fra vores behandlere"**, mens artiklerne
+        er signeret "Fillox-holdet". Behold den?
+- [ ] **Cookiebanner og måling** (du, 25/11-2026: "cookiebanner ja"; se afsnittet "Cookiebanner og
+      måling" ovenfor). Gennemgangen af det live site 25/11-2026 fandt GTM-KDBJMVF2 (GA4
+      G-TE9JGYM0GM med Google signals og Ads-link, Google Ads Conversion Linker og Meta Pixel
+      342699568558593) plus to WordPress-plugins uden for containeren: Site Kit (GA4 G-QMXBXHY79B)
+      og PixelYourSite (Meta Pixel 155084197640287 med Conversions API). Det live site har intet
+      cookiebanner.
+  - [ ] **Bekræft GTM-KDBJMVF2** som containeren til det nye site (`config/site.ts` →
+        `analytics.gtmId`), og få containerens administrator til at lave ændringerne her (før
+        lanceringen, så målingen virker fra dag ét):
+    1. Tag 37 (Custom HTML, Meta Pixel 342699568558593) og tag 38 (`fbq('track','Schedule')`):
+       Avancerede indstillinger → Samtykkeindstillinger → "Kræv yderligere samtykke, for at tagget
+       udløses": `ad_storage`, `ad_user_data` og `ad_personalization`. I dag udløses Meta Pixel
+       uanset samtykke.
+    2. Tag 19 (Custom HTML, `bekraeft_booking`) og tag 32 (Custom HTML, lytter efter
+       `custom.postMessage.*` fra Gecko-kalenderen): "Intet yderligere samtykke kræves" (de sætter
+       ingen cookies; de GA4-events, de udløser, styres af GA4's indbyggede samtykketjek).
+    3. Udløseren for tag 19, "Page Path indeholder `/booking/`": det nye site har ingen skråstreg
+       til sidst. Ret til "Page Path er lig med `/booking`".
+    4. Tag 26 (`form_submit` på "Page Path indeholder `/kontakt/`"): eventet kom fra WordPress'
+       formular-plugin, og det nye site sender det ikke. Sæt tagget på pause (eller se spørgsmålet
+       om kontaktformularen nedenfor) og ret stien til "er lig med `/kontakt`".
+    5. Tag 6 (`indsend_knap`, Click Text "Indsend") og tag 10 (`booking_forside`, Click Text
+       "BOOKING"): knapperne hedder nu "Send besked" og "Book tid". Ret udløserne.
+    6. Læg **ikke** en Consent Mode-standard eller en CMP-skabelon ind i GTM: sitet sætter selv
+       standarden (alt afvist) og opdateringen, før containeren indlæses. Slå "Aktivér
+       samtykkeoversigt" til under Containerindstillinger for at se hvert tags samtykke.
+    7. Test i Tag Assistant på Netlify-preview'et: "Afvis alle" → GTM indlæses ikke; kun
+       Statistik → GA4 udløses, tag 37/38 ikke; "Accepter alle" → alle tags. Udgiv containeren.
+    8. Derefter: sæt `analytics.blockCustomHtmlWithoutMarketing` til `false` i `config/site.ts`
+       (ellers er tag 19 og 32, og dermed booking- og købsmålingen i GA4, slået fra, når kun
+       Statistik er valgt).
+  - [ ] **GA4 og Google Ads** (uden for containeren): Site Kit-pluginnet (G-QMXBXHY79B) stopper med
+        WordPress. Det ser ud til at levere Google Ads-konverteringen "Book appointment" (sidevisning
+        på `/booking`). Flyt den til G-TE9JGYM0GM (fx nøglebegivenheden `bekraeft_booking` eller
+        `purchase`, importeret i Google Ads) før lanceringen, hvis Ads-kontoen byder på den.
+  - [ ] **Meta**: PixelYourSite-pixlen 155084197640287 (med Conversions API) stopper med WordPress;
+        kun GTM-pixlen 342699568558593 følger med. Hvilken pixel bruger jeres annoncer?
+  - [ ] **GA4 G-TE9JGYM0GM** har "automatisk registrering af brugerleverede data" slået til (e-mail
+        og telefon fra formularer sendes hashet til Google). Slå det fra (GA4 → Datastrømme →
+        Google-tagindstillinger), eller få det beskrevet i privatlivspolitikken.
+  - [ ] **Gecko-kalenderen** indlæser Google Tag Manager (GTM-K388CKJQ, GTM-5JMDCX4G) i sin egen
+        iframe på `/booking`, uanset cookievalget. Bed Gecko om at fjerne det eller vente på
+        samtykke, eller få juristen til at vurdere, om privatlivspolitikken skal nævne det.
+  - [ ] **Juristen**: banneret og "13. Cookies" (`content/consent.ts`) er nye tekster. Åbne punkter:
+        overførselsgrundlaget for Google og Meta (USA, fx EU-US Data Privacy Framework), og om de
+        er databehandlere eller selvstændigt dataansvarlige.
+  - [ ] **Kontaktformularen** måles ikke i GA4 på det nye site (se punkt 4). Skal sitet sende et
+        event til GTM, når en besked er sendt? (En lille kodeændring.)
+- [ ] **Østerbro** (du, 25/11-2026: "østerbro er åbent"): adressen findes ikke på fillox.dk, i
+      Drive eller på Geckos offentlige side (Gecko kender behandlingsstedet "Fillox - Østerbro",
+      id 14667, uden adresse). Indtil da står Østerbro som "Ny klinik" med "Fillox Østerbro er vores
+      nyeste klinik. Adresse og åbningstider kommer her snart." (`content/clinics.ts`,
+      `content/pages/clinics.ts`), uden adresse, tider, bookingknap, kortlink og strukturerede data,
+      og "Få besked, når Østerbro åbner" er fjernet. **Send**: gadeadresse og postnummer,
+      åbningstider, Google Maps-link (klinikkens sted) og Østerbros Gecko-kalender-id. Så sættes
+      `status: "open"` (fremgangsmåden står i kommentaren i `content/clinics.ts`).
 - [ ] **City2: adresse og weekendtider** (`content/clinics.ts`): fillox.dk/kontakt siger både
       "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop, centrets egen adresse); weekend
       10–17 (desktop) eller 10–19 (mobil). Centrets egen side (city2.dk, uge 48) siger man–tor 10–19,
@@ -380,8 +470,8 @@ sitet, skal værten med i CSP'en.
 - [ ] **Alberte** (`content/team.ts`): titel, uddannelse og klinikker er ikke bekræftet (live giver
       hende ingen titel). Hendes priskort viser bl.a. Skinbooster og PRF (injektioner). Bekræft, hvad
       hun er uddannet som, og hvad hun udfører.
-- [ ] **"10.000+ behandlinger"** i forsidens hero (`content/pages/home.ts` → `stats`) kommer fra
-      designet. Hvad bygger tallet på?
+- [x] **"10.000+ behandlinger"** i forsidens hero (`content/pages/home.ts` → `stats`): bekræftet
+      25/11-2026 ("10.000+ behandlinger er det vi har lavet indtil videre").
 - [ ] **Instagram**: sitet linker til instagram.com/fillox_dk (`config/site.ts`), Amager Centrets side
       til instagram.com/fillox.dk. Hvilken konto er klinikkens?
 - [x] `npm run build` er grønt, og de gamle URL'er redirecter: tjekket 24/11-2026 (produktionsbuild,
@@ -398,7 +488,8 @@ sitet, skal værten med i CSP'en.
       brotli-komprimeret; at headers fra `netlify.toml` er med (`curl -I`); ingen konsolfejl eller
       404'er.
 - [ ] **CSP**: i lanceringsugen er den kun rapporterende. Lav en hel testbooking i Gecko, inkl.
-      betalingstrinnet, i Safari, Chrome og Firefox, og tjek, at konsollen ikke viser CSP-brud. Omdøb
+      betalingstrinnet, i Safari, Chrome og Firefox, og tjek, at konsollen ikke viser CSP-brud. Gør
+      det også efter "Accepter alle" (GTM, GA4, Google Ads og Meta Pixel indlæst). Omdøb
       så `Content-Security-Policy-Report-Only` til `Content-Security-Policy` i `netlify.toml`.
 - [ ] **Google Search Console**: indsend `/sitemap.xml` og `/legacy-sitemap.xml`. Slet
       `public/legacy-sitemap.xml` og de to `wp-sitemap-…`-redirects i `content/redirects.ts` ca. 3
@@ -416,7 +507,7 @@ skal du rette en tekst i en komponent, hører teksten til i `content/`.
 
 | Fil / mappe | Hvad |
 |---|---|
-| `config/site.ts` | `market: "no"`, `country: "NO"`, `legalName`, `domain`/`url` (`https://fillox.no`), `locale: "nb-NO"`, `lang: "nb"`, `currency: "NOK"`, `pricePattern`, telefon/e-mail, `company` (`registrationLabel: "Org.nr."`), Instagram, Trustpilot (`score`, `reviewCount`, `url` som på profilen), **booking** (se punkt 3) |
+| `config/site.ts` | `market: "no"`, `country: "NO"`, `legalName`, `domain`/`url` (`https://fillox.no`), `locale: "nb-NO"`, `lang: "nb"`, `currency: "NOK"`, `pricePattern`, telefon/e-mail, `company` (`registrationLabel: "Org.nr."`), Instagram, Trustpilot (`score`, `reviewCount`, `url` som på profilen), **booking** (se punkt 3), `analytics.gtmId` (fillox.no's egen GTM-container, eller `null`: så intet cookiebanner og ingen tags; cookielisten i `content/consent.ts` skal passe til containerens tags) |
 | `content/routes.ts` | Norske stier, fx `/om-oss`, `/personvern`, `/kontakt/takk` — **og omdøb de matchende mapper i `app/`** |
 | `content/**` | Al tekst og data: navigation, klinikker, behandlinger, priser, behandlere, blog, sidetekster, UI-strenge, 404, `/booking`-tekst, `seo.ts` (dag-labels), `forms.ts` (formularnavne), `redirects.ts` (gamle fillox.no-URL'er), `reviews.ts` (kun ægte anmeldelser fra fillox.no's Trustpilot-profil, ordret; se kommentaren øverst i filen) |
 | `public/__forms.html` | Samme formularnavne som `content/forms.ts` |

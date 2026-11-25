@@ -47,6 +47,8 @@ const layouts = {
  * photo cards; mb: heading and compact text cards).
  */
 export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["posts"]> }) {
+  // Only published posts reach the page (content/blog.ts → posts); a section without one is not rendered.
+  if (!posts.items.length) return null;
   const layout = layouts[Math.min(posts.items.length, 3) as 1 | 2 | 3];
   const single = posts.items.length === 1;
   return (

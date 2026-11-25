@@ -96,15 +96,28 @@ export const clinics: Clinic[] = withBookingLinks([
     geo: { latitude: 55.6781581, longitude: 12.5351565 },
   },
   {
-    // Not on fillox.dk yet; the opening date is confirmed by the owner.
+    // The owner says Østerbro is open (25 November 2026), but its address is not known yet: it is
+    // not on fillox.dk (sitemap, /kontakt, footer; checked 25/11-2026) or in the Drive folder ("Om
+    // Fillox og klinikker" has the heading only), and Gecko's public booking page lists the clinic
+    // ("Fillox - Østerbro", behandlingssted id 14667) without an address. So it stays
+    // "coming-soon" (no address, hours, booking button, map link or structured data), with neutral
+    // wording instead of the passed "Åbner 1. november".
+    // TODO (owner): street address + postcode, opening hours, Google Maps link (the clinic's place,
+    // as for the other clinics) and the Gecko calendar id. Then set status "open", fill address,
+    // hours, hoursSummary, booking, directionsHref and geo like Frederiksberg above, drop
+    // openingNote and note (or make note a transport note), and delete `comingSoon.osterbro` in
+    // content/pages/clinics.ts.
     slug: "osterbro",
     name: "Østerbro",
     fullName: "Fillox Østerbro",
     address: [],
     hours: [],
     status: "coming-soon",
-    openingNote: "Åbner 1. november",
-    note: "Vi åbner 1. november. Skriv dig op, så får du besked, når vi åbner for booking.",
+    // TODO: copy review (neutral until the address is known; also shown in the menus, footer,
+    // /kontakt and on the home page)
+    openingNote: "Ny klinik",
+    // TODO: copy review
+    note: "Fillox Østerbro er vores nyeste klinik. Adresse og åbningstider kommer her snart.",
   },
 ]);
 

@@ -55,17 +55,19 @@ export const blogPage = {
 
   meta: {
     title: "Blog",
-    // TODO: copy review (meta description is not in the design; it is the 6blog hero intro)
-    description:
-      "Ærlige svar om behandlinger, resultater og efterpleje, skrevet af de læger og sygeplejersker, der behandler dig.",
+    // TODO: copy review (meta description is not in the design; it is the hero intro)
+    description: "Ærlige svar om behandlinger, forløb og efterpleje fra Fillox-holdet.",
   },
 
   hero: {
     eyebrow: "Blog",
     title: "Viden fra vores behandlere",
-    intro:
-      "Ærlige svar om behandlinger, resultater og efterpleje, skrevet af de læger og sygeplejersker, der behandler dig.",
-    introShort: "Ærlige svar om behandlinger, resultater og efterpleje.",
+    // TODO: copy review. The design's intro ("… skrevet af de læger og sygeplejersker, der behandler
+    // dig") named the writers; the posts are signed "Fillox-holdet" (owner, 2026-11-25), so the
+    // intro no longer says who wrote them, and "resultater" is left out (the posts make no result
+    // claims). Owner question (README): keep the design's title "Viden fra vores behandlere"?
+    intro: "Ærlige svar om behandlinger, forløb og efterpleje fra Fillox-holdet.",
+    introShort: "Ærlige svar om behandlinger, forløb og efterpleje.",
   },
 
   filters: {
@@ -151,6 +153,20 @@ export const blogArticle = {
 
   author: {
     writtenBy: "Skrevet af",
+  },
+
+  /**
+   * The team as author: every post without an `authorSlug` (content/blog.ts) is signed
+   * "Fillox-holdet" (owner, 2026-11-25). No person's portrait: the bylines and the author box show
+   * the Fillox mark (components/blog/TeamMark.tsx). Structured data names the organisation
+   * (site.name) as the author.
+   */
+  teamAuthor: {
+    name: "Fillox-holdet",
+    // TODO: copy review (one line in the author box, desktop only; not in the design)
+    bio: "Vi skriver om behandlinger, forløb og efterpleje, så du ved, hvad du kan forvente.",
+    // TODO: copy review
+    link: { label: "Mød vores behandlere", href: routes.aboutTeam } satisfies Link,
   },
 
   related: {

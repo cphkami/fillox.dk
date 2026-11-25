@@ -22,6 +22,18 @@
 #   Chrome and Firefox without violations, rename the key to Content-Security-Policy (README →
 #   "Efter lancering"). fillox.no (TIMMA): frame-src https://bestill.timma.no instead of Gecko's
 #   hosts, and no Gecko script host.
+# - Measurement, only after cookie consent (config/site.ts → analytics, components/consent): the
+#   hosts of the tags in GTM-KDBJMVF2 (inventory 2026-11-25), nothing else.
+#   · Google Tag Manager + GA4 (Google signals and Ads link on) + Conversion Linker, as Google's CSP
+#     guide lists them for "Google tag / GA4": script www.googletagmanager.com; img and connect
+#     *.google-analytics.com, *.g.doubleclick.net, *.google.com, *.google.dk (Google lists each
+#     ccTLD; the audience is Denmark), www.googletagmanager.com; connect also
+#     pagead2.googlesyndication.com; frame www.googletagmanager.com.
+#   · Meta Pixel (a Custom HTML tag, hence 'unsafe-inline'): script connect.facebook.net (fbevents.js,
+#     /signals/config), connect connect.facebook.net (telemetry) and www.facebook.com, img
+#     www.facebook.com (/tr), form-action www.facebook.com (fbevents' form POST fallback to /tr).
+#   A new tag in the container (Hotjar, TikTok, Google Ads remarketing …) needs its hosts here AND a
+#   line in the cookie list (content/consent.ts) with a new consentVersion.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -30,4 +42,4 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "SAMEORIGIN"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://filloxdanmark.app4.geckobooking.dk; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src https://*.geckobooking.dk https://checkout.dibspayment.eu https://onpay.io https://*.onpay.io; form-action 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://filloxdanmark.app4.geckobooking.dk https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://*.google.com https://*.google.dk https://www.facebook.com; font-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://*.google.com https://*.google.dk https://pagead2.googlesyndication.com https://connect.facebook.net https://www.facebook.com; frame-src https://*.geckobooking.dk https://checkout.dibspayment.eu https://onpay.io https://*.onpay.io https://www.googletagmanager.com; form-action 'self' https://www.facebook.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"

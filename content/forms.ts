@@ -17,7 +17,11 @@ export const forms = {
    * "blog:/blog": where the visitor signed up, as a record of the consent).
    */
   newsletter: "nyhedsbrev",
-  /** "Få besked" signup on the coming-soon Østerbro clinic card (/klinikker). */
+  /**
+   * "Få besked" signup that was on the coming-soon Østerbro clinic card (/klinikker). Not shown
+   * since 25/11-2026 (the owner says Østerbro is open). Remove it end to end, in one change, once
+   * Østerbro has its address (see the `notify` comment in content/pages/clinics.ts).
+   */
   notifyOsterbro: "osterbro-besked",
 } as const;
 

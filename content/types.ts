@@ -94,7 +94,7 @@ export type Clinic = {
   /** Google Maps / directions URL. */
   directionsHref?: string;
   status: "open" | "coming-soon";
-  /** Shown when status is "coming-soon", e.g. "Åbner 1. november". */
+  /** Shown when status is "coming-soon" in place of the address, e.g. "Åbner 1. december" or "Ny klinik". */
   openingNote?: string;
   /**
    * Structured data (JSON-LD) only: a photo of this clinic (path under /public) and its
@@ -489,7 +489,12 @@ export type BlogBlock =
       eyebrow: string; // "Behandlingen i artiklen"
       note?: string; // "Gratis lægekonsultation før første behandling"
       hideNoteOnMobile?: boolean;
-    };
+    }
+  /**
+   * Arrow links under the closing paragraph ("Læs om lip filler →", "Book en gratis
+   * konsultation →"). Site paths only; check:market verifies every href lands on a page.
+   */
+  | { type: "links"; items: Link[] };
 
 export type BlogPost = {
   slug: string; // route: /blog/[slug]
@@ -500,7 +505,19 @@ export type BlogPost = {
   date: string; // ISO date
   excerpt: string;
   image: ImageRef;
+  /**
+   * A practitioner (content/team.ts) as the named author. Without it the post is signed by the
+   * team, "Fillox-holdet" (content/pages/blog.ts → blogArticle.teamAuthor), with the Fillox mark
+   * in place of a portrait. A published post never names a practitioner (check:market).
+   */
   authorSlug?: string;
+  /**
+   * `false` puts the post on hold: no page (404), and it is left out of /blog (list, featured
+   * card, filter chips), "Læs også", the treatment pages, the sitemap and the structured data.
+   * Its data stays, so removing the flag re-enables it; say why in a comment next to the flag.
+   * Default (undefined / true): published.
+   */
+  published?: boolean;
   /** Article body as structured blocks (rendered by the blog article page). */
   body?: BlogBlock[];
   /** Filter slug of `category` (see blogFilters), e.g. "botox". */

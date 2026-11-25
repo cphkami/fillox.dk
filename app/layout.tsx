@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree, Poppins } from "next/font/google";
+import { ConsentManager } from "@/components/consent";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { OrganizationJsonLd } from "@/components/seo";
@@ -77,6 +78,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           {layoutCopy.skipLink}
         </a>
+        {/* Cookie banner + consent-gated GTM (config/site.ts → analytics). Right after the skip link,
+            so while it is open it is the next tab stop; fixed at the bottom, rendered on the client only. */}
+        {site.analytics.gtmId ? <ConsentManager /> : null}
         <Header />
         <main id={layoutCopy.mainId} tabIndex={-1} className="flex-1 focus:outline-none">
           {children}

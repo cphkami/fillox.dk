@@ -2,10 +2,10 @@ import Link from "next/link";
 import { Eyebrow, Photo, buttonClasses } from "@/components/ui";
 import { blogPostHref } from "@/content/blog";
 import { blogPage as copy } from "@/content/pages/blog";
-import { getTeamMember } from "@/content/team";
 import type { BlogPost, ImageRef } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { cardFocusRing, joinMeta, readingTime, shortReadingTime, stretchedLink } from "./postView";
+import { AuthorAvatar } from "./AuthorAvatar";
+import { cardFocusRing, joinMeta, postAuthor, readingTime, shortReadingTime, stretchedLink } from "./postView";
 import { Responsive } from "./Responsive";
 
 /**
@@ -26,7 +26,7 @@ function photoSizes(image: ImageRef): string {
  * excerpt, no button). The whole card is clickable through the title link.
  */
 export function FeaturedPost({ post }: { post: BlogPost }) {
-  const author = post.authorSlug ? getTeamMember(post.authorSlug) : undefined;
+  const author = postAuthor(post);
 
   return (
     <article
@@ -62,24 +62,22 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
           <Responsive mobile={post.excerptShort} desktop={post.excerpt} />
         </p>
 
-        {author ? (
-          <div className="flex items-center gap-2.5 md:mt-1.5 md:gap-3">
-            <Photo
-              image={{ ...author.image, alt: "" }}
-              sizes="44px"
-              radius="50%"
-              className="size-9 shrink-0 md:size-11"
-            />
-            <p className="text-[13px] md:text-small">
-              <span className="font-semibold">{author.name}</span>
-              <span className="text-muted md:hidden">
-                {copy.separator}
-                {author.role}
-              </span>
-              <span className="block text-muted max-md:hidden">{author.title ?? author.role}</span>
-            </p>
-          </div>
-        ) : null}
+        {/* The practitioner (portrait, name, role) or the team (the Fillox mark and its name). */}
+        <div className="flex items-center gap-2.5 md:mt-1.5 md:gap-3">
+          <AuthorAvatar author={author} sizes="44px" className="size-9 md:size-11" />
+          <p className="text-[13px] md:text-small">
+            <span className="font-semibold">{author.name}</span>
+            {author.role ? (
+              <>
+                <span className="text-muted md:hidden">
+                  {copy.separator}
+                  {author.role}
+                </span>
+                <span className="block text-muted max-md:hidden">{author.title ?? author.role}</span>
+              </>
+            ) : null}
+          </p>
+        </div>
 
         <span
           aria-hidden="true"

@@ -3,7 +3,6 @@ import { site } from "@/config/site";
 import { legalNav } from "../navigation";
 import { ui } from "../ui";
 import type { FormName } from "@/lib/forms";
-import { forms } from "../forms";
 import { photos as clinicPhotos } from "../photos";
 
 /**
@@ -53,9 +52,10 @@ const privacyLink = legalNav.find((l) => l.href.includes("privat")) ?? legalNav[
 export const clinicsPage = {
   meta: {
     title: "Find klinik",
-    // TODO: copy review (meta description is not in the design; built from the hero text)
+    // TODO: copy review (meta description is not in the design; built from the hero text).
+    // Present tense since 25/11-2026: the owner says Østerbro is open.
     description:
-      "Find din Fillox-klinik i City2, Amager Centret, på Frederiksberg og snart på Østerbro. Se adresser og åbningstider, og book tid i klinikken.",
+      "Find din Fillox-klinik i City2, Amager Centret, på Frederiksberg eller på Østerbro. Se adresser og åbningstider, og book tid i klinikken.",
   },
 
   hero: {
@@ -139,17 +139,25 @@ export const clinicsPage = {
 
   /** Mobile wording for coming-soon clinics (mk), keyed by clinic slug. */
   comingSoon: {
+    // Østerbro is open (owner, 25/11-2026) but has no address on the site yet (content/clinics.ts),
+    // so its card keeps the coming-soon layout with neutral wording. No `formName`: the "Få besked,
+    // når Østerbro åbner" signup is not shown any more, as the clinic has opened.
     osterbro: {
       /** Badge next to the name on mobile. Desktop shows `Clinic.openingNote` on the photo. */
-      openingNoteShort: "Åbner 1. nov",
-      noteShort: "Vi åbner på Østerbro 1. november. Skriv dig op, så får du besked.",
-      /** Netlify form the "Få besked" signup posts to (see public/__forms.html). */
-      formName: forms.notifyOsterbro,
+      // TODO: copy review
+      openingNoteShort: "Ny klinik",
+      // TODO: copy review
+      noteShort: "Vores nyeste klinik. Adresse og åbningstider kommer her snart.",
     },
   } as Record<string, { openingNoteShort?: string; noteShort?: string; formName?: FormName }>,
 
   // TODO: copy review — only the toggle ("Få besked") is in the design; the form
   // itself is not designed. Labels/placeholders follow the 6ko contact form.
+  // Not shown anywhere since 25/11-2026 (no coming-soon clinic has a `formName`). Remove it end to
+  // end together with forms.notifyOsterbro once Østerbro has its address: this copy, the type
+  // NotifyCopy, components/clinics/NotifyForm.tsx, ClinicCard's `notifyCopy` prop, the
+  // `notifyCopy` prop and `data-notify-open` selectors in app/klinikker/page.tsx, the
+  // "osterbro-besked" form in public/__forms.html and its row in README.md.
   notify: {
     toggle: ui.notifyMe,
     formLabel: "Få besked, når Østerbro åbner",

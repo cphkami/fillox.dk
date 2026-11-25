@@ -8,10 +8,12 @@ import type { ArticleView } from "./articleView";
 
 /**
  * schema.org BlogPosting + BreadcrumbList for an article page (all data from /content).
- * The publisher is the site-wide Organization node rendered by the root layout.
+ * The publisher, and the author of a post signed by the team, is the site-wide Organization
+ * node rendered by the root layout. Only published posts have a page (content/blog.ts → posts).
  */
 export function ArticleJsonLd({ view }: { view: ArticleView }) {
-  const { post, author } = view;
+  const { post } = view;
+  const { member } = view.author;
   const url = absoluteUrl(view.path);
   const organization = { "@id": ORGANIZATION_ID };
 
@@ -35,18 +37,19 @@ export function ArticleJsonLd({ view }: { view: ArticleView }) {
     // An excerpt-only post (no written body yet) claims no reading time.
     ...(view.hasBody && post.readingMinutes ? { timeRequired: `PT${post.readingMinutes}M` } : {}),
     ...(about.length ? { about } : {}),
-    author: author
+    // A practitioner is a Person (same @id as on their /behandlere profile); the team
+    // ("Fillox-holdet") is the organisation itself, the same node as the root layout's.
+    author: member
       ? {
           "@type": "Person",
-          // Same @id as the Person node on the author's /behandlere profile.
-          "@id": `${absoluteUrl(teamMemberHref(author.slug))}#person`,
-          name: author.fullName ?? author.name,
-          jobTitle: author.title ?? author.role,
-          url: absoluteUrl(teamMemberHref(author.slug)),
-          image: absoluteUrl(author.image.src),
+          "@id": `${absoluteUrl(teamMemberHref(member.slug))}#person`,
+          name: member.fullName ?? member.name,
+          jobTitle: member.title ?? member.role,
+          url: absoluteUrl(teamMemberHref(member.slug)),
+          image: absoluteUrl(member.image.src),
           worksFor: organization,
         }
-      : organization,
+      : { "@type": "MedicalOrganization", "@id": ORGANIZATION_ID, name: site.name, url: site.url },
     publisher: organization,
   };
 

@@ -1,5 +1,6 @@
 import type { Link, TextBlock, TextPageContent } from "../types";
 import { site } from "@/config/site";
+import { privacyCookieBlocks } from "../consent";
 import { privacyNewsletterAnchor, routes } from "../routes";
 
 /**
@@ -284,6 +285,11 @@ export const privacyPage: TextPageContent = {
         ],
       ],
     },
+
+    // NOT on the live page: "13. Cookies", added 2026-11-25 with the cookie banner (owner:
+    // "cookiebanner ja"). Its copy and the cookie list live in content/consent.ts.
+    // TODO: copy review (owner/jurist): new section, not from the live site.
+    ...privacyCookieBlocks,
 
     companyLines,
   ],

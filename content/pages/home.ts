@@ -52,6 +52,7 @@ export const homePage = {
     // portrait column from 1024px. TODO: copy review (alt text)
     image: photos.behandlingKlient satisfies ImageRef,
     stats: [
+      // Owner, 2026-11-25: "10.000+ behandlinger er det vi har lavet indtil videre" (treatments done so far).
       { value: "10.000+", label: "Behandlinger" },
       { value: "4", label: "Klinikker" },
       { value: `${formatDecimal(site.trustpilot.score)} ★`, label: "Trustpilot" },

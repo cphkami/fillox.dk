@@ -3,6 +3,7 @@ import { Eyebrow, Photo, containerClasses } from "@/components/ui";
 import { blogArticle as copy, blogPage } from "@/content/pages/blog";
 import { cn } from "@/lib/cn";
 import type { ArticleView } from "./articleView";
+import { AuthorAvatar } from "./AuthorAvatar";
 import { joinMeta } from "./postView";
 import { Responsive } from "./Responsive";
 
@@ -60,21 +61,11 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
         <h1 className="font-heading text-[36px] leading-[1.08] tracking-display text-pretty text-heading md:text-[48px] md:tracking-hero xl:text-h1-xs">{post.title}</h1>
 
         <div className="flex items-center gap-2.5 md:gap-3">
-          {author ? (
-            <Photo
-              image={{ ...author.image, alt: "" }}
-              sizes="44px"
-              radius="50%"
-              className="size-10 shrink-0 md:size-11"
-            />
-          ) : null}
+          {/* The practitioner's portrait, or the Fillox mark for "Fillox-holdet". */}
+          <AuthorAvatar author={author} sizes="44px" className="size-10 md:size-11" />
           <p className="text-[13px] leading-[1.5] text-muted md:text-small md:leading-normal">
-            {author ? (
-              <>
-                <span className="font-semibold text-ink">{author.name}</span>
-                {blogPage.separator}
-              </>
-            ) : null}
+            <span className="font-semibold text-ink">{author.name}</span>
+            {blogPage.separator}
             <time dateTime={post.date}>
               <Responsive mobile={copy.formatDateShort(post.date)} desktop={copy.formatDate(post.date)} />
             </time>

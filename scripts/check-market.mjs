@@ -41,6 +41,13 @@
  * 13. components/dev/ (the colour tuner) stays dev-only: rule 9 and Tailwind's scan skip it, so
  *     only app/layout.tsx may import it, and only as a dynamic import() under
  *     `process.env.NODE_ENV === "development"` (which a production build drops).
+ * 14. the blog (content/blog.ts): `published` is a boolean when set; a post on hold
+ *     (`published: false`) is linked from nowhere (no published post's "Læs også", no treatment
+ *     page, no article link, no redirect, no `/blog/<slug>` literal in the code or content); the
+ *     featured post is published; a published post names no practitioner as its author (it is
+ *     signed by the team), lists known filters, treatments and published related posts, has unique
+ *     heading ids, links that land on pages, and a reading time that matches its text (≈ 200
+ *     words a minute); "Alle artikler om …" links on treatment pages open a chip that /blog shows.
  *
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
@@ -387,11 +394,12 @@ for (const slug of treatmentsWithoutReviews) {
 
 // 12. Static pages inside a collection (app/behandlinger/for-maend) never take a collection slug.
 {
-  const { posts } = await importSite("content/blog.ts");
+  // Every post, also those on hold: re-enabling one must not collide with a static page.
+  const { allPosts } = await importSite("content/blog.ts");
   const collectionSlugs = {
     treatments: treatmentSlugs,
     practitioners: teamSlugs,
-    blog: new Set(posts.map((post) => post.slug)),
+    blog: new Set(allPosts.map((post) => post.slug)),
   };
   for (const path of staticAppRoutes()) {
     for (const key of collections) {
@@ -461,6 +469,139 @@ for (const slug of treatmentsWithoutReviews) {
   }
 }
 
+// 14. Blog: posts on hold are linked from nowhere; published posts are signed by the team and consistent.
+const blog = await importSite("content/blog.ts");
+{
+  const { allPosts, posts, allBlogFilters, blogFilters, postFilterSlugs } = blog;
+  const { blogPage } = await importSite("content/pages/blog.ts");
+  const where = (post) => `content/blog.ts "${post.slug}"`;
+  const published = new Set(posts.map((post) => post.slug));
+  const held = allPosts.filter((post) => !published.has(post.slug));
+  const knownFilters = new Set(allBlogFilters.map((filter) => filter.slug));
+  const shownFilters = new Set(blogFilters.map((filter) => filter.slug));
+  const SLUG = /^[a-z0-9-]+$/;
+  const WORDS_PER_MINUTE = 200;
+  const words = (text = "") => text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+  /** A site href lands on a page: a route, a treatment or practitioner page, or a published post. */
+  const pagesOf = { treatments: treatmentSlugs, practitioners: teamSlugs, blog: published };
+  const landsOnPage = (href) => {
+    const path = pathOf(href);
+    if (routePaths.has(path)) return true;
+    return Object.entries(pagesOf).some(([key, slugs]) => {
+      const base = routes[key];
+      return Boolean(base) && path.startsWith(`${base}/`) && slugs.has(path.slice(base.length + 1));
+    });
+  };
+
+  const slugs = new Set();
+  for (const post of allPosts) {
+    if (slugs.has(post.slug)) errors.push(`${where(post)}: duplicate slug`);
+    slugs.add(post.slug);
+    if (!SLUG.test(post.slug)) errors.push(`${where(post)}: slug must be lowercase a–z, 0–9 and "-"`);
+    if (post.published !== undefined && typeof post.published !== "boolean") {
+      errors.push(`${where(post)}: published must be true or false (got ${JSON.stringify(post.published)})`);
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(post.date) || Number.isNaN(Date.parse(post.date))) {
+      errors.push(`${where(post)}: date must be an ISO day (got "${post.date}")`);
+    }
+    if (post.authorSlug && !teamSlugs.has(post.authorSlug)) {
+      errors.push(`${where(post)}: authorSlug "${post.authorSlug}" is not in content/team.ts`);
+    }
+    for (const slug of postFilterSlugs(post)) {
+      if (!knownFilters.has(slug)) errors.push(`${where(post)}: "${slug}" is not a filter in allBlogFilters`);
+    }
+    for (const slug of post.treatmentSlugs ?? []) {
+      if (!treatmentSlugs.has(slug)) errors.push(`${where(post)}: treatmentSlugs "${slug}" is not in content/treatments.ts`);
+    }
+  }
+
+  if (!posts.length) errors.push("content/blog.ts: no published post (/blog would be empty)");
+  const featured = allPosts.filter((post) => post.featured);
+  if (featured.length > 1) errors.push(`content/blog.ts: more than one featured post (${featured.map((p) => p.slug).join(", ")})`);
+  for (const post of featured) {
+    if (!published.has(post.slug)) errors.push(`${where(post)}: featured, but on hold (published: false)`);
+  }
+
+  for (const post of posts) {
+    // BEK 253/2025 § 10: no health professional endorsing a product in an ad; owner 2026-11-25: "Fillox-holdet".
+    if (post.authorSlug) {
+      errors.push(
+        `${where(post)}: published with a practitioner ("${post.authorSlug}") as author; published posts are ` +
+          `signed by the team (remove authorSlug)`,
+      );
+    }
+    for (const key of ["relatedPostSlugs", "relatedPostSlugsMobile"]) {
+      for (const slug of post[key] ?? []) {
+        if (!slugs.has(slug)) errors.push(`${where(post)}: ${key} names an unknown post "${slug}"`);
+        else if (!published.has(slug)) errors.push(`${where(post)}: ${key} names "${slug}", which is on hold`);
+      }
+    }
+    if (!post.body?.length) continue;
+    const ids = new Set();
+    let count = 0;
+    for (const block of post.body) {
+      if (block.type === "h2" || block.type === "h3") {
+        if (!SLUG.test(block.id)) errors.push(`${where(post)}: heading id "${block.id}" must be lowercase a–z, 0–9 and "-"`);
+        if (ids.has(block.id)) errors.push(`${where(post)}: heading id "${block.id}" is used twice`);
+        ids.add(block.id);
+      }
+      if (["lead", "paragraph", "h2", "h3", "quote", "tip"].includes(block.type)) count += words(block.text) + words(block.title);
+      if (block.type === "list") count += block.items.reduce((sum, item) => sum + words(item), 0);
+      if (block.type === "booking" && !treatmentSlugs.has(block.treatmentSlug)) {
+        errors.push(`${where(post)}: booking card for "${block.treatmentSlug}", which is not in content/treatments.ts`);
+      }
+      if (block.type === "links") {
+        for (const link of block.items) {
+          if (!landsOnPage(link.href)) errors.push(`${where(post)}: link "${link.label}" → ${link.href} lands on no page (or on a post on hold)`);
+        }
+      }
+    }
+    const minutes = count / WORDS_PER_MINUTE;
+    if (!post.readingMinutes || Math.abs(post.readingMinutes - minutes) > 1) {
+      errors.push(
+        `${where(post)}: readingMinutes ${post.readingMinutes} does not match the text ` +
+          `(${count} words ≈ ${minutes.toFixed(1)} min at ${WORDS_PER_MINUTE} words a minute)`,
+      );
+    } else if (!post.readingTime.includes(String(post.readingMinutes))) {
+      errors.push(`${where(post)}: readingTime "${post.readingTime}" does not say ${post.readingMinutes} minutes`);
+    }
+  }
+
+  // Treatment pages: "Fra bloggen" lists published posts only, and "Alle artikler om …" opens a chip /blog shows.
+  for (const treatment of treatments) {
+    for (const slug of treatment.detail?.relatedPostSlugs ?? []) {
+      if (!slugs.has(slug)) errors.push(`content/treatments.ts "${treatment.slug}": relatedPostSlugs names an unknown post "${slug}"`);
+      else if (!published.has(slug)) errors.push(`content/treatments.ts "${treatment.slug}": relatedPostSlugs names "${slug}", which is on hold`);
+    }
+    const href = treatment.detail?.relatedPostsLink?.href;
+    const filter = href ? new URL(href, "https://x.invalid").searchParams.get(blogPage.filterParam) : null;
+    if (filter && !shownFilters.has(filter)) {
+      errors.push(`content/treatments.ts "${treatment.slug}": relatedPostsLink opens the blog filter "${filter}", which has no published post`);
+    }
+  }
+
+  // Nothing links a post on hold: redirects, and `/blog/<slug>` literals in the code, content and Netlify config.
+  if (held.length) {
+    const heldPaths = held.map((post) => `${routes.blog}/${post.slug}`);
+    for (const { source, destination } of legacyRedirects) {
+      if (heldPaths.includes(pathOf(destination))) errors.push(`redirect ${source} → ${destination}: the post is on hold (published: false)`);
+    }
+    const files = [
+      ...["app", "components", "lib", "content", "config"].flatMap((dir) => sourceFiles(join(root, dir))),
+      join(root, "netlify.toml"),
+    ].filter((file) => existsSync(file));
+    for (const file of files) {
+      const text = readFileSync(file, "utf8");
+      for (const path of heldPaths) {
+        // A whole path: "/blog/x" but not "/blog/x-y".
+        if (new RegExp(`${path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![a-z0-9-])`).test(text)) {
+          errors.push(`${relative(root, file)}: links ${path}, which is on hold (published: false)`);
+        }
+      }
+    }
+  }
+}
+
 for (const note of notes) console.log(`check:market note: ${note}`);
 
 if (errors.length) {
@@ -470,5 +611,5 @@ if (errors.length) {
 console.log(
   `check:market ok: ${routePaths.size} routes, ${collections.length} collections, ${legacyRedirects.length} redirects, ` +
     `${declaredForms.length} forms, ${openClinics.length} open clinics (booking: ${site.booking.provider}), ` +
-    `${reviews.length} reviews`,
+    `${reviews.length} reviews, ${blog.posts.length} published posts (${blog.allPosts.length - blog.posts.length} on hold)`,
 );

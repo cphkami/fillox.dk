@@ -75,6 +75,30 @@ export const site: SiteConfig = {
     geckoIcCode: "8e00766ca8cc633be72131fc48608e4bb8796",
   },
 
+  /**
+   * Statistics and marketing behind the cookie banner (config/types.ts → AnalyticsConfig).
+   * GTM-KDBJMVF2 is the container the live WordPress site loads (inventory 2026-11-25): GA4
+   * G-TE9JGYM0GM (+ Google signals, Ads link), the Google Ads Conversion Linker and Meta Pixel
+   * 342699568558593. The two WordPress plugins (Site Kit: GA4 G-QMXBXHY79B; PixelYourSite: Meta
+   * Pixel 155084197640287) are NOT in it and stop with the old site.
+   * TODO (owner): confirm this container for the new site and have its owner make the changes in
+   * README → "Før lancering" → "Cookiebanner og måling" (consent checks, triggers).
+   * fillox.no: its own container id, or null until it has one.
+   */
+  analytics: {
+    gtmId: "GTM-KDBJMVF2",
+    consentVersion: "2026-11-25",
+    consentMaxAgeDays: 365,
+    consentStorageKey: "fillox-consent",
+    cookies: {
+      // GA4: _ga, _ga_<container id> (2 years).
+      statistics: ["_ga", "_ga_*"],
+      // Google Ads Conversion Linker: _gcl_au/_aw/_dc/_gb/_gs/_ag (90 days); Meta Pixel: _fbp, _fbc (90 days).
+      marketing: ["_gcl_*", "_fbp", "_fbc"],
+    },
+    blockCustomHtmlWithoutMarketing: true,
+  },
+
   brand: {
     logoDark: "/brand/fillox-logo-black.png",
     logoLight: "/brand/fillox-logo-sand.png",

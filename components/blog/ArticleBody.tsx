@@ -1,4 +1,4 @@
-import { Eyebrow, Photo } from "@/components/ui";
+import { ArrowLink, Eyebrow, Photo } from "@/components/ui";
 import type { BlogBlock } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { BookingCard } from "./BookingCard";
@@ -8,7 +8,7 @@ import { Responsive } from "./Responsive";
  * Renders the typed article body (content/types.ts `BlogBlock`). Type sizes from 6art
  * (desktop: lead 19px, body 17px/1.75, H2 28px) and mar (mobile: lead 18px, body
  * 17px/1.7, H2 22px); from 1280px they grow with the type scale (lead `text-title`, body
- * `text-body-lg`, H2 `text-h3-lg`). Blocks without a design (h3, quote, tip, image) follow
+ * `text-body-lg`, H2 `text-h3-lg`). Blocks without a design (h3, quote, tip, image, links) follow
  * the same visual language. The parent sets the vertical rhythm (gap 16px / 18px, growing
  * to ~22px at 1600 with the type, like the space above H2s and H3s).
  *
@@ -102,6 +102,21 @@ function Block({ block }: { block: BlogBlock }) {
           note={block.note}
           hideNoteOnMobile={block.hideNoteOnMobile}
         />
+      );
+
+    case "links":
+      // Closing links ("Læs om lip filler →"): stacked 44px rows on mobile, one wrapping row from
+      // 768px. Rows 44px + 4px apart keep ArrowLink's hit areas (12px above and below) apart.
+      return (
+        <ul className="grid gap-1 md:flex md:flex-wrap md:gap-x-8 md:gap-y-1">
+          {block.items.map((link) => (
+            <li key={link.href} className="flex min-h-11 items-center">
+              <ArrowLink href={link.href} className="leading-[1.5]">
+                {link.label}
+              </ArrowLink>
+            </li>
+          ))}
+        </ul>
       );
   }
 }

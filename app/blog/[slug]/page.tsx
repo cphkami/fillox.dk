@@ -13,7 +13,7 @@ import { pageShareImage, sharedOpenGraph, shareImage, shareTitle } from "@/lib/m
 
 type Props = { params: Promise<{ slug: string }> };
 
-/** Every post is generated at build time; other slugs 404. */
+/** Every published post is generated at build time; other slugs (and posts on hold) 404. */
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -25,18 +25,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPost(slug);
   if (!post) return {};
   const view = buildArticleView(post);
-  // The author's profile page: article:author expects a profile URL, and `authors` with a
-  // url also emits <link rel="author">.
-  const author = view.author
-    ? { name: view.author.fullName ?? view.author.name, url: absoluteUrl(teamMemberHref(view.author.slug)) }
-    : undefined;
+  // A practitioner: their profile page (article:author expects a profile URL, and `authors` with
+  // a url also emits <link rel="author">). The team ("Fillox-holdet"): its name only.
+  const { member } = view.author;
+  const author: { name: string; url?: string } = member
+    ? { name: member.fullName ?? member.name, url: absoluteUrl(teamMemberHref(member.slug)) }
+    : { name: view.author.name };
   return {
     title: post.title,
     description: post.excerpt,
     alternates: { canonical: view.path },
     // An excerpt-only post (no written body yet) stays out of the index until its text exists.
     ...(view.hasBody ? {} : { robots: { index: false, follow: true } }),
-    authors: author ? [author] : undefined,
+    authors: [author],
     // Replaces the root layout's openGraph as a whole (see lib/metadata.ts).
     openGraph: {
       type: "article",
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt,
       url: view.path,
       publishedTime: post.date,
-      authors: author ? [author.url] : undefined,
+      authors: author.url ? [author.url] : undefined,
       section: post.category,
       // Category and kind can be the same ("Efterpleje"): one tag each.
       tags: Array.from(new Set([post.category, post.kind].filter((t): t is string => Boolean(t)))),
@@ -69,7 +70,7 @@ export default async function BlogArticlePage({ params }: Props) {
         <ArticleHeader view={view} />
         <div className={`${readingColumn} flex flex-col gap-4 pt-7 pb-8 md:gap-[18px] md:pt-fluid-56 md:pb-6 xl:gap-fluid-18`}>
           <ArticleBody blocks={view.blocks} />
-          {view.author ? <AuthorBox author={view.author} /> : null}
+          <AuthorBox author={view.author} />
         </div>
       </article>
       <RelatedArticles entries={view.related} />

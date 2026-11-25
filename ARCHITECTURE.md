@@ -7,7 +7,7 @@ lives in two places:
 
 | What | Where |
 |---|---|
-| Domain, locale, currency, phone, email, CVR, booking provider, logos | `config/site.ts` |
+| Domain, locale, currency, phone, email, CVR, booking provider, GTM container + consent settings (`analytics`), logos | `config/site.ts` |
 | All visible copy and data (nav, clinics, treatments, prices, team, blog, page copy, UI strings) | `content/**` |
 
 **Rule: components and pages never contain market copy.** No Danish strings, prices,
@@ -34,7 +34,8 @@ in `README.md` → "Rebranding til fillox.no".
   `app/apple-icon.png`; `app/manifest.ts` serves `/manifest.webmanifest` (name from
   `config/site.ts`, colours = `pageColor` in `lib/metadata.ts`).
 - Deploy target: Netlify (`netlify.toml`: Node 22, security headers incl. a report-only CSP that
-  allows only Gecko's hosts; README → "Deploy til Netlify").
+  allows only Gecko's hosts and the hosts of the GTM container's tags, which load only after
+  consent; README → "Deploy til Netlify").
 
 ## Directory layout
 
@@ -48,7 +49,8 @@ content/
   team.ts                      practitioners
   reviews.ts                   verified Trustpilot reviews (verbatim) + where each is shown (see "Reviews")
   photos.ts                    the clinic's own mood photos: file, size, alt, default crop (see "Photos")
-  blog.ts                      blog posts
+  blog.ts                      blog posts (`published: false` = on hold; see "Blog")
+  consent.ts                   cookie banner copy + the privacy policy's cookie section (see "Cookie consent")
   prices.ts                    price list (Priser page)
   ui.ts                        shared UI strings ("Book tid", "Se priser", "Læs mere" …)
   pages/<page>.ts              page-specific copy (home, about, prices, clinics, contact, blog, men,
@@ -56,7 +58,8 @@ content/
   redirects.ts                 legacy fillox.dk URLs → new routes
   routes.ts                    every route path; code, canonicals and the sitemap link through it
 lib/                           helpers (formatPrice, cn, …); metadata.ts builds every route's
-                               metadata + Open Graph (pageMetadata), forms.ts posts to Netlify Forms
+                               metadata + Open Graph (pageMetadata), forms.ts posts to Netlify Forms,
+                               analytics.ts: Consent Mode, stored choice, GTM loader, cookie deletion
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
                                redirect targets (and the price list's treatment links: the treatment
                                exists, an #anchor is a section / item id of its long-form page),
@@ -65,11 +68,15 @@ scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes
                                no æ/ø/å strings in app/, components/ (except components/dev/), lib/, review excerpts
                                verbatim + review sets consistent (content/reviews.ts), components/dev/
                                imported only by app/layout.tsx behind the NODE_ENV guard; note when
-                               the Trustpilot numbers (config/site.ts) are > 60 days old
+                               the Trustpilot numbers (config/site.ts) are > 60 days old; the blog
+                               (posts on hold linked from nowhere, published posts signed by the team,
+                               their links, filters, related posts and reading times)
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
   layout/                      Header (DesktopNav, MegaMenu, DropdownMenu, MobileMenu), Footer
   booking/                     BookingEmbed (switches on the booking provider), GeckoEmbed, TimmaEmbed
+  consent/                     ConsentManager (the cookie banner, client), ConsentSettingsButton (footer),
+                               consentStore
   ui/                          primitives: Button, Eyebrow, SectionHeading, Photo, ScrollRow,
                                ResponsiveText (mobile/desktop copy), JoinedLines, HoneypotField,
                                ReviewRotator (client), AllReviewsLink, TrustpilotRating, …
@@ -101,7 +108,7 @@ public/images/                 fillox/ (the clinic's mood photos), resultater/ (
 | `/ny-hos-fillox` | no design: "Ny hos Fillox?", the guide for first-time visitors (`routes.newHere`; see "Ny hos Fillox?") |
 | `/klinikker` | `6kl` / `mk` |
 | `/kontakt` | `6ko` / `mc` |
-| `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar`. A post without its written article (`content/blog.ts` → `hasArticleBody`) gets an excerpt page (noindex, not in the sitemap) and shows no reading time anywhere: article header, blog cards, "Læs også" and the treatment pages' article cards (`components/blog/postView.ts` → `readingTime`, `shortReadingTime`) |
+| `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` (see "Blog"). A post without its written article (`content/blog.ts` → `hasArticleBody`) gets an excerpt page (noindex, not in the sitemap) and shows no reading time anywhere: article header, blog cards, "Læs også" and the treatment pages' article cards (`components/blog/postView.ts` → `readingTime`, `shortReadingTime`) |
 | `/booking` | no design: intro band + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
 | `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style |
 
@@ -143,9 +150,11 @@ Botox (botulinumtoksin) is a prescription medicine and must not be advertised to
   men's page; the home page's results caption (the bestseller #01 already said "Rynkebehandling").
 - **Unchanged on purpose**: every price-list row label and amount (the area rows, the area
   packages, "Lægekonsultation før første botox" in the consultation card), the verbatim agency
-  sentences above, and the blog: three articles (`botox-for-foerste-gang`,
-  `hvornaar-giver-det-mening-at-starte-med-botox`, `de-foerste-24-timer-efter-botox`) and the
-  /blog filter chip "Botox" still name the product (open legal question, README).
+  sentences above.
+- **Blog posts about Botox on hold** (2026-11-25): the three articles (`botox-for-foerste-gang`,
+  `hvornaar-giver-det-mening-at-starte-med-botox`, `de-foerste-24-timer-efter-botox`) carry
+  `published: false` (see "Blog"), so they have no page and the /blog chip "Botox" is not shown,
+  until the owner's jurist has answered (README).
 - **Photos without product or syringe, and no before/after** on the two wrinkle pages and the Botox
   blog posts (see "Photos"): a before/after of a Botox result would advertise the medicine.
 - **No reviews, results, blog posts or "fra" price** on the two wrinkle pages (long-form pages
@@ -285,6 +294,58 @@ Columns from 768px = the number of pairs, up to 3, so one or two pairs fill the 
 design's white 300px cards in a scroll row (stacked halves 280px wide). `sizes`: `sideSizes` (box
 height × aspect, or half a column) and `landscapeSizes` (the column, or half of it, × the photo's
 aspect over the slot's when it is wider), from the measured column widths (content width − gaps).
+
+## Blog
+
+- **Published posts** (`content/blog.ts` → `allPosts`; `posts` is the published ones): four articles
+  of 2026-11-25 (owner: "lave bloggen. skriv et par artikler"). Every fact comes from the site's
+  own content (prices through `listPrice()` from `content/prices.ts`, so a price change follows) or
+  the live fillox.dk, with a `// source:` comment per block; blocks marked `TODO: fagligt tjek
+  (læge)` need a doctor's review. A `links` block puts arrow links under the closing paragraph.
+- **Author**: a post without `authorSlug` is signed by the team, "Fillox-holdet"
+  (`content/pages/blog.ts` → `blogArticle.teamAuthor`), with the Fillox mark
+  (`components/blog/TeamMark`, via `AuthorAvatar`) in place of a portrait; the article's JSON-LD
+  names the organisation. A published post never names a practitioner (`check:market`; BEK
+  253/2025 § 10: no health professional endorsing a product in an ad).
+- **On hold**: `published: false` keeps a post's data but gives it no page (404) and leaves it out
+  of /blog (list, featured card, chips with no published post), "Læs også", the treatment pages,
+  the sitemap and the structured data; `check:market` fails if anything still links it.
+
+## Cookie consent
+
+Statistics and marketing load **only after consent** (owner 2026-11-25: "cookiebanner ja"). Config:
+`config/site.ts` → `analytics` (`config/types.ts` → `AnalyticsConfig`): `gtmId` (null = no banner,
+no footer button, no tags), `consentVersion` (a change asks everyone again), `consentMaxAgeDays`
+(365), `consentStorageKey`, the first-party cookie names per category, and
+`blockCustomHtmlWithoutMarketing`. Copy and the privacy policy's "13. Cookies" list:
+`content/consent.ts`.
+
+- **Order on every page load** (`lib/analytics.ts`, run by `components/consent/ConsentManager`,
+  rendered in the root layout right after the skip link): Google Consent Mode v2 `default` with all
+  four signals denied (+ `wait_for_update`, `ads_data_redaction`); the cookies of every category
+  not granted are deleted (also the old WordPress site's); with a stored choice that grants
+  Statistik or Marketing, the Consent Mode `update`, then the GTM container (`gtm.js`). No choice,
+  or "Afvis alle": GTM is never requested. Statistik → `analytics_storage`; Marketing → `ad_storage`,
+  `ad_user_data`, `ad_personalization`.
+- **Stored choice**: localStorage (first party, never sent), with `consentVersion` and a
+  timestamp; an unreadable, older-version or > 12-month-old choice counts as none. Storage blocked:
+  the banner asks on every page and nothing loads.
+- **Custom HTML guard**: GTM-KDBJMVF2's Meta Pixel is a Custom HTML tag without a consent check,
+  which Consent Mode cannot stop. While `blockCustomHtmlWithoutMarketing` is true, the loader
+  pushes `gtm.blocklist: ["customScripts"]` before `gtm.js` unless Marketing is granted. Set it to
+  false once the container gates those tags (README → "Før lancering" → "Cookiebanner og måling").
+- **Withdrawal**: "Cookieindstillinger" in the footer reopens the banner on "Tilpas" with the
+  current choice; withdrawing a category while GTM runs deletes its cookies and reloads the page
+  (tags that ran cannot be unloaded).
+- **Banner UI**: a non-modal labelled `<section>` fixed at the bottom (no cookie wall: the page
+  stays usable); "Accepter alle" and "Afvis alle" are the same component, variant, size and row;
+  "Tilpas" shows one switch per optional category, none on in advance; every control ≥ 44px. It
+  reserves its height at the end of the page (spacer + scroll padding) and stacks above the mobile
+  book bar on treatment pages. Rendered on the client only (not in the server HTML).
+- **A new tag in the container** needs a consent setting in GTM, its hosts in the CSP
+  (`netlify.toml`), a line in the cookie list and a new `consentVersion`.
+- **Gecko**: `/booking`'s calendar iframe is necessary for booking and loads regardless of the
+  choice; Gecko's own page loads Google Tag Manager inside it (outside our control, README).
 
 ## Booking providers
 

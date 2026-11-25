@@ -27,9 +27,10 @@ const legal: RouteKey[] = ["terms", "privacy"];
  * changes here:
  * - static routes: every route in content/routes.ts except `unlisted` (hash fragments are
  *   stripped, so the about page's team anchor collapses into the about page);
- * - detail routes: every treatment, practitioner and blog post with a written article.
- *   Excerpt-only posts are noindex (app/blog/[slug]/page.tsx) and left out until their
- *   text exists (content/blog.ts → hasArticleBody).
+ * - detail routes: every treatment, practitioner and published blog post with a written article.
+ *   `posts` holds the published posts only (a post on hold, `published: false`, has no page);
+ *   excerpt-only posts are noindex (app/blog/[slug]/page.tsx) and left out until their text
+ *   exists (content/blog.ts → hasArticleBody).
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const listedPosts = posts.filter(hasArticleBody);

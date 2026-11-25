@@ -5,14 +5,14 @@
  */
 import { blogFilters, blogPostHref, hasArticleBody } from "@/content/blog";
 import { blogArticle, blogPage } from "@/content/pages/blog";
-import { getTeamMember } from "@/content/team";
-import type { BlogBlock, BlogPost, TeamMember } from "@/content/types";
-import { relatedEntries, type RelatedEntry } from "./postView";
+import type { BlogBlock, BlogPost } from "@/content/types";
+import { postAuthor, relatedEntries, type PostAuthor, type RelatedEntry } from "./postView";
 
 export type ArticleView = {
   post: BlogPost;
   path: string;
-  author?: TeamMember;
+  /** A practitioner or the team ("Fillox-holdet"): every post is signed. */
+  author: PostAuthor;
   /** Filter chip of the post's category, for the breadcrumb ("Blog → Botox"). */
   category: { label: string; href: string };
   blocks: BlogBlock[];
@@ -44,7 +44,7 @@ export function buildArticleView(post: BlogPost): ArticleView {
   return {
     post,
     path: blogPostHref(post.slug),
-    author: post.authorSlug ? getTeamMember(post.authorSlug) : undefined,
+    author: postAuthor(post),
     category: {
       label: post.category,
       href: filter ? blogPage.filterHref(filter.slug) : blogPage.path,

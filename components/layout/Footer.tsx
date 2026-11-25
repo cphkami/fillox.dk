@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ConsentSettingsButton } from "@/components/consent";
 import { HoursSummary } from "@/components/ui/HoursSummary";
 import { JoinedLines } from "@/components/ui/JoinedLines";
 import { site } from "@/config/site";
 import { clinics } from "@/content/clinics";
+import { consentCopy } from "@/content/consent";
 import { layoutCopy } from "@/content/layout";
 import { footerNav, legalNav } from "@/content/navigation";
 import { routes } from "@/content/routes";
@@ -31,6 +33,10 @@ const contactCards: ContactCard[] = [
     internal: true,
   },
 ];
+
+/** The legal links and the "Cookieindstillinger" button: 44px rows below lg, an 8px hit area around them from lg. */
+const legalLinkClasses =
+  "hover:text-on-footer hover:underline hover:decoration-1 hover:underline-offset-[3px] max-lg:inline-flex max-lg:min-h-11 max-lg:items-center lg:relative lg:after:absolute lg:after:-inset-x-2 lg:after:-inset-y-2";
 
 const cardClasses =
   "group block rounded-[18px] bg-footer-card px-5 py-4 transition-colors hover:bg-footer-card-hover focus-visible:bg-footer-card-hover lg:rounded-[20px] lg:px-7 lg:py-[22px]";
@@ -77,7 +83,8 @@ function ContactCardLink({ card }: { card: ContactCard }) {
  * "Tilmeld" is the footer's only button); contact band with three equal cards: phone, e-mail and
  * online booking ("Book online · Find en tid →", owner 2026-10: two buttons in the footer made no
  * sense, the header keeps its sticky "Book tid"); logo + tagline; one column per clinic; footer
- * links; copyright + legal links; the Trustpilot strip (owner, 2026-10; `FooterTrust`). Spans the
+ * links; copyright + legal links + the "Cookieindstillinger" button (reopens the cookie banner,
+ * components/consent); the Trustpilot strip (owner, 2026-10; `FooterTrust`). Spans the
  * fluid site canvas with the surface margin (like every rounded band), its fr-based grids spread
  * with the width.
  *
@@ -190,15 +197,20 @@ export function Footer() {
                         &nbsp;·&nbsp;
                       </span>
                     ) : null}
-                    <NavLink
-                      href={l.href}
-                      prefetch={false}
-                      className="hover:text-on-footer hover:underline hover:decoration-1 hover:underline-offset-[3px] max-lg:inline-flex max-lg:min-h-11 max-lg:items-center lg:relative lg:after:absolute lg:after:-inset-x-2 lg:after:-inset-y-2"
-                    >
+                    <NavLink href={l.href} prefetch={false} className={legalLinkClasses}>
                       {l.label}
                     </NavLink>
                   </li>
                 ))}
+                {/* Reopens the cookie banner (components/consent); only when the market has tags. */}
+                {site.analytics.gtmId ? (
+                  <li className="max-lg:flex max-lg:items-center">
+                    <span aria-hidden="true" className="lg:hidden">
+                      &nbsp;·&nbsp;
+                    </span>
+                    <ConsentSettingsButton label={consentCopy.footerButton} className={legalLinkClasses} />
+                  </li>
+                ) : null}
               </ul>
             </nav>
           </div>

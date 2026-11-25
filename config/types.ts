@@ -36,6 +36,46 @@ export type BookingConfig =
 
 export type BookingProvider = BookingConfig["provider"];
 
+/**
+ * Statistics and marketing tags, loaded ONLY after cookie consent (components/consent,
+ * lib/analytics.ts). Nothing third-party loads before a choice: the Google Tag Manager container
+ * is injected once the visitor grants "Statistik" or "Marketing", after a Google Consent Mode v2
+ * `default` (everything denied) and an `update` from the choice. The banner copy and the cookie
+ * list for the privacy policy are content (content/consent.ts).
+ */
+export type AnalyticsConfig = {
+  /**
+   * Google Tag Manager container id, e.g. "GTM-KDBJMVF2". `null` switches everything off: no
+   * banner, no "Cookieindstillinger" button, no tags.
+   */
+  gtmId: string | null;
+  /**
+   * Version of the consent text / cookie list, e.g. "2026-11-25". Change it whenever a category,
+   * a vendor or a purpose changes: every visitor is asked again.
+   */
+  consentVersion: string;
+  /** A stored choice expires after this many days and the banner asks again (365 = 12 months). */
+  consentMaxAgeDays: number;
+  /** localStorage key of the stored choice (first-party, never sent to a server). */
+  consentStorageKey: string;
+  /**
+   * First-party cookies (on this site's domain) that belong to each category. They are deleted
+   * whenever the category is not granted: on "Afvis alle", on withdrawal, and on every page load
+   * without consent (the old WordPress site set them without asking). A trailing `*` is a prefix.
+   */
+  cookies: {
+    statistics: string[];
+    marketing: string[];
+  };
+  /**
+   * Block the container's Custom HTML tags (GTM `gtm.blocklist: ["customScripts"]`) unless
+   * "Marketing" is granted. GTM-KDBJMVF2's Meta Pixel is a Custom HTML tag WITHOUT a consent
+   * check: Consent Mode cannot stop it, so with "Statistik" only it would still fire. Set to
+   * false once the container gates its Custom HTML tags on consent (README → "Før lancering").
+   */
+  blockCustomHtmlWithoutMarketing: boolean;
+};
+
 export type SiteConfig = {
   /** Market code, e.g. "dk" / "no". */
   market: string;
@@ -94,6 +134,9 @@ export type SiteConfig = {
   };
 
   booking: BookingConfig;
+
+  /** Statistics / marketing tags behind the cookie banner (see AnalyticsConfig). */
+  analytics: AnalyticsConfig;
 
   brand: {
     logoDark: string;
