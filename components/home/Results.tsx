@@ -11,14 +11,16 @@ const HOVER_ZOOM = 1.03;
 
 /**
  * `sizes` of a card photo: the card's width, or more when the photo is wider than the card
- * (cover paints it card-height × aspect wide), × the hover zoom. Card widths: mobile 230px;
+ * (cover paints it card-height × aspect wide), × the photo's own zoom (`image.zoom`) × the hover
+ * zoom. Card widths: mobile 230px;
  * 1024–1179 ≤ 300px; 1180–1279 ≤ 333px; from 1280 a third of the content width minus the gaps
  * (≈ 28.4vw; 454px on the 1600 canvas).
  */
 function photoSizes(image: ImageRef): string {
   const aspect = image.width && image.height ? image.width / image.height : CARD_ASPECT;
-  const k = Math.max(1, aspect / CARD_ASPECT) * HOVER_ZOOM;
-  const mobile = Math.max(MOBILE_CARD.w, MOBILE_CARD.h * aspect) * HOVER_ZOOM;
+  const zoom = Math.max(1, image.zoom ?? 1);
+  const k = Math.max(1, aspect / CARD_ASPECT) * zoom * HOVER_ZOOM;
+  const mobile = Math.max(MOBILE_CARD.w, MOBILE_CARD.h * aspect) * zoom * HOVER_ZOOM;
   return [
     `(min-width: 1600px) ${Math.ceil(454 * k)}px`,
     `(min-width: 1280px) ${(28.4 * k).toFixed(1)}vw`,

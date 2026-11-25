@@ -494,8 +494,9 @@ på sitet, skal værten med i CSP'en (begge filer).
     toppen dér viser nu spejlbilledet (25/11-2026). Næsekorrektion viser behandlingsrummet i
     stedet for billedet af en behandler, der gør en sprøjte klar, over "Din behandler: Dr. Tom".
     Sprøjtebillederne står stadig uden navn øverst på kindben, kæbelinje, hage og tear trough
-    (ingen navngiven behandler dér), på forsidens lip filler-kort og i to artikler. Er det
-    Alberte på begge sprøjtebilleder? (Hun er kosmetisk sygeplejerske og giver injektioner:
+    (ingen navngiven behandler dér), på forsidens lip filler-kort og i to artikler. Billedet,
+    hvor hun gør sprøjten klar, er Alberte (du, 25/11-2026: "den billede af alberte lip filler").
+    Er det også Alberte på billedet med armene over kors? (Hun er kosmetisk sygeplejerske og giver injektioner:
     skinbooster, PRF hud, lip filler, fillers og rynkebehandling står på hendes profil, se
     "Alberte" nedenfor.)
   - **Før/efter på Kæbelinje** (`/behandlinger/kaebelinje`, "Før og efter"): ét profilpar af hage og
@@ -546,6 +547,9 @@ på sitet, skal værten med i CSP'en (begge filer).
       stemningsbilleder med behandlingens navn som eneste tekst (Lip filler, Kæbelinje, Skinbooster;
       intet rynkekort). Ingen kunder og ingen resultater; før/efter står på behandlingssiderne.
       Kæbelinje-kortet viser nu folderbilledet (25/11-2026; Mikes foto er blevet hans portræt).
+      Lip filler-kortet (du, 25/11-2026: "for højt oppe vs de andre") viser nu billedet med armene
+      over kors, zoomet ind, så øjnene står i samme højde som på de to andre kort og der er luft
+      over hovedet; sprøjten ses stadig nederst til højre.
 - [ ] **Billeder**: der er **ingen stockfotos** tilbage på siden (de ni filer i
       `public/images/hero/` og `public/images/results/` er slettet; logovæggen "Fillox-Behandling-3"
       findes stadig i `design-reference/uploads/`). Mangler stadig: et foto + alt-tekst pr. klinik

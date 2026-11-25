@@ -78,9 +78,11 @@ export const photos = {
     height: 630,
   },
   /**
-   * A practitioner preparing a syringe (fillers only). Small file (782px): soft where it is drawn
-   * wider, as in the blog article header (up to 1.84× on the 1600 canvas; README asks for a larger
-   * original).
+   * A practitioner preparing a syringe (fillers only): Alberte (the owner, 2026-11-25: "den billede
+   * af alberte lip filler"), unnamed here as every photo. Her bun touches the top edge, so it is
+   * not used where faces line up in a row (the home cards). Small file (782px): soft where it is
+   * drawn wider, as in the blog article header (up to 1.84× on the 1600 canvas; README asks for a
+   * larger original).
    */
   sproejte: {
     src: "/images/fillox/sproejte.jpg",
@@ -92,9 +94,9 @@ export const photos = {
   },
   /**
    * A practitioner holding a syringe, arms crossed (fillers and skin only). Looks like Alberte's
-   * portrait (same shoot, pose, gloves and backdrop; `sproejte` likely too): never above or beside
-   * another named practitioner (it was the lip filler hero over "Din behandler: Annika" until
-   * 2026-11-25). Unnamed, as every photo here; the owner is asked (README).
+   * portrait (same shoot, pose, gloves and backdrop; the owner named `sproejte` as her): never above
+   * or beside another named practitioner (it was the lip filler hero over "Din behandler: Annika"
+   * until 2026-11-25). Unnamed, as every photo here. The home "Lip filler" card (zoomed 1.35).
    */
   behandlerSproejte: {
     src: "/images/fillox/behandler-sproejte.jpg",

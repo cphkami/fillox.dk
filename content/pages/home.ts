@@ -94,7 +94,12 @@ export const homePage = {
     listLabel: "Behandlinger",
     items: [
       {
-        image: { ...photos.sproejte, alt: "" },
+        // Alberte with a syringe, arms crossed (content/photos.ts). The owner, 2026-11-25, on the
+        // former photo here (`sproejte`, her head at the card's top edge): "for højt oppe vs de
+        // andre … zoom den ind … ellers prøv at se om der er andet billede". This one has room above
+        // her head: zoomed 1.35 from the top centre, her eyes sit at ≈ 38% of the card, the line of
+        // the other two (≈ 39%), and the syringe stays in the lower right corner.
+        image: { ...photos.behandlerSproejte, alt: "", position: "50% 0%", zoom: 1.35 },
         caption: treatmentName("lip-filler"),
         href: treatmentHref("lip-filler"),
       },
