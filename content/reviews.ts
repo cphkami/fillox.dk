@@ -16,7 +16,10 @@ import type { CustomerReview, ReviewSets } from "./types";
  * Selection (all 5 stars, in Danish). Left out on purpose:
  * - reviews that name "Botox": Botox is a prescription medicine, and testimonials about it
  *   count as advertising it to the public (needs a legal check before any use);
- * - reviews that name practitioners who are no longer on the team (content/team.ts);
+ * - reviews that name practitioners who are no longer on the team (content/team.ts): Maria left
+ *   Fillox (the owner, 2026-11-25), so the five reviews that named her are gone from every set
+ *   and from this list (Sally Villumsen, Camilla, Gitte Varming, Melissa Paludan, Sarah Mari
+ *   Nielsen). The reviewer called "Maria" (tp-69f8db8a…, about Mike) is a client and stays;
  * - reviews about Fillox Oslo, anonymous reviewers ("Consumer"), reviews that give a
  *   practitioner a title they do not have, and reviews in other languages.
  *
@@ -315,28 +318,6 @@ export const reviews: CustomerReview[] = [
     practitioners: ["annika"],
   },
   {
-    id: "tp-67ddc269c749041a519ad94f",
-    author: "Sally Villumsen",
-    date: "2025-03-21",
-    rating: 5,
-    source: "Trustpilot",
-    url: "https://dk.trustpilot.com/reviews/67ddc269c749041a519ad94f",
-    text: "FILLOXXXXX!!!!\nFik lavet læber af sødeste Maria, hun er virkelig sød og sætter en ind i tingene. \nVirkelig et godt sted!!\n",
-    practitioners: ["maria"],
-    treatments: ["lip-filler"],
-  },
-  {
-    id: "tp-677f6fed904b8496332316cb",
-    author: "Camilla",
-    date: "2025-01-09",
-    rating: 5,
-    source: "Trustpilot",
-    url: "https://dk.trustpilot.com/reviews/677f6fed904b8496332316cb",
-    text: "En 5’er herfra🩷 havde jeg ku gi Maria 10 havde jeg gjordt det🌸\nVågnede imorges og kiggede mig i spejlet og er simpelthen så glad for resultaterne, det utrolig hvor meget flotte naturlige resultater kan gøre ved ens selvtillid, så af hjertet tak🙏",
-    short: "En 5’er herfra🩷 havde jeg ku gi Maria 10 havde jeg gjordt det🌸 …",
-    practitioners: ["maria"],
-  },
-  {
     id: "tp-675a92ed19b8bc72d700f6d1",
     author: "Susan",
     date: "2024-12-12",
@@ -346,27 +327,6 @@ export const reviews: CustomerReview[] = [
     text: "Utrolig søde og tager hensyn til ens behov og er eksta omhyggelige. Vil til enhver tid anbefale fillox",
   },
   {
-    id: "tp-675324abe704b1fab9f1ca2f",
-    author: "Gitte Varming",
-    date: "2024-12-06",
-    rating: 5,
-    source: "Trustpilot",
-    url: "https://dk.trustpilot.com/reviews/675324abe704b1fab9f1ca2f",
-    text: "Utroligt god behandling \naf Maria ♥️ super dygtig. som sagt har aldrig har prøve det før,🙂resultat blev så flot \nKommer igen ",
-    practitioners: ["maria"],
-  },
-  {
-    id: "tp-67373773339dd25ae582e74f",
-    author: "Melissa Paludan",
-    date: "2024-11-15",
-    rating: 5,
-    source: "Trustpilot",
-    url: "https://dk.trustpilot.com/reviews/67373773339dd25ae582e74f",
-    text: "Mig og min søster har begge fået 0,7 milliliter i vores læber, det er blevet så flot og vi kommer helt klart igen! Vi fik dem lavet hos Maria, dejlig god service ",
-    practitioners: ["maria"],
-    treatments: ["lip-filler"],
-  },
-  {
     id: "tp-6725f69f3483d58580291a9b",
     author: "Gillian  Lyons-Hardø",
     date: "2024-11-02",
@@ -374,18 +334,6 @@ export const reviews: CustomerReview[] = [
     source: "Trustpilot",
     url: "https://dk.trustpilot.com/reviews/6725f69f3483d58580291a9b",
     text: "Jeg har været rigtig glad for resultaterne. Den sygeplejerske det udførte dem er meget professionel og giver rigtig god og ærlig vejledning.",
-  },
-  {
-    id: "tp-66d4b791de24877a718f684b",
-    author: "Sarah Mari Nielsen",
-    date: "2024-09-01",
-    rating: 5,
-    source: "Trustpilot",
-    url: "https://dk.trustpilot.com/reviews/66d4b791de24877a718f684b",
-    text: "Jeg besøgte Fillox for at få lidt mere volumen i mine læber, og jeg er utrolig tilfreds med resultatet. Maria, som behandlede mig, er ikke kun yderst kompetent, men også utrolig behagelig og dygtig. Hun tog sig tid til at forstå, præcis hvilket look jeg ønskede, og udførte behandlingen med stor omhu. Resultatet er naturligt og smukt, præcis som jeg havde håbet. \n\nJeg kan varmt anbefale Maria hos Fillox, hvis du overvejer en filler behandling – du vil være i de bedste hænder!",
-    short: "Jeg besøgte Fillox for at få lidt mere volumen i mine læber, og jeg er utrolig tilfreds med resultatet. Maria, som behandlede mig, er ikke kun yderst kompetent, men også utrolig behagelig og dygtig. …",
-    practitioners: ["maria"],
-    treatments: ["lip-filler"],
   },
   {
     id: "tp-662fbf1b5324f53bc92637e3",
@@ -465,13 +413,6 @@ export const reviewSets: ReviewSets = {
       "tp-69764555ccd134a8d29b0a76", // Lærke
       "tp-6853191b833081bb8e327156", // SZ
     ],
-    maria: [
-      "tp-66d4b791de24877a718f684b", // Sarah Mari Nielsen
-      "tp-67373773339dd25ae582e74f", // Melissa Paludan
-      "tp-677f6fed904b8496332316cb", // Camilla
-      "tp-67ddc269c749041a519ad94f", // Sally Villumsen
-      "tp-675324abe704b1fab9f1ca2f", // Gitte Varming
-    ],
     mike: [
       "tp-69eccd907b18c45698f3d2a5", // K.H
       "tp-69f8db8a87db75a4d3e20419", // Maria
@@ -487,7 +428,7 @@ export const reviewSets: ReviewSets = {
       "tp-685be49bf3450e262884e97d", // Miya Kisbye
       "tp-69eccd907b18c45698f3d2a5", // K.H
       "tp-6887906b6563f6dce40919b7", // Jessica
-      "tp-66d4b791de24877a718f684b", // Sarah Mari Nielsen
+      "tp-69fdde069fc37839f18be885", // Emma (in place of a review naming Maria, 2026-11-25)
       "tp-68627b53fb5db385c73e2eae", // Victoria
     ],
     skinbooster: [

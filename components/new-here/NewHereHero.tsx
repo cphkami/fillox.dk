@@ -8,10 +8,10 @@ import type { NewHerePage } from "@/content/pages/new-here";
  * panel (text on the page base), so the H1, the intro and "Book konsultation" come first on a
  * phone. The draft's subtitle is a paragraph in the heading font under the H1.
  *
- * Photo `sizes`: the near-square photo (behandler-portraet-2.jpg, 976 × 1027 = 0.95) covers a
- * slot about as tall as wide or taller (424 × 652px at 1024, 605 × 668 at 1440, 668 × 720 from
- * 1600), so it paints at height × 0.95, which is wider than the slot (620px at 1024, 635 at
- * 1440, 684 from 1600): 640px up to 1599, 690px from 1600.
+ * Photo `sizes`: the portrait photo (behandler-vindue.jpg, 830 × 1010 = 0.82) covers a slot
+ * 424 × 652px at 1024 (painted 652 × 0.82 ≈ 535px wide), 605 × 668 at 1440 and 668 × 720 from
+ * 1600 (painted at the slot's width): 640px up to 1599, 690px from 1600, as for the near-square
+ * photo before it.
  */
 export function NewHereHero({ hero, titleId }: { hero: NewHerePage["hero"]; titleId: string }) {
   return (

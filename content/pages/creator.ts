@@ -33,8 +33,11 @@ export const creatorPage: TextPageContent = {
     title: "Content creator",
     intro:
       "Laver du indhold om skønhed, hudpleje eller livsstil? Vi hører gerne fra content creators, der har lyst til at samarbejde med Fillox.",
-    // The clinic's own photo (content/photos.ts). TODO: copy review (image choice + alt text)
-    image: photos.behandlerPortraet2,
+    // The clinic's own photo (content/photos.ts): a woman with a hand mirror, no practitioner's
+    // face, since the page names Annika as a contact (her portrait was here until it became her
+    // team photo, 2026-11-25) and no treatment, as the page says nothing about treatments.
+    // TODO: copy review (image choice + alt text)
+    image: photos.spejl,
   },
   body: [
     { type: "h2", text: "Send os en DM" },

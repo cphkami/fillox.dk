@@ -3,6 +3,7 @@ import { site } from "@/config/site";
 import { formatPrice } from "@/lib/format";
 import { priceCards } from "../prices";
 import { routes } from "../routes";
+import { getTeamMember } from "../team";
 import { getTreatment } from "../treatments";
 import { treatmentPage } from "./treatments";
 
@@ -66,6 +67,13 @@ const from = (amount: number) => `fra ${formatPrice(amount)}`;
 const laserCard = priceCards.find((c) => c.id === LASER_CARD);
 if (!laserCard) throw new Error(`men: no price card "${LASER_CARD}"`);
 
+/** The 4:5 team-card crop's object-position (content/team.ts → `image`). Throws on an unknown slug. */
+function teamCardPosition(slug: string): string {
+  const position = getTeamMember(slug)?.image.position;
+  if (!position) throw new Error(`men: no team portrait crop for "${slug}"`);
+  return position;
+}
+
 const menShareImage: ImageRef | undefined = treatmentPage.categoryImages[menCategorySlug];
 if (!menShareImage) throw new Error(`men: no category image "${menCategorySlug}"`);
 
@@ -84,9 +92,9 @@ export const menPage = {
   },
 
   /**
-   * Share image: the men's treatment pages' hero photo, Mike in the clinic (content/pages/
-   * treatments.ts → categoryImages["for-maend"], content/photos.ts, 1290 × 1219). The page itself
-   * shows no photo of him there.
+   * Share image: the men's treatment pages' hero photo, the empty treatment room (content/pages/
+   * treatments.ts → categoryImages["for-maend"], content/photos.ts, with its link-preview crop).
+   * It was Mike's photo until that became his team portrait (the owner, 2026-11-25).
    */
   shareImage: menShareImage,
 
@@ -209,22 +217,22 @@ export const menPage = {
   /**
    * "Dine behandlere": care, not gender (see the header). Three practitioners from
    * content/team.ts with their own quotes from fillox.dk/om-os: Alberte (the owner's example),
-   * Annika (who offers rynkebehandling) and Maria (fillers & Botox, the lip filler page's
-   * practitioner), so the people match the treatments on the list. Each card links to the
+   * Annika (who offers rynkebehandling) and Mike (fillers incl. the jawline area, and
+   * rynkebehandling; in place of Maria, who has left Fillox, the owner 2026-11-25), so the people
+   * match the treatments on the list. Kubra has no quote of her own yet. Each card links to the
    * practitioner's profile; no "Book tid hos …": the booking calendar cannot preselect a
-   * practitioner (lib/booking.ts → practitionerBookingHref). `position` is the portrait crop in
-   * the 4:5 slot (object-position: the faces sit at different heights in the photos).
+   * practitioner (lib/booking.ts → practitionerBookingHref). `position` is the 4:5 team-card crop
+   * from the face table (the member's `image` carries its zoom), so the faces sit on one line.
    */
   care: {
     id: "behandlere",
     eyebrow: "Dine behandlere",
     title: "Du er i gode hænder",
     intro: "Lidt skeptisk? Fair nok. Vi forklarer, hvad vi gør og hvorfor, svarer på alt, du spørger om, og tager os godt af dig hele vejen.",
-    people: [
-      { slug: "alberte", position: "50% 30%" },
-      { slug: "annika", position: "50% 42%" },
-      { slug: "maria", position: "50% 18%" },
-    ] as { slug: string; position: string }[],
+    people: ["alberte", "annika", "mike"].map((slug) => ({ slug, position: teamCardPosition(slug) })) as {
+      slug: string;
+      position: string;
+    }[],
     teamLink: { label: "Mød hele teamet", href: routes.aboutTeam } satisfies Link,
   },
 

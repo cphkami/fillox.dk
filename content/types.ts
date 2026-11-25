@@ -10,7 +10,7 @@
  */
 
 export type ImageRef = {
-  src: string; // path under /public, e.g. "/images/team/annika.jpg"
+  src: string; // path under /public, e.g. "/images/team/annika-2026.jpg"
   alt: string;
   /** CSS object-position, e.g. "50% 30%" — reproduces the crop from the design. */
   position?: string;
@@ -150,7 +150,7 @@ export type TreatmentDetailMobile = {
   /** Practitioner card: title line, e.g. "Sygeplejerske · Fillers & botox". */
   practitionerTitle?: string;
   practitionerText?: string;
-  /** Practitioner card CTA, e.g. { label: "Book hos Maria", href: "/booking?behandler=maria" }. */
+  /** Practitioner card CTA, e.g. { label: "Book hos Annika", href: "/booking?behandler=annika" }. */
   practitionerCta?: Link;
   pricesIntro?: string;
 };
@@ -487,7 +487,7 @@ export type BlogBlock =
       type: "booking";
       treatmentSlug: string;
       eyebrow: string; // "Behandlingen i artiklen"
-      note?: string; // "Gratis lægekonsultation før første behandling"
+      note?: string; // "Konsultation og kontrol er altid gratis"
       hideNoteOnMobile?: boolean;
     }
   /**
@@ -499,7 +499,7 @@ export type BlogBlock =
 export type BlogPost = {
   slug: string; // route: /blog/[slug]
   title: string;
-  /** Primary category label shown on cards and in the breadcrumb, e.g. "Botox". */
+  /** Primary category label shown on cards and in the breadcrumb, e.g. "Filler". */
   category: string;
   readingTime: string; // "4 min læsning"
   date: string; // ISO date
@@ -520,11 +520,11 @@ export type BlogPost = {
   published?: boolean;
   /** Article body as structured blocks (rendered by the blog article page). */
   body?: BlogBlock[];
-  /** Filter slug of `category` (see blogFilters), e.g. "botox". */
+  /** Filter slug of `category` (see blogFilters), e.g. "filler". */
   categorySlug?: string;
   /** Article type shown on treatment-page cards and the article eyebrow, e.g. "Guide", "Efterpleje". */
   kind?: string;
-  /** Every filter the post matches (besides "alle"), e.g. ["botox", "guides"]. */
+  /** Every filter the post matches (besides "alle"), e.g. ["filler", "guides"]. */
   tags?: string[];
   /** Reading time in minutes (mobile shows "4 min"). */
   readingMinutes?: number;

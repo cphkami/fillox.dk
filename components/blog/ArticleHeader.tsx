@@ -22,8 +22,8 @@ export const readingColumn = "mx-auto w-full max-w-[800px] px-5 md:px-10";
 const crumbLink = "relative inline-block transition-colors after:absolute after:-inset-x-1 after:-inset-y-3 hover:text-accent";
 
 /**
- * Article header (6art / mar): breadcrumb "Blog → Botox" (desktop) or "‹ Alle artikler"
- * (mobile), "BOTOX · GUIDE", H1, byline, then the wide hero photo.
+ * Article header (6art / mar): breadcrumb "Blog → Filler" (desktop) or "‹ Alle artikler"
+ * (mobile), "FILLER · GUIDE", H1, byline, then the wide hero photo.
  */
 export function ArticleHeader({ view }: { view: ArticleView }) {
   const { post, author, category } = view;

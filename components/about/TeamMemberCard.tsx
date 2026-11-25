@@ -6,8 +6,8 @@ import type { TeamMember } from "@/content/types";
 import { cn } from "@/lib/cn";
 
 /**
- * One practitioner on /om-os. Every member gets the same card (the owner: all six side by side,
- * 2 rows of 3, Dr. Tom no longer a wide block on top), so the grid reads as one team.
+ * One practitioner on /om-os. Every member gets the same card (the owner: all side by side in
+ * rows of 3, Dr. Tom no longer a wide block on top), so the grid reads as one team.
  *
  * - Portrait: framed from the face table (content/team.ts → framedPortrait), so faces sit on one
  *   line and at one size in every card: the 4:5 team-card crop (`crops.about`) from 768px, the

@@ -12,12 +12,19 @@ import type { ImageRef } from "./types";
  * most 1200px), for every photo that is a page's share image (lib/metadata.ts → `shareImage`).
  *
  * Rules (README → "Før lancering" → photos):
- * - Only Dr. Tom (`tomKlinik`) and Mike (`mikeKlinik`) are identified. Every other practitioner,
- *   the group photo and every client stay UNNAMED: no name, title or clinic in alt texts,
- *   captions, file names or comments, and no unnamed practitioner next to a named author.
+ * - People (the owner, 2026-11-25): the photos of Dr. Tom (grey-beige uniform), Alberte (black,
+ *   arms crossed), Annika (black, smiling) and Mike are now their team portraits
+ *   (public/images/team/<slug>-2026.jpg, content/team.ts), so they are no longer mood photos here
+ *   ("så kan vi bruge andre billeder andre steder"); their mood copies are gone.
+ *   `behandlerVindue` is Alberte too (in white). Every entry here stays UNNAMED (alt texts,
+ *   captions, file names), and a photo of a team member never sits right above or beside a
+ *   different named practitioner, where it would read as that person; nor does an unnamed
+ *   practitioner's face sit next to a named author. Nobody else in these photos is identified:
+ *   never name a person in any other photo.
  * - Rynkebehandling pages and Botox posts (Botox is a prescription medicine): only photos without
  *   a product, syringe, needle or vial, and no treatment in progress — `behandlingsrum`, `spejl`,
- *   `behandlerVindue`, `behandlerPortraet2` — never as a "result". `sproejte` and
+ *   `behandlerVindue` — never as a "result". `behandlerFolder` qualifies too (checked 2026-11-25:
+ *   the leaflet's print is unreadable, no product shown). `sproejte` and
  *   `behandlerSproejte` show a syringe: fillers and skin pages only. Check the image itself, not a
  *   description of it, before a photo goes on a Botox page.
  * - Not used on purpose: Drive 382DC544 (a practitioner injecting a client at the brow, a typical
@@ -52,14 +59,6 @@ export const photos = {
     height: 1448,
     share: { src: "/images/fillox/og-behandlingsrum.jpg", width: 1086, height: 570 },
   },
-  /** Dr. Tom Haugland in the clinic (identified). */
-  tomKlinik: {
-    src: "/images/fillox/tom-klinik.jpg",
-    alt: "Dr. Tom Haugland i beige uniform i klinikken",
-    position: "50% 25%",
-    width: 1223,
-    height: 1286,
-  },
   /** A woman, seen from behind, looking at herself in a white hand mirror. */
   spejl: {
     src: "/images/fillox/spejl.jpg",
@@ -91,7 +90,12 @@ export const photos = {
     height: 998,
     share: { src: "/images/fillox/og-sproejte.jpg", width: 782, height: 410 },
   },
-  /** A practitioner holding a syringe, arms crossed (fillers only). */
+  /**
+   * A practitioner holding a syringe, arms crossed (fillers and skin only). Looks like Alberte's
+   * portrait (same shoot, pose, gloves and backdrop; `sproejte` likely too): never above or beside
+   * another named practitioner (it was the lip filler hero over "Din behandler: Annika" until
+   * 2026-11-25). Unnamed, as every photo here; the owner is asked (README).
+   */
   behandlerSproejte: {
     src: "/images/fillox/behandler-sproejte.jpg",
     alt: "Behandler med langt lyst hår i sort Fillox-trøje og sorte handsker holder en sprøjte",
@@ -112,25 +116,10 @@ export const photos = {
     height: 782,
     share: { src: "/images/fillox/og-behandler-folder.jpg", width: 854, height: 448 },
   },
-  /** A practitioner with arms crossed (gloves, no product). */
-  behandlerPortraet1: {
-    src: "/images/fillox/behandler-portraet-1.jpg",
-    alt: "Behandler med langt lyst hår i sort Fillox-trøje og sorte handsker med korslagte arme",
-    position: "45% 25%",
-    width: 1105,
-    height: 1118,
-    share: { src: "/images/fillox/og-behandler-portraet-1.jpg", width: 1105, height: 580 },
-  },
-  /** A smiling practitioner (no gloves, no product). */
-  behandlerPortraet2: {
-    src: "/images/fillox/behandler-portraet-2.jpg",
-    alt: "Smilende behandler med langt lyst hår i sort Fillox-uniform",
-    position: "50% 25%",
-    width: 976,
-    height: 1027,
-    share: { src: "/images/fillox/og-behandler-portraet-2.jpg", width: 976, height: 512 },
-  },
-  /** A practitioner by a bright window (no product). Small file (830px): no wide slots. */
+  /**
+   * A practitioner by a bright window (no product). Small file (830px): no wide slots. Alberte (the
+   * owner), unnamed here: only beside her own name or no practitioner's (see "People" above).
+   */
   behandlerVindue: {
     src: "/images/fillox/behandler-vindue.jpg",
     alt: "Behandler med langt lyst hår i en lys slå-om-trøje ved et vindue",
@@ -138,15 +127,6 @@ export const photos = {
     width: 830,
     height: 1010,
     share: { src: "/images/fillox/og-behandler-vindue.jpg", width: 830, height: 436 },
-  },
-  /** Mike (identified), the same man as public/images/team/mike.jpg. */
-  mikeKlinik: {
-    src: "/images/fillox/mike-klinik.jpg",
-    alt: "Mike, sygeplejerske hos Fillox, i sort uniform med korslagte arme",
-    position: "55% 25%",
-    width: 1290,
-    height: 1219,
-    share: { src: "/images/fillox/og-mike-klinik.jpg", width: 1200, height: 630 },
   },
   /**
    * Four practitioners on and around a white sofa (unnamed). 15%: the wide phone and tablet crops

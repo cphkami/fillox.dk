@@ -95,7 +95,11 @@ export const site: SiteConfig = {
       // GA4: _ga, _ga_<container id> (2 years).
       statistics: ["_ga", "_ga_*"],
       // Google Ads Conversion Linker: _gcl_au/_aw/_dc/_gb/_gs/_ag (90 days); Meta Pixel: _fbp, _fbc (90 days).
-      marketing: ["_gcl_*", "_fbp", "_fbc"],
+      // "pys*", "last_pys*", "pbid": the old WordPress site's PixelYourSite cookies (first visit,
+      // landing page, traffic source, session, advanced form data; set on .fillox.dk without
+      // consent). Deleted only, never set by this site. Names from PixelYourSite's cookie list and the
+      // live site's PYS options (2026-11-25). TODO: confirm them in a browser that visited the old site.
+      marketing: ["_gcl_*", "_fbp", "_fbc", "pys*", "last_pys*", "pbid"],
     },
     blockCustomHtmlWithoutMarketing: true,
   },

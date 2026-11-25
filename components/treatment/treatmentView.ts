@@ -10,7 +10,7 @@ import { treatmentPage as copy } from "@/content/pages/treatments";
 import { priceCards, type PriceListRow } from "@/content/prices";
 import { reviewsFor } from "@/content/reviews";
 import { routes } from "@/content/routes";
-import { team } from "@/content/team";
+import { framedPortrait, team } from "@/content/team";
 import { getTreatment, treatmentHref } from "@/content/treatments";
 import type {
   BeforeAfter,
@@ -94,7 +94,10 @@ export type TreatmentView = {
   };
   practitioner?: {
     member: TeamMember;
+    /** Portrait crop below 640px and from 768px (the 4:5 team-card crop: a tall slot there). */
     image: ImageRef;
+    /** Crop at 640–767px, where the mobile slot is landscape (≈ 1.5–1.8 : 1). */
+    smCrop: Pick<ImageRef, "position" | "zoom">;
     heading: string;
     mobileTitle?: string;
     text: string;
@@ -148,6 +151,13 @@ export type TreatmentView = {
 
 const overviewHref = routes.treatments;
 const overviewLabel = mainNav.find((n) => n.kind === "treatments")?.label ?? "";
+
+/**
+ * "Din behandler" photo slot at 640–767px: full width (≈ 600–727px) and 400px high, so landscape.
+ * Zoom 1 (the photo fills it by its width), eye line a third down. The other widths use the 4:5
+ * team-card crop: the slot is a portrait there (≈ 0.7–0.9 : 1, PractitionerSection).
+ */
+const PRACTITIONER_SM_SLOT = { aspect: 660 / 400, eyes: 0.33 };
 
 /** The treatment a "for mænd" variant borrows prices and practitioner from (see priceAliases). */
 function aliasTarget(treatment: Treatment): Treatment | undefined {
@@ -270,7 +280,9 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
   const practitioner: TreatmentView["practitioner"] = member
     ? {
         member,
-        image: member.crops?.practitioner ?? member.image,
+        // Framed from the face table (content/team.ts), as on the team cards.
+        image: member.crops?.practitioner ?? member.crops?.about ?? member.image,
+        smCrop: framedPortrait(member, PRACTITIONER_SM_SLOT),
         heading:
           d?.practitionerHeading ?? copy.practitioner.heading(member.name, member.title?.split(" · ")[0] ?? member.role),
         mobileTitle: d?.mobile?.practitionerTitle ?? member.titleShort ?? member.title ?? member.role,

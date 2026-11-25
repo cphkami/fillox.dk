@@ -96,6 +96,20 @@ export function pushConsentDefault(): void {
 const dayMs = 24 * 60 * 60 * 1000;
 
 /**
+ * True for a `storage` event (another tab of this site) that may have changed the stored choice:
+ * its key, or a cleared localStorage (key null).
+ */
+export function isConsentStorageEvent(event: StorageEvent): boolean {
+  let local: Storage | null = null;
+  try {
+    local = window.localStorage;
+  } catch {
+    return false; // storage blocked: nothing is stored, nothing to follow
+  }
+  return event.storageArea === local && (event.key === null || event.key === config.consentStorageKey);
+}
+
+/**
  * The stored choice, or null when there is none, it is unreadable, it was made under another
  * consentVersion, or it is older than consentMaxAgeDays (the banner then asks again).
  */

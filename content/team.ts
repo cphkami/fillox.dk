@@ -10,7 +10,11 @@ import { formatDecimal } from "@/lib/format";
 /**
  * Practitioners in display order (home team grid, /om-os, /behandlere): Dr. Tom first (fagligt
  * ansvarlig læge), then the others. Every grid shows them as equal cards (the owner, 2026-10-03:
- * "alle ved siden af hinanden i 2 rækker, 3 i hver række"), so no member is `featured` any more.
+ * "alle ved siden af hinanden i 2 rækker, 3 i hver række", when there were six; with five the
+ * second row of the 3-column grids is centred), so no member is `featured` any more.
+ * Maria has left Fillox (the owner, 2026-11-25: "Maria er ikke længere i Fillox … hun er ude"):
+ * her entry, photo and profile are gone, /behandlere/maria redirects to the team section
+ * (content/redirects.ts) and the reviews that name her are left out (content/reviews.ts).
  * Only Alberte has a full profile design (6alb / ma); the other profiles follow her template
  * (intro, facts, "Sådan arbejder jeg", offers, reviews, booking band) with their own facts.
  * Credentials that are not documented are left out on purpose — do not invent them.
@@ -24,20 +28,19 @@ import { formatDecimal } from "@/lib/format";
  * - Bios are lightly adapted; `quote` is a verbatim excerpt of the practitioner's own quote
  *   (whole sentences). "Sådan arbejder jeg" cards (first person) only rephrase that quote
  *   lightly. Where a card says more than the quote, the profile speaks in the third person
- *   ("Sådan arbejder Maria"): Maria (her quote plus what /om-os says about her), Tom (no quote:
- *   his cards rephrase Fillox's own "Hvorfor vælge Fillox" on /om-os, which he answers for as
- *   fagligt ansvarlig læge) and Kubra (no quote: Fillox's shared standards).
+ *   ("Sådan arbejder Tom"): Tom (no quote: his cards rephrase Fillox's own "Hvorfor vælge Fillox"
+ *   on /om-os, which he answers for as fagligt ansvarlig læge) and Kubra (no quote: Fillox's
+ *   shared standards).
  * - Offers are what each one is documented to perform: Tom his specialty on /om-os
  *   ("ansigtskonturering samt næse- og hagekorrektioner"; /om-os adds "og trådløft", which is not
- *   offered any more (content/redirects.ts), so his texts leave it out too); Maria "Fillers & Botox" (/om-os) plus her reviews (lip filler,
- *   Botox, filler, skinbooster); Annika and Mike their reviews (Annika: lip filler, Botox,
- *   fillers, skinbooster/Sunekos; Mike: lip filler, Botox, fillers incl. hage); Kubra the three
- *   areas the owner confirmed (fillers, rynkebehandling, hudforbedring). Names, short texts and
- *   prices come from content/treatments.ts and the price list (content/prices.ts), so they
- *   never drift from /priser.
+ *   offered any more (content/redirects.ts), so his texts leave it out too); Annika and Mike their
+ *   reviews (Annika: lip filler, Botox, fillers, skinbooster/Sunekos; Mike: lip filler, Botox,
+ *   fillers incl. hage); Kubra the three areas the owner confirmed (fillers, rynkebehandling,
+ *   hudforbedring). Names, short texts and prices come from content/treatments.ts and the price
+ *   list (content/prices.ts), so they never drift from /priser.
  * - An offer's `treatmentSlug` also makes treatment pages without a practitioner of their own
  *   pick the first member who offers it as "Din behandler" (components/treatment/treatmentView.ts).
- *   So only treatments whose page already has its practitioner (lip filler → Maria, næsekorrektion
+ *   So only treatments whose page already has its practitioner (lip filler → Annika, næsekorrektion
  *   → Tom, skinbooster and Alberte's offers → Alberte, who comes first; the rynkebehandling hub is
  *   a long-form page and shows no practitioner, content/types.ts)
  *   carry one; Tom's chin and contouring offers, the nurses' "Fillers i ansigtet" and Kubra's
@@ -52,11 +55,21 @@ import { formatDecimal } from "@/lib/format";
  *
  * Card links: every member has `profile.offers`, so every card says "Se hvad X tilbyder".
  *
- * Image crops: `image` is the photo with its default crop (avatars). The team grids and the
- * profile hero frame it from the face table at the bottom (framedPortrait): `crops.about` is the
- * 4:5 team-card crop (teamSlots.portrait); the components ask for the squarer one
- * (teamSlots.square) and the hero crops themselves. `crops.practitioner` reproduces a zoomed
- * image-slot crop from design-reference/.image-slots.state.json (s6bx-annika).
+ * Photos (the owner, 2026-11-25: new portraits of Tom, Alberte, Annika and Mike, "fjern de
+ * nuværende billeder"): public/images/team/<slug>-2026.jpg, re-encoded from the clinic's Drive
+ * originals (sRGB, no metadata, never upscaled; new names so no CDN serves the old files; the
+ * originals are no larger). They replaced their mood copies (public/images/fillox/
+ * behandler-portraet-1.jpg = Alberte, -2.jpg = Annika, tom-klinik.jpg, mike-klinik.jpg), so each
+ * photo is now only a portrait (content/photos.ts → People). Kubra keeps kubra.jpg.
+ * Each has a link-preview crop (`share`, og-<file>.jpg, ≈ 1.91 : 1 cut at the face) for the
+ * profile's og:image. Nobody else in the clinic's photos is identified (content/photos.ts).
+ *
+ * Image crops: every slot frames the face from the face table at the bottom (framedPortrait), so
+ * faces sit on one eye line and at one size: `image` (the default crop: avatars, the men's page
+ * cards) and `crops.about` are the 4:5 team-card crop (teamSlots.portrait); the components ask for
+ * the squarer one (teamSlots.square), the profile row (teamSlots.row), the "Din behandler" crops on
+ * treatment pages and the profile hero's own. The design's stored crops (s6alb-hero, s6bx-annika)
+ * were for the old photos and are gone.
  */
 
 const profileHref = (slug: string) => `${routes.practitioners}/${slug}`;
@@ -188,12 +201,16 @@ const reshape = (slot: Required<FaceSlot>, aspect: number): Required<FaceSlot> =
  * - `square` (33:34, the mo cards' 330 × 340): the home grid from 768px (a shorter section, see
  *   components/home/Team.tsx) and the /om-os and /behandlere cards below 768px. Same headroom and
  *   face width as `portrait`.
- * The components draw the slots with `aspect-[4/5]` / `aspect-[33/34]`; keep them in step.
+ * - `row` (190:268): the profile page's "Mød resten af teamet" row from 768px
+ *   (components/practitioner/TeamRow.tsx). Same headroom and face width as `portrait`.
+ * The components draw the slots with `aspect-[4/5]` / `aspect-[33/34]` / `aspect-[190/268]`; keep
+ * them in step.
  */
 const PORTRAIT_SLOT: Required<FaceSlot> = { aspect: 4 / 5, eyes: 0.28, face: 0.109 };
 export const teamSlots = {
   portrait: PORTRAIT_SLOT,
   square: reshape(PORTRAIT_SLOT, 33 / 34),
+  row: reshape(PORTRAIT_SLOT, 190 / 268),
 } as const;
 
 const pct = (n: number) => `${Math.round(n * 1000) / 10}%`;
@@ -222,8 +239,9 @@ export function drawnWidthScale(image: ImageRef, aspect: number): number {
  * of the slot. Solving for p places the nose and eye lines (clamped to the photo's edges).
  *
  * In a slot with a face size, the zoom also grows (a little past that size) when the photo's
- * edge keeps the eye line more than 1% off `slot.eyes` at p = 0 or 1: Annika's photo has a
- * mirror and the ceiling above her, Dr. Tom's head is close to the top edge.
+ * edge keeps the eye line more than 1% off `slot.eyes` at p = 0 or 1: Annika's photo is cut just
+ * above her hair, so her eyes sit high in it, and her portrait is drawn ≈ 15% larger than the
+ * others to bring them down to the common eye line.
  */
 function faceCrop(image: ImageRef & { width: number; height: number }, face: Face, slot: FaceSlot): ImageRef {
   const ratio = image.width / image.height;
@@ -242,15 +260,17 @@ function faceCrop(image: ImageRef & { width: number; height: number }, face: Fac
       zoom = ceil2((1 - slot.eyes - tolerance) / (photoHeight * (1 - face.eyes)));
     }
   }
-  const place = (target: number, u: number, fitted: boolean) => {
+  const place = (target: number, u: number, fitted: boolean, exact: number) => {
     const d = fitted ? 1 : overflow;
     const k = 1 - zoom * d;
-    // Zoom 1 on an axis the photo fills exactly: the position doesn't matter there.
-    // (Within 1%: the photo can only move by that much, so centre it.)
-    return Math.abs(k) < 0.01 ? 0.5 : clamp01((target - zoom * u * d) / k);
+    // Zoom 1 on an axis the photo fills exactly: the position doesn't matter in this slot (within
+    // 1%, the photo can only move by that much). It does in a frame of another shape that draws
+    // the same crop (the profile hero below 640px gets wider than tall): `exact` is the centre
+    // horizontally and the photo's top vertically, so the head is never cut there.
+    return Math.abs(k) < 0.01 ? exact : clamp01((target - zoom * u * d) / k);
   };
-  const x = place(0.5, face.x, byWidth);
-  const y = place(slot.eyes, face.eyes, !byWidth);
+  const x = place(0.5, face.x, byWidth, 0.5);
+  const y = place(slot.eyes, face.eyes, !byWidth, 0);
   return { ...image, position: `${pct(x)} ${pct(y)}`, zoom: zoom === 1 ? undefined : zoom };
 }
 
@@ -261,12 +281,14 @@ const members: TeamMember[] = [
     fullName: "Dr. Tom Haugland",
     role: "Æstetisk læge",
     title: "Æstetisk læge · Daglig leder",
+    // In the clinic, grey-beige uniform (the owner, 2026-11-25). Also the /om-os doctor section's
+    // photo, there in a wider crop (content/pages/about.ts).
     image: {
-      src: "/images/team/tom.jpg",
+      src: "/images/team/tom-2026.jpg",
       alt: "Dr. Tom Haugland, æstetisk læge hos Fillox",
-      position: "50% 50%",
-      width: 509,
-      height: 800,
+      width: 1223,
+      height: 1286,
+      share: { src: "/images/team/og-tom-2026.jpg", width: 1200, height: 628 },
     },
     // Also the "Din behandler" text on /behandlinger/naesekorrektion (no practitionerText there).
     bio: "Tom er uddannet læge i Oslo og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere. Han er fagligt ansvarlig læge i Fillox, og næsekorrektioner udføres af ham.",
@@ -361,12 +383,14 @@ const members: TeamMember[] = [
     name: "Alberte",
     // No `title`: the live site gives Alberte none, so cards and her profile show the role.
     role: "Behandler",
+    // In black, arms crossed (the owner, 2026-11-25: "alberte har også i hvid man brug den i sort
+    // det bedre"; the white one by the window is a mood photo, content/photos.ts → behandlerVindue).
     image: {
-      src: "/images/team/alberte.jpg",
+      src: "/images/team/alberte-2026.jpg",
       alt: "Alberte, behandler hos Fillox",
-      position: "50% 50%",
-      width: 1728,
-      height: 2304,
+      width: 1105,
+      height: 1118,
+      share: { src: "/images/team/og-alberte-2026.jpg", width: 1105, height: 579 },
     },
     // TODO: fact check (owner): the live site gives Alberte no title, education or clinic, and
     // nothing places her at a clinic (the homepage puts Annika at City2). Her profession, her
@@ -388,15 +412,8 @@ const members: TeamMember[] = [
         "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden. Hendes drivkraft er at hjælpe mennesker med at blive den bedste version af sig selv, med resultater der forbedrer frem for at forandre.",
       introShort:
         "Alberte holder sig altid orienteret i den nyeste viden. Hendes drivkraft er resultater, der forbedrer frem for at forandre.",
-      // s6alb-hero
-      heroImage: {
-        src: "/images/team/alberte.jpg",
-        alt: "Alberte, behandler hos Fillox",
-        position: "42% 62%",
-        zoom: 1.19,
-        width: 1728,
-        height: 2304,
-      },
+      // No `heroImage`: the design's s6alb-hero crop was for her old photo; the hero frames the new
+      // one from the face table, as on the other profiles.
       primaryCta: { label: "Book tid hos Alberte", href: bookWith("alberte") },
       secondaryCta: { label: "Se behandlinger", href: "#behandlinger" },
       // From her quote on /om-os ("Min tilgang er at forbedre og ikke forandre", "fremhæve hver
@@ -464,23 +481,14 @@ const members: TeamMember[] = [
     name: "Annika",
     role: "Sygeplejerske",
     title: "Kosmetisk sygeplejerske",
+    // Straight blonde hair, black Fillox uniform (the owner, 2026-11-25). The design's s6bx-annika
+    // crop was for her old photo; "Din behandler" frames this one from the face table.
     image: {
-      src: "/images/team/annika.jpg",
+      src: "/images/team/annika-2026.jpg",
       alt: "Annika, kosmetisk sygeplejerske hos Fillox",
-      position: "50% 50%",
-      width: 1440,
-      height: 1920,
-    },
-    crops: {
-      // s6bx-annika (Botox page, "Din behandler")
-      practitioner: {
-        src: "/images/team/annika.jpg",
-        alt: "Annika, kosmetisk sygeplejerske hos Fillox",
-        position: "48% 69%",
-        zoom: 1.36,
-        width: 1440,
-        height: 1920,
-      },
+      width: 976,
+      height: 1027,
+      share: { src: "/images/team/og-annika-2026.jpg", width: 976, height: 511 },
     },
     bio: "Annika er uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom og har stor viden om det æstetiske felt og de forskellige behandlinger og muligheder.",
     bioShort: "Uddannet i Fillox af Dr. Tom, med stor viden om behandlinger og muligheder.",
@@ -549,104 +557,17 @@ const members: TeamMember[] = [
     },
   },
   {
-    slug: "maria",
-    name: "Maria",
-    role: "Sygeplejerske",
-    // mo / mb and the live /om-os say "Fillers & Botox". Botox is a prescription medicine, so the
-    // site names the treatment instead, as the owner's agency texts do (2026-10): title, bio, profile
-    // and facts say "rynkebehandling". TODO: copy review — "rynkebehandling" in place of "Botox".
-    title: "Sygeplejerske · Fillers & rynkebehandling",
-    image: {
-      src: "/images/team/maria.jpg",
-      alt: "Maria, sygeplejerske hos Fillox",
-      position: "50% 50%",
-      width: 533,
-      height: 800,
-    },
-    crops: {
-      // s6c-maria (Lip filler page) has no stored crop: centred.
-      practitioner: {
-        src: "/images/team/maria.jpg",
-        alt: "Maria, sygeplejerske hos Fillox",
-        position: "50% 50%",
-        width: 533,
-        height: 800,
-      },
-    },
-    bio: "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring. Hun er ekspert i både fillers og rynkebehandling, med sans for det naturlige resultat.",
-    bioShort: "Detaljeorienteret og holistisk, med flere års erfaring og ekspert i fillers og rynkebehandling.",
-    quote: "“At se mine tilfredse kunder smile er en af de største glæder, jeg har, både professionelt og personligt.”",
-    link: { label: "Se hvad Maria tilbyder", href: profileHref("maria") },
-    bookingHref: bookWith("maria"),
-    profile: {
-      intro:
-        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger. Hun er ekspert i både fillers og rynkebehandling og kombinerer behandlinger til skræddersyede løsninger, med sans for det naturlige resultat.",
-      introShort:
-        "Maria er sygeplejerske med flere års erfaring og ekspert i både fillers og rynkebehandling, med sans for det naturlige resultat.",
-      primaryCta: { label: "Book tid hos Maria", href: bookWith("maria") },
-      secondaryCta: seeTreatments,
-      facts: [
-        { label: "Specialer", value: "Fillers & rynkebehandling" },
-        { label: "Tilgang", value: "Holistisk & detaljeorienteret" },
-        { label: "Fokus", value: "Skræddersyede løsninger" },
-      ],
-      // In the third person, as on Tom's profile: only the first card is her own words (her quote
-      // on /om-os: "Det vigtigste for mig er, at mine kunder føler sig trygge ved, at deres behov
-      // bliver mødt, og at deres naturlige skønhed fremhæves"); the other two are what the clinic
-      // says about her there ("Hun kan med sin erfaring og kompetencer kombinere og tilbyde
-      // skræddersyet løsninger", "hendes øje for kvalitet og sans for det naturlige resultat").
-      approach: {
-        eyebrow: "Sådan arbejder Maria",
-        title: "Det kan du regne med hos Maria",
-        items: [
-          {
-            title: "Dine behov i centrum",
-            text: "Det vigtigste for Maria er, at du føler dig tryg ved, at dine behov bliver mødt, og at din naturlige skønhed fremhæves.",
-            textShort: "Du skal føle dig tryg ved, at dine behov bliver mødt.",
-          },
-          {
-            title: "Skræddersyet til dig",
-            text: "Med sin erfaring kombinerer Maria behandlinger og skræddersyr en løsning, der passer til dig.",
-            textShort: "Maria kombinerer behandlinger til en løsning, der passer til dig.",
-          },
-          {
-            title: "Øje for kvalitet",
-            text: "Maria har øje for kvalitet og sans for det naturlige resultat.",
-            textShort: "Med sans for det naturlige resultat.",
-          },
-        ],
-      },
-      // /om-os: "ekspert i både Fillers & Botox-behandlinger"; her Trustpilot reviews: lip filler,
-      // Botox, filler and skinbooster. The lip filler page already has her as "Din behandler".
-      offers: {
-        ...offersCopy("Maria"),
-        items: [
-          treatmentOffer("lip-filler"),
-          wrinkleOffer,
-          facialFillers,
-          treatmentOffer("skinbooster"),
-          consultationOffer("Maria"),
-          followUpOffer,
-        ],
-      },
-      booking: {
-        title: "Book tid hos Maria",
-        text: "Vælg behandling og klinik. Første konsultation er altid gratis.",
-        cta: { label: "Book tid hos Maria", href: bookWith("maria") },
-      },
-    },
-  },
-  {
     slug: "mike",
     name: "Mike",
     role: "Sygeplejerske",
     title: "Kosmetisk sygeplejerske",
+    // Black uniform, arms crossed (the owner, 2026-11-25).
     image: {
-      src: "/images/team/mike.jpg",
+      src: "/images/team/mike-2026.jpg",
       alt: "Mike, kosmetisk sygeplejerske hos Fillox",
-      position: "50% 50%",
-      width: 1602,
-      height: 1920,
+      width: 1290,
+      height: 1219,
+      share: { src: "/images/team/og-mike-2026.jpg", width: 1200, height: 628 },
     },
     bio: "Mike er kvalificeret kosmetisk sygeplejerske og har udvidet sin ekspertise gennem løbende uddannelse. Han tilpasser behandlingen til dine ønsker og behov.",
     bioShort: "Tilpasser behandlingen til dine ønsker og behov, med et naturligt resultat som mål.",
@@ -724,9 +645,9 @@ const members: TeamMember[] = [
       // slots; this one fills them as the other portraits do.
       src: "/images/team/kubra.jpg",
       alt: "Kubra, kosmetisk sygeplejerske hos Fillox",
-      position: "50% 30%",
       width: 716,
       height: 895,
+      share: { src: "/images/team/og-kubra.jpg", width: 716, height: 375 },
     },
     clinicSlugs: ["city2"],
     bio: `Kosmetisk sygeplejerske i ${clinicName("city2")} med en rolig hånd, et skarpt øje og et humør, der smitter. Hun udfører fillers, rynkebehandling og hudforbedring.`,
@@ -800,15 +721,18 @@ const members: TeamMember[] = [
 ];
 
 /**
- * Faces in each member's `image` (see faceCrop), measured on the files. A member without one
- * keeps `image`'s own crop in the team grids and the profile hero.
+ * Faces in each member's `image` (see faceCrop), measured on the files with a 1% grid
+ * (2026-11-25). `x` is the middle of the face (between the nose line and the middle of the head:
+ * Alberte, Annika and Mike turn their heads a little); `eyes` the line through both pupils,
+ * `mouth` the line between the lips. A member without one keeps `image`'s own crop.
+ * Hair tops, for the headroom they leave in the 4:5 card: Tom 8%, Alberte 7.5%, Annika 1.7%,
+ * Mike 5.3%, Kubra 9% of the photo's height.
  */
 const faces: Record<string, Face> = {
-  tom: { x: 0.505, eyes: 0.21, mouth: 0.296 },
-  alberte: { x: 0.52, eyes: 0.365, mouth: 0.435 },
-  annika: { x: 0.5, eyes: 0.41, mouth: 0.505 },
-  maria: { x: 0.45, eyes: 0.23, mouth: 0.315 },
-  mike: { x: 0.495, eyes: 0.31, mouth: 0.385 },
+  tom: { x: 0.58, eyes: 0.225, mouth: 0.295 },
+  alberte: { x: 0.475, eyes: 0.233, mouth: 0.325 },
+  annika: { x: 0.535, eyes: 0.19, mouth: 0.278 },
+  mike: { x: 0.48, eyes: 0.24, mouth: 0.33 },
   kubra: { x: 0.5, eyes: 0.278, mouth: 0.387 },
 };
 
@@ -823,10 +747,14 @@ export function framedPortrait(member: TeamMember, slot: FaceSlot, fallback: Ima
   return faceCrop({ ...member.image, width, height }, face, slot);
 }
 
-export const team: TeamMember[] = members.map((member) => ({
-  ...member,
-  crops: { ...member.crops, about: framedPortrait(member, teamSlots.portrait) },
-}));
+/**
+ * The team with `image` and `crops.about` set to the 4:5 team-card crop, so a slot that draws
+ * `image` as it is (the men's page cards, avatars) frames the face like the team cards.
+ */
+export const team: TeamMember[] = members.map((member) => {
+  const portrait = framedPortrait(member, teamSlots.portrait);
+  return { ...member, image: portrait, crops: { ...member.crops, about: portrait } };
+});
 
 export function getTeamMember(slug: string): TeamMember | undefined {
   return team.find((m) => m.slug === slug);

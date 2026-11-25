@@ -162,7 +162,8 @@ export const treatmentPage = {
     eyebrow: "Fra bloggen",
     /** Heading when `detail.relatedPostsTitle` is missing. */
     title: withName("Læs mere om"),
-    intro: "Alt det, du gerne vil vide før din første behandling, skrevet af vores behandlere.",
+    // TODO: copy review — the posts are signed "Fillox-holdet" (content/pages/blog.ts → teamAuthor).
+    intro: "Det, du gerne vil vide før og efter din behandling, skrevet af Fillox-holdet.",
     readArticle: "Læs artiklen",
     /** Short reading time on mobile cards: "Guide · 4 min". */
     minutes: "min",
@@ -273,14 +274,21 @@ export const treatmentPage = {
   categoryImages: {
     // A syringe is fine on filler pages (not on the rynkebehandling pages).
     fillers: photos.sproejte,
-    // Botox is a prescription medicine: a practitioner by a window, no product, syringe or
-    // treatment (content/photos.ts → rules).
-    rynkebehandling: photos.behandlerVindue,
+    // Botox is a prescription medicine: only photos without product, syringe or treatment
+    // (content/photos.ts → rules). The hub shows the practitioner reading a leaflet: its "Læs mere"
+    // cards already show the other three such photos (the room, the mirror, the window; content/
+    // blog.ts), and a photo is never twice on one page. 60%: her face and the leaflet in the
+    // portrait column. No practitioner is named on the hub.
+    rynkebehandling: { ...photos.behandlerFolder, position: "60% 40%" },
+    // The window photo is Alberte (the owner, 2026-11-25), unnamed here: every hudforbedring page
+    // with a "Din behandler" shows Alberte, so it never sits beside another practitioner's name.
     hudforbedring: photos.behandlerVindue,
     "laser-harfjerning": photos.behandlingsrum,
     hartab: photos.behandlingKlient,
-    // Mike (identified) on the "for mænd" pages; also the /behandlinger/for-maend share image.
-    "for-maend": photos.mikeKlinik,
+    // The empty treatment room on the "for mænd" pages (kæbelinje and hårtab for mænd), also the
+    // /behandlinger/for-maend share image. It was Mike's photo until that became his team portrait
+    // (the owner, 2026-11-25); no other photo shows a man, and these pages name no practitioner.
+    "for-maend": photos.behandlingsrum,
   } as Record<string, ImageRef>,
 
   /** Used when a category has no image above: the empty treatment room (no person, no product). */

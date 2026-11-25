@@ -34,7 +34,7 @@ const LIST_ID = "post-list";
 /**
  * Filterable post overview: chip row, featured card, "Seneste artikler" grid and
  * "Vis flere artikler". The active chip is kept in `?kategori=` (so treatment pages
- * can link to /blog?kategori=botox). The page is static: the initial HTML is the
+ * can link to /blog?kategori=filler). The page is static: the initial HTML is the
  * unfiltered list (Suspense fallback), and the URL filter applies after hydration.
  * BlogFilterScope (rendered around this on the server) shows that fallback already
  * filtered for deep links, so hydration does not flash the unfiltered overview.
@@ -81,7 +81,7 @@ type ViewProps = BlogBrowserProps & {
 
 /**
  * For the fallback: under which filters each entry, "Vis flere artikler" and the empty
- * text show on the first page (space-separated slugs, for `[data-blog-item~="botox"]`).
+ * text show on the first page (space-separated slugs, for `[data-blog-item~="filler"]`).
  */
 function prefilterPlan(filters: BlogFilter[], entries: BlogEntry[]) {
   const size = copy.list.pageSize;

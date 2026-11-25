@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ButtonLink, Container, Eyebrow, Photo, ResponsiveText } from "@/components/ui";
+import { CropPhoto } from "@/components/practitioner/CropPhoto";
+import { ButtonLink, Container, Eyebrow, ResponsiveText } from "@/components/ui";
 import { treatmentPage as copy } from "@/content/pages/treatments";
 import type { ImageRef } from "@/content/types";
 import type { TreatmentView } from "./treatmentView";
@@ -9,16 +10,28 @@ const SLOT_H_MD = 440;
 const SLOT_H_MOBILE = 400;
 
 /**
- * Photo `sizes`: the slot is 574px wide on the 1600px canvas (1 : 1.4 split of the 1440px
- * content width), ~36vw from 1024px. A design crop's zoom (`image.zoom`, which paints the
+ * Photo `sizes`: the width the photo is DRAWN at. The slot is 568–574px wide on the 1600px canvas
+ * (1 : 1.4 split of the 1440px content width), ~36vw from 1024px, and 520px high up to 1280, then
+ * 520 → 640px (37.5vw + 40px) at 1600. A design crop's zoom (`image.zoom`, which paints the
  * photo that much wider) is included so the photo stays sharp.
- * Below 1024 the slot is (100vw − 120px) / 2.4 × 440px (768–1023) and (100vw − 40px) × 400px:
- * a photo wider than the slot's shape (known `width`/`height`) is painted slot-height × aspect
- * wide (object-cover), until the viewport is wide enough for the slot to be the wider.
+ * Below 1024 the slot is (100vw − 120px) / 2.4 × 440px (768–1023) and (100vw − 40px) × 400px.
+ * At every width a photo wider than the slot's shape (known `width`/`height`) is painted
+ * slot-height × aspect wide (object-cover), until the viewport is wide enough for the slot to be
+ * the wider. From 1024px the slot is ≈ 0.68–0.89 : 1, so the team's 0.95–1.06 : 1 portraits always
+ * fill its height there.
  */
 function photoSizes(image: ImageRef): string {
   const z = Math.max(1, image.zoom ?? 1);
   const aspect = image.width && image.height ? image.width / image.height : 0;
+
+  // From 1024px: the photo fills the slot's height (cover) unless it is narrower than the slot.
+  const wide = [
+    `(min-width: 1600px) ${Math.ceil(Math.max(574, 640 * aspect) * z)}px`,
+    aspect > 0.9
+      ? `(min-width: 1280px) calc((37.5vw + 40px) * ${(aspect * z).toFixed(4)})`
+      : `(min-width: 1280px) ${Math.ceil(36 * z)}vw`,
+    `(min-width: 1024px) ${Math.ceil(Math.max(461, 520 * aspect) * z)}px`,
+  ];
 
   const mdBox = `calc((100vw - 120px) * ${(z / 2.4).toFixed(4)})`;
   const mdCover = `${Math.ceil(SLOT_H_MD * aspect * z)}px`;
@@ -40,9 +53,7 @@ function photoSizes(image: ImageRef): string {
         ? [mobileCover]
         : [`(min-width: ${mobileFrom}px) ${mobileBox}`, mobileCover];
 
-  return [`(min-width: 1600px) ${Math.ceil(574 * z)}px`, `(min-width: 1024px) ${Math.ceil(36 * z)}vw`, ...md, ...mobile].join(
-    ", ",
-  );
+  return [...wide, ...md, ...mobile].join(", ");
 }
 
 /**
@@ -50,6 +61,10 @@ function photoSizes(image: ImageRef): string {
  * mb: photo, name in the accent, title, short text and a full-width "Book hos …" button).
  * Wide screens: the 1 : 1.4 split fills the canvas and the photo grows 520 → 640px tall
  * (≈ the design's 418 × 520 portrait proportion at every width).
+ *
+ * The portrait is framed from the face table (content/team.ts, treatmentView): the 4:5 team-card
+ * crop in the portrait slot (≈ 0.6–0.9 : 1 below 640px and from 768px), its own crop at 640–767px,
+ * where the full-width slot is landscape.
  */
 export function PractitionerSection({ practitioner: p }: { practitioner: NonNullable<TreatmentView["practitioner"]> }) {
   return (
@@ -58,11 +73,12 @@ export function PractitionerSection({ practitioner: p }: { practitioner: NonNull
       aria-labelledby={copy.sectionIds.practitioner}
       className="flex flex-col gap-4 pt-2 pb-14 leading-[1.5] md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-10 md:pt-0 md:pb-fluid-84 lg:gap-fluid-64"
     >
-      <Photo
-        image={p.image}
+      <CropPhoto
+        mobile={p.image}
+        desktop={p.image}
+        sm={p.smCrop}
         sizes={photoSizes(p.image)}
-        radius={24}
-        className="h-[400px] shrink-0 md:h-[440px] lg:h-fluid-520/640"
+        className="h-[400px] shrink-0 rounded-[24px] md:h-[440px] lg:h-fluid-520/640"
       />
       <div className="flex flex-col gap-4 md:block">
         <Eyebrow className="md:mb-[18px]">{copy.practitioner.eyebrow}</Eyebrow>

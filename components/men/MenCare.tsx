@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { ArrowLink, Container, Eyebrow, Photo } from "@/components/ui";
 import type { MenPage } from "@/content/pages/men";
+import { drawnWidthScale } from "@/content/team";
 import type { MenCarePerson } from "./menView";
+
+/** `sizes` of a 4:5 card slot, × how much wider the crop draws the photo (cover × zoom). */
+function cardSizes(scale: number): string {
+  const s = (n: number) => Math.ceil(n * scale);
+  return `(min-width: 1600px) ${s(260)}px, (min-width: 1024px) ${s(17)}vw, (min-width: 768px) ${s(30)}vw, ${s(104)}px`;
+}
 
 /**
  * "Dine behandlere": the page's one human element, about care (not about a practitioner's
@@ -17,7 +24,8 @@ import type { MenCarePerson } from "./menView";
  * Below 768px each practitioner is a row (104px portrait beside the text); from 768px three
  * columns. Image `sizes`: a third of the right column from 1024px ((1440 − 77) × 1.6 / 2.6 =
  * 839px, minus two 29px gaps, / 3 ≈ 260px at 1600; ≈ 16vw below), a third of the content on
- * tablets, 104px on phones.
+ * tablets, 104px on phones; each multiplied by `drawnWidthScale` (the team-card crop zooms and
+ * crops the photo, so it is drawn up to ≈ 1.7× the slot's width), as on the team cards.
  */
 export function MenCare({ copy, people }: { copy: MenPage["care"]; people: MenCarePerson[] }) {
   const titleId = `${copy.id}-title`;
@@ -48,7 +56,7 @@ export function MenCare({ copy, people }: { copy: MenPage["care"]; people: MenCa
             <Photo
               image={member.image}
               position={position}
-              sizes="(min-width: 1600px) 260px, (min-width: 1024px) 17vw, (min-width: 768px) 30vw, 104px"
+              sizes={cardSizes(drawnWidthScale(member.image, 4 / 5))}
               className="aspect-[4/5] w-[104px] shrink-0 self-start md:w-full"
             />
             <div className="min-w-0 md:mt-5 xl:mt-fluid-20">

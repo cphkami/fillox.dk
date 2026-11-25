@@ -33,14 +33,31 @@ in `README.md` → "Rebranding til fillox.no".
   `robots`, e.g. noindex, replaces it). Icons: `app/favicon.ico`, `app/icon.png`,
   `app/apple-icon.png`; `app/manifest.ts` serves `/manifest.webmanifest` (name from
   `config/site.ts`, colours = `pageColor` in `lib/metadata.ts`).
-- Deploy target: Netlify (`netlify.toml`: Node 22, security headers incl. a report-only CSP that
-  allows only Gecko's hosts and the hosts of the GTM container's tags, which load only after
-  consent; README → "Deploy til Netlify").
+- Deploy target: Netlify (`netlify.toml`: Node 22; README → "Deploy til Netlify").
+- Security headers (HSTS, nosniff, Referrer-Policy, X-Frame-Options, Permissions-Policy and a
+  report-only CSP that allows only Gecko's hosts and the hosts of the GTM container's tags, which
+  load only after consent) live in ONE module, `config/securityHeaders.ts` (no imports;
+  `cspDirectives` holds one source list per directive, `cspHeaderName` is
+  `Content-Security-Policy-Report-Only` until the launch-week test booking is clean).
+  `next.config.ts` → `headers()` sends them on `/:path*`, which covers every response of the
+  Next.js server (pages, robots.txt, sitemap.xml, manifest, 404s); on Netlify that is the server
+  handler, which netlify.toml `[[headers]]` do not reach. `netlify.toml` keeps a copy for the files
+  the CDN serves itself (public/, /_next/static, /_next/image); check:market rule 15 fails when
+  the copy differs in any name or value, when another `[[headers]]` block sets one of them, when
+  `next.config.ts` → `headers()` (evaluated through scripts/ts-hooks.mjs) does not return exactly
+  one `/:path*` rule with exactly that list (or sets one of them on another path), or when the CSP
+  does not allow the booking provider (and www.googletagmanager.com with a GTM container). The
+  CSP's Google hosts include ad.doubleclick.net and www.googleadservices.com, which the GA4 tag's
+  Ads link calls. Next.js drops config headers on its own config
+  redirects (resolve-routes returns `resHeaders: null`), so the legacy 308s carry none; Netlify
+  adds HSTS and nosniff there.
 
 ## Directory layout
 
 ```
 config/site.ts                 market config (see above)
+config/securityHeaders.ts      security headers + CSP directives (one source; next.config.ts sends
+                               them, netlify.toml copies them; see "Stack")
 content/
   types.ts                     shared content types
   navigation.ts                main nav, mega menu, footer + legal links
@@ -70,7 +87,10 @@ scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes
                                imported only by app/layout.tsx behind the NODE_ENV guard; note when
                                the Trustpilot numbers (config/site.ts) are > 60 days old; the blog
                                (posts on hold linked from nowhere, published posts signed by the team,
-                               their links, filters, related posts and reading times)
+                               their links, filters, related posts and reading times, no
+                               prescription-medicine name, no price card on wrinkle posts); security
+                               headers (netlify.toml = config/securityHeaders.ts, the CSP allows the
+                               booking provider + GTM)
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
   layout/                      Header (DesktopNav, MegaMenu, DropdownMenu, MobileMenu), Footer
@@ -83,6 +103,8 @@ components/
   seo/                         OrganizationJsonLd (root layout); JsonLd, absoluteUrl, breadcrumbList
   dev/                         dev-only tools, never in a production build: ColorTuner ("Farver",
                                see "Design tokens" → "Colour tuner")
+  practitioner/teamGrid.ts     centres a team grid's short last row (home, /om-os, /behandlere;
+                               see "Team" → "Grids")
   <page>/                      page-local components (owned by that page)
 app/                           routes (see below)
 design-reference/              the source design: screens/*.png, sections/*.html, uploads/
@@ -97,7 +119,7 @@ public/images/                 fillox/ (the clinic's mood photos), resultater/ (
 | `/` | `6a` / `mf` |
 | (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
-| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo is the clinic's group photo (four practitioners, unnamed), with a desktop crop in content (`hero.imagePositionDesktop`, 50% 30% from 1024px); the doctor section shows `doctor.image` (Dr. Tom in the clinic, `DoctorSection` → `OwnPhoto`) instead of his team-card portrait. The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
+| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo is the clinic's group photo (four practitioners, unnamed), with a desktop crop in content (`hero.imagePositionDesktop`, 50% 30% from 1024px); the doctor section shows `doctor.image` (`DoctorSection` → `OwnPhoto`): Dr. Tom's team photo uncropped at full height (head to hands, the plant, the panelled wall), where his team card further down is a head-and-shoulders close-up (it is the only photo of him, 2026-11-25). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). Anette's palette: the name (H1) takes `text-emphasis` (plum); the closing "Book tid hos …" band (the design's powder) is the Lys Rosa `band`, because a beige panel reads as one block with the Sandbeige footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
@@ -139,35 +161,51 @@ Botox (botulinumtoksin) is a prescription medicine and must not be advertised to
 
 - **The treatment, not the product.** Titles, menus, cards, CTAs, meta descriptions, alt texts and
   structured data say "Rynkebehandling" / "rynkebehandling" (the hub's name), never "Botox". The
-  product is named only where an agency text names it: one FAQ answer on the hub ("Hvad er
-  forskellen på Botox og filler?") and one sentence in the Om os Academy paragraph.
+  product or its active substance is named only where an agency text names it: four places on the
+  hub — the FAQ question "Hvad er forskellen på Botox og filler?" (a visible h3 and the FAQPage
+  JSON-LD question name) and its answer, the FAQ answer "Ved kosmetisk behandling med
+  botulinumtoksin …" and the "konsultation" section's paragraph "Hvis der er tale om en
+  behandling med botulinumtoksin …" — and one sentence in the Om os Academy paragraph. The FAQ
+  heading and its JSON-LD are an open owner / legal question (README → "Juridisk gennemlæsning").
 - **Changed for this (2026-10, each `// TODO: copy review`)**: the price card's eyebrow ("MIMISKE
   RYNKER M.M.", the hub's term; "RYNKEBEHANDLING" would repeat the card title next to it) and
   /priser's mobile chip ("Rynkebehandling") in `content/prices.ts` (the header "Priser" dropdown shows
   the eyebrow on every page); the /priser meta description; `content/layout.ts` → `meta.description` (the
-  default description and the Organization JSON-LD); Maria's title, bio, profile and facts
-  (`content/team.ts`) and her block on the lip filler page; the mega menu's "For mænd" note; the
+  default description and the Organization JSON-LD); the mega menu's "For mænd" note; the
   men's page; the home page's results caption (the bestseller #01 already said "Rynkebehandling").
 - **Unchanged on purpose**: every price-list row label and amount (the area rows, the area
   packages, "Lægekonsultation før første botox" in the consultation card), the verbatim agency
   sentences above.
-- **Blog posts about Botox on hold** (2026-11-25): the three articles (`botox-for-foerste-gang`,
-  `hvornaar-giver-det-mening-at-starte-med-botox`, `de-foerste-24-timer-efter-botox`) carry
-  `published: false` (see "Blog"), so they have no page and the /blog chip "Botox" is not shown,
-  until the owner's jurist has answered (README).
-- **Photos without product or syringe, and no before/after** on the two wrinkle pages and the Botox
-  blog posts (see "Photos"): a before/after of a Botox result would advertise the medicine.
-- **No reviews, results, blog posts or "fra" price** on the two wrinkle pages (long-form pages
-  show only what their content gives; `treatmentsWithoutReviews` is a second guard). Menus, cards
-  and the home page still show the hub's `priceFrom` (lowest row on the price card).
+- **Rynkebehandling blog posts** (owner, 2026-11-25): the three former Botox posts were rewritten
+  about the treatment and published (`rynkebehandling-for-foerste-gang`,
+  `hvornaar-giver-rynkebehandling-mening`, `de-foerste-24-timer-efter-rynkebehandling`; category
+  and /blog chip `rynkebehandling`). No product or active-substance name anywhere (the body uses
+  the hub's own words, "muskelafslappende injektionsbehandling"), no price or booking card, no
+  results, signed by the team. check:market rule 14 rejects a published post or filter chip that
+  names Botox or another botulinum toxin brand in anything it shows (slug, title, excerpts,
+  category, kind, tags, image, headings, booking text, links). It also rejects a booking card, or
+  an excerpt-only post, for a `treatmentsWithoutReviews` page. The old `/blog/botox-…` preview URLs
+  404 on purpose (no redirect keeps the product name alive in a URL).
+- **Photos without product or syringe, and no before/after** on the two wrinkle pages and the
+  rynkebehandling blog posts (see "Photos"): a before/after of a Botox result would advertise the
+  medicine. Their "Læs også" cards show each post's photo, so they list only posts whose photo
+  is product-free too: the other rynkebehandling posts and "lip-filler-for-foerste-gang" (the
+  leaflet photo). "De første 24 timer" links the filler aftercare article ("Hævelse og blå
+  mærker", a treatment photo) as a closing text link instead.
+- **No reviews, results or "fra" price** on the two wrinkle pages (long-form pages show only
+  what their content gives; `treatmentsWithoutReviews` is a second guard). The hub lists the three
+  rynkebehandling posts through `detail.relatedPostSlugs` (a long-form page shows only the posts
+  its content names); "andre behandlingsmuligheder" names none. Menus, cards and the home page
+  still show the hub's `priceFrom` (lowest row on the price card).
 
 ### Long-form treatment pages
 
 A treatment whose `detail` has `sections` (`content/types.ts` → `TreatmentSection`) is a long-form
 page: `app/behandlinger/[slug]/page.tsx` renders the hero, `components/treatment/LongformSections`,
-the FAQ and a closing band, and **nothing else** — no fallback facts, "Om behandlingen" band,
-practitioner, results, price list, reviews or blog posts (`components/treatment/treatmentView.ts`
-→ `longform`). Today: `rynkebehandling` and `andre-behandlingsmuligheder`.
+the FAQ, the blog posts its `detail.relatedPostSlugs` names (none without it) and a closing band,
+and **nothing else** — no fallback facts, "Om behandlingen" band, practitioner, results, price
+list or reviews (`components/treatment/treatmentView.ts` → `longform`). Today: `rynkebehandling`
+(with the three rynkebehandling posts) and `andre-behandlingsmuligheder`.
 
 - **Hero** (`TreatmentHero`): `detail.heading` (the H1 when it says more than `title`),
   `headingAccent` (a second line, smaller, accent colour; the H1 reads "<heading> – <accent>"),
@@ -224,12 +262,17 @@ left in `public/images/`.
   placement spreads an entry and overrides `position` (or `alt: ""` where the photo is decorative):
   `{ ...photos.sproejte, position: "55% 12%" }`. Placements: home hero, home treatment cards,
   home testimonial (`behandlingsrum`, decorative), /behandlinger hero, `categoryImages` /
-  `defaultImage` and the lip filler, "andre behandlingsmuligheder" and laser for mænd heroes
-  (`content/pages/treatments.ts`, `content/treatments.ts`), /om-os hero and doctor,
-  /ny-hos-fillox hero and closing band, the /klinikker cards and the clinics' JSON-LD image
-  (`content/seo.ts`), /priser's financing box, /ledige-stillinger (the group photo),
-  /content-creator, every blog post, and the default share image (`og-spejl.jpg`, 1200 × 630,
-  `content/layout.ts` → `meta.ogImage`).
+  `defaultImage` and the lip filler (`spejl`), næsekorrektion (`behandlingsrum`), "andre
+  behandlingsmuligheder" and laser for mænd heroes
+  (`content/pages/treatments.ts`, `content/treatments.ts`), the /om-os hero (the group photo; the
+  doctor section shows Dr. Tom's team photo, see "People"), /ny-hos-fillox hero (`behandlerVindue`)
+  and closing band, the /klinikker cards and the clinics' JSON-LD image (`content/seo.ts`),
+  /priser's financing box, /ledige-stillinger (the group photo), /content-creator (`spejl`: the
+  page names Annika, so no practitioner's face), every blog post, and the default share image
+  (`og-spejl.jpg`, 1200 × 630, `content/layout.ts` → `meta.ogImage`). `categoryImages`:
+  rynkebehandling = `behandlerFolder` (60% 40%; its "Læs mere" cards show the room, the mirror and
+  the window), `"for-maend"` = `behandlingsrum` (also the men's page share image). A photo is
+  shown once per page, except on /klinikker (the room on every card) and Dr. Tom on /om-os.
 - **Share images** — link previews centre-crop og:image to 1.91 : 1, which cut the faces off the
   portrait photos. Every photo that is a page's share image has a `share` crop
   (`og-<file>.jpg`, ≈ 1.91 : 1, cut at the subject, at the file's own width up to 1200px: no
@@ -237,13 +280,21 @@ left in `public/images/`.
   `pageMetadata` and the blog posts) falls back to the site's default for a page photo narrower
   than 1.5 : 1 without a `share` crop. A new share photo needs its crop (the alt text must still
   hold for it).
-- **People** — only Dr. Tom (`tomKlinik`) and Mike (`mikeKlinik`) are identified and may be named in
-  an alt text. Every other practitioner, the group photo and every client stays unnamed (alt texts,
-  captions, file names, comments), and no unnamed practitioner's face sits next to a named author
-  (the featured blog post by Annika shows the mirror photo).
-- **Prescription medicine** — the rynkebehandling pages, the Botox blog posts and /ny-hos-fillox
-  (it leads to them) use photos without product, syringe, needle or vial and with no treatment in
-  progress (`spejl`, `behandlingsrum`, `behandlerVindue`, `behandlerPortraet2`), never as a
+- **People** (owner, 2026-11-25; the rule is in `content/photos.ts`) — the photos of Dr. Tom,
+  Alberte, Annika and Mike are their team portraits only (`public/images/team/<slug>-2026.jpg`, see
+  "Team"); their mood copies (`tom-klinik`, `mike-klinik`, `behandler-portraet-1/2` and their
+  `og-` crops) are deleted. `behandlerVindue` is Alberte too: unnamed, and only beside her own
+  name or no practitioner's (the hudforbedring pages show Alberte or no "Din behandler"). A photo
+  of a team member never sits right above or beside a different named practitioner, and no
+  unnamed practitioner's face sits next to a named author. The syringe photos (`behandlerSproejte`
+  clearly, `sproejte` likely) are from Alberte's shoot (same pose, gloves and backdrop as her
+  portrait; owner asked): so the lip filler page ("Din behandler: Annika") and næsekorrektion
+  ("Din behandler: Dr. Tom") have heroes with no team member in them. Nobody else is identified: the other
+  mood photos, the group photo and every client stay unnamed (alt texts, captions, file names).
+- **Prescription medicine** — the rynkebehandling pages, the rynkebehandling blog posts and
+  /ny-hos-fillox (it leads to them) use photos without product, syringe, needle or vial and with no
+  treatment in progress (`spejl`, `behandlingsrum`, `behandlerVindue`, `behandlerFolder`: checked
+  2026-11-25, no product shown, the leaflet's print unreadable), never as a
   result; the syringe photos (`sproejte`, `behandlerSproejte`) are for filler pages and posts.
   Judge the image itself, not its description: Drive 382DC544, first described as a
   consultation, is an injection at the client's brow (a typical Botox site) and is used nowhere.
@@ -254,7 +305,7 @@ left in `public/images/`.
   owner's checks.
 - **Home treatment cards** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` → `results`):
   mood photos captioned with the treatment's name (from `content/treatments.ts`) and linking to it —
-  Lip filler (`sproejte`), Kæbelinje (`mikeKlinik`), Skinbooster (`behandlerVindue`). Not results:
+  Lip filler (`sproejte`), Kæbelinje (`behandlerFolder`, 75% 40%), Skinbooster (`behandlerVindue`). Not results:
   no client, no year, no amount, no rynkebehandling. `alt: ""` on all three, as on the team and blog
   cards: the caption names the link. `components/home/Results.tsx` → `photoSizes` asks for the
   card width, or card height × aspect for a photo wider than the 5 : 6 card, × the 3% hover zoom.
@@ -297,11 +348,19 @@ aspect over the slot's when it is wider), from the measured column widths (conte
 
 ## Blog
 
-- **Published posts** (`content/blog.ts` → `allPosts`; `posts` is the published ones): four articles
-  of 2026-11-25 (owner: "lave bloggen. skriv et par artikler"). Every fact comes from the site's
+- **Published posts** (`content/blog.ts` → `allPosts`; `posts` is the published ones): seven
+  articles of 2026-11-25 (owner: "lave bloggen. skriv et par artikler"): four on lip filler,
+  swelling and skin, and three in the category `rynkebehandling` (see "Prescription medicine"; the
+  design's "Botox" chip is the "Rynkebehandling" chip). /blog's heading is "Viden fra
+  Fillox-holdet". Each post has its own photo, never a team portrait. Every fact comes from the site's
   own content (prices through `listPrice()` from `content/prices.ts`, so a price change follows) or
   the live fillox.dk, with a `// source:` comment per block; blocks marked `TODO: fagligt tjek
-  (læge)` need a doctor's review. A `links` block puts arrow links under the closing paragraph.
+  (læge)` need a doctor's review. A `links` block puts arrow links under the closing paragraph, or
+  mid-article: the aftercare articles put the on-call line as a `tel:` link (`site.contact.phoneHref`,
+  tap to call) under their warning signs, and "Lip filler for første gang" links
+  `/blog/haevelse-og-blaa-maerker#kontakt-os`. check:market lets `tel:` links pass and checks
+  that a `/blog/<slug>#id` link lands on a heading of that post. Every article that mentions the
+  follow-up check states the live policy's conditions (once per treatment, within 21 days).
 - **Author**: a post without `authorSlug` is signed by the team, "Fillox-holdet"
   (`content/pages/blog.ts` → `blogArticle.teamAuthor`), with the Fillox mark
   (`components/blog/TeamMark`, via `AuthorAvatar`) in place of a portrait; the article's JSON-LD
@@ -309,7 +368,8 @@ aspect over the slot's when it is wider), from the measured column widths (conte
   253/2025 § 10: no health professional endorsing a product in an ad).
 - **On hold**: `published: false` keeps a post's data but gives it no page (404) and leaves it out
   of /blog (list, featured card, chips with no published post), "Læs også", the treatment pages,
-  the sitemap and the structured data; `check:market` fails if anything still links it.
+  the sitemap and the structured data; `check:market` fails if anything still links it. No post is
+  on hold today.
 
 ## Cookie consent
 
@@ -323,7 +383,8 @@ no footer button, no tags), `consentVersion` (a change asks everyone again), `co
 - **Order on every page load** (`lib/analytics.ts`, run by `components/consent/ConsentManager`,
   rendered in the root layout right after the skip link): Google Consent Mode v2 `default` with all
   four signals denied (+ `wait_for_update`, `ads_data_redaction`); the cookies of every category
-  not granted are deleted (also the old WordPress site's); with a stored choice that grants
+  not granted are deleted (also the old WordPress site's, PixelYourSite's `pys*`, `last_pys*` and
+  `pbid` included); with a stored choice that grants
   Statistik or Marketing, the Consent Mode `update`, then the GTM container (`gtm.js`). No choice,
   or "Afvis alle": GTM is never requested. Statistik → `analytics_storage`; Marketing → `ad_storage`,
   `ad_user_data`, `ad_personalization`.
@@ -336,14 +397,22 @@ no footer button, no tags), `consentVersion` (a change asks everyone again), `co
   false once the container gates those tags (README → "Før lancering" → "Cookiebanner og måling").
 - **Withdrawal**: "Cookieindstillinger" in the footer reopens the banner on "Tilpas" with the
   current choice; withdrawing a category while GTM runs deletes its cookies and reloads the page
-  (tags that ran cannot be unloaded).
+  (tags that ran cannot be unloaded). Other open tabs follow: `consentStore.init()` listens for the
+  `storage` event on the consent key (`lib/analytics.ts` → `isConsentStorageEvent`) and applies the
+  new choice there too (Consent Mode update, cookie deletion, a reload while GTM runs; the banner
+  opens when the choice was cleared).
 - **Banner UI**: a non-modal labelled `<section>` fixed at the bottom (no cookie wall: the page
   stays usable); "Accepter alle" and "Afvis alle" are the same component, variant, size and row;
   "Tilpas" shows one switch per optional category, none on in advance; every control ≥ 44px. It
-  reserves its height at the end of the page (spacer + scroll padding) and stacks above the mobile
-  book bar on treatment pages. Rendered on the client only (not in the server HTML).
+  reserves its height at the end of the page (spacer + scroll padding; `--consent-reserve` also
+  raises `<body>`'s min-height in app/layout.tsx, so a short page's footer does not move) and
+  stacks above the mobile book bar on treatment pages: z-45, above the book bar (z-40) and below
+  the sticky header (z-50), so the mobile menu and the dropdown panels cover it while open.
+  After a choice, focus returns to the footer button that reopened it, or goes to `<main>` when
+  it was in the banner (a first-visit choice). Rendered on the client only (not in the server HTML).
 - **A new tag in the container** needs a consent setting in GTM, its hosts in the CSP
-  (`netlify.toml`), a line in the cookie list and a new `consentVersion`.
+  (`config/securityHeaders.ts` → `cspDirectives`, plus the copy in `netlify.toml`), a line in the
+  cookie list and a new `consentVersion`.
 - **Gecko**: `/booking`'s calendar iframe is necessary for booking and loads regardless of the
   choice; Gecko's own page loads Google Tag Manager inside it (outside our control, README).
 
@@ -461,20 +530,43 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
 ## Team (practitioners)
 
 - **Data** — `content/team.ts` (order = display order: Dr. Tom, the fagligt ansvarlig læge,
-  first). Profiles (/behandlere/<slug>) follow Alberte's design (6alb / ma) with each
-  practitioner's own documented facts; the file's header lists the sources and what is left out.
+  first): Dr. Tom, Alberte, Annika, Mike, Kubra. Profiles (/behandlere/<slug>) follow Alberte's
+  design (6alb / ma) with each practitioner's own documented facts; the file's header lists the
+  sources and what is left out. Maria left Fillox (owner, 2026-11-25): her entry, photo and
+  profile are gone, `/behandlere/maria` redirects (308) to `/om-os#behandlere`
+  (`content/redirects.ts`), the reviews that name her are left out (`content/reviews.ts`), the
+  lip filler page's "Din behandler" is Annika and the men's page shows Mike in her place.
 - **Grids** — home ("Mød dem, der behandler dig"), /om-os and /behandlere show every member as
-  an equal card: 3 columns from 1024px (home from 768px), so six members are 2 rows of 3 (the
-  owner, October 2026). No member is featured any more: `TeamMember.featured` (content/types.ts)
-  is unused, and 6om's wide Dr. Tom photo (`tom-wide.jpg`, `tom.jpg` with blurred side bands)
-  was deleted before launch (2026-11).
-- **Portraits** — framed from a face table in `content/team.ts` (nose line, eye and mouth lines
-  measured per photo; `framedPortrait(member, slot)`), so every face in a grid sits on one line
-  and at one size: `teamSlots.portrait` (4:5) for the /om-os and /behandlere cards from 768px
-  and the home scroll row, `teamSlots.square` (33:34, mo's cards) for the home grid and the
-  cards below 768px. The profile hero crops come from the same table
-  (`components/practitioner/profile.ts` → `HERO_SLOTS`), except Alberte's designed crop.
-  `sizes` multiplies the slot width by `drawnWidthScale` (cover × zoom). A new photo needs its
+  an equal card in rows of 3 (the owner, October 2026). With five members the short last row is
+  centred (`components/practitioner/teamGrid.ts`): the grid has twice the tracks, every card spans
+  two, and `teamGridStart` moves the first card of a short row half a card in. Home: 3 + 2 from
+  768px (below, the scroll row); /om-os and /behandlere: 2 + 2 + 1 at 560–1023px, 3 + 2 from
+  1024px. No member is featured any more: `TeamMember.featured` (content/types.ts) is unused, and
+  6om's wide Dr. Tom photo was deleted before launch (2026-11).
+- **Portraits** — the owner's new photos of 2026-11-25: `public/images/team/<slug>-2026.jpg`
+  (Tom, Alberte, Annika, Mike: re-encoded from the Drive originals, sRGB, no metadata, never
+  upscaled; new file names so no CDN serves the old ones), Kubra keeps `kubra.jpg`. Each member
+  has a `share` crop (`og-<file>.jpg`, ≈ 1.91 : 1 at the face) for the profile's og:image.
+  Framed from a face table in `content/team.ts` (`faces`: nose line, eye and mouth lines measured
+  per file on a 1% grid; `framedPortrait(member, slot)`), so every face in a grid sits on one
+  line and at one size: `teamSlots.portrait` (4:5) for the /om-os and /behandlere cards from
+  768px and the home scroll row, `teamSlots.square` (33:34, mo's cards) for the home grid and the
+  cards below 768px, `teamSlots.row` (190:268) for the profile's "Mød resten af teamet" row
+  (`TeamRow`). The exported `team[].image` and `crops.about` are the 4:5 card crop (avatars, the
+  men's page cards). The treatment pages' "Din behandler" uses `CropPhoto`: the card crop, plus
+  `smCrop` (660:400, eyes at 33%) at 640–767px, where the slot is landscape. The profile hero
+  crops come from the same table (`components/practitioner/profile.ts` → `HERO_SLOTS`; the sm
+  eye line is 31%, so Kubra's hair is not cut; the desktop crop takes its horizontal position from
+  the narrowest frame, 360 × 636 at 768px, and its vertical one from the 1280 frame; the mobile
+  crop's vertical position also keeps the head whole in the widest mobile frame, 615 × 440 at
+  639px, where Kubra's 4:5 photo is drawn much taller); no designed
+  crop is left. On an axis a photo fills exactly in its slot, `faceCrop` puts the photo's top (not
+  its middle) at the top, so a frame of another shape that draws the same crop (the profile hero
+  below 640px gets wider than tall) never cuts the head. Annika's photo is cut
+  just above her hair, so the zoom rule draws her ≈ 15% larger to reach the common eye line.
+  `sizes` describes the width the photo is drawn at (cover × zoom): `drawnWidthScale` on the team
+  cards and the men's page cards (`MenCare`), and per breakpoint from the measured slots in `PractitionerHero` and the treatment
+  pages' `PractitionerSection`. A new photo needs its
   `faces` entry, and should be a portrait (crop a landscape photo to 4:5 first: Kubra's
   original is `design-reference/uploads/kubra-original.jpg`).
 
@@ -874,8 +966,9 @@ at rest keeps the brown hover (hover / focus classes outrank a breakpoint class)
   ratio and grow modestly (`lg:min-h-fluid-720/800`).
   Exception: the home team grid ("Mød dem, der behandler dig", `components/home/Team.tsx`)
   stops at 64rem from 1280px, centred under its centred heading, with squarer 33:34
-  portraits: six members are two rows, and filling the panel with 4:5 portraits made the
-  section ≈ 1.7 screens tall at 1710px. The full team grids (/om-os, /behandlere) fill.
+  portraits: five members are two rows (3 + 2, the short row centred), and filling the panel
+  with 4:5 portraits made the section ≈ 1.7 screens tall at 1710px. The full team grids (/om-os,
+  /behandlere) fill.
 - Centred headings + intros stay centred at their `ch` width; single-line rows (USP band,
   stats) spread across the width (`justify-between` / `justify-evenly`).
 - Section paddings use `*-fluid-N` in place of the design number (`lg:py-[84px]` →

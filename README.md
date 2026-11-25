@@ -60,6 +60,14 @@ npm run build            # kører check:market først (prebuild)
 - en åben kliniks adresse eller åbningstider ikke kan læses ind i de strukturerede data
   (sidste adresselinje skal være `<postnr> <by>`, tider som `10–20`, dag-labels i
   `content/seo.ts` → `openingDays`);
+- et udgivet blogindlæg eller en filterknap på `/blog` nævner Botox, det aktive stof eller et
+  andet mærke af det (adresse, titel, uddrag, kategori, tags, billede, overskrifter, bookingkort,
+  links), eller et indlæg viser et bookingkort (med "fra"-pris) til rynkesiderne;
+- sikkerheds-headerne i `netlify.toml` ikke er præcis dem i `config/securityHeaders.ts` (navne og
+  værdier), en anden `[[headers]]`-blok også sætter en af dem, `next.config.ts` → `headers()`
+  (som scriptet kører) ikke sender præcis den liste på `/:path*` (eller sætter en af dem på en
+  anden sti), eller CSP'en ikke tillader booking-udbyderen (Geckos script og kalender, eller
+  TIMMA-siden) og, med en GTM-container, `www.googletagmanager.com`;
 - der står æ, ø eller å i en streng i `app/`, `components/` eller `lib/` (tekst hører til i
   `content/`; udviklerværktøjet i `components/dev/` er undtaget).
 
@@ -72,13 +80,22 @@ Trustpilot-tallene i `config/site.ts`, når `trustpilot.checked` er mere end 60 
 Netlifys Next.js-runtime. Ingen miljøvariabler at sætte i Netlify: Node-versionen står i
 `netlify.toml` (`NODE_VERSION = "22"`; Next 16 kræver Node ≥ 20.9, se `engines` i `package.json`).
 
-`netlify.toml` sætter også sikkerheds-headers på alle svar: HSTS (som det gamle site),
-`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy` og en
-Content-Security-Policy, der i første omgang kun rapporterer (`Content-Security-Policy-Report-Only`,
-se "Efter lancering"). Den tillader kun Gecko (script + kalender-iframe), de betalingssider, Gecko
-kan åbne i iframen (Nets Easy, OnPay), og værterne for taggene i GTM-containeren (Google Tag
-Manager, Google Analytics, Google Ads, Meta Pixel; de indlæses kun efter samtykke). Lægger I et nyt
-tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal værten med i CSP'en.
+Sikkerheds-headers (HSTS som det gamle site, `X-Content-Type-Options`, `Referrer-Policy`,
+`X-Frame-Options`, `Permissions-Policy` og en Content-Security-Policy, der i første omgang kun
+rapporterer: `Content-Security-Policy-Report-Only`, se "Efter lancering") står ét sted:
+`config/securityHeaders.ts`. `next.config.ts` → `headers()` sender dem på alt, Next.js-serveren
+svarer: sider, robots.txt, sitemap.xml, manifestet og 404-siden (de svar når Netlifys `[[headers]]`
+ikke). `netlify.toml` gentager samme liste for de filer, Netlifys CDN selv leverer (billeder i
+`public/`, `/_next/static`, `/_next/image`). **Ret altid i begge filer**: `npm run check:market`
+(også før hvert build) fejler, hvis et navn eller en værdi afviger. De gamle URL'ers
+308-videresendelser får ingen headers fra Next.js (det gør Next.js bevidst); det er uskadeligt, og
+Netlify sætter selv HSTS og nosniff på dem.
+
+CSP'en (`config/securityHeaders.ts` → `cspDirectives`) tillader kun Gecko (script +
+kalender-iframe), de betalingssider, Gecko kan åbne i iframen (Nets Easy, OnPay), og værterne for
+taggene i GTM-containeren (Google Tag Manager, Google Analytics, Google Ads, Meta Pixel; de indlæses
+kun efter samtykke). Lægger I et nyt tredjepartsscript, en ny iframe eller et nyt tag i containeren
+på sitet, skal værten med i CSP'en (begge filer).
 
 1. Forbind repoet i Netlify → build-indstillingerne læses fra `netlify.toml`.
 2. Domæne: `fillox.dk` (+ `www`) → Netlify, HTTPS via Let's Encrypt.
@@ -116,13 +133,18 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
   eller Meta: Google Tag Manager (`config/site.ts` → `analytics.gtmId`, GTM-KDBJMVF2) hentes først,
   når Statistik eller Marketing er valgt, efter Google Consent Mode v2 (alt afvist som standard,
   så valget som `update`). "Afvis alle" sletter de gamle `_ga`/`_gcl_*`/`_fbp`-cookies fra
-  WordPress-sitet.
+  WordPress-sitet og PixelYourSite-pluginnets cookies (`pys*`, `last_pys*`, `pbid`; navnene er
+  fra pluginnets cookieliste: bekræft dem i en browser, der har besøgt det gamle site).
 - Valget gemmes i browseren (`fillox-consent` i localStorage) i 12 måneder; banneret spørger igen,
   når `consentVersion` i `config/site.ts` ændres. "Cookieindstillinger" i footeren åbner banneret
-  igen; trækkes et samtykke tilbage, slettes cookies, og siden genindlæses.
+  igen; trækkes et samtykke tilbage, slettes cookies, og siden genindlæses — også i andre åbne
+  faner med sitet (de følger valget med det samme).
+- Banneret ligger under headeren: mobilmenuen og menuerne "Priser", "Find klinik" og "Om os"
+  dækker det, mens de er åbne.
 - Tekster og cookielisten (privatlivspolitikken → "13. Cookies") står i `content/consent.ts`.
   **Nyt tag i containeren** (Hotjar, TikTok, Google Ads-remarketing …): samtykkeindstilling på
-  tagget i GTM, værterne i CSP'en (`netlify.toml`), en linje i cookielisten og en ny
+  tagget i GTM, værterne i CSP'en (`config/securityHeaders.ts` → `cspDirectives` og kopien i
+  `netlify.toml`), en linje i cookielisten og en ny
   `consentVersion`, så alle bliver spurgt igen.
 - Indtil containerens Meta Pixel-tags har et samtykketjek (se "Før lancering"), blokerer sitet alle
   Custom HTML-tags uden Marketing (`analytics.blockCustomHtmlWithoutMarketing`).
@@ -164,16 +186,17 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
         filler-siden, og på rynkesiderne kort-teksten, mega-menuens navn "Andre behandlinger" og
         linket "Andre behandlingsmuligheder →" (se "Rynkesiderne" nedenfor)
   - [ ] "rynkebehandling" i stedet for "Botox": `content/prices.ts` (priskortets etiket og chip,
-        /priser-metabeskrivelsen), `content/layout.ts` (sitets beskrivelse), `content/team.ts`
-        (Maria), `content/navigation.ts` ("For mænd"-noten), `content/pages/home.ts` og
+        /priser-metabeskrivelsen), `content/layout.ts` (sitets beskrivelse),
+        `content/navigation.ts` ("For mænd"-noten), `content/pages/home.ts` og
         `content/pages/men.ts`
   - [ ] `content/pages/treatments.ts`: fallback-tekster, FAQ'er, oversigtssiden `/behandlinger`
   - [ ] `content/pages/practitioner.ts`: behandlersider (tekst i booking-båndet pr. behandler)
   - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande — og **beslut, om desktop
         også skal have samtykke-feltet** (kun i mobildesignet)
   - [ ] `content/pages/clinics.ts`: meta, skjulte navne, "Få besked"-formularen
-  - [ ] `content/pages/blog.ts` og `content/blog.ts`: de fire nye artikler, bloggens intro og
-        nyhedsbrev (se "Blog" nedenfor)
+  - [ ] `content/pages/blog.ts` og `content/blog.ts`: de syv artikler, bloggens overskrift, intro
+        og nyhedsbrev, og intro-linjen over artiklerne på behandlingssiderne (`content/treatments.ts`,
+        `content/pages/treatments.ts`; se "Blog" nedenfor)
   - [ ] `content/consent.ts`: cookiebanneret og afsnittet "13. Cookies" i privatlivspolitikken
         (nye tekster, se "Cookiebanner og måling" nedenfor)
   - [ ] `content/pages/jobs.ts` og `content/pages/creator.ts`: hele siderne (ikke i designet)
@@ -206,21 +229,55 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       videre dertil (`content/redirects.ts`). Resten af sitet følger samme linje: menuer, kort,
       priskortets etiket og mobil-chip ("MIMISKE RYNKER M.M." og "Rynkebehandling" i stedet for
       "BOTOX" / "Botox"), metabeskrivelsen på `/priser`, sitets standardbeskrivelse og
-      strukturerede data (`content/layout.ts`), Marias titel, bio og faktakort og hendes afsnit på
-      lip filler-siden siger nu "rynkebehandling" (alle markeret `// TODO: copy review`).
-      Produktnavnet står kun, hvor bureauet selv har skrevet det: ét FAQ-svar på rynkesiden og én
-      sætning i Fillox Academy-afsnittet på Om os. De to rynkesider viser ingen anmeldelser,
-      resultater, blogindlæg eller "fra"-pris (`treatmentsWithoutReviews` i `content/reviews.ts`).
-      Stadig åbent:
-  - [ ] **Blogartikler om Botox** (`/blog/botox-for-foerste-gang`,
-        `/blog/hvornaar-giver-det-mening-at-starte-med-botox`,
-        `/blog/de-foerste-24-timer-efter-botox`): **sat på pause 25/11-2026** (`published: false` i
-        `content/blog.ts`): ingen side (404), ikke på `/blog`, i "Læs også", på behandlingssiderne
-        eller i sitemap, og filterknappen "Botox" vises ikke. Teksterne ligger der stadig. Skal de
-        skrives om (af bureauet), så de handler om behandlingen og ikke om produktet, eller slettes?
-        Kommer de tilbage, signeres de "Fillox-holdet" (ikke Annika: en sundhedsperson, der
-        anbefaler et lægemiddel i en reklame, er forbudt, BEK 253/2025 § 10, stk. 1, nr. 7) og får
-        en rigtig dato; `check:market` afviser en udgivet artikel med en behandler som forfatter.
+      strukturerede data (`content/layout.ts`) siger nu "rynkebehandling" (alle markeret
+      `// TODO: copy review`).
+      Produktnavnet eller det aktive stof står kun, hvor bureauet selv har skrevet det: fire steder
+      på rynkesiden — FAQ-spørgsmålet "Hvad er forskellen på Botox og filler?" (en synlig
+      overskrift og spørgsmålets navn i de strukturerede data, FAQPage) og svaret på det, FAQ-svaret
+      "Ved kosmetisk behandling med botulinumtoksin …" og afsnittet "Hvis der er tale om en
+      behandling med botulinumtoksin …" under konsultationen — og én sætning i Fillox
+      Academy-afsnittet på Om os (se "Juridisk gennemlæsning" nedenfor). Rynkesiderne viser ingen anmeldelser,
+      resultater eller "fra"-pris (`treatmentsWithoutReviews` i `content/reviews.ts`). Rynkesiden
+      har igen "Læs mere om rynkebehandling" med de tre rynkeartikler (nedenfor); siden om andre
+      behandlingsmuligheder har ingen blogsektion. Stadig åbent:
+  - [ ] **Blogartikler om rynkebehandling** (du, 25/11-2026): de tre Botox-indlæg er skrevet om
+        til artikler om selve behandlingen og udgivet: `/blog/rynkebehandling-for-foerste-gang`,
+        `/blog/hvornaar-giver-rynkebehandling-mening` og
+        `/blog/de-foerste-24-timer-efter-rynkebehandling` (filterknappen hedder "Rynkebehandling").
+        Produktnavnet og det aktive stof står ingen steder: ikke i titel, overskrifter, adresse,
+        uddrag, metatekst, alt-tekst eller billede, og heller ikke i brødteksten, som bruger
+        rynkesidens egne ord ("muskelafslappende injektionsbehandling", "rynkebehandling med et
+        receptpligtigt lægemiddel"). Ingen priser, intet bookingkort med "fra"-pris, ingen
+        resultater og ingen navngiven behandler; de er signeret "Fillox-holdet" (en sundhedsperson,
+        der anbefaler et lægemiddel i en reklame, er forbudt, BEK 253/2025 § 10, stk. 1, nr. 7). Kun
+        fakta fra sitet selv og fra fillox.dk; kilden står ved hver blok i `content/blog.ts`.
+        `npm run check:market` afviser et udgivet indlæg eller en filterknap, der nævner Botox
+        eller et andet mærke af stoffet, og et bookingkort til rynkesiderne. De gamle
+        preview-adresser `/blog/botox-…` giver 404 og har ingen viderestilling, så produktnavnet
+        ikke lever videre i en adresse. Åbent:
+    - [ ] **Fagligt tjek af en læge** (alle blokke markeret `TODO: fagligt tjek (læge)`), især
+          efterplejen, og hvornår man skal ringe til vagtlægen eller 112. fillox.dk siger kun 2
+          timer før let træning og 24 timer før hård træning; det gamle udkasts råd (ikke ligge ned
+          i 4 timer, ikke massere området) står ikke på fillox.dk og er udeladt. Skal lægen tilføje
+          efterpleje og advarselstegn, der gælder netop den muskelafslappende behandling (fx besvær
+          med at synke eller tale, et hængende øjenlåg)? I dag bruger "De første 24 timer" sitets
+          generelle tegn og samme "Ring 112"-liste som artiklen om hævelse og blå mærker
+          (synsforstyrrelser, vejrtræknings- eller synkebesvær, hævelse i tungen eller svælget), og
+          den henviser til hævelsesartiklen for dem, der har fået filler. Akuttelefonen er et link,
+          man kan trykke på (ringer op) under advarselstegnene i begge artikler.
+    - [ ] **Juridisk gennemlæsning** af de tre artikler før lanceringen (brødteksten nævner
+          "rynkebehandling med et receptpligtigt lægemiddel" og "muskelafslappende
+          injektionsbehandling"). Og af rynkesiden selv: FAQ-overskriften "Hvad er forskellen på
+          Botox og filler?" nævner et receptpligtigt lægemiddel i en overskrift og i de
+          strukturerede data (FAQPage), som søgemaskiner viser. Forslag (bureauets tekst, så det
+          kræver jeres og juristens ja): "Hvad er forskellen på muskelafslappende behandling og
+          filler?", eller i det mindste at tage det spørgsmål ud af de strukturerede data.
+    - [ ] Copy review. "Hvornår giver rynkebehandling mening?" er mærket "Guide" i stedet for
+          designets "Forebyggelse", fordi "forebyggelse" kan læses som en påstand. OK?
+    - [ ] De gamle `/blog/botox-…`-adresser lå kun på det skjulte preview og giver nu 404 uden
+          viderestilling. OK?
+    - [ ] Skal siden om andre behandlingsmuligheder også have en blogsektion? (De tre artikler
+          handler om rynker.)
   - [ ] **Priser**: alle rækker på priskortet "Rynkebehandling" er uændrede (områder, pakker,
         tyggemuskler, hyperhidrose, Traptox). Konsultationskortet har stadig rækken
         "Lægekonsultation før første botox" — forslag med bureauets ord: "Lægefaglig
@@ -228,12 +285,13 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
         prisrække uden link: skal den have et afsnit?
   - [ ] **"fra 799 kr" for rynkebehandling** står stadig i menuerne, på forsiden (bestseller #01),
         på siden for mænd og i behandlernes priskort ("Rynkebehandling" lige over
-        kundeanmeldelserne hos Annika, Maria og Mike, `wrinkleOffer` i `content/team.ts`). Er en
+        kundeanmeldelserne hos Annika og Mike, `wrinkleOffer` i `content/team.ts`). Er en
         pris ved siden af behandlingen i orden?
   - [ ] **Siden for mænd** (`content/pages/men.ts`): FAQ-svaret "Hvor lang tid tager det?" bruger
         nu rynkesidens ord (lægefaglig forundersøgelse, mindst to dages betænkningstid);
         "cirka 15 minutter" og "Den er gratis" er taget ud. Skal det igen stå, at
-        lægekonsultationen er gratis?
+        lægekonsultationen er gratis? (De tre rynkeartikler siger heller ikke "gratis" om den
+        lægefaglige forundersøgelse eller kontrollen.)
   - [ ] **Om os**: "Det er let at finde en klinik, der tilbyder botox, filler, laser …" er
         bureauets sætning og står ordret. Behold den, eller bed bureauet om en ny formulering
         (fx "rynkebehandling, filler, laser …") — ret den ikke selv.
@@ -267,18 +325,47 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       oversat — bed bureauet se på den. (2) Dr. Toms titel: den nye tekst siger "grundlægger af
       Fillox" og "den medicinsk ansvarlige læge", hans behandlerkort "Æstetisk læge · Daglig
       leder" og "fagligt ansvarlig læge" (`content/team.ts`). Hvilken skal begge steder bruge?
-      (3) ~~Dr. Toms portræt to gange~~ og (4) ~~det lille topbillede~~: løst 24/11-2026 med jeres
-      egne fotos (lægeafsnittet viser Dr. Tom i klinikken, toppen gruppebilledet af fire
-      behandlere, uden navne). Fillox Academy-afsnittet har stadig intet billede: det har ingen
-      plads til et i sit layout, og vi har ikke opfundet et nyt. De to kursusbilleder i Drive kan
-      ikke bruges, som de er: sikkerhedsbrillerne bærer fillermærket "croma" lige ved ansigtet.
-      Har I et kursusbillede uden mærker, og skal afsnittet have et?
+      (3) **Dr. Toms foto**: hans nye portræt (grå uniform, 25/11-2026) er det eneste foto af ham.
+      Lægeafsnittet viser det nu i et bredt udsnit (hele højden: fra hoved til hænder, planten og
+      panelvæggen), og hans behandlerkort længere nede på siden viser samme foto tæt. Har I et
+      andet billede af ham? (4) ~~det lille topbillede~~: løst 24/11-2026 (toppen viser
+      gruppebilledet af fire behandlere, uden navne). Fillox Academy-afsnittet har stadig intet
+      billede: det har ingen plads til et i sit layout, og vi har ikke opfundet et nyt. De to
+      kursusbilleder i Drive kan ikke bruges, som de er: sikkerhedsbrillerne bærer fillermærket
+      "croma" lige ved ansigtet. Har I et kursusbillede uden mærker, og skal afsnittet have et?
 - [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Kubras tekster er et neutralt
       udkast (titel, City2, fillers, rynkebehandling og hudforbedring) — få hendes egne ord og et
-      citat. Dr. Toms og Marias "Sådan arbejder …"-kort er skrevet i tredje person ud fra Om os.
+      citat. Dr. Toms "Sådan arbejder …"-kort er skrevet i tredje person ud fra Om os.
       `/klinikker` siger ikke længere "Samme behandlere" (`content/pages/clinics.ts`), da
-      behandlerne arbejder på bestemte klinikker — bekræft. Større originaler af `tom.jpg`
-      (509 × 800) og `maria.jpg` (533 × 800): de bliver forstørret i profilernes hero fra 1280px.
+      behandlerne arbejder på bestemte klinikker — bekræft.
+- [ ] **Maria er stoppet** (du, 25/11-2026: "Maria er ikke længere i Fillox … hun er ude"): hun er
+      fjernet overalt (behandlerlisten, forsiden, Om os, `/behandlere`, profilen og hendes foto), og
+      `/behandlere/maria` sender videre (308) til Om os → behandlerne. De fem anmeldelser, der
+      nævner hende, er taget ud (31 tilbage); kunden "Maria" i en anmeldelse om Mike er en anden og
+      står der stadig.
+  - [ ] Lip filler-siden viser nu **Annika** som "Din behandler" (hun tilbyder lip filler, og flere
+        anmeldelser om læber nævner hende). Er det rigtigt, eller skal det være Mike eller Kubra?
+  - [ ] Siden for mænd ("Du er i gode hænder") viser nu Alberte, Annika og **Mike** (i stedet for
+        Maria). Er det i orden?
+  - [ ] Er Maria med på gruppebilledet med fire behandlere i sofaen (toppen af Om os og
+        `/ledige-stillinger`)? Hvis ja, skal det skiftes.
+- [ ] **Nye portrætter** (du, 25/11-2026): Tom (grå uniform), Alberte (sort), Annika og Mike har nye
+      fotos, `public/images/team/<slug>-2026.jpg` (fra Drive, uden metadata, ikke forstørret), på
+      alle sider; de gamle portrætter og stemningskopierne af de fire fotos er slettet. Kubra er
+      uændret. Vinduesbilledet er også Alberte: det står fortsat uden navn som stemningsbillede og
+      aldrig ved siden af en anden navngiven behandler. På forsiden står Alberte nu højere (hele
+      hovedet med luft over, på linje med de andre). Med fem behandlere står de i rækker af 3 + 2
+      med den nederste række centreret (forsiden fra 768 px, Om os og `/behandlere` fra 1024 px;
+      2 + 2 + 1 på Om os og `/behandlere` fra 560 til 1023 px).
+  - [ ] Er 3 + 2 godt, eller skal de stå på én række af 5, som i det oprindelige design?
+  - [ ] Annikas foto er beskåret helt tæt over håret, så hendes ansigt står lidt større og tættere
+        på kanten end de andres på behandlerkortene, under "Din behandler" på lip filler-siden og
+        øverst på hendes profil. Har I en version med mere luft over hovedet?
+  - [ ] Større originaler: de fire nye portrætter er 976–1290 px brede, og Toms foto forstørres op
+        til ca. 1,85× på behandlerkortene. Kubras foto (716 px bredt) forstørres lidt (ca. 1,07×)
+        øverst på hendes profil på store skærme. Send gerne de fulde originaler.
+  - Profilernes topbillede viser nu hele hovedet også i smalle vinduer (480–639 px), og ansigtet
+    står midt i billedet på iPad på højkant (768–1023 px).
 - [ ] **Booking hos en bestemt behandler**: `/booking?behandler=<slug>` åbner Gecko-kalenderen
       uden filter. Kan Gecko forvælge en behandler (et kalender- eller ressource-id pr. behandler,
       som `geckoCalendarId` pr. klinik)? Indtil da åbner knapperne "Book tid hos …" på
@@ -295,15 +382,16 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       lægemiddellovens § 66). Det er gjort:
   - **Stemningsbilleder** (`public/images/fillox/`, `content/photos.ts`) i stedet for alle
     stockfotos: forsiden (top, de tre behandlingskort, anmeldelserne), `/behandlinger` og alle
-    behandlingssider, Om os (gruppebilledet og Dr. Tom i klinikken), Ny hos Fillox?, `/klinikker`
+    behandlingssider, Om os (gruppebilledet), Ny hos Fillox?, `/klinikker`
     (behandlingsrummet på alle fire kort og i Googles strukturerede data), `/priser`,
     `/ledige-stillinger` (gruppebilledet), `/content-creator`, bloggen og delingsbillederne
     (`og-*.jpg`: et bredt udsnit af hvert foto, så ansigterne ikke skæres af, når Facebook,
-    LinkedIn og X viser et link). Kun Dr. Tom og Mike er navngivet; de andre behandlere,
-    gruppebilledet og alle kunder står **uden navn** i alt-tekster og filnavne. Botox-siderne
-    (rynkebehandling og andre behandlingsmuligheder), de tre Botox-indlæg og Ny hos Fillox? viser
-    kun billeder uden produkt, sprøjte og behandling (vinduesbilledet, spejlet, behandlingsrummet,
-    et portræt af en smilende behandler). Ikke brugt: billedet med Profhilo-æsken (reklame for
+    LinkedIn og X viser et link). Tom, Alberte, Annika og Mike har deres fotos som portrætter (se
+    "Nye portrætter" ovenfor); som stemningsbilleder står alle **uden navn** i alt-tekster og
+    filnavne, ligesom gruppebilledet og alle kunder. Botox-siderne (rynkebehandling og andre
+    behandlingsmuligheder), de tre rynkeartikler og Ny hos Fillox? viser kun billeder uden
+    produkt, sprøjte og behandling (vinduesbilledet, spejlet, behandlingsrummet og
+    folderbilledet, rynkesidens top). Ikke brugt: billedet med Profhilo-æsken (reklame for
     medicinsk udstyr med en behandlers anbefaling, BEK 715/2022 § 6), de tre enkeltbilleder af
     kunder lige efter en læbebehandling (de læses som resultater, og et af dem viser et fillermærke
     på spejlet), begge kursusbilleder (fillermærket "croma" på sikkerhedsbrillerne) og billedet
@@ -312,13 +400,24 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
     fjernet 25/11-2026). Alt-tekster er markeret `TODO: copy review`.
   - [ ] **Juridisk tjek af selve billederne**: gennemgangen 24/11-2026 godkendte billederne til
     Botox-siderne ud fra en beskrivelse af dem, og én beskrivelse var forkert (382DC544 ovenfor).
-    Lad den, der tjekker, se på billederne på rynkesiden, de tre Botox-indlæg og Ny hos Fillox?
-    (vinduesbilledet, portrættet, spejlet og behandlingsrummet).
-  - [ ] **Hvem er på billederne?** Behandlerne på stemningsbillederne står uden navn, men to
-    behandlingssider viser en unavngiven behandler i toppen lige over en navngiven behandler
-    ("Maria" på lip filler, "Alberte" på hudsiderne). Læsere kan tro, det er samme person. Sig
-    gerne, hvem der er på hvilke billeder (så kan de stå på deres egne sider), ellers bruger vi
-    billeder uden personer dér.
+    Lad den, der tjekker, se på billederne på rynkesiden, de tre rynkeartikler og Ny hos Fillox?
+    (vinduesbilledet, folderbilledet, spejlet og behandlingsrummet).
+  - [x] "Læs også" under rynkeartiklerne viser kun billeder uden sprøjte og uden behandling
+    (25/11-2026): de to andre rynkeartikler og "Lip filler for første gang" (folderbilledet).
+    Sprøjtebilledet (Skinbooster eller Profhilo) og billedet af en behandling (Hævelse og blå
+    mærker) står ikke længere dér; "De første 24 timer" linker i stedet til hævelsesartiklen i
+    bunden.
+  - [ ] **Hvem er på billederne?** Delvist besvaret 25/11-2026 (portrætterne, og vinduesbilledet
+    er Alberte; på hudsiderne står det over "Din behandler: Alberte" eller uden navn). Stadig åbent:
+    sprøjtebillederne, folderbilledet, behandlingen i hvid kittel og gruppebilledet. Sprøjtebilledet
+    med armene over kors ligner tydeligt Albertes portræt (samme fotografering, positur, handsker
+    og baggrund), så det står ikke længere øverst på lip filler-siden over "Din behandler: Annika":
+    toppen dér viser nu spejlbilledet (25/11-2026). Næsekorrektion viser behandlingsrummet i
+    stedet for billedet af en behandler, der gør en sprøjte klar, over "Din behandler: Dr. Tom".
+    Sprøjtebillederne står stadig uden navn øverst på kindben, kæbelinje, hage og tear trough
+    (ingen navngiven behandler dér), på forsidens lip filler-kort og i to artikler. Er det
+    Alberte på begge sprøjtebilleder, og er hun uddannet til at give injektioner (se "Alberte"
+    nedenfor)?
   - **Før/efter på Kæbelinje** (`/behandlinger/kaebelinje`, "Før og efter"): ét profilpar af hage og
     læber (`public/images/resultater/hage-1-*`, fra "Billede28-kopi"), skåret ud af jeres egen
     komposit med samme udsnit på begge halvdele og ingen anden redigering; teksten siger, at det er
@@ -366,6 +465,7 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       `results`): stockfotos med "lip filler, 2026" osv. er erstattet (24/11-2026) af jeres egne
       stemningsbilleder med behandlingens navn som eneste tekst (Lip filler, Kæbelinje, Skinbooster;
       intet rynkekort). Ingen kunder og ingen resultater; før/efter står på behandlingssiderne.
+      Kæbelinje-kortet viser nu folderbilledet (25/11-2026; Mikes foto er blevet hans portræt).
 - [ ] **Billeder**: der er **ingen stockfotos** tilbage på siden (de ni filer i
       `public/images/hero/` og `public/images/results/` er slettet; logovæggen "Fillox-Behandling-3"
       findes stadig i `design-reference/uploads/`). Mangler stadig: et foto + alt-tekst pr. klinik
@@ -374,17 +474,41 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       "Opløsning" ovenfor).
 - [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
 - [ ] **Blog** (du, 25/11-2026: "lave bloggen. skriv et par artikler", signeret "Fillox-holdet"):
-      fire nye artikler, dateret 25/11-2026 — "Lip filler for første gang", "0,5 eller 1 ml?",
-      "Hævelse og blå mærker" og "Skinbooster eller Profhilo". Alle fakta (priser, mængder, forløb,
-      vagttelefon) kommer fra sitets eget indhold eller fra fillox.dk; kilden står ved hver blok i
-      `content/blog.ts`. Artiklerne har ingen navngiven forfatter og intet portræt (Fillox-mærket i
-      stedet; de strukturerede data nævner Fillox som forfatter).
+      syv artikler, dateret 25/11-2026 — "Lip filler for første gang", "0,5 eller 1 ml?",
+      "Hævelse og blå mærker", "Skinbooster eller Profhilo" og de tre rynkeartikler
+      ("Rynkebehandling for første gang", "Hvornår giver rynkebehandling mening?", "De første 24
+      timer efter en rynkebehandling"; se "Botox og markedsføring" ovenfor). Alle fakta (priser,
+      mængder, forløb, vagttelefon) kommer fra sitets eget indhold eller fra fillox.dk; kilden står
+      ved hver blok i `content/blog.ts`. Artiklerne har ingen navngiven forfatter og intet portræt
+      (Fillox-mærket i stedet; de strukturerede data nævner Fillox som forfatter), og bloggen viser
+      ingen af behandlernes portrætter: Skinbooster-artiklen har sprøjtebilledet, rynkeartiklerne
+      behandlingsrummet, spejlet og vinduesbilledet. Filterknappen "Botox" hedder nu
+      "Rynkebehandling".
   - [ ] **Fagligt tjek af en læge** før lancering: alle blokke markeret `TODO: fagligt tjek
-        (læge)` (bl.a. hævelse, blå mærker og hvornår man skal ringe).
-  - [ ] Copy review af artiklerne, link-teksterne under dem og bloggens intro ("Ærlige svar om
-        behandlinger, forløb og efterpleje fra Fillox-holdet").
-  - [ ] Bloggens overskrift er stadig designets **"Viden fra vores behandlere"**, mens artiklerne
-        er signeret "Fillox-holdet". Behold den?
+        (læge)` (bl.a. hævelse, blå mærker og hvornår man skal ringe; rynkeartiklerne: se "Botox og
+        markedsføring"). Konkrete spørgsmål til lægen:
+    - [ ] "Hævelse og blå mærker" kalder "Blå mærker eller misfarvning" normalt (fra fillox.dk's
+          FAQ) og siger samtidig "ring med det samme", hvis huden bliver "hvid, bleg, plettet eller
+          blålig". Det kan en læser ikke skelne. Forslag: "Blå mærker der, hvor nålen har været" som
+          normalt, og som tegn på at ringe: "Huden i eller omkring området bliver hvid eller bleg,
+          får et plettet, netagtigt blåligt eller lilla mønster (ikke et almindeligt blåt mærke),
+          eller føles kold." Teksten er ikke ændret, før lægen har formuleret den (samme sætning
+          står nu også i "Lip filler for første gang").
+    - [ ] fillox.dk's FAQ siger "Undgå at tage Paracet, Aspirin, Ibux eller Voltaren"; artiklerne
+          (og behandlingssidernes FAQ) nævner ikke Paracet. Må artiklerne sige, hvad man kan tage
+          mod smerter (fx paracetamol)?
+    - "Lip filler for første gang" har nu også advarselstegnene (stærkere smerter; hvid, bleg,
+      plettet eller blålig hud → akuttelefonen; syn, vejrtrækning eller synkebesvær → 112), et link
+      til "Hvornår skal du kontakte os?" i hævelsesartiklen og sætningen "stop ikke selv med
+      ordineret medicin" under rådet om Aspirin, Ibux og Voltaren (som hævelsesartiklen).
+  - Kontrollen: alle fem artikler, der nævner den, siger nu fillox.dk's betingelser: "Kontrollen
+    tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen." (Se
+    "Kontrol efter behandling" nedenfor om prislisten.)
+  - [ ] Copy review af artiklerne og link-teksterne under dem. Bloggens overskrift er nu **"Viden
+        fra Fillox-holdet"** (før designets "Viden fra vores behandlere"), introen "Ærlige svar om
+        behandlinger, forløb og efterpleje, så du ved, hvad du kan forvente.", og linjen over
+        artiklerne på behandlingssiderne "Det, du gerne vil vide før og efter din behandling,
+        skrevet af Fillox-holdet." Er de i orden?
 - [ ] **Cookiebanner og måling** (du, 25/11-2026: "cookiebanner ja"; se afsnittet "Cookiebanner og
       måling" ovenfor). Gennemgangen af det live site 25/11-2026 fandt GTM-KDBJMVF2 (GA4
       G-TE9JGYM0GM med Google signals og Ads-link, Google Ads Conversion Linker og Meta Pixel
@@ -400,20 +524,27 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
        uanset samtykke.
     2. Tag 19 (Custom HTML, `bekraeft_booking`) og tag 32 (Custom HTML, lytter efter
        `custom.postMessage.*` fra Gecko-kalenderen): "Intet yderligere samtykke kræves" (de sætter
-       ingen cookies; de GA4-events, de udløser, styres af GA4's indbyggede samtykketjek).
-    3. Udløseren for tag 19, "Page Path indeholder `/booking/`": det nye site har ingen skråstreg
+       ingen cookies; de GA4-events, de udløser, styres af GA4-taggenes samtykke, punkt 3).
+    3. GA4-taggene: tag 3 og 33 (Google-tagget G-TE9JGYM0GM) og GA4-events 6, 10, 22, 26, 34 og
+       35 → Samtykkeindstillinger → "Kræv yderligere samtykke": `analytics_storage`. Tag 11
+       (Conversion Linker) → `ad_storage`. I dag har de kun Googles indbyggede tjek, som ved
+       afvist Statistik stadig sender cookieløse GA4-hits (Consent Mode "advanced"), også når kun
+       Marketing er valgt — banneret lover, at det kun sker, hvis man siger ja. (Vil juristen
+       hellere acceptere de cookieløse hits, skal "13. Cookies" i `content/consent.ts` sige det.)
+    4. Udløseren for tag 19, "Page Path indeholder `/booking/`": det nye site har ingen skråstreg
        til sidst. Ret til "Page Path er lig med `/booking`".
-    4. Tag 26 (`form_submit` på "Page Path indeholder `/kontakt/`"): eventet kom fra WordPress'
+    5. Tag 26 (`form_submit` på "Page Path indeholder `/kontakt/`"): eventet kom fra WordPress'
        formular-plugin, og det nye site sender det ikke. Sæt tagget på pause (eller se spørgsmålet
        om kontaktformularen nedenfor) og ret stien til "er lig med `/kontakt`".
-    5. Tag 6 (`indsend_knap`, Click Text "Indsend") og tag 10 (`booking_forside`, Click Text
+    6. Tag 6 (`indsend_knap`, Click Text "Indsend") og tag 10 (`booking_forside`, Click Text
        "BOOKING"): knapperne hedder nu "Send besked" og "Book tid". Ret udløserne.
-    6. Læg **ikke** en Consent Mode-standard eller en CMP-skabelon ind i GTM: sitet sætter selv
+    7. Læg **ikke** en Consent Mode-standard eller en CMP-skabelon ind i GTM: sitet sætter selv
        standarden (alt afvist) og opdateringen, før containeren indlæses. Slå "Aktivér
        samtykkeoversigt" til under Containerindstillinger for at se hvert tags samtykke.
-    7. Test i Tag Assistant på Netlify-preview'et: "Afvis alle" → GTM indlæses ikke; kun
-       Statistik → GA4 udløses, tag 37/38 ikke; "Accepter alle" → alle tags. Udgiv containeren.
-    8. Derefter: sæt `analytics.blockCustomHtmlWithoutMarketing` til `false` i `config/site.ts`
+    8. Test i Tag Assistant på Netlify-preview'et: "Afvis alle" → GTM indlæses ikke; kun
+       Statistik → GA4 udløses, tag 37/38 ikke; kun Marketing → ingen GA4-hits (heller ikke
+       cookieløse), tag 37/38 udløses; "Accepter alle" → alle tags. Udgiv containeren.
+    9. Derefter: sæt `analytics.blockCustomHtmlWithoutMarketing` til `false` i `config/site.ts`
        (ellers er tag 19 og 32, og dermed booking- og købsmålingen i GA4, slået fra, når kun
        Statistik er valgt).
   - [ ] **GA4 og Google Ads** (uden for containeren): Site Kit-pluginnet (G-QMXBXHY79B) stopper med
@@ -431,7 +562,7 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
   - [ ] **Juristen**: banneret og "13. Cookies" (`content/consent.ts`) er nye tekster. Åbne punkter:
         overførselsgrundlaget for Google og Meta (USA, fx EU-US Data Privacy Framework), og om de
         er databehandlere eller selvstændigt dataansvarlige.
-  - [ ] **Kontaktformularen** måles ikke i GA4 på det nye site (se punkt 4). Skal sitet sende et
+  - [ ] **Kontaktformularen** måles ikke i GA4 på det nye site (se punkt 5). Skal sitet sende et
         event til GTM, når en besked er sendt? (En lille kodeændring.)
 - [ ] **Østerbro** er åben (du, 25/11-2026) på **Nordre Frihavnsgade 13A, 2100 København Ø**
       (postnummer og kortplacering tjekket mod OpenStreetMap). Den står nu som åben klinik på
@@ -453,8 +584,10 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
 - [ ] **Kontrol efter behandling**: det nye site siger "Konsultation og kontrol er altid gratis".
       Live-politikken (fillox.dk/om-os/kontrol-eftertjek, som nu sender videre til
       `/priser#konsultation`) siger også: én kontrol pr. behandling, du booker den selv ca. 14 dage
-      efter, og retten bortfalder efter 21 dage. Skal de betingelser stå på det nye site (fx på
-      `/handelsbetingelser`)?
+      efter, og retten bortfalder efter 21 dage. Blogartiklerne siger det nu (25/11-2026), men
+      prislisten (`/priser`: introen og rækken "Kontrol efter behandling"), bookingkortet i "Lip
+      filler for første gang" og kortet "Gratis kontrol" hos behandlerne gør ikke. Skal
+      betingelserne også stå dér (og på `/handelsbetingelser`)?
 - [ ] **Sundhed+**: live /finansiering tilbyder finansiering via Sundhed+ (Sundhed+ Kredit). Det nye
       `/priser#finansiering` siger kun "Spørg i klinikken eller ved booking" (`content/prices.ts` →
       `financing`). Skal Sundhed+ nævnes eller linkes?
@@ -484,12 +617,18 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
       billeder gennem Netlify Image CDN og HTML/JS gennem Netlifys edge, så tjek på preview-URL'en:
       Lighthouse mobil + desktop på de vigtigste sider; at `/_next/image` svarer med `image/avif`
       eller `image/webp` (med `Accept: image/avif,image/webp`) og lang cache; at HTML og JS er
-      brotli-komprimeret; at headers fra `netlify.toml` er med (`curl -I`); ingen konsolfejl eller
-      404'er.
+      brotli-komprimeret; ingen konsolfejl eller 404'er; og at alle seks sikkerheds-headers kommer
+      præcis én gang på en side OG på en fil: `curl -sI https://fillox-dk.netlify.app/ | cut -d: -f1
+      | sort | uniq -di` og det samme for `/images/fillox/spejl.jpg`. Kommandoen må kun vise
+      cache-status (og `x-nextjs-prerender`, som er Next.js' egen). Netlify sætter selv HSTS og
+      nosniff på sider; står en af dem to gange, så sig det.
 - [ ] **CSP**: i lanceringsugen er den kun rapporterende. Lav en hel testbooking i Gecko, inkl.
       betalingstrinnet, i Safari, Chrome og Firefox, og tjek, at konsollen ikke viser CSP-brud. Gør
-      det også efter "Accepter alle" (GTM, GA4, Google Ads og Meta Pixel indlæst). Omdøb
-      så `Content-Security-Policy-Report-Only` til `Content-Security-Policy` i `netlify.toml`.
+      det også efter "Accepter alle" (GTM, GA4, Google Ads og Meta Pixel indlæst), gerne med et
+      annonceklik-id i adressen (fx `?gclid=test`): GA4-taggets Ads-link kan kalde
+      `ad.doubleclick.net` og `www.googleadservices.com`, som nu står i CSP'en (25/11-2026). Sæt så
+      `cspHeaderName` i `config/securityHeaders.ts` til `Content-Security-Policy`, og omdøb nøglen
+      i `netlify.toml` på samme måde (`check:market` kræver begge).
 - [ ] **Google Search Console**: indsend `/sitemap.xml` og `/legacy-sitemap.xml`. Slet
       `public/legacy-sitemap.xml` og de to `wp-sitemap-…`-redirects i `content/redirects.ts` ca. 3
       måneder efter lanceringen.
@@ -514,7 +653,7 @@ skal du rette en tekst i en komponent, hører teksten til i `content/`.
 | `public/__nyhedsbrev-tilmeldt.html` | Videresender til `routes.newsletterThanks` (fx `/nyhetsbrev/takk`); filnavnet er `content/forms.ts` → `newsletterNoJsAction` |
 | `public/images/**` | Fotos; **klinikkortet** `public/images/clinics/kort.svg` er et København-kort |
 | `public/legacy-sitemap.xml` | De gamle fillox.dk-adresser: slet filen (og de to `wp-sitemap-…`-redirects), eller erstat den med fillox.no's gamle URL'er |
-| `netlify.toml` | CSP'en nævner Geckos værter: til TIMMA `frame-src https://bestill.timma.no` og ingen Gecko-script-vært |
+| `config/securityHeaders.ts` + `netlify.toml` | Samme ændring i begge: CSP'en nævner Geckos værter. Til TIMMA `frame-src https://bestill.timma.no` i stedet for Geckos værter, ingen Gecko-script-vært, og fillox.no's GTM-værter. `check:market` fejler, hvis CSP'en ikke tillader TIMMA-siden |
 | `ARCHITECTURE.md`, `README.md` | Rutetabel og tekst for NO |
 
 `config/types.ts` og `content/types.ts` er fælles kontrakter — TypeScript tjekker det norske
@@ -595,7 +734,8 @@ TIMMA-id'erne fra den nuværende fillox.no: `filloxdrammen`, `filloxlillestrom`,
   `public/images/resultater/` og `results` / `resultsTitle` / `resultsIntro` i `content/treatments.ts`
   (Kæbelinje), og brug kun billeder, I har lov til at bruge dér (`content/photos.ts`, med
   `share`-udsnittene til delingsbilleder). Lægens foto på Om os (`content/pages/about.ts` →
-  `doctor.image`) kan udelades: så viser afsnittet hans portræt fra behandlerkortet.
+  `doctor.image`) er i dag Dr. Toms portræt i et bredt udsnit. Uden nøglen viser afsnittet hans
+  udsnit fra behandlerkortet, som så står to gange på siden.
 - **Gamle URL'er**: `content/redirects.ts` er den danske WordPress-liste — erstat den med
   fillox.no's gamle sitemap, så placeringer og links overlever skiftet.
 - **hreflang** mellem fillox.dk og fillox.no er ikke sat op (kræver en tabel over, hvilke

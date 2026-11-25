@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CropPhoto } from "@/components/practitioner/CropPhoto";
+import { teamGridStart } from "@/components/practitioner/teamGrid";
 import { ArrowLink, Container, ScrollRow, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import type { TeamMember } from "@/content/types";
@@ -22,16 +23,17 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
 }
 
 /**
- * "Mød dem, der behandler dig". Every practitioner as an equal card (the owner: all six side by
- * side, 2 rows of 3, as on /om-os), in team order (Dr. Tom first).
+ * "Mød dem, der behandler dig". Every practitioner as an equal card (the owner: all side by side,
+ * rows of 3, as on /om-os), in team order (Dr. Tom first).
  *
  * - Mobile (mf, < 768px): the design's horizontal scroll row on the page background, 150px cards,
- *   link under the row. Kept rather than a 2-column grid: six cards in three rows would add
+ *   link under the row. Kept rather than a 2-column grid: five cards in three rows would add
  *   ≈ 550px to an already long front page, while the row shows two and a half portraits (so it
  *   reads as scrollable) and "Mød hele teamet" leads to the full grid on /om-os.
- * - From 768px: a 3-column grid, so six members are 2 rows of 3 (cards are only a portrait, name
- *   and role, so three fit at 768px too). From 1024px (6a) it sits in the secondary beige panel,
- *   with "Mød hele teamet →" under the heading.
+ * - From 768px: a 3-column grid (cards are only a portrait, name and role, so three fit at 768px
+ *   too); five members are a row of 3 and a centred row of 2 (components/practitioner/teamGrid.ts:
+ *   6 tracks, each card spans 2). From 1024px (6a) it sits in the secondary beige panel, with
+ *   "Mød hele teamet →" under the heading.
  * - Height: 6a showed five 188 × 268 cards in ONE row; two rows of 4:5 portraits filling the panel
  *   made the section 1,413px tall at 1280 and 1,708px at 1710 (≈ 1.7 screens for photo, name and
  *   role, with the full team one click away). So from 768px the portraits are the squarer 33:34
@@ -70,16 +72,19 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
           aria-label={copy.listLabel}
           className={cn(
             "-my-1.5 -mr-5 -ml-1.5 flex snap-x snap-mandatory scroll-pr-5 scroll-pl-1.5 gap-3 overflow-x-auto overscroll-x-contain py-1.5 pr-5 pl-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-            "md:m-0 md:grid md:snap-none md:grid-cols-3 md:gap-x-5 md:gap-y-9 md:overflow-visible md:p-0 lg:gap-x-6 lg:gap-y-10 xl:mx-auto xl:w-full xl:max-w-[64rem] 2xl:gap-x-7 2xl:gap-y-12",
+            "md:m-0 md:grid md:snap-none md:grid-cols-6 md:gap-x-5 md:gap-y-9 md:overflow-visible md:p-0 lg:gap-x-6 lg:gap-y-10 xl:mx-auto xl:w-full xl:max-w-[64rem] 2xl:gap-x-7 2xl:gap-y-12",
           )}
         >
-          {members.map((member) => {
+          {members.map((member, i) => {
             const row = member.crops?.about ?? member.image;
             const grid = framedPortrait(member, teamSlots.square);
             const rowScale = drawnWidthScale(row, teamSlots.portrait.aspect);
             const gridScale = drawnWidthScale(grid, teamSlots.square.aspect);
             return (
-              <li key={member.slug} className="w-[150px] flex-none snap-start md:w-auto">
+              <li
+                key={member.slug}
+                className={cn("w-[150px] flex-none snap-start md:col-span-2 md:w-auto", teamGridStart(i, members.length, 3, "md"))}
+              >
                 <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] pb-1.5 md:rounded-[20px]">
                   {/* The visible name and role label the link, so the portrait is decorative here.
                       `sizes`: 3 columns, at most (64rem − 2 × 28) / 3 ≈ 323px from 1280px, ≈ 29vw

@@ -4,7 +4,6 @@ import { blogPage } from "./pages/blog";
 import { treatmentPage } from "./pages/treatments";
 import { photos } from "./photos";
 import { priceCards } from "./prices";
-import { practitionerBookingHref } from "@/lib/booking";
 import { formatPrice } from "@/lib/format";
 import { site } from "@/config/site";
 
@@ -29,9 +28,15 @@ import { site } from "@/config/site";
  * content/types.ts) with the owner's new copy, VERBATIM: Google Drive › Fillox › Fillox.dk ›
  * "Botox og rynkebehandling" (the agency's Google Doc, tabs 1 and 2, 2026-10-09). The text is
  * written not to advertise a prescription medicine (Botox / botulinumtoksin, lægemiddellovens
- * § 66): the product is named only where the source does (one FAQ answer), and there are no
- * prices, results, reviews or blog posts on these pages; the CTAs are the author's ("Book en
- * konsultation", "Kontakt os"). Keep it that way when editing them.
+ * § 66): the product or its active substance is named only where the source does, in four places
+ * on the hub: the FAQ question "Hvad er forskellen på Botox og filler?" (a visible h3 and the
+ * FAQPage JSON-LD question name) and its answer, the FAQ answer "Ved kosmetisk behandling med
+ * botulinumtoksin …" and the "konsultation" section's paragraph "Hvis der er tale om en behandling
+ * med botulinumtoksin …" (both FAQ answers are in the JSON-LD too). TODO (owner + legal, README):
+ * the heading and the structured data name a prescription medicine; there are no
+ * prices, results or reviews on these pages; the hub's blog section lists only the rynkebehandling
+ * articles, written the same way (content/blog.ts, owner 2026-11-25); the CTAs are the author's
+ * ("Book en konsultation", "Kontakt os"). Keep it that way when editing them.
  *
  * Without a live page (minimal content, generic fallbacks): hage, polyphil-hair. Copy marked
  * `// TODO: copy review` is not from the design, the live site or the owner's documents and needs
@@ -79,9 +84,6 @@ function cardRows(cardId: string): PriceRow[] {
 /** Hero photo of a page on the generic template: its category's photo (content/pages/treatments.ts). */
 const categoryImage = (categorySlug: string): ImageRef =>
   treatmentPage.categoryImages[categorySlug] ?? treatmentPage.defaultImage;
-
-/** Booking link that preselects a practitioner: /booking?behandler=<slug> (lib/booking.ts). */
-const bookWith = practitionerBookingHref;
 
 /*
  * Before/after results (detail.resultsTitle / resultsIntro / results, components/treatment/
@@ -132,8 +134,9 @@ const chinResults: Pick<Detail, "resultsTitle" | "resultsIntro" | "results"> = {
   ],
 };
 
-const relatedPostsIntro =
-  "Alt det, du gerne vil vide før din første behandling, skrevet af vores behandlere.";
+// TODO: copy review — the posts are signed "Fillox-holdet" (content/pages/blog.ts → teamAuthor), not
+// by a practitioner.
+const relatedPostsIntro = "Det, du gerne vil vide før og efter din behandling, skrevet af Fillox-holdet.";
 
 /* ------------------------------------------------- facts and FAQ shared by pages */
 
@@ -297,10 +300,13 @@ export const treatments: Treatment[] = [
     detail: {
       title: "Lip Filler",
       lead: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, du kan altid bygge på senere.",
-      // The clinic's own photo (content/photos.ts); a syringe is fine on a filler page. Not a client:
-      // the single "after" shots of lips were taken right after treatment and read as results.
+      // The clinic's own photo (content/photos.ts) with no team member in it: the syringe photo it
+      // showed (behandlerSproejte) looks like Alberte's portrait (same shoot, pose, gloves and
+      // backdrop; the owner is asked, README) and sat one band above "Din behandler: Annika"
+      // (changed 2026-11-25). Not a client: the single "after" shots of lips were taken right after
+      // treatment and read as results. Also the page's share image.
       // TODO: copy review (image choice + alt text)
-      heroImage: photos.behandlerSproejte,
+      heroImage: photos.spejl,
       // fillox.dk/fillers/lip-filler: behandlingstid ca. 20 min, varighed cirka 6–9 måneder.
       facts: [
         { label: "Pris", value: from(lowestListPrice("lip-filler")) },
@@ -319,14 +325,12 @@ export const treatments: Treatment[] = [
         "Definition af læbekant",
         "Fugt og friskhed",
       ],
-      practitionerSlug: "maria",
-      // TODO: copy review — "rynkebehandling" in place of "Botox" (a prescription medicine; 2026-10),
-      // here and in practitionerText / mobile below, as on her team card (content/team.ts).
-      practitionerHeading: "Maria, sygeplejerske, ekspert i fillers & rynkebehandling",
-      // fillox.dk/om-os (Maria). The live site does not say who performs lip filler, so no "udføres af".
-      practitionerText:
-        "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger og ekspert i både fillers og rynkebehandling. Hendes øje for kvalitet og sans for det naturlige resultat skinner igennem i alle behandlinger.",
-      practitionerQuote: "At se mine tilfredse kunder smile er en af de største glæder, jeg har.",
+      // Maria has left Fillox (the owner, 2026-11-25). Annika offers lip filler (content/team.ts)
+      // and is named in lip filler reviews; heading, text, mobile title and "Book hos Annika" come
+      // from her team entry, and the quote is her own (her team card, from fillox.dk/om-os). The
+      // live site does not say who performs lip filler, so no "udføres af".
+      practitionerSlug: "annika",
+      practitionerQuote: "Jeg er først tilfreds, når du er glad og tilfreds.",
       // No results section yet: the clinic's lip pairs are held back (see "Before/after results"
       // above and the README). The design's three pairs were one stock photo with invented captions.
       pricesTitle: "Vælg din mængde",
@@ -381,10 +385,6 @@ export const treatments: Treatment[] = [
         about: [
           "Lip filler er lavet af hyaluronsyre, et stof der findes naturligt i huden. Behandlingen giver diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
         ],
-        practitionerTitle: "Sygeplejerske · Fillers & rynkebehandling",
-        practitionerText:
-          "Maria er en detaljeorienteret sygeplejerske med flere års erfaring og ekspert i både fillers og rynkebehandling.",
-        practitionerCta: { label: "Book hos Maria", href: bookWith("maria") },
         pricesIntro: "Mange starter med 0,5 ml. Din behandler anbefaler mængden ved konsultationen.",
       },
     },
@@ -484,7 +484,10 @@ export const treatments: Treatment[] = [
     short: "Næsekorrektion uden kirurgi med filler, udført af Dr. Tom.",
     detail: {
       lead: "Næsekorrektion med filler, et ikke-kirurgisk næsejob, retter ujævnheder langs næseryggen og kan ændre formen på næsespidsen. Udføres af Dr. Tom.",
-      heroImage: categoryImage("fillers"),
+      // Not the fillers category photo (sproejte: a blonde practitioner from Alberte's shoot preparing
+      // a syringe), which would sit above "Din behandler: Dr. Tom", who performs the treatment: the
+      // empty treatment room, no person. TODO: copy review (image choice)
+      heroImage: photos.behandlingsrum,
       facts: [
         { label: "Pris", value: from(lowestListPrice("naesekorrektion")) },
         { label: "Varighed", value: "ca. 20 min" },
@@ -673,6 +676,13 @@ export const treatments: Treatment[] = [
           answer:
             "Ved kosmetisk behandling med botulinumtoksin kræves en lægefaglig forundersøgelse. Ved første behandling gælder som udgangspunkt mindst to dages betænkningstid, før der kan gives samtykke.",
         },
+      ],
+      // "Læs mere om rynkebehandling" (owner, 2026-11-25): the three rynkebehandling articles, written
+      // without the product name (content/blog.ts). Its link: "Alle artikler om rynkebehandling".
+      relatedPostSlugs: [
+        "rynkebehandling-for-foerste-gang",
+        "hvornaar-giver-rynkebehandling-mening",
+        "de-foerste-24-timer-efter-rynkebehandling",
       ],
       closing: {
         title: "Er du i tvivl om, hvor du skal begynde?",
@@ -876,6 +886,8 @@ export const treatments: Treatment[] = [
         { label: "Restitution", value: "Op til 24 timer" },
       ],
       about: [
+        // TODO: source — "40 mg" is not on fillox.dk/skinbooster/ejal-40 or /skinbooster, and no volume
+        // is given (the blog leaves it out). Owner: source and volume, or drop "med 40 mg".
         "Ejal 40 er en biorevitaliserende gel med 40 mg hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den strammer slap hud op, mindsker rynker og forbedrer hudtone og elasticitet.",
         "Sunekos kombinerer hyaluronsyre og aminosyrer og er særligt god til svære områder som mørke rande og poser under øjnene, linjer på overlæben og hudkvaliteten på panden. Sunekos er ikke en filler, så resultatet ser naturligt ud.",
       ],
@@ -1129,8 +1141,8 @@ export const treatments: Treatment[] = [
     short: "Laser hårfjerning på ryg, skuldre, bryst og resten af kroppen, med faste priser på kombinerede områder.", // TODO: copy review
     detail: {
       lead: "Hårfjerning med diodelaser på ryg, skuldre, bryst og resten af kroppen. Indstillingerne tilpasses din hudtype og hårstruktur.", // TODO: copy review
-      // The treatment room, as on laser hårfjerning: not Mike (the category photo), since the
-      // page's practitioner section presents someone else. TODO: copy review (image choice)
+      // The treatment room, as on laser hårfjerning and the for-maend category image; the
+      // practitioner section shows Alberte. TODO: copy review (image choice)
       heroImage: photos.behandlingsrum,
       facts: laserFacts(lowestListPrice("laser-harfjerning")),
       ...laserAbout,

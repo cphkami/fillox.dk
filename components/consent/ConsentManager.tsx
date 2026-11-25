@@ -34,7 +34,13 @@ const linkClasses =
  * - Fixed at the bottom (no layout shift; server HTML has no banner). Below 768px it sits above
  *   the fixed book bar of treatment pages while the bar is shown; on every page it reserves its
  *   height at the end of the page and as scroll padding, so nothing (the footer, the Gecko
- *   calendar's controls, a focused field) has to stay under it.
+ *   calendar's controls, a focused field) has to stay under it. The reserve also raises <body>'s
+ *   min-height (app/layout.tsx), so on a page shorter than the viewport the footer stays put.
+ * - Stacking: z-45, above the page and the mobile book bar (z-40) but below the sticky header
+ *   (z-50), whose mobile menu and dropdown panels must cover the banner while they are open.
+ * - Focus after a choice: back to the footer button that reopened it; otherwise, when focus was
+ *   in the banner, to <main> (tabIndex -1), so keyboard and screen-reader users continue in the
+ *   page instead of at <body>.
  * - 44px targets (buttons 50px, switch rows 44px), the site's focus ring, AA contrast, no motion
  *   with prefers-reduced-motion (globals.css), usable from 320px (one button per row below 360px;
  *   the card scrolls inside when the viewport is short).
@@ -45,13 +51,22 @@ export function ConsentManager() {
   const sectionRef = useRef<HTMLElement>(null);
   const firstSwitchRef = useRef<HTMLInputElement>(null);
   const previous = useRef<{ open: boolean; view: ConsentView }>({ open: false, view: "main" });
+  /** Focus was inside the banner when it closed (it unmounts, so focus would fall to <body>). */
+  const hadFocus = useRef(false);
   const ids = useId();
   const titleId = `${ids}-title`;
 
   useEffect(() => consentStore.init(), []);
 
+  /** Runs a store action that may close the banner, noting first whether focus is inside it. */
+  const closing = (action: () => void) => {
+    hadFocus.current = Boolean(sectionRef.current?.contains(document.activeElement));
+    action();
+  };
+
   // Focus: into the banner when the footer reopens it, to the first switch on "Tilpas", and
-  // back to the footer button when it closes.
+  // back to the footer button when it closes (or to <main>, when focus was in the banner and no
+  // button opened it: a first-visit choice).
   useEffect(() => {
     const was = previous.current;
     previous.current = { open, view };
@@ -62,6 +77,8 @@ export function ConsentManager() {
     } else if (!open && was.open) {
       const opener = consentStore.takeOpener();
       if (opener?.isConnected) opener.focus();
+      else if (hadFocus.current) document.querySelector<HTMLElement>("main")?.focus({ preventScroll: true });
+      hadFocus.current = false;
     }
   }, [open, view, reopened]);
 
@@ -103,7 +120,7 @@ export function ConsentManager() {
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "Escape" && current) {
       event.stopPropagation();
-      consentStore.close();
+      closing(() => consentStore.close());
     }
   };
 
@@ -123,7 +140,8 @@ export function ConsentManager() {
         onKeyDown={onKeyDown}
         className={cn(
           // Below 768px: the surface margin on both sides, 10px (or the safe area) above the bottom.
-          "fixed inset-x-surface bottom-[max(10px,env(safe-area-inset-bottom))] z-[60] max-h-[calc(100dvh-162px)] overflow-y-auto overscroll-contain",
+          // z-45: below the header (z-50), whose menus must cover the banner; above the book bar (z-40).
+          "fixed inset-x-surface bottom-[max(10px,env(safe-area-inset-bottom))] z-[45] max-h-[calc(100dvh-162px)] overflow-y-auto overscroll-contain",
           "rounded-[20px] border border-line bg-white p-5 text-body text-ink shadow-float motion-safe:animate-fade-in",
           // Above the treatment pages' book bar (64px + 8px gap) while it is shown (not inert).
           "max-md:[html:has([data-mobile-book-bar]:not([inert]))_&]:bottom-[calc(max(10px,env(safe-area-inset-bottom))+72px)]",
@@ -145,7 +163,7 @@ export function ConsentManager() {
           <button
             type="button"
             aria-label={copy.close}
-            onClick={() => consentStore.close()}
+            onClick={() => closing(() => consentStore.close())}
             className="absolute top-3 right-3 flex size-11 cursor-pointer items-center justify-center rounded-full bg-sand text-[18px] text-ink hover:bg-secondary focus-visible:bg-secondary md:top-4 md:right-4"
           >
             <span aria-hidden="true">✕</span>
@@ -185,10 +203,10 @@ export function ConsentManager() {
             "Gem valg" (outline) below them below 768px, third in the row from 768px. One button per
             row below 360px. The 16px side padding (fluid from 1280) lets three fit the 30em card. */}
         <div className="mt-4 grid grid-cols-1 gap-2 min-[360px]:grid-cols-2 md:mt-5 md:grid-cols-3 md:gap-3">
-          <Button size="mdTight" className={buttonPadding} onClick={() => consentStore.choose(fullConsent)}>
+          <Button size="mdTight" className={buttonPadding} onClick={() => closing(() => consentStore.choose(fullConsent))}>
             {copy.acceptAll}
           </Button>
-          <Button size="mdTight" className={buttonPadding} onClick={() => consentStore.choose(noConsent)}>
+          <Button size="mdTight" className={buttonPadding} onClick={() => closing(() => consentStore.choose(noConsent))}>
             {copy.rejectAll}
           </Button>
           {view === "main" ? (
@@ -205,7 +223,7 @@ export function ConsentManager() {
               variant="outline"
               size="mdTight"
               className={cn(buttonPadding, "col-span-full md:col-span-1")}
-              onClick={() => consentStore.choose(draft)}
+              onClick={() => closing(() => consentStore.choose(draft))}
             >
               {copy.settings.save}
             </Button>

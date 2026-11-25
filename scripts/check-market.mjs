@@ -46,8 +46,19 @@
  *     page, no article link, no redirect, no `/blog/<slug>` literal in the code or content); the
  *     featured post is published; a published post names no practitioner as its author (it is
  *     signed by the team), lists known filters, treatments and published related posts, has unique
- *     heading ids, links that land on pages, and a reading time that matches its text (≈ 200
- *     words a minute); "Alle artikler om …" links on treatment pages open a chip that /blog shows.
+ *     heading ids, links that land on pages (a "/blog/<slug>#id" link: on a heading of that post;
+ *     tel: links pass), and a reading time that matches its text (≈ 200
+ *     words a minute); "Alle artikler om …" links on treatment pages open a chip that /blog shows;
+ *     no filter chip and no published post names a prescription medicine (Botox, its active
+ *     substance or another brand of it) in its slug, title, excerpts, category, kind, tags, image,
+ *     headings, booking card or links, and no published post shows a booking card (with its "fra"
+ *     price) for a page in content/reviews.ts → treatmentsWithoutReviews (the rynkebehandling pages).
+ * 15. security headers: netlify.toml's [[headers]] for "/*" (files the CDN serves) lists exactly
+ *     the names and values of config/securityHeaders.ts, and no other [[headers]] block sets one of
+ *     them; next.config.ts → headers() (evaluated) returns exactly one rule on "/:path*" with exactly
+ *     that list (everything the Next.js server answers) and no other rule that sets one of them; the
+ *     CSP lets in the booking provider (Gecko's script and calendar, or the TIMMA page) and, with a
+ *     GTM container, www.googletagmanager.com.
  *
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
@@ -469,7 +480,8 @@ for (const slug of treatmentsWithoutReviews) {
   }
 }
 
-// 14. Blog: posts on hold are linked from nowhere; published posts are signed by the team and consistent.
+// 14. Blog: posts on hold are linked from nowhere; published posts are signed by the team, consistent and
+//     name no prescription medicine.
 const blog = await importSite("content/blog.ts");
 {
   const { allPosts, posts, allBlogFilters, blogFilters, postFilterSlugs } = blog;
@@ -481,10 +493,25 @@ const blog = await importSite("content/blog.ts");
   const shownFilters = new Set(blogFilters.map((filter) => filter.slug));
   const SLUG = /^[a-z0-9-]+$/;
   const WORDS_PER_MINUTE = 200;
+  // Botox is a prescription medicine: never advertised to the public, also not on the clinic's own
+  // site (lægemiddelloven § 66; owner 2026-11-25). The brands of botulinum toxin and its name.
+  const PRESCRIPTION_NAME =
+    /botox|botulin|vistabel|bocouture|xeomin|azzalure|dysport|alluzience|letybo|nuceiva|jeuveau|relfydess|daxxify/i;
+  /** The pages about a prescription medicine (no reviews, no price): no booking card points there. */
+  const prescriptionPages = new Set(treatmentsWithoutReviews);
+  for (const filter of allBlogFilters) {
+    if (PRESCRIPTION_NAME.test(`${filter.slug} ${filter.label}`)) {
+      errors.push(`content/blog.ts allBlogFilters: the chip "${filter.label}" names a prescription medicine`);
+    }
+  }
   const words = (text = "") => text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
-  /** A site href lands on a page: a route, a treatment or practitioner page, or a published post. */
+  /**
+   * A site href lands on a page: a route, a treatment or practitioner page, or a published post.
+   * A tel: link (the on-call line) is not a page and always passes.
+   */
   const pagesOf = { treatments: treatmentSlugs, practitioners: teamSlugs, blog: published };
   const landsOnPage = (href) => {
+    if (href.startsWith("tel:")) return true;
     const path = pathOf(href);
     if (routePaths.has(path)) return true;
     return Object.entries(pagesOf).some(([key, slugs]) => {
@@ -530,6 +557,26 @@ const blog = await importSite("content/blog.ts");
           `signed by the team (remove authorSlug)`,
       );
     }
+    // Everything a post shows of itself (its page, card, meta and share image) names no prescription
+    // medicine; the body text may use the rynkebehandling pages' own words.
+    const shown = [
+      post.slug, post.title, post.excerpt, post.excerptShort, post.category, post.categorySlug, post.kind,
+      ...(post.tags ?? []), post.image?.src, post.image?.alt, post.image?.share?.src,
+      ...(post.body ?? []).flatMap((block) => {
+        if (block.type === "h2" || block.type === "h3") return [block.id, block.text];
+        if (block.type === "booking") return [block.eyebrow, block.note];
+        if (block.type === "links") return block.items.flatMap((link) => [link.label, link.href]);
+        if (block.type === "image") return [block.image.src, block.image.alt, block.caption];
+        return [];
+      }),
+    ];
+    const named = shown.find((text) => typeof text === "string" && PRESCRIPTION_NAME.test(text));
+    if (named) errors.push(`${where(post)}: names a prescription medicine ("${named}"); write about the treatment (rynkebehandling)`);
+    // An excerpt-only post gets a booking card for its first treatment (components/blog/articleView.ts).
+    const firstTreatment = post.treatmentSlugs?.[0];
+    if (!post.body?.length && firstTreatment && prescriptionPages.has(firstTreatment)) {
+      errors.push(`${where(post)}: excerpt-only post about "${firstTreatment}" would show a booking card with its price (write the body)`);
+    }
     for (const key of ["relatedPostSlugs", "relatedPostSlugsMobile"]) {
       for (const slug of post[key] ?? []) {
         if (!slugs.has(slug)) errors.push(`${where(post)}: ${key} names an unknown post "${slug}"`);
@@ -550,9 +597,21 @@ const blog = await importSite("content/blog.ts");
       if (block.type === "booking" && !treatmentSlugs.has(block.treatmentSlug)) {
         errors.push(`${where(post)}: booking card for "${block.treatmentSlug}", which is not in content/treatments.ts`);
       }
+      if (block.type === "booking" && prescriptionPages.has(block.treatmentSlug)) {
+        errors.push(
+          `${where(post)}: booking card for "${block.treatmentSlug}" shows its "fra" price, which the rynkebehandling ` +
+            `pages leave out (link to the page and to booking instead)`,
+        );
+      }
       if (block.type === "links") {
         for (const link of block.items) {
           if (!landsOnPage(link.href)) errors.push(`${where(post)}: link "${link.label}" → ${link.href} lands on no page (or on a post on hold)`);
+          // "/blog/<slug>#<id>": the post has that heading.
+          const [path, hash] = link.href.split("#");
+          const target = hash && path.startsWith(`${routes.blog}/`) ? posts.find((p) => `${routes.blog}/${p.slug}` === path) : null;
+          if (target && !target.body?.some((b) => (b.type === "h2" || b.type === "h3") && b.id === hash)) {
+            errors.push(`${where(post)}: link "${link.label}" → ${link.href}: "${target.slug}" has no heading #${hash}`);
+          }
         }
       }
     }
@@ -598,6 +657,96 @@ const blog = await importSite("content/blog.ts");
           errors.push(`${relative(root, file)}: links ${path}, which is on hold (published: false)`);
         }
       }
+    }
+  }
+}
+
+// 15. Security headers: one set in config/securityHeaders.ts, copied into netlify.toml.
+const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config/securityHeaders.ts");
+{
+  const name = (key) => key.toLowerCase();
+  const isSecurityHeader = (key) => securityHeaders.some((h) => name(h.key) === name(key));
+  // next.config.ts → headers(), evaluated (not searched for a word): exactly one rule on "/:path*"
+  // with exactly the list of config/securityHeaders.ts, and no other rule that sets one of them.
+  {
+    const { default: nextConfig } = await importSite("next.config.ts");
+    const rules = (await nextConfig.headers?.()) ?? [];
+    const everywhere = rules.filter((r) => r.source === "/:path*");
+    if (everywhere.length !== 1 || JSON.stringify(everywhere[0].headers) !== JSON.stringify(securityHeaders)) {
+      errors.push('next.config.ts: headers() must return { source: "/:path*", headers: securityHeaders } exactly once');
+    }
+    for (const rule of rules) {
+      if (rule !== everywhere[0] && rule.headers?.some((h) => isSecurityHeader(h.key))) {
+        errors.push(`next.config.ts: headers() rule "${rule.source}" also sets a security header (config/securityHeaders.ts is the one list)`);
+      }
+    }
+  }
+  // netlify.toml's [[headers]] tables: `for` and the `Name = "value"` lines of [headers.values].
+  const blocks = [];
+  let block = null;
+  readFileSync(join(root, "netlify.toml"), "utf8")
+    .split("\n")
+    .forEach((raw, i) => {
+      const line = raw.trim();
+      if (!line || line.startsWith("#")) return;
+      if (/^\[\[headers\]\]$/.test(line)) return blocks.push((block = { line: i + 1, for: null, values: [], inValues: false }));
+      if (line === "[headers.values]" && block) return void (block.inValues = true);
+      if (line.startsWith("[")) return void (block = null);
+      if (!block) return;
+      const pair = /^([A-Za-z0-9-]+)\s*=\s*"([^"\\]*)"$/.exec(line);
+      if (!pair) return errors.push(`netlify.toml:${i + 1}: write each header as Name = "value" on one line (no escapes)`);
+      if (block.inValues) block.values.push({ key: pair[1], value: pair[2], line: i + 1 });
+      else if (pair[1] === "for") block.for = pair[2];
+    });
+  const all = blocks.filter((b) => b.for === "/*");
+  if (all.length !== 1) errors.push(`netlify.toml: needs exactly one [[headers]] for = "/*" (found ${all.length})`);
+  const toml = all[0]?.values ?? [];
+  for (const other of blocks.filter((b) => b.for !== "/*")) {
+    for (const { key, line } of other.values) {
+      if (isSecurityHeader(key)) {
+        errors.push(`netlify.toml:${line}: [[headers]] "${other.for}" sets ${key}; security headers are set once, on "/*"`);
+      }
+    }
+  }
+  for (const [list, where] of [[securityHeaders, "config/securityHeaders.ts"], [toml, "netlify.toml"]]) {
+    const seen = new Set();
+    for (const { key } of list) {
+      if (seen.has(name(key))) errors.push(`${where}: header ${key} is listed twice`);
+      seen.add(name(key));
+    }
+  }
+  for (const { key, value } of all.length === 1 ? securityHeaders : []) {
+    const copy = toml.find((h) => name(h.key) === name(key));
+    if (!copy) errors.push(`netlify.toml [[headers]] "/*": ${key} is missing (config/securityHeaders.ts sends it on pages)`);
+    else if (copy.key !== key || copy.value !== value) {
+      errors.push(`netlify.toml:${copy.line}: ${copy.key} differs from config/securityHeaders.ts (copy the value from there)`);
+    }
+  }
+  for (const { key, line } of toml) {
+    if (!isSecurityHeader(key)) {
+      errors.push(`netlify.toml:${line}: ${key} is not in config/securityHeaders.ts (pages would not send it)`);
+    }
+  }
+  // The CSP lets in what the site loads from other hosts (scheme + host; "*.x.dk" matches subdomains).
+  const allows = (directive, url) => {
+    const { protocol, hostname } = new URL(url);
+    return (cspDirectives[directive] ?? cspDirectives["default-src"] ?? []).some((source) => {
+      const m = /^(https?:)\/\/(\*\.)?([^/:]+)/.exec(source);
+      if (!m || m[1] !== protocol) return false;
+      return m[2] ? hostname.endsWith(`.${m[3]}`) : hostname === m[3];
+    });
+  };
+  const needs = [];
+  if (site.booking.provider === "gecko") {
+    needs.push(["script-src", `https://${site.booking.geckoHost}/site/iframe.js`, "Gecko's iframe.js"]);
+    needs.push(["frame-src", `https://${site.booking.geckoHost}/`, "the Gecko calendar"]);
+  } else if (site.booking.provider === "timma") {
+    needs.push(["frame-src", site.booking.timmaBaseUrl, "the TIMMA reservation page"]);
+  }
+  if (site.analytics.gtmId) needs.push(["script-src", "https://www.googletagmanager.com/gtm.js", "the GTM container"]);
+  for (const [directive, url, what] of needs) {
+    if (!allows(directive, url)) {
+      errors.push(`config/securityHeaders.ts: ${cspHeaderName} ${directive} does not allow ${new URL(url).origin} (${what})`);
     }
   }
 }

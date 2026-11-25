@@ -29,19 +29,27 @@ type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
 export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
   const { breadcrumb } = practitionerPage;
   const hasFacts = profile.facts.length > 0;
-  // The photo is half the surface band: 768px on the 1600px canvas (1600 − 2 × 32 surface
-  // margin, halved), about 50vw − 24px below. The zoomed desktop crop draws the photo `zoom`
-  // times wider than its slot, so request that width to keep it sharp. At 768–1023px the slot is
-  // taller than the photo (≈ 360–488 × 640–680px), so the photo fills it by its height and is
-  // drawn ≈ 680px × its width / height wide.
-  const zoom = profile.desktopImage.zoom ?? 1;
+  // `sizes`: the width the photo is DRAWN at (object-fit: cover × the crop's zoom), not the slot's,
+  // so it is downloaded sharp. Measured slots (width × height): from 1600px 768 × 800 (half the
+  // 1536px surface band); 1180–1599px (50vw − 24px) × 1.095 of that (≤ 800); 1024–1179px
+  // 488–566 × 620; 768–1023px 360–488 × 540–700 (the text column's height); 640–767px
+  // (100vw − 24px) × 560 (landscape: the photo fills its width); below 640px (100vw − 24px) × 440.
+  // A photo wider than its slot's shape is drawn slot height × its aspect wide.
   const { width, height } = profile.desktopImage;
-  const tabletWidth = Math.max(488, width && height ? (680 * width) / height : 488);
+  const aspect = width && height ? width / height : 0.8;
+  const zoom = profile.desktopImage.zoom ?? 1;
+  const mobileZoom = profile.mobileImage.zoom ?? 1;
+  const px = (n: number) => `${Math.ceil(n)}px`;
+  // Below 640px the photo fills the slot's width once the slot is wider than 440px × its aspect.
+  const mobileFillsWidthFrom = Math.ceil(440 * aspect) + 24;
   const sizes = [
-    `(min-width: 1600px) ${Math.ceil(768 * zoom)}px`,
-    zoom === 1 ? "(min-width: 1024px) calc(50vw - 24px)" : `(min-width: 1024px) calc((50vw - 24px) * ${zoom})`,
-    `(min-width: 768px) ${Math.ceil(tabletWidth * zoom)}px`,
-    "calc(100vw - 24px)",
+    `(min-width: 1600px) ${px(Math.max(768, 800 * aspect) * zoom)}`,
+    `(min-width: 1180px) calc((50vw - 24px) * ${(Math.max(1, 1.095 * aspect) * zoom).toFixed(3)})`,
+    `(min-width: 1024px) ${px(Math.max(566, 620 * aspect) * zoom)}`,
+    `(min-width: 768px) ${px(Math.max(488, 700 * aspect) * zoom)}`,
+    "(min-width: 640px) calc(100vw - 24px)",
+    ...(mobileFillsWidthFrom < 640 ? [`(min-width: ${mobileFillsWidthFrom}px) calc((100vw - 24px) * ${mobileZoom})`] : []),
+    px(440 * aspect * mobileZoom),
   ].join(", ");
 
   return (

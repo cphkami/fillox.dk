@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { securityHeaders } from "./config/securityHeaders";
 import { legacyRedirects } from "./content/redirects";
 
 const nextConfig: NextConfig = {
@@ -26,6 +27,18 @@ const nextConfig: NextConfig = {
      * heroes at 1x, portraits on retina) is served from the 1920px bucket.
      */
     deviceSizes: [640, 750, 828, 1080, 1200, 1440, 1600, 1920, 2048, 3840],
+  },
+
+  /**
+   * Security headers (HSTS, CSP …) on every response the Next.js server sends: pages, robots.txt,
+   * sitemap.xml, the manifest, 404s (not the 308s of redirects() below: Next.js drops these headers
+   * on its own redirects). On Netlify these come from the server handler, which
+   * netlify.toml's [[headers]] do not reach; netlify.toml covers what the CDN serves on its own
+   * (public/, /_next/static, /_next/image). Values: config/securityHeaders.ts (check:market fails
+   * when netlify.toml's copy differs).
+   */
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders }];
   },
 
   /** Legacy fillox.dk URLs → new routes (308). Data lives in content/redirects.ts. */

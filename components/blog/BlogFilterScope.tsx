@@ -4,7 +4,7 @@ import type { BlogFilter } from "@/content/types";
 import { InlineScript } from "./InlineScript";
 
 /**
- * Deep links into a filter, e.g. /blog?kategori=botox from the treatment pages.
+ * Deep links into a filter, e.g. /blog?kategori=filler from the treatment pages.
  *
  * /blog is static, so its HTML is BlogBrowser's Suspense fallback: the unfiltered
  * overview. The URL filter only applies once React hydrates. To avoid that flash (and the

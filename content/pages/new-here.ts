@@ -86,11 +86,13 @@ export type NewHereNeed = {
 
 /**
  * Hero photo (from 1024px only), also the share image (its link-preview crop): a smiling
- * practitioner, a friendly first face for new clients (the clinic's own photo, content/photos.ts).
- * No product, syringe or treatment: the page also leads to the rynkebehandling pages.
+ * practitioner by a bright window, a friendly first face for new clients (the clinic's own photo,
+ * content/photos.ts), unnamed, and no practitioner is named on this page. No product, syringe or
+ * treatment: the page also leads to the rynkebehandling pages. Until 2026-11-25 this was the
+ * smiling practitioner in black, now Annika's team portrait (content/team.ts).
  */
 // TODO: copy review (image choice + alt text)
-const heroImage: ImageRef = photos.behandlerPortraet2;
+const heroImage: ImageRef = photos.behandlerVindue;
 
 export const newHerePage = {
   path: routes.newHere,

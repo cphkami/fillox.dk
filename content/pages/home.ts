@@ -99,9 +99,11 @@ export const homePage = {
         href: treatmentHref("lip-filler"),
       },
       {
-        // Mike (he offers facial fillers, content/team.ts), unnamed here: a different face from
-        // the hero and the other two cards. No client, no injection.
-        image: { ...photos.mikeKlinik, alt: "" },
+        // A practitioner in profile, smiling at a leaflet (the jawline in view). No client, no
+        // injection, no product. Not Mike's photo any more: it became his team portrait, which the
+        // team row further down shows (the owner, 2026-11-25). 75%: her face nearer the middle of
+        // the 5 : 6 card, the leaflet still in it.
+        image: { ...photos.behandlerFolder, alt: "", position: "75% 40%" },
         caption: treatmentName("kaebelinje"),
         href: treatmentHref("kaebelinje"),
       },

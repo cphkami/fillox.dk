@@ -2,6 +2,7 @@ import {
   analyticsEnabled,
   applyConsent,
   deleteCookiesNotGranted,
+  isConsentStorageEvent,
   noConsent,
   pushConsentDefault,
   readStoredConsent,
@@ -50,6 +51,25 @@ function update(patch: Partial<ConsentUiState>) {
   for (const listener of listeners) listener();
 }
 
+/**
+ * Another tab stored (or cleared) the choice: apply it on this page view, as if made here. The
+ * banner closes when there is a choice and opens when there is none; withdrawing a category while
+ * GTM runs reloads this tab too (tags that ran cannot be unloaded).
+ */
+function followOtherTab() {
+  const next = readStoredConsent();
+  const previous = state.current;
+  const same =
+    next && previous ? next.statistics === previous.statistics && next.marketing === previous.marketing : next === previous;
+  if (same) {
+    update({ current: next });
+    return;
+  }
+  const mustReload = applyConsent(next ?? noConsent, previous);
+  update({ current: next, draft: next ?? noConsent, open: !next, view: "main", reopened: false });
+  if (mustReload) window.location.reload();
+}
+
 export const consentStore = {
   subscribe(listener: () => void) {
     listeners.add(listener);
@@ -72,6 +92,10 @@ export const consentStore = {
     if (stored) applyConsent(stored, null);
     else deleteCookiesNotGranted(null);
     update({ ready: true, current: stored, open: !stored, draft: stored ?? noConsent });
+    // A choice made in another tab applies here too (a withdrawal included).
+    window.addEventListener("storage", (event) => {
+      if (isConsentStorageEvent(event)) followOtherTab();
+    });
   },
 
   /** Footer button: reopen on the settings view, the switches showing the choice in force. */

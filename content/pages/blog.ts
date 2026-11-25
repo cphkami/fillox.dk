@@ -19,7 +19,7 @@ import { routes } from "../routes";
 /** Route of the blog overview (the article route is `blogPostHref()` in content/blog.ts). */
 const BLOG_PATH = routes.blog;
 
-/** Query parameter that preselects a filter chip, e.g. /blog?kategori=botox. */
+/** Query parameter that preselects a filter chip, e.g. /blog?kategori=filler. */
 const FILTER_PARAM = "kategori";
 
 /** Filter slug that shows every post (see `blogFilters`). */
@@ -49,7 +49,7 @@ export const blogPage = {
   path: BLOG_PATH,
   filterParam: FILTER_PARAM,
   allFilter: ALL_FILTER,
-  /** Overview link filtered to one category: "/blog?kategori=botox" ("alle" = the plain overview). */
+  /** Overview link filtered to one category: "/blog?kategori=filler" ("alle" = the plain overview). */
   filterHref: (filterSlug: string) =>
     filterSlug === ALL_FILTER ? BLOG_PATH : `${BLOG_PATH}?${FILTER_PARAM}=${encodeURIComponent(filterSlug)}`,
 
@@ -61,12 +61,13 @@ export const blogPage = {
 
   hero: {
     eyebrow: "Blog",
-    title: "Viden fra vores behandlere",
-    // TODO: copy review. The design's intro ("… skrevet af de læger og sygeplejersker, der behandler
-    // dig") named the writers; the posts are signed "Fillox-holdet" (owner, 2026-11-25), so the
-    // intro no longer says who wrote them, and "resultater" is left out (the posts make no result
-    // claims). Owner question (README): keep the design's title "Viden fra vores behandlere"?
-    intro: "Ærlige svar om behandlinger, forløb og efterpleje fra Fillox-holdet.",
+    // TODO: copy review. The design's title ("Viden fra vores behandlere") and intro ("… skrevet af
+    // de læger og sygeplejersker, der behandler dig") said practitioners wrote the posts; they are
+    // signed "Fillox-holdet" (owner, 2026-11-25; `blogArticle.teamAuthor` below), so the title names
+    // the team and the intro no longer says who wrote them. "resultater" is left out (the posts make
+    // no result claims).
+    title: "Viden fra Fillox-holdet",
+    intro: "Ærlige svar om behandlinger, forløb og efterpleje, så du ved, hvad du kan forvente.",
     introShort: "Ærlige svar om behandlinger, forløb og efterpleje.",
   },
 
@@ -94,7 +95,7 @@ export const blogPage = {
   /** Short reading time on mobile and in compact lists: "4 min". */
   minutes: (n: number) => `${n} min`,
 
-  /** Separator between meta parts: "Botox · Guide · 4 min læsning". */
+  /** Separator between meta parts: "Filler · Guide · 3 min læsning". */
   separator: " · ",
 
   newsletter: {
@@ -129,7 +130,7 @@ export const blogPage = {
 };
 
 export const blogArticle = {
-  /** Desktop breadcrumb "Blog → Botox" (the category crumb links to the filtered overview). */
+  /** Desktop breadcrumb "Blog → Filler" (the category crumb links to the filtered overview). */
   blogCrumb: { label: "Blog", href: BLOG_PATH } satisfies Link,
   // TODO: copy review (accessible name of the breadcrumb; not in the design)
   breadcrumbLabel: "Brødkrumme",

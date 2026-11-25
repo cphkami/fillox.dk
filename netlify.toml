@@ -9,31 +9,14 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Security headers on every response (pages, assets, /_next/image).
-# - HSTS as the old WordPress site sent it (fillox.dk is on the preload list).
-# - X-Frame-Options / frame-ancestors: only fillox.dk may frame its own pages.
-# - Permissions-Policy turns off what no page uses. Leave `payment` and
-#   `publickey-credentials-get` alone: the Gecko booking iframe (and its card payment) may need them.
-# - The CSP ships as Report-Only first (violations appear in the browser console, nothing is
-#   blocked). The site loads nothing from other hosts except Gecko on /booking: Gecko's iframe.js
-#   (script), its calendar iframe (with an inline onload handler, hence 'unsafe-inline' next to
-#   Next's own inline scripts) and, in the booking flow, the payment pages Gecko may open inside
-#   that iframe (Nets Easy / OnPay). After a full test booking incl. the payment step in Safari,
-#   Chrome and Firefox without violations, rename the key to Content-Security-Policy (README →
-#   "Efter lancering"). fillox.no (TIMMA): frame-src https://bestill.timma.no instead of Gecko's
-#   hosts, and no Gecko script host.
-# - Measurement, only after cookie consent (config/site.ts → analytics, components/consent): the
-#   hosts of the tags in GTM-KDBJMVF2 (inventory 2026-11-25), nothing else.
-#   · Google Tag Manager + GA4 (Google signals and Ads link on) + Conversion Linker, as Google's CSP
-#     guide lists them for "Google tag / GA4": script www.googletagmanager.com; img and connect
-#     *.google-analytics.com, *.g.doubleclick.net, *.google.com, *.google.dk (Google lists each
-#     ccTLD; the audience is Denmark), www.googletagmanager.com; connect also
-#     pagead2.googlesyndication.com; frame www.googletagmanager.com.
-#   · Meta Pixel (a Custom HTML tag, hence 'unsafe-inline'): script connect.facebook.net (fbevents.js,
-#     /signals/config), connect connect.facebook.net (telemetry) and www.facebook.com, img
-#     www.facebook.com (/tr), form-action www.facebook.com (fbevents' form POST fallback to /tr).
-#   A new tag in the container (Hotjar, TikTok, Google Ads remarketing …) needs its hosts here AND a
-#   line in the cookie list (content/consent.ts) with a new consentVersion.
+# Security headers on the files Netlify's CDN serves on its own: public/ (/images/*, /brand/*),
+# /_next/static/* and /_next/image (Image CDN). These rules do NOT reach the responses of the
+# Next.js server handler (pages, robots.txt, sitemap.xml, 404s): next.config.ts → headers() sends
+# the same set there. The 308s of next.config.ts → redirects() carry neither (Next.js drops its
+# headers on them; Netlify adds HSTS + nosniff); see config/securityHeaders.ts.
+# The values and the reasons for each one live in config/securityHeaders.ts. This block is a copy
+# (TOML cannot import it): change both, keep one line per header, double-quoted values only.
+# `npm run check:market` (also before every build) fails when a name or value here differs.
 [[headers]]
   for = "/*"
   [headers.values]
@@ -42,4 +25,4 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "SAMEORIGIN"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
-    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://filloxdanmark.app4.geckobooking.dk https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://*.google.com https://*.google.dk https://www.facebook.com; font-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://*.google.com https://*.google.dk https://pagead2.googlesyndication.com https://connect.facebook.net https://www.facebook.com; frame-src https://*.geckobooking.dk https://checkout.dibspayment.eu https://onpay.io https://*.onpay.io https://www.googletagmanager.com; form-action 'self' https://www.facebook.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"
+    Content-Security-Policy-Report-Only = "default-src 'self'; script-src 'self' 'unsafe-inline' https://filloxdanmark.app4.geckobooking.dk https://www.googletagmanager.com https://connect.facebook.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://*.google.com https://*.google.dk https://ad.doubleclick.net https://www.googleadservices.com https://www.facebook.com; font-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.g.doubleclick.net https://*.google.com https://*.google.dk https://ad.doubleclick.net https://www.googleadservices.com https://pagead2.googlesyndication.com https://connect.facebook.net https://www.facebook.com; frame-src https://*.geckobooking.dk https://checkout.dibspayment.eu https://onpay.io https://*.onpay.io https://www.googletagmanager.com; form-action 'self' https://www.facebook.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'"

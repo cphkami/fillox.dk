@@ -9,32 +9,45 @@ import { formatPrice } from "@/lib/format";
 /**
  * Blog posts (design 6blog / mbl overview, 6art / mar article).
  *
- * Published (owner, 2026-11-25: "lave bloggen. skriv et par artikler", signed "Fillox-holdet"):
- * four articles dated 2026-11-25, their real publication date. They have no `authorSlug`, so they
- * are signed by the team (content/pages/blog.ts → blogArticle.teamAuthor). Every fact in them comes
- * from the site's own content or the live fillox.dk; the `// source:` comment above each block says
- * where. Copy marked "fagligt tjek (læge)" must be read by a doctor before launch.
+ * Published (owner, 2026-11-25: "lave bloggen. skriv et par artikler", signed "Fillox-holdet";
+ * "lad os lave simpelt tekster til blogs så vi har noget som kan bruges"): seven articles dated
+ * 2026-11-25, their real publication date. They have no `authorSlug`, so they are signed by the
+ * team (content/pages/blog.ts → blogArticle.teamAuthor). Every fact in them comes from the site's
+ * own content or the live fillox.dk; the `// source:` comment above each block says where. Copy
+ * marked "fagligt tjek (læge)" must be read by a doctor before launch.
  *
- * On hold (`published: false`): the three posts about Botox, a prescription medicine (advertising
- * it to the public is prohibited, lægemiddelloven § 66), until the owner's jurist has answered
- * (README → "Før lancering" → Botox og markedsføring). Their data is kept below; removing the flag
- * re-enables a post, and check:market then applies the rules for published posts (no named
- * practitioner as author, related posts published).
+ * Rynkebehandling (owner, 2026-11-25): the three former Botox posts are rewritten as articles about
+ * the TREATMENT (consultation, the doctor's assessment, course, aftercare) without the product name
+ * or the active substance anywhere in them: Botox is a prescription medicine, and advertising it to
+ * the public is prohibited, also on the clinic's own website (lægemiddelloven § 66, VEJ 9400/2022
+ * pkt. 8.1). They follow the rynkebehandling pages' line (content/treatments.ts header): the hub's
+ * own words for the treatment ("muskelafslappende injektionsbehandling", "rynkebehandling med et
+ * receptpligtigt lægemiddel"), no prices, no booking card (it shows a "fra" price), no results,
+ * no named practitioner, only product-free photos. check:market (rule 14) guards the product name
+ * and the booking card.
+ *
+ * `published: false` puts a post on hold (content/types.ts → BlogPost.published); none is on hold
+ * now. check:market then makes sure nothing links it.
  *
  * Images: the clinic's own mood photos (content/photos.ts; the design's were stock), one per post,
- * all different. `position` keeps the face in the wide crops (the article header is 2.32 : 1).
- * Only `spejl` (1548px) fills the article header's 1440px at 1x; the other files are 782–1105px
- * wide and are drawn up to 1.84× there on the 1600 canvas (README: larger originals requested).
+ * all different. Never the team portraits (public/images/team/, content/team.ts; owner 2026-11-25:
+ * their mood copies are deleted) and never a person who is named on the same page; syringe photos
+ * (`sproejte`, `behandlerSproejte`) only on filler and skin posts. `position` keeps the face in the
+ * wide crops (the article header is 2.32 : 1). Only `spejl` (1548px) fills the article header's
+ * 1440px at 1x; the other files are 782–1135px wide and are drawn up to 1.84× there on the 1600
+ * canvas (README: larger originals requested).
  * TODO: copy review (image choice + alt).
  */
 
 /**
  * Every filter chip, in the design's order (desktop 6blog; mobile mbl hides "Guides"). /blog
- * shows `blogFilters` below: only chips with at least one published post.
+ * shows `blogFilters` below: only chips with at least one published post. The design's "Botox"
+ * chip is "Rynkebehandling" (a prescription medicine is never named; owner, 2026-11-25).
  */
 export const allBlogFilters: BlogFilter[] = [
   { slug: blogPage.allFilter, label: "Alle" },
-  { slug: "botox", label: "Botox" },
+  // TODO: copy review
+  { slug: "rynkebehandling", label: "Rynkebehandling" },
   { slug: "filler", label: "Filler" },
   { slug: "hudpleje", label: "Hudpleje" },
   { slug: "efterpleje", label: "Efterpleje" },
@@ -72,6 +85,10 @@ const links = {
   prices: { label: "Se alle priser", href: `${routes.prices}#fillers` },
   contact: { label: "Kontakt os", href: routes.contact },
   consultation: { label: "Book en gratis konsultation", href: site.booking.href },
+  // Rynkebehandling posts: the hub's own CTA ("Book en konsultation"), with no price word.
+  wrinkles: treatmentLink("Læs om rynkebehandling", "rynkebehandling"),
+  otherOptions: treatmentLink("Læs om andre behandlingsmuligheder", "andre-behandlingsmuligheder"),
+  wrinkleConsultation: { label: "Book en konsultation", href: site.booking.href },
 } satisfies Record<string, Link>;
 
 /** Eyebrow of the inline booking card (design 6art). */
@@ -117,7 +134,7 @@ export const allPosts: BlogPost[] = [
       // konsultation, hvis du er i tvivl"); content/navigation.ts ("Helt uforpligtende")
       {
         type: "paragraph",
-        text: "Er du i tvivl, om lip filler er noget for dig, kan du også booke en gratis konsultation for sig. Den tager 30 minutter hos en kosmetisk sygeplejerske og er helt uforpligtende.",
+        text: "Er du i tvivl, om lip filler er noget for dig, kan du også booke en gratis konsultation først. Den tager 30 minutter hos en kosmetisk sygeplejerske og er helt uforpligtende.",
       },
       // source: fillox.dk/fillers/faq-om-fillers-behandling, spørgsmål 4 (forkølelsessår/herpes kan blusse
       // op efter injektionerne, især ved læbefillers; tal med lægen før behandlingen)
@@ -164,10 +181,24 @@ export const allPosts: BlogPost[] = [
         type: "paragraph",
         text: "Det er også almindeligt at være lidt rød, øm eller kløende og at få et blåt mærke, hvor nålen har været. Den slags reaktioner varer op til en uge. Varer en betændelsesreaktion længere, eller får du andre gener, skal du hurtigst muligt kontakte en læge, for eksempel vores vagtlæge.",
       },
+      // source: the urgent signs and the 112 list of "haevelse-og-blaa-maerker" below (general advice
+      // after hyaluronic-acid filler, not on fillox.dk); content/pages/contact.ts → on-call
+      // ("Akuttelefon" = site.contact.phone). TODO: fagligt tjek (læge): keep in step with
+      // "haevelse-og-blaa-maerker" (the doctor is asked to word the skin-colour sign there).
+      {
+        type: "paragraph",
+        text: `Bliver smerterne stærkere i stedet for at aftage, eller bliver huden i eller omkring læberne hvid, bleg, plettet eller blålig, så ring med det samme til vores akuttelefon, ${ON_CALL_PHONE}. Får du synsforstyrrelser eller svært ved at trække vejret eller synke, så ring 112.`,
+      },
+      // TODO: copy review (link label)
+      {
+        type: "links",
+        items: [{ label: "Hvad er normalt, og hvornår skal du ringe?", href: `${routes.blog}/haevelse-og-blaa-maerker#kontakt-os` }],
+      },
       { type: "h2", id: "efterpleje", text: "Sådan passer du på læberne" },
       { type: "paragraph", text: "Et par enkle råd til tiden efter behandlingen:" },
       // source: content/treatments.ts → fillerFaq.aftercare; fillox.dk/fillers/faq-om-fillers-behandling,
-      // spørgsmål 2, 3, 5 og 6
+      // spørgsmål 2, 3, 5 og 6 (6 also names Paracet: left out on purpose, as in fillerFaq.aftercare.
+      // TODO: fagligt tjek (læge): may the article say what to take for pain, e.g. paracetamol?)
       {
         type: "list",
         style: "bullet",
@@ -177,6 +208,12 @@ export const allPosts: BlogPost[] = [
           "Begræns alkohol 24 timer før og efter behandlingen.",
           "Undgå Aspirin, Ibux og Voltaren, som kan give mere blødning og flere blå mærker.",
         ],
+      },
+      // source: general patient-safety advice, not on fillox.dk (as in "haevelse-og-blaa-maerker": never
+      // stop prescribed medicine on your own). TODO: fagligt tjek (læge)
+      {
+        type: "paragraph",
+        text: "Tager du medicin, som en læge har ordineret, så stop ikke selv med den. Tal med os eller din egen læge først.",
       },
       { type: "h2", id: "holdbarhed", text: "Hvor længe holder det?" },
       // source: content/treatments.ts → lip-filler FAQ "Hvor længe holder resultatet?" (typisk 6–9
@@ -189,10 +226,11 @@ export const allPosts: BlogPost[] = [
       { type: "h2", id: "kontrol", text: "Kontrol og spørgsmål bagefter" },
       // source: content/prices.ts → konsultation ("Kontrol efter behandling", "valgfri, ca. 14 dage efter",
       // gratis); fillox.dk/om-os/kontrol-eftertjek (evaluere resultatet og sikre, at alt forløber som
-      // forventet; "Denne skal du selv booke")
+      // forventet; "Denne skal du selv booke"; "tilbydes kun én gang per behandling"; "Hvis der går mere
+      // end 21 dage efter din behandling, bortfalder retten til kontroltiden")
       {
         type: "paragraph",
-        text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol. Den er valgfri, og du booker den selv. Her ser I på resultatet sammen og sikrer, at alt forløber, som det skal.",
+        text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol. Den er valgfri, og du booker den selv. Her ser I på resultatet sammen og sikrer, at alt forløber, som det skal. Kontrollen tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen.",
       },
       // source: content/pages/contact.ts → on-call ("Vagtlæge 24/7", "Akuttelefon" = site.contact.phone;
       // fillox.dk/kontakt "AKUT ASSISTANCE 24/7")
@@ -237,10 +275,10 @@ export const allPosts: BlogPost[] = [
       { type: "h2", id: "dine-laeber-og-dine-oensker", text: "Det afhænger af dine læber og dine ønsker" },
       // source: fillox.dk/fillers/lip-filler (intro: hvad der er smukke læber, er et spørgsmål om
       // definition og ønsker, som varierer med alder og personlige præferencer); content/treatments.ts →
-      // lip-filler about[0] (hyaluronsyre, findes naturligt i huden) / goodFor (volumen, symmetri, læbekant)
+      // lip-filler goodFor (volumen, symmetri, læbekant)
       {
         type: "paragraph",
-        text: "Der findes ikke én rigtig mængde. Hvad der er smukke læber, er personligt, og ønskerne varierer blandt andet med alder og smag. Lip filler er lavet af hyaluronsyre, et stof der findes naturligt i huden, og nogle ønsker lidt mere volumen, andre en bedre symmetri eller en tydeligere læbekant.",
+        text: "Der findes ikke én rigtig mængde. Hvad der er smukke læber, er personligt, og ønskerne varierer blandt andet med alder og smag. Nogle ønsker lidt mere volumen, andre en bedre symmetri eller en tydeligere læbekant.",
       },
       // source: content/treatments.ts → lip-filler about[1] (konsultation, anatomi, plan) and pricesIntro
       // ("Din behandler anbefaler mængden ved konsultationen")
@@ -292,10 +330,11 @@ export const allPosts: BlogPost[] = [
       // source: content/prices.ts → konsultation ("Kontrol efter behandling", "valgfri, ca. 14 dage efter",
       // gratis); fillox.dk/om-os/kontrol-eftertjek (selv booke; evaluere resultatet; "Eventuelle justeringer
       // vil altid være baseret på en faglig vurdering … med udgangspunkt i dine ønsker"; flere behandlinger
-      // "kan kræve en ny behandling med tilhørende pris")
+      // "kan kræve en ny behandling med tilhørende pris"; "tilbydes kun én gang per behandling"; "Hvis der
+      // går mere end 21 dage efter din behandling, bortfalder retten til kontroltiden")
       {
         type: "paragraph",
-        text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol, som er valgfri, og som du selv booker. Her vurderer I resultatet sammen, og eventuelle justeringer bygger altid på en faglig vurdering og på dine ønsker. Bliver I enige om, at mere filler giver mening, er det en ny behandling med sin egen pris.",
+        text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol, som er valgfri, og som du selv booker. Her vurderer I resultatet sammen, og eventuelle justeringer bygger altid på en faglig vurdering og på dine ønsker. Bliver I enige om, at mere filler giver mening, er det en ny behandling med sin egen pris. Kontrollen tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen.",
       },
       // source: content/treatments.ts → lip-filler FAQ "Kan filler opløses igen?"; content/prices.ts →
       // fillers ("Opløsning af filler (Hyalase)", "pr. område")
@@ -358,7 +397,11 @@ export const allPosts: BlogPost[] = [
       },
       // source: fillox.dk/fillers/faq-om-fillers-behandling, spørgsmål 7 (rødme, hævelse, kløe, smerte,
       // stikkende/tappe, fasthed/ujævnheder, blå mærker, misfarvning); content/treatments.ts →
-      // fillerFaq.sideEffects
+      // fillerFaq.sideEffects. TODO: fagligt tjek (læge): "misfarvning" (normal) next to "plettet eller
+      // blålig" (call at once, below) is hard to tell apart. Proposed for the doctor: "Blå mærker der, hvor
+      // nålen har været" here, and below "Huden i eller omkring området bliver hvid eller bleg, får et
+      // plettet, netagtigt blåligt eller lilla mønster (ikke et almindeligt blåt mærke), eller føles kold."
+      // (also in "lip-filler-for-foerste-gang"). Not changed until the doctor words it.
       {
         type: "list",
         style: "bullet",
@@ -402,7 +445,8 @@ export const allPosts: BlogPost[] = [
       // source: fillox.dk/fillers/faq-om-fillers-behandling, spørgsmål 5 (alkohol 24 timer før og efter,
       // "alkohol kan fortynde blodet"), 6 (smertestillende, øget blødning og blå mærker), 2 (6 timer,
       // infektion, vand og sæbe), 3 (sol og solarium); content/treatments.ts → fillerFaq.aftercare
-      // (Aspirin, Ibux og Voltaren)
+      // (Aspirin, Ibux og Voltaren). Spørgsmål 6 also names Paracet: left out on purpose, as in
+      // fillerFaq.aftercare. TODO: fagligt tjek (læge): may the article say what to take for pain?
       {
         type: "list",
         style: "bullet",
@@ -441,6 +485,8 @@ export const allPosts: BlogPost[] = [
           "En reaktion varer mere end en uge, eller du får andre gener end dem, der er nævnt her.",
         ],
       },
+      // Tap to call on a phone (the same line as the footer's contact card). TODO: copy review (label)
+      { type: "links", items: [{ label: `Ring til akuttelefonen, ${ON_CALL_PHONE}`, href: site.contact.phoneHref }] },
       { type: "h2", id: "ring-112", text: "Hvornår skal du ringe 112?" },
       // source: general emergency advice, not on fillox.dk (sight problems after a filler, signs of a
       // severe allergic reaction). TODO: fagligt tjek (læge)
@@ -457,10 +503,11 @@ export const allPosts: BlogPost[] = [
       { type: "paragraph", text: "Fortæl, at du har fået en behandling med filler, og hvornår." },
       { type: "h2", id: "kontrol", text: "Gratis kontrol" },
       // source: content/prices.ts → konsultation ("Kontrol efter behandling", "valgfri, ca. 14 dage efter",
-      // gratis); fillox.dk/om-os/kontrol-eftertjek ("Denne skal du selv booke")
+      // gratis); fillox.dk/om-os/kontrol-eftertjek ("Denne skal du selv booke"; "tilbydes kun én gang per
+      // behandling"; "Hvis der går mere end 21 dage efter din behandling, bortfalder retten til kontroltiden")
       {
         type: "paragraph",
-        text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol. Den er valgfri, og du booker den selv. Her kan I tale om, hvordan de første dage er gået, og se på resultatet sammen.",
+        text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol. Den er valgfri, og du booker den selv. Her kan I tale om, hvordan de første dage er gået, og se på resultatet sammen. Kontrollen tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen.",
       },
       { type: "h2", id: "vil-du-vide-mere", text: "Vil du vide mere?" },
       {
@@ -483,7 +530,9 @@ export const allPosts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Begge er behandlinger med hyaluronsyre, men de bruges til forskellige ting og gives i forskellige forløb. Her er forskellen, og hvordan din behandler vurderer, hvad der passer til din hud.",
-    image: { ...photos.behandlerPortraet1, position: "45% 22%" },
+    // A practitioner holding a syringe (fine on a skin post; nobody is named on the page). Not a
+    // team portrait (content/team.ts, owner 2026-11-25). 22%: face to gloves in the wide header.
+    image: { ...photos.behandlerSproejte, position: "50% 22%" },
     treatmentSlugs: ["skinbooster", "profhilo"],
     relatedPostSlugs: ["haevelse-og-blaa-maerker", "lip-filler-for-foerste-gang", "lip-filler-0-5-eller-1-ml"],
     // No booking card in the text: the article compares two treatments (the closing links point to
@@ -505,13 +554,14 @@ export const allPosts: BlogPost[] = [
       // source: content/treatments.ts → skinbooster lead ("Vi bruger Ejal 40 og Sunekos"), profhilo
       {
         type: "paragraph",
-        text: "På vores behandlingssider hører Ejal 40 og Sunekos under Skinbooster, mens Profhilo har sin egen side.",
+        text: "Hos Fillox bruger vi Ejal 40 og Sunekos som skinboosters, mens Profhilo er en behandling for sig.",
       },
       { type: "h2", id: "skinbooster", text: "Skinbooster: Ejal 40 og Sunekos" },
-      // source: content/treatments.ts → skinbooster about[0]; fillox.dk/skinbooster/ejal-40
+      // source: content/treatments.ts → skinbooster about[0]; fillox.dk/skinbooster/ejal-40 (the "40 mg" on
+      // the treatment page has no source on fillox.dk, so the article leaves it out)
       {
         type: "paragraph",
-        text: "Ejal 40 er en biorevitaliserende gel med 40 mg hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den bruges til slap hud og rynker og til at forbedre hudtone og elasticitet.",
+        text: "Ejal 40 er en biorevitaliserende gel med hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den bruges til slap hud og rynker og til at forbedre hudtone og elasticitet.",
       },
       // source: content/treatments.ts → skinbooster about[1]; fillox.dk/skinbooster/sunekos
       {
@@ -580,127 +630,347 @@ export const allPosts: BlogPost[] = [
     ],
   },
 
-  /* ------------------------------------------------------------------- on hold */
-  // ON HOLD (all three Botox posts): Botox is a prescription medicine, and advertising it to the
-  // public is prohibited (lægemiddelloven § 66). Not published until the owner's jurist has answered
-  // (README → "Før lancering" → Botox og markedsføring). Before removing `published: false`: legal
-  // sign-off on the text, a real publication date, and the author (a published post names no
-  // practitioner: BEK 253/2025 § 10, stk. 1, nr. 7; check:market fails otherwise).
+  /* ---------------------------------------------------------- rynkebehandling */
+  // The former Botox posts, rewritten as articles about the treatment (owner, 2026-11-25; see the
+  // header). No product name or active substance anywhere, no price, no booking card (it shows a
+  // "fra" price), no results; the hub's own words for the treatment. Facts: the rynkebehandling hub
+  // (content/treatments.ts, the agency's copy), content/pages/men.ts, content/pages/new-here.ts,
+  // content/prices.ts, content/pages/contact.ts and the live fillox.dk/rynkebehandling,
+  // /om-os/kontrol-eftertjek and /kontakt (fetched 2026-11-25).
   {
-    slug: "botox-for-foerste-gang",
-    published: false, // on hold: Botox (see above)
-    title: "Botox for første gang: sådan foregår det",
-    category: "Botox",
-    categorySlug: "botox",
+    slug: "rynkebehandling-for-foerste-gang",
+    title: "Rynkebehandling for første gang: sådan foregår det",
+    category: "Rynkebehandling",
+    categorySlug: "rynkebehandling",
     kind: "Guide",
-    tags: ["botox", "guides"],
-    readingTime: "4 min læsning",
-    readingMinutes: 4,
-    date: "2026-09-12",
+    tags: ["rynkebehandling", "guides"],
+    readingTime: "2 min læsning",
+    readingMinutes: 2,
+    date: "2026-11-25",
+    // TODO: copy review
     excerpt:
-      "Fra den første lægekonsultation til den gratis kontrol to uger efter. Annika gennemgår hele forløbet, så du ved præcis, hvad du kan forvente.",
-    excerptShort: "Annika gennemgår hele forløbet, fra lægekonsultation til gratis kontrol.",
-    // No practitioner's face next to the author's name (Annika) and no product: the mirror photo.
-    image: photos.spejl,
-    // TODO: fact check (owner): the design's example article, written in Annika's voice; fillox.dk
-    // has no article by her. Facts (time, training, longevity) match fillox.dk/rynkebehandling.
-    authorSlug: "annika",
-    // The rynkebehandling hub replaced the Botox page (2026-10).
+      "Fra den første konsultation til kontrollen bagefter: sådan foregår en rynkebehandling hos Fillox, når du er ny.",
+    excerptShort: "Fra den første konsultation til kontrollen bagefter.",
+    // The empty treatment room: no person, product, syringe or treatment.
+    image: photos.behandlingsrum,
     treatmentSlugs: ["rynkebehandling"],
     relatedPostSlugs: [
-      "hvornaar-giver-det-mening-at-starte-med-botox",
-      "de-foerste-24-timer-efter-botox",
+      "hvornaar-giver-rynkebehandling-mening",
+      "de-foerste-24-timer-efter-rynkebehandling",
       "lip-filler-for-foerste-gang",
     ],
-    relatedPostSlugsMobile: ["hvornaar-giver-det-mening-at-starte-med-botox", "haevelse-og-blaa-maerker"],
+    // TODO: fagligt tjek (læge) + copy review
     body: [
       {
         type: "lead",
-        text: "Overvejer du botox for første gang? Her gennemgår jeg, hvordan en behandling hos Fillox foregår fra start til slut, så du ved præcis, hvad du kan forvente.",
+        text: "Overvejer du rynkebehandling for første gang? Her gennemgår vi, hvordan et forløb hos Fillox foregår, fra den første konsultation til kontrollen bagefter, så du ved, hvad du kan forvente.",
       },
-      { type: "h2", id: "foer-behandlingen", text: "Før behandlingen" },
+      { type: "h2", id: "du-behoever-ikke-vide-det", text: "Du behøver ikke vide, hvad du skal have" },
+      // source: content/treatments.ts → rynkebehandling sections "typer-af-rynker" ("Det er ikke alle
+      // rynker, der opstår på samme måde. Derfor findes der heller ikke én behandling, som passer til
+      // alle") and "vaelg-behandling" (muskler, tab af volumen, hudens kvalitet); FAQ "Kan jeg få hjælp,
+      // hvis jeg aldrig har fået rynkebehandling før?" (konsultation uden at vide, hvilken behandling)
       {
         type: "paragraph",
-        text: "Før din første behandling taler du med en læge. Det er lovpligtigt og gratis hos os. Vi gennemgår dit helbred, dine ønsker og de områder, du gerne vil behandle, og vi siger ærligt til, hvis vi ikke mener, behandlingen er det rigtige for dig.",
-        mobileText:
-          "Før din første behandling taler du med en læge. Det er lovpligtigt og gratis hos os. Vi gennemgår dit helbred og dine ønsker, og vi siger ærligt til, hvis behandlingen ikke er det rigtige for dig.",
+        text: "Ikke alle rynker opstår på samme måde. Nogle skyldes ansigtets bevægelser, andre tab af volumen eller ændringer i hudens kvalitet. Derfor findes der ikke én behandling, der passer til alle, og du kan sagtens bestille en konsultation uden at vide, hvilken behandling der er relevant for dig.",
+      },
+      { type: "h2", id: "konsultationen", text: "Først en konsultation" },
+      // source: content/treatments.ts → rynkebehandling section "konsultation" (ønsker, relevante
+      // helbredsoplysninger, muligheder; "forventet resultat, begrænsninger, mulige bivirkninger og
+      // eventuelle alternativer"; "Du kan også vælge ikke at gå videre med behandling");
+      // fillox.dk/rynkebehandling ("nogle gange kan en fillerbehandling faktisk gavne dig mere";
+      // "sammen aftaler I derefter et eventuelt behandlingsforløb")
+      {
+        type: "paragraph",
+        text: "Ved konsultationen gennemgår vi dine ønsker, relevante helbredsoplysninger og de muligheder, der kan være aktuelle for dig. Du får information om det forventede resultat, begrænsninger, mulige bivirkninger og eventuelle alternativer. Nogle gange er en anden behandling mere relevant end den, du havde tænkt dig.",
+      },
+      {
+        type: "paragraph",
+        text: "Derefter aftaler I sammen et eventuelt forløb. Du kan også vælge ikke at gå videre med behandling.",
+      },
+      { type: "h2", id: "laegens-vurdering", text: "Lægens vurdering og betænkningstid" },
+      // source: content/treatments.ts → rynkebehandling section "konsultation" (den nødvendige
+      // lægefaglige forundersøgelse) and FAQ "Skal jeg til konsultation, før jeg kan blive behandlet?"
+      // ("kræves en lægefaglig forundersøgelse. Ved første behandling gælder som udgangspunkt mindst to
+      // dages betænkningstid, før der kan gives samtykke"); content/pages/men.ts → FAQ "Hvor lang tid
+      // tager det?" ("rynkebehandling med et receptpligtigt lægemiddel"); content/prices.ts →
+      // konsultation ("lovpligtig")
+      {
+        type: "paragraph",
+        text: "Er der tale om rynkebehandling med et receptpligtigt lægemiddel, kræver loven, at der først foretages en lægefaglig forundersøgelse. Ved den første behandling gælder som udgangspunkt mindst to dages betænkningstid, før du kan give dit samtykke. Så har du ro til at tænke det igennem, før du beslutter dig.",
       },
       { type: "h2", id: "selve-behandlingen", text: "Selve behandlingen" },
+      // source: content/pages/men.ts → FAQ "Hvor lang tid tager det?" ("Selve behandlingen tager typisk
+      // 20–40 minutter"); fillox.dk/rynkebehandling ("Ca. 20-40 minutter"); content/treatments.ts →
+      // rynkebehandling intro (sundhedsfaglig baggrund, fælles faglige standarder, Fillox Academy)
       {
         type: "paragraph",
-        text: "Behandlingen tager cirka 20 til 40 minutter. Vi renser huden og markerer punkterne, og derefter injicerer vi små mængder med en meget tynd nål. De fleste beskriver det som et kort prik.",
-        mobileText:
-          "Behandlingen tager cirka 20 til 40 minutter. Vi injicerer små mængder med en meget tynd nål. De fleste beskriver det som et kort prik.",
-      },
-      {
-        type: "booking",
-        treatmentSlug: "rynkebehandling",
-        eyebrow: BOOKING_EYEBROW,
-        note: "Gratis lægekonsultation før første behandling",
-        hideNoteOnMobile: true,
+        text: "Selve behandlingen tager typisk 20–40 minutter. Hos Fillox møder du behandlere med sundhedsfaglig baggrund, som arbejder efter fælles faglige standarder og får løbende undervisning gennem Fillox Academy.",
       },
       { type: "h2", id: "efter-behandlingen", text: "Efter behandlingen" },
+      // source: fillox.dk/rynkebehandling ("RESTITUTIONSTID Let træning: 2t / Hård træning: 24t");
+      // content/treatments.ts → rynkebehandling FAQ "Hvor længe holder en rynkebehandling?" ("afhænger
+      // af behandlingsformen og individuelle forhold. Ved konsultationen kan du få en mere præcis
+      // forventning")
       {
         type: "paragraph",
-        text: "Du kan gå direkte tilbage til hverdagen. De første timer er der et par ting, du skal huske:",
-        hideOnMobile: true,
+        text: "Vent 2 timer med let træning og 24 timer med hård træning. Hvornår du kan se en virkning, og hvor længe den holder, afhænger af behandlingsformen og af dig. Det får du at vide ved konsultationen.",
+      },
+      // source: content/pages/contact.ts → on-call ("Efter en behandling", "Vagtlæge 24/7", "Akuttelefon"
+      // = site.contact.phone); fillox.dk/kontakt ("AKUT ASSISTANCE 24/7", "Vi har altid en vagtlæge")
+      {
+        type: "paragraph",
+        text: `Har du spørgsmål i tiden efter, er du altid velkommen til at kontakte os. Vi har vagtlæge døgnet rundt på akuttelefonen, ${ON_CALL_PHONE}.`,
+      },
+      { type: "h2", id: "kontrol", text: "Kontrol efter cirka 14 dage" },
+      // source: content/prices.ts → konsultation ("Kontrol efter behandling", "valgfri, ca. 14 dage
+      // efter"); fillox.dk/om-os/kontrol-eftertjek ("evaluere resultatet og sikre, at alt forløber som
+      // forventet"; "Denne skal du selv booke"; "tilbydes kun én gang per behandling"; "Hvis der går mere
+      // end 21 dage efter din behandling, bortfalder retten til kontroltiden")
+      {
+        type: "paragraph",
+        text: "Cirka 14 dage efter behandlingen kan du komme til en kontrol. Den er valgfri, og du booker den selv. Her ser I på resultatet sammen og sikrer, at alt forløber som forventet. Kontrollen tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen.",
+      },
+      { type: "h2", id: "vil-du-vide-mere", text: "Vil du vide mere?" },
+      {
+        type: "paragraph",
+        text: "På siden om rynkebehandling kan du læse om de forskellige typer rynker, og om hvad der sker ved en konsultation. Er du i tvivl om, hvor du skal begynde, kan du bestille en konsultation eller skrive til os.",
+      },
+      { type: "links", items: [links.wrinkles, links.wrinkleConsultation, links.contact] },
+    ],
+  },
+  {
+    slug: "hvornaar-giver-rynkebehandling-mening",
+    title: "Hvornår giver rynkebehandling mening?",
+    category: "Rynkebehandling",
+    categorySlug: "rynkebehandling",
+    // The design's "Forebyggelse": the article does not present treatment as prevention.
+    kind: "Guide",
+    tags: ["rynkebehandling", "guides"],
+    readingTime: "2 min læsning",
+    readingMinutes: 2,
+    date: "2026-11-25",
+    // TODO: copy review
+    excerpt:
+      "Rynker har forskellige årsager, og ikke alle behandles på samme måde. Her er, hvad der afgør, om en behandling er relevant for dig, og hvorfor det altid starter med en vurdering.",
+    excerptShort: "Rynker har forskellige årsager. Her er, hvad der afgør, om en behandling er relevant for dig.",
+    // A woman seen from behind with a hand mirror: no product, syringe, treatment or "result".
+    image: photos.spejl,
+    treatmentSlugs: ["rynkebehandling"],
+    // "Læs også" shows each post's photo: on a rynkebehandling post only posts whose photo has no
+    // product, syringe or treatment (content/photos.ts; the lip filler post's is the leaflet).
+    relatedPostSlugs: [
+      "rynkebehandling-for-foerste-gang",
+      "de-foerste-24-timer-efter-rynkebehandling",
+      "lip-filler-for-foerste-gang",
+    ],
+    // TODO: fagligt tjek (læge) + copy review
+    body: [
+      // source: content/treatments.ts → rynkebehandling lead ("Rynker og fine linjer er en naturlig del
+      // af livet") and intro ("afhænger af både årsagen til rynkerne, hudens tilstand og dine ønsker");
+      // fillox.dk/rynkebehandling ("oplevelsen af disse ældningstegn er blandet og varierer meget fra
+      // person til person")
+      {
+        type: "lead",
+        text: "Rynker og fine linjer er en naturlig del af livet, og hvordan man har det med dem, er meget forskelligt. Om en behandling giver mening for dig, afhænger af, hvorfor linjerne er der, og af hvad du selv ønsker.",
+      },
+      { type: "h2", id: "forskellige-aarsager", text: "Rynker har forskellige årsager" },
+      // source: content/treatments.ts → rynkebehandling lead and section "typer-af-rynker" (items
+      // "Rynker i panden", "Bekymringsrynken", "Smilerynker omkring øjnene", "Andre linjer og rynker")
+      {
+        type: "paragraph",
+        text: "Nogle linjer opstår, når vi smiler eller rynker panden. Andre bliver mere synlige i takt med, at huden ændrer sig. Typiske eksempler er:",
       },
       {
         type: "list",
         style: "bullet",
-        // "Vent 2 timer …" is fillox.dk/rynkebehandling ("Let træning: 2t / Hård træning: 24t").
-        // TODO: fact check (owner): the other two points are not on fillox.dk.
         items: [
-          "Undgå at ligge ned de første fire timer",
-          "Vent 2 timer med let træning og 24 timer med hård træning",
-          "Undgå at massere de behandlede områder",
+          "Vandrette linjer i panden, som ofte opstår, når vi løfter øjenbrynene.",
+          "Bekymringsrynken, de lodrette linjer mellem øjenbrynene, som blandt andet opstår, når vi koncentrerer os.",
+          "Smilerynker omkring øjnene, også kaldet kragetæer, som typisk viser sig, når vi smiler.",
+          "Linjer omkring munden og nedadvendte mundvige, som kan have andre årsager og kræve en anden tilgang.",
         ],
       },
-      { type: "h2", id: "hvor-laenge-holder-det", text: "Hvor længe holder det?" },
+      { type: "h2", id: "aarsagen-afgoer-behandlingen", text: "Årsagen afgør behandlingen" },
+      // source: content/treatments.ts → rynkebehandling section "vaelg-behandling" (the agency's copy:
+      // mimiske rynker → "en læge vurdere, om muskelafslappende injektionsbehandling er relevant";
+      // volumen → filler; fine linjer og hudens kvalitet → microneedling eller peeling; "forskellige
+      // formål, effekter og risici … individuel vurdering frem for blot at vælge en behandling ud fra
+      // navnet")
+      { type: "paragraph", text: "Valget afhænger først og fremmest af, hvorfor rynkerne er opstået:" },
+      {
+        type: "list",
+        style: "bullet",
+        items: [
+          "Mimiske rynker skyldes gentagne bevægelser i ansigtets muskler. Her kan en læge vurdere, om muskelafslappende injektionsbehandling er relevant.",
+          "Linjer, der skyldes tab af volumen, kan i nogle tilfælde vurderes med henblik på behandling med filler.",
+          "Fine linjer og ændringer i hudens kvalitet kan være relevante at vurdere i forhold til hudforbedrende behandlinger som microneedling eller peeling.",
+        ],
+      },
       {
         type: "paragraph",
-        text: "Resultatet holder typisk 3 til 5 måneder. Effekten begynder efter 3 til 5 dage og er fuldt udviklet efter omkring to uger. Du er altid velkommen til en gratis kontrol.",
-        mobileText:
-          "Resultatet holder typisk 3 til 5 måneder. Effekten er fuldt udviklet efter omkring to uger, og kontrollen er altid gratis.",
+        text: "Behandlingerne har forskellige formål, effekter og risici. Derfor er det vigtigt at vælge ud fra en individuel vurdering frem for ud fra navnet på en behandling.",
       },
+      { type: "h2", id: "dine-oensker", text: "Dine ønsker er udgangspunktet" },
+      // source: fillox.dk/rynkebehandling ("De kan være charmerende og give liv til ansigtet – men for
+      // mange kan de give et tungt indtryk, der ikke matcher det udtryk, man ønsker at udstråle");
+      // content/treatments.ts → rynkebehandling section "konsultation" ("Du kan også vælge ikke at gå
+      // videre med behandling")
+      {
+        type: "paragraph",
+        text: "Nogle synes, at linjerne giver liv til ansigtet. Andre oplever, at de giver et udtryk, der ikke passer til dem. Begge dele er helt i orden, og det er dig, der bestemmer, om du vil gå videre med en behandling.",
+      },
+      // source: content/treatments.ts → andre-behandlingsmuligheder section "individuel-vurdering" ("Vi
+      // fortæller også, når en anden behandlingsform, yderligere undersøgelse eller henvisning er mere
+      // hensigtsmæssig")
+      {
+        type: "paragraph",
+        text: "Vi fortæller dig også, hvis en anden behandlingsform, en yderligere undersøgelse eller en henvisning er mere hensigtsmæssig.",
+      },
+      { type: "h2", id: "risici", text: "Kend risiciene" },
+      // source: content/treatments.ts → rynkebehandling FAQ "Er der risici ved rynkebehandling?" and
+      // "Hvor længe holder en rynkebehandling?"
+      {
+        type: "paragraph",
+        text: "Alle kosmetiske injektionsbehandlinger indebærer risici, for eksempel lokale reaktioner, asymmetri eller andre komplikationer afhængigt af behandlingen. Du får information om de relevante risici, før du beslutter dig. Hvor længe en behandling holder, afhænger af behandlingsformen og af individuelle forhold.",
+      },
+      { type: "h2", id: "start-med-en-konsultation", text: "Start med en konsultation" },
+      // source: content/treatments.ts → rynkebehandling section "konsultation" ("Du behøver ikke at vide
+      // på forhånd, hvilken behandling du ønsker") and FAQ "Skal jeg til konsultation, før jeg kan blive
+      // behandlet?"; content/pages/men.ts → FAQ "Hvor lang tid tager det?" (the same sentence)
+      {
+        type: "paragraph",
+        text: "Du behøver ikke at vide på forhånd, hvilken behandling du ønsker. Ved konsultationen gennemgår vi dine ønsker og de muligheder, der kan være aktuelle for dig. Er der tale om rynkebehandling med et receptpligtigt lægemiddel, foretages først en lægefaglig forundersøgelse, og ved første behandling gælder som udgangspunkt mindst to dages betænkningstid.",
+      },
+      { type: "h2", id: "vil-du-vide-mere", text: "Vil du vide mere?" },
+      // source: content/treatments.ts → andre-behandlingsmuligheder (mundvige, tyggemuskler, svedtendens)
+      {
+        type: "paragraph",
+        text: "På siden om rynkebehandling kan du læse mere om de forskellige typer rynker. Handler dit ønske om for eksempel mundvigene, tyggemusklerne eller svedtendens, finder du det under andre behandlingsmuligheder.",
+      },
+      { type: "links", items: [links.wrinkles, links.otherOptions, links.wrinkleConsultation] },
     ],
   },
   {
-    slug: "hvornaar-giver-det-mening-at-starte-med-botox",
-    published: false, // on hold: Botox (see above)
-    title: "Hvornår giver det mening at starte med botox?",
-    category: "Botox",
-    categorySlug: "botox",
-    kind: "Forebyggelse",
-    tags: ["botox"],
-    readingTime: "3 min læsning",
-    readingMinutes: 3,
-    date: "2026-08-22", // placeholder (design order)
-    excerpt:
-      "Der findes ingen rigtig alder for den første behandling. Det handler om dine linjer, dit udtryk og dine ønsker, og om en ærlig vurdering.",
-    // A practitioner's portrait: no product, syringe or treatment (a post about Botox; no author,
-    // so no named person next to the unnamed one). 15%: the forehead stays in the wide header.
-    image: { ...photos.behandlerPortraet2, position: "50% 15%" },
-    treatmentSlugs: ["rynkebehandling"],
-  },
-  {
-    slug: "de-foerste-24-timer-efter-botox",
-    published: false, // on hold: Botox (see above)
-    title: "Gør og undgå de første 24 timer efter botox",
-    category: "Efterpleje",
-    categorySlug: "efterpleje",
+    slug: "de-foerste-24-timer-efter-rynkebehandling",
+    title: "De første 24 timer efter en rynkebehandling",
+    category: "Rynkebehandling",
+    categorySlug: "rynkebehandling",
     kind: "Efterpleje",
-    tags: ["efterpleje", "botox"],
-    readingTime: "3 min læsning",
-    readingMinutes: 3,
-    date: "2026-08-08", // placeholder (design order)
+    tags: ["rynkebehandling", "efterpleje"],
+    readingTime: "2 min læsning",
+    readingMinutes: 2,
+    date: "2026-11-25",
+    // TODO: copy review
     excerpt:
-      "Et par enkle råd til de første timer efter behandlingen, så du får mest ud af den: træning, sauna, makeup og søvn.",
-    // The empty treatment room: no person, no product (a post about Botox).
-    image: photos.behandlingsrum,
+      "Hvad du skal være opmærksom på efter en rynkebehandling: hvornår du kan træne igen, hvilke reaktioner du kan få, og hvornår du skal kontakte os.",
+    excerptShort: "Hvornår du kan træne igen, og hvornår du skal kontakte os.",
+    // A practitioner by a bright window in a light wrap top: no product, syringe or treatment. Not
+    // named anywhere on this page (no practitioner section, the post is signed by the team). 38%: hair
+    // to neck in the 2.32 : 1 article header (the default 30% cut the chin).
+    image: { ...photos.behandlerVindue, position: "45% 38%" },
     treatmentSlugs: ["rynkebehandling"],
-    // Not in the mobile list (design mbl shows 5 of the 6 posts).
-    hideInMobileList: true,
+    // "Læs også": only posts whose photo has no product, syringe or treatment (see "hvornaar-…" above);
+    // the filler aftercare article is linked at the end instead.
+    relatedPostSlugs: [
+      "rynkebehandling-for-foerste-gang",
+      "hvornaar-giver-rynkebehandling-mening",
+      "lip-filler-for-foerste-gang",
+    ],
+    // No booking card: an aftercare article sells nothing.
+    // TODO: fagligt tjek (læge) + copy review
+    body: [
+      {
+        type: "lead",
+        text: "Her er, hvad du skal være opmærksom på i timerne efter en rynkebehandling, hvornår du kan træne igen, og hvornår du skal kontakte os.",
+      },
+      { type: "h2", id: "spoerg-foer-du-gaar", text: "Spørg, før du går hjem" },
+      // source: content/treatments.ts → rynkebehandling section "konsultation" ("Du får information om
+      // forventet resultat, begrænsninger, mulige bivirkninger og eventuelle alternativer")
+      {
+        type: "paragraph",
+        text: "Allerede ved konsultationen får du information om det forventede resultat, begrænsninger og mulige bivirkninger. Har du spørgsmål til tiden efter behandlingen, så stil dem gerne, inden du går hjem.",
+      },
+      { type: "h2", id: "traening", text: "Vent med at træne" },
+      // source: fillox.dk/rynkebehandling ("RESTITUTIONSTID Let træning: 2t / Hård træning: 24t")
+      { type: "paragraph", text: "Vent 2 timer med let træning og 24 timer med hård træning." },
+      // source: content/treatments.ts → rynkebehandling section "vaelg-behandling" (filler is one of the
+      // wrinkle treatments); the aftercare in "haevelse-og-blaa-maerker" (linked at the end).
+      // TODO: copy review
+      { type: "paragraph", text: "Har du fået filler, gælder også rådene i artiklen om hævelse og blå mærker." },
+      // source: content/pages/new-here.ts → FAQ "Skal jeg afsætte tid hjemme efter behandlingen?"
+      // ("Fortæl os, hvis du har en vigtig begivenhed eller bestemte planer, så kan vi rådgive dig om
+      // tidspunktet")
+      {
+        type: "paragraph",
+        text: "Har du en vigtig begivenhed eller bestemte planer, så fortæl os det før behandlingen. Så kan vi rådgive dig om tidspunktet.",
+      },
+      { type: "h2", id: "reaktioner", text: "Reaktioner efter behandlingen" },
+      // source: content/pages/new-here.ts → FAQ "Skal jeg afsætte tid hjemme efter behandlingen?" ("Det
+      // kommer an på behandlingen. Nogle giver kun svagt synlige reaktioner, mens andre blandt andet kan
+      // give rødme, hævelse eller blå mærker"); content/treatments.ts → rynkebehandling FAQ "Er der
+      // risici ved rynkebehandling?" (lokale reaktioner, asymmetri, andre komplikationer)
+      {
+        type: "paragraph",
+        text: "Hvilke reaktioner du kan få, afhænger af behandlingen. Nogle behandlinger giver kun svagt synlige reaktioner, mens andre blandt andet kan give rødme, hævelse eller blå mærker. Som ved alle kosmetiske injektionsbehandlinger kan der også opstå lokale reaktioner, asymmetri eller andre komplikationer.",
+      },
+      { type: "h2", id: "kontrol", text: "Resultatet ser I på ved kontrollen" },
+      // source: content/treatments.ts → rynkebehandling FAQ "Hvor længe holder en rynkebehandling?";
+      // content/prices.ts → konsultation ("Kontrol efter behandling", "valgfri, ca. 14 dage efter");
+      // fillox.dk/om-os/kontrol-eftertjek ("evaluere resultatet og sikre, at alt forløber som forventet";
+      // "Denne skal du selv booke"; "tilbydes kun én gang per behandling"; "Hvis der går mere end 21 dage
+      // efter din behandling, bortfalder retten til kontroltiden")
+      {
+        type: "paragraph",
+        text: "Hvornår du kan se en virkning, og hvor længe den holder, afhænger af behandlingsformen og af dig. Cirka 14 dage efter behandlingen kan du komme til en kontrol, som er valgfri, og som du selv booker. Her evaluerer I resultatet og sikrer, at alt forløber som forventet. Kontrollen tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen.",
+      },
+      { type: "h2", id: "kontakt-os", text: "Hvornår skal du kontakte os?" },
+      // source: content/pages/contact.ts → on-call ("Efter en behandling", "Vagtlæge 24/7", "Akuttelefon"
+      // = site.contact.phone); fillox.dk/kontakt ("AKUT ASSISTANCE 24/7"); the wording of
+      // "haevelse-og-blaa-maerker" above ("kontakt os hellere én gang for meget")
+      {
+        type: "paragraph",
+        text: `Er du i tvivl om, hvorvidt det, du oplever, er normalt, så kontakt os hellere én gang for meget. Vi har vagtlæge døgnet rundt på akuttelefonen, ${ON_CALL_PHONE}. Ring, hvis:`,
+      },
+      // source: item 1: the site's own warning signs ("haevelse-og-blaa-maerker": stronger instead of
+      // easing); item 2: content/treatments.ts → fillerFaq.sideEffects ("Som ved alle injektioner er der
+      // en lille risiko for infektion") with the infection signs of "haevelse-og-blaa-maerker" (general,
+      // not on fillox.dk); item 3: content/treatments.ts → rynkebehandling FAQ "Er der risici ved
+      // rynkebehandling?" ("Du får information om de relevante risici"). TODO: fagligt tjek (læge):
+      // should the doctor add warning signs specific to the muscle-relaxing treatment?
+      {
+        type: "list",
+        style: "bullet",
+        items: [
+          "En reaktion bliver værre i stedet for at aftage.",
+          "Området bliver rødt, varmt og ømt, eller du får feber. Som ved alle injektioner er der en lille risiko for infektion.",
+          "Du får gener, som du ikke har fået at vide, at du kunne forvente.",
+        ],
+      },
+      // Tap to call on a phone (the same line as the footer's contact card). TODO: copy review (label)
+      { type: "links", items: [{ label: `Ring til akuttelefonen, ${ON_CALL_PHONE}`, href: site.contact.phoneHref }] },
+      // source: general emergency advice, not on fillox.dk: the 112 list of "haevelse-og-blaa-maerker",
+      // in its words. TODO: fagligt tjek (læge) (see the question above about signs specific to the
+      // muscle-relaxing treatment)
+      {
+        type: "paragraph",
+        text: "Ring 112, hvis du efter behandlingen får synsforstyrrelser, sløret syn eller nedsat syn, svært ved at trække vejret eller synke, eller hævelse i tungen eller svælget. Fortæl, at du har fået en rynkebehandling, og hvornår.",
+      },
+      { type: "h2", id: "vil-du-vide-mere", text: "Vil du vide mere?" },
+      {
+        type: "paragraph",
+        text: "På siden om rynkebehandling kan du læse mere om behandlingerne, og om hvad der sker ved en konsultation. Har du spørgsmål før eller efter en behandling, er du altid velkommen til at kontakte os.",
+      },
+      // TODO: copy review (link label)
+      {
+        type: "links",
+        items: [
+          links.wrinkles,
+          links.contact,
+          { label: "Læs om hævelse og blå mærker", href: `${routes.blog}/haevelse-og-blaa-maerker` },
+        ],
+      },
+    ],
   },
 ];
 
@@ -720,7 +990,7 @@ export function postFilterSlugs(post: BlogPost): string[] {
   return Array.from(new Set([post.categorySlug, ...(post.tags ?? [])].filter((s): s is string => Boolean(s))));
 }
 
-/** The chips on /blog: "Alle" and every chip with at least one published post (no empty "Botox"). */
+/** The chips on /blog: "Alle" and every chip with at least one published post (no empty chip). */
 export const blogFilters: BlogFilter[] = allBlogFilters.filter(
   (filter) => filter.slug === blogPage.allFilter || posts.some((post) => postFilterSlugs(post).includes(filter.slug)),
 );

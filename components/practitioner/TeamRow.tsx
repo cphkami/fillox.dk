@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ArrowLink, Container, Photo, ScrollRow } from "@/components/ui";
+import { ArrowLink, Container, ScrollRow } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
-import { teamMemberHref } from "@/content/team";
+import { drawnWidthScale, framedPortrait, teamMemberHref, teamSlots } from "@/content/team";
 import type { TeamMember } from "@/content/types";
-import { PORTRAIT_TOP_POSITION } from "./profile";
+import { CropPhoto } from "./CropPhoto";
 
 type TeamRowProps = { members: TeamMember[]; titleId: string };
 
@@ -12,6 +12,10 @@ type TeamRowProps = { members: TeamMember[]; titleId: string };
  * Styled like the home page team row (6a / mf): from 768px a panel with the portraits in a
  * 4-column row; below 768px a horizontal scroll-snap row on the page background. Every
  * portrait links to that practitioner's profile.
+ *
+ * Portraits: framed from the face table (content/team.ts → framedPortrait), as on the other team
+ * rows: the 4:5 team-card crop in the 150 × 190 mobile cards, the taller `teamSlots.row` crop
+ * (190:268) from 768px.
  *
  * The panel is sand, not the home row's secondary beige: it sits right on top of the footer, and
  * sand (#EBE8DF) is 1.49:1 against the Sandbeige footer (#CDBEA7) where secondary (#E1DCCF) is
@@ -41,16 +45,27 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
           aria-label={copy.listLabel}
           className="-my-1.5 -mr-5 -ml-1.5 flex snap-x snap-mandatory scroll-pr-5 scroll-pl-1.5 gap-3 overflow-x-auto overscroll-x-contain py-1.5 pr-5 pl-1.5 [scrollbar-width:none] md:m-0 md:grid md:snap-none md:grid-cols-4 md:gap-5 md:overflow-visible 2xl:gap-6 md:p-0 [&::-webkit-scrollbar]:hidden"
         >
-          {members.map((member) => (
+          {members.map((member) => {
+            const card = member.crops?.about ?? member.image;
+            const tall = framedPortrait(member, teamSlots.row);
+            const cardScale = drawnWidthScale(card, teamSlots.portrait.aspect);
+            const tallScale = drawnWidthScale(tall, teamSlots.row.aspect);
+            return (
             <li key={member.slug} className="w-[150px] flex-none snap-start md:w-auto">
               <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] md:rounded-[20px]">
-                <Photo
-                  image={{ ...member.image, position: PORTRAIT_TOP_POSITION, zoom: undefined }}
-                  // 4 columns in the sand panel: (1536 − 2 × 80 − 3 × 24) / 4 ≈ 326px on the 1600px canvas.
-                  sizes="(min-width: 1600px) 330px, (min-width: 768px) 22vw, 150px"
-                  radius="var(--photo-radius)"
-                  className="h-[190px] [--photo-radius:18px] md:aspect-[190/268] md:h-auto md:[--photo-radius:20px]"
-                  imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"
+                {/* The visible name and role label the link, so the portrait is decorative here.
+                    4 columns in the sand panel: (1536 − 2 × 80 − 3 × 24) / 4 ≈ 326px on the
+                    1600px canvas, ≈ 22vw from 768px, 150px cards below; × the crop's zoom. */}
+                <CropPhoto
+                  mobile={{ ...card, alt: "" }}
+                  desktop={{ ...tall, alt: "" }}
+                  sizes={[
+                    `(min-width: 1600px) ${Math.ceil(330 * tallScale)}px`,
+                    `(min-width: 768px) ${Math.ceil(22 * tallScale)}vw`,
+                    `${Math.ceil(150 * cardScale)}px`,
+                  ].join(", ")}
+                  className="h-[190px] rounded-[18px] md:aspect-[190/268] md:h-auto md:rounded-[20px]"
+                  imgClassName="transition-transform duration-500 group-hover:[transform:scale(1.03)]"
                 />
                 <h3 className="mt-2.5 font-heading text-[16px] text-accent md:mt-[18px] md:border-t md:border-accent md:pt-3.5 md:text-h4 md:tracking-display xl:text-[length:clamp(20px,1.5625vw,25px)] md:text-heading md:group-hover:text-accent">
                   {member.name}
@@ -60,7 +75,8 @@ export function TeamRow({ members, titleId }: TeamRowProps) {
                 </p>
               </Link>
             </li>
-          ))}
+            );
+          })}
         </ScrollRow>
 
         <p className="text-[15px] leading-[44px] md:mt-fluid-48 md:text-center md:text-ui-sm md:leading-normal">

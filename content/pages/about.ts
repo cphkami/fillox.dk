@@ -1,7 +1,7 @@
 import type { ImageRef, Link, RichText } from "../types";
 import { site } from "@/config/site";
 import { aboutTeamAnchor, routes } from "../routes";
-import { teamMemberHref } from "../team";
+import { getTeamMember, teamMemberHref } from "../team";
 import { photos } from "../photos";
 
 /**
@@ -12,6 +12,9 @@ export { aboutTeamAnchor };
 
 /** Slug of the medically responsible doctor (content/team.ts): his portrait and profile link. */
 const doctorSlug = "tom";
+
+const doctorPhoto = getTeamMember(doctorSlug)?.image;
+if (!doctorPhoto) throw new Error(`about: no team member "${doctorSlug}"`);
 
 /**
  * Copy for /om-os.
@@ -110,12 +113,22 @@ export const aboutPage = {
     id: "laegen",
     slug: doctorSlug,
     /**
-     * His photo in the clinic (content/photos.ts, 1223 × 1286), not his team-card portrait, which
-     * is the first card of the team grid further down the page. The alt text may name him.
-     * Optional: without the key, DoctorSection shows his team-card portrait.
+     * His photo in the clinic (content/team.ts, 1223 × 1286), which is also his team-card portrait
+     * further down the page (the owner's choice of 2026-11-25; there is no second photo of him in
+     * the clinic's photos, and the old portrait is gone). So it is shown in a clearly
+     * different crop here: unzoomed, the whole photo's height (him from head to hands, the plant
+     * and the panelled wall), where the team card is a head-and-shoulders close-up. 60%: his face
+     * sits at 58% of the width, so the narrow column at 768px keeps it in the middle. The alt
+     * text may name him. Optional: without the key, DoctorSection shows his team-card crop, which
+     * would then be on the page twice.
      */
     // TODO: copy review (alt text)
-    image: photos.tomKlinik satisfies ImageRef,
+    image: {
+      ...doctorPhoto,
+      alt: "Dr. Tom Haugland i beige uniform i klinikken",
+      position: "60% 25%",
+      zoom: undefined,
+    } satisfies ImageRef,
     title: "En læge, der er en del af hverdagen",
     lead: "Hos Fillox er den medicinsk ansvarlige læge ikke blot et navn på hjemmesiden.",
     paragraphs: [

@@ -117,4 +117,9 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/behandlinger/gummy-smile", destination: "/behandlinger/andre-behandlingsmuligheder#gummy-smile", note: "Gummy smile (preview)" },
   { source: "/behandlinger/hyperhidrose", destination: "/behandlinger/andre-behandlingsmuligheder#svedtendens", note: "Hyperhidrose (preview)" },
   { source: "/behandlinger/traptox", destination: "/behandlinger/andre-behandlingsmuligheder", note: "Traptox (preview)" },
+
+  /* ---------------------------------------- Behandlere, der ikke længere er i Fillox */
+  // Her profile was on the previews; an old link lands on the team section of /om-os
+  // (routes.aboutTeam, written out: this file stays dependency-free).
+  { source: "/behandlere/maria", destination: "/om-os#behandlere", note: "Maria er stoppet i Fillox (2026-11-25)" },
 ];

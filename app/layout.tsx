@@ -70,7 +70,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={site.lang} className={`${figtree.variable} ${poppins.variable} h-full`}>
-      <body className="flex min-h-full flex-col">
+      {/* min-height: the viewport plus the open cookie banner's reserve (--consent-reserve, set by
+          ConsentManager), so on a short page its spacer after the footer extends the page instead
+          of shrinking <main> and moving the footer up (no layout shift when the banner appears). */}
+      <body className="flex min-h-[calc(100%_+_var(--consent-reserve,0px))] flex-col">
         {DevColorTuner ? <DevColorTuner /> : null}
         <a
           href={`#${layoutCopy.mainId}`}

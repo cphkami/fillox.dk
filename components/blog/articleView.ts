@@ -13,7 +13,7 @@ export type ArticleView = {
   path: string;
   /** A practitioner or the team ("Fillox-holdet"): every post is signed. */
   author: PostAuthor;
-  /** Filter chip of the post's category, for the breadcrumb ("Blog → Botox"). */
+  /** Filter chip of the post's category, for the breadcrumb ("Blog → Filler"). */
   category: { label: string; href: string };
   blocks: BlogBlock[];
   /**
