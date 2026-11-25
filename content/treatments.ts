@@ -2,6 +2,7 @@ import type { Bestseller, FaqItem, ImageRef, PriceRow, Treatment } from "./types
 import { routes } from "./routes";
 import { blogPage } from "./pages/blog";
 import { treatmentPage } from "./pages/treatments";
+import { photos } from "./photos";
 import { priceCards } from "./prices";
 import { practitionerBookingHref } from "@/lib/booking";
 import { formatPrice } from "@/lib/format";
@@ -82,22 +83,54 @@ const categoryImage = (categorySlug: string): ImageRef =>
 /** Booking link that preselects a practitioner: /booking?behandler=<slug> (lib/booking.ts). */
 const bookWith = practitionerBookingHref;
 
-/** Photos with their intrinsic size. */
-type Img = Required<Pick<ImageRef, "src" | "width" | "height">>;
-
-const IMG = {
-  duoPink: { src: "/images/results/duo-pink.jpg", width: 2000, height: 1228 },
-} satisfies Record<string, Img>;
-
 /*
  * Before/after results (detail.resultsTitle / resultsIntro / results, components/treatment/
- * ResultsSection): no page has them. The design's lip filler pairs were placeholders (both halves
- * cropped the same stock photo, under "real customers, shared with consent, no filters" and
- * "0,5 ml · 2026"-style captions), so the section was taken out before launch (2026-11).
- * TODO: real before/after photos from Fillox, with the patient's written consent and a legal OK
- * (README → "Før lancering"); then add `results` back, each half with its own alt, e.g.
- * "Læber før behandling med lip filler, 0,5 ml". The section only renders when `results` has items.
+ * ResultsSection): the clinic's own photos of its own clients, shown with their consent (the
+ * owner, 2026-11-24; the written consent per client stays in the journal, README). Files:
+ * public/images/resultater/<pair>-foer.jpg / -efter.jpg, cut from the clinic's composites with
+ * the SAME crop and no other edit on both halves (no retouching, exposure or colour change; the
+ * clinic's logo, frame and labels are left out).
+ *
+ * Rules (a legal check of 2026-11-24, README → "Før lancering"; lov om markedsføring af
+ * sundhedsydelser § 2, VEJ 9319/2013 pkt. 6.2 and 12, BEK 834/2014 § 37):
+ * - same person on both halves, which the intro says; the order follows the clinic's composite
+ *   (top = before) and the visible change: confirm it in the journal (README); nothing about
+ *   amounts, time since treatment, light or filters;
+ * - no "after" taken right after treatment (redness, swelling, an injection mark, fresh aftercare
+ *   gloss on treated lips), no make-up, exposure or sharpness difference that flatters the
+ *   "after", and the same head pose on both halves (a tilted head changes how the chin and lips
+ *   read);
+ * - the caption is the treated area only; "Resultater varierer fra person til person" in the intro;
+ * - NO Botox before/after anywhere (a prescription medicine: lægemiddellovens § 66).
+ * Shown today: one chin-and-lips profile on Kæbelinje. Held back (reasons in the README): the lip
+ * pairs, the men's lip pair, three more chin profiles (IMG_5189: different head pose, light and
+ * sharpness) and the Sunekos eye pair.
  */
+// TODO: copy review (alt texts, captions and the intro)
+const chinResults: Pick<Detail, "resultsTitle" | "resultsIntro" | "results"> = {
+  resultsTitle: "Før og efter",
+  resultsIntro:
+    "Billeder af en af vores egne klienter, vist med klientens samtykke. Billederne viser den samme person før og efter behandling med filler. Resultater varierer fra person til person.",
+  results: [
+    {
+      before: {
+        src: "/images/resultater/hage-1-foer.jpg",
+        alt: "Hage og læber i profil før behandling med filler",
+        position: "50% 50%",
+        width: 863,
+        height: 363,
+      },
+      after: {
+        src: "/images/resultater/hage-1-efter.jpg",
+        alt: "Samme klients hage og læber i profil efter behandling med filler",
+        position: "50% 50%",
+        width: 863,
+        height: 363,
+      },
+      caption: "Hage og læber",
+    },
+  ],
+};
 
 const relatedPostsIntro =
   "Alt det, du gerne vil vide før din første behandling, skrevet af vores behandlere.";
@@ -264,13 +297,10 @@ export const treatments: Treatment[] = [
     detail: {
       title: "Lip Filler",
       lead: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, du kan altid bygge på senere.",
-      heroImage: {
-        src: IMG.duoPink.src,
-        alt: "To smilende kvinder foran en rosa baggrund",
-        position: "50% 50%",
-        width: 2000,
-        height: 1228,
-      },
+      // The clinic's own photo (content/photos.ts); a syringe is fine on a filler page. Not a client:
+      // the single "after" shots of lips were taken right after treatment and read as results.
+      // TODO: copy review (image choice + alt text)
+      heroImage: photos.behandlerSproejte,
       // fillox.dk/fillers/lip-filler: behandlingstid ca. 20 min, varighed cirka 6–9 måneder.
       facts: [
         { label: "Pris", value: from(lowestListPrice("lip-filler")) },
@@ -297,8 +327,8 @@ export const treatments: Treatment[] = [
       practitionerText:
         "Maria er en detaljeorienteret og holistisk sygeplejerske med flere års erfaring inden for æstetiske behandlinger og ekspert i både fillers og rynkebehandling. Hendes øje for kvalitet og sans for det naturlige resultat skinner igennem i alle behandlinger.",
       practitionerQuote: "At se mine tilfredse kunder smile er en af de største glæder, jeg har.",
-      // No results section until Fillox delivers real before/after photos (see "Before/after
-      // results" above): the design's three pairs were one stock photo with invented captions.
+      // No results section yet: the clinic's lip pairs are held back (see "Before/after results"
+      // above and the README). The design's three pairs were one stock photo with invented captions.
       pricesTitle: "Vælg din mængde",
       pricesIntro:
         "Din behandler anbefaler mængden ved konsultationen. Mange starter med 0,5 ml og bygger på senere.",
@@ -403,6 +433,7 @@ export const treatments: Treatment[] = [
       lead: "Filler i kæbelinjen giver en tydeligere overgang mellem hoved og hals og en mere markant profil, og du fremstår slankere i ansigtet.",
       heroImage: categoryImage("fillers"),
       ...kaebelinjeAbout,
+      ...chinResults,
     },
   },
   {
@@ -685,14 +716,12 @@ export const treatments: Treatment[] = [
       ],
       metaDescription:
         "Nogle ønsker en vurdering af læbernes form eller ansigtets konturer. Andre søger hjælp til gener som kraftig svedtendens eller spændinger i kæbemusklerne.",
-      // TODO: copy review (image choice + alt text; the design has no photo for this page)
-      heroImage: {
-        src: "/images/hero/hero-3.jpg",
-        alt: "Kvinde med langt brunt hår i aftenlys",
-        position: "50% 35%",
-        width: 1200,
-        height: 1500,
-      },
+      // TODO: copy review (image choice + alt text; the design has no photo for this page). A page
+      // under the rynkebehandling hub: a mood photo without product, syringe or "result"
+      // (content/photos.ts); the hub itself shows the window photo. 85%: the long-form hero is a
+      // tall, narrow slot from 1024px (≈ 488 × 970), which shows a third of the photo's width; this
+      // keeps the whole mirror in it.
+      heroImage: { ...photos.spejl, position: "85% 45%" },
       // TODO: copy review — accessible name of the hero's jump links, and their short labels
       // (`navLabel`, the items' own words).
       jumpLabel: "Problemstillinger på siden",
@@ -1100,7 +1129,9 @@ export const treatments: Treatment[] = [
     short: "Laser hårfjerning på ryg, skuldre, bryst og resten af kroppen, med faste priser på kombinerede områder.", // TODO: copy review
     detail: {
       lead: "Hårfjerning med diodelaser på ryg, skuldre, bryst og resten af kroppen. Indstillingerne tilpasses din hudtype og hårstruktur.", // TODO: copy review
-      heroImage: categoryImage("for-maend"),
+      // The treatment room, as on laser hårfjerning: not Mike (the category photo), since the
+      // page's practitioner section presents someone else. TODO: copy review (image choice)
+      heroImage: photos.behandlingsrum,
       facts: laserFacts(lowestListPrice("laser-harfjerning")),
       ...laserAbout,
       pricesTitle: "Priser for mænd",

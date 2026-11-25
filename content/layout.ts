@@ -6,6 +6,7 @@
 import { site } from "@/config/site";
 import { forms } from "./forms";
 import { routes } from "./routes";
+import { photos } from "./photos";
 
 export const layoutCopy = {
   meta: {
@@ -18,13 +19,16 @@ export const layoutCopy = {
     // place of "botox" (a prescription medicine; 2026-10). Also the Organization JSON-LD description.
     description:
       "Tryg rynkebehandling, fillers og hudforbedring – udført af læger og sygeplejersker og tilpasset din anatomi. Klinikker i København og omegn.",
-    /** Default social sharing image (1200×630 crop is taken from the centre). */
+    /**
+     * Default social sharing image: a 1200 × 630 crop of the clinic's mirror photo
+     * (content/photos.ts; no product, no client's result).
+     */
     // TODO: copy review (alt text)
     ogImage: {
-      src: "/images/results/duo-pink.jpg",
-      alt: "To smilende kvinder foran en rosa baggrund",
-      width: 2000,
-      height: 1228,
+      src: photos.ogSpejl.src,
+      alt: photos.ogSpejl.alt,
+      width: photos.ogSpejl.width,
+      height: photos.ogSpejl.height,
     },
   },
 

@@ -4,7 +4,8 @@ import { formatDecimal } from "@/lib/format";
 import { reviewsFor } from "../reviews";
 import { ui } from "../ui";
 import { routes } from "../routes";
-import { treatmentHref } from "../treatments";
+import { getTreatment, treatmentHref } from "../treatments";
+import { photos } from "../photos";
 
 /**
  * Front page copy (design 6a desktop, mf mobile). Copy is verbatim from the design.
@@ -19,7 +20,14 @@ import { treatmentHref } from "../treatments";
 
 type Stat = { value: string; label: string };
 type Usp = { title: string; text: string };
-type ResultPhoto = { image: ImageRef; caption: string; href: string };
+type TreatmentPhoto = { image: ImageRef; caption: string; href: string };
+
+/** A treatment's name for a caption (content/treatments.ts), e.g. "Lip filler". */
+function treatmentName(slug: string): string {
+  const treatment = getTreatment(slug);
+  if (!treatment) throw new Error(`home: no treatment "${slug}"`);
+  return treatment.name;
+}
 
 export const homePage = {
   meta: {
@@ -39,12 +47,10 @@ export const homePage = {
     leadShort: "Trygge, professionelle behandlinger, udført af læger og sygeplejersker og tilpasset din egen anatomi.",
     primaryCta: { label: ui.bookCta, href: site.booking.href } satisfies Link,
     secondaryCta: { label: ui.seePrices, href: routes.prices } satisfies Link,
-    image: {
-      src: "/images/hero/hero-warm.jpg",
-      alt: "Kvinde med langt, gyldenbrunt hår og glødende hud i varmt lys",
-      // Face sits in the upper half; keep the eyes clear of the top edge on wide crops.
-      position: "50% 30%",
-    } satisfies ImageRef,
+    // The clinic's own photo (content/photos.ts). The practitioner's face sits at ≈ 45% × 58%; 62%
+    // keeps it in the landscape crops below 1024px, and her hands and the client's face in the
+    // portrait column from 1024px. TODO: copy review (alt text)
+    image: photos.behandlingKlient satisfies ImageRef,
     stats: [
       { value: "10.000+", label: "Behandlinger" },
       { value: "4", label: "Klinikker" },
@@ -74,38 +80,36 @@ export const homePage = {
       "Det bedste resultat er det, ingen bemærker, kun at du ser veludhvilet ud, som på de gamle billeder. Derfor starter enhver behandling med en ærlig konsultation, hvor vi lige så gerne fraråder som anbefaler.",
     introShort:
       "Det bedste resultat er det, ingen bemærker, kun at du ser veludhvilet ud. Derfor starter enhver behandling med en ærlig konsultation, hvor vi lige så gerne fraråder som anbefaler.",
-    // TODO: copy review (accessible name of the mobile scroll row, not in the design)
-    listLabel: "Resultater",
+    /**
+     * Mood photos of the clinic, each linking to a treatment; the caption is the treatment's name.
+     * Not results: no client's result and no before/after here, no year or amount in the caption.
+     * The clinic's before/after pairs are on the treatment pages (content/treatments.ts →
+     * `results`; Kæbelinje so far). No rynkebehandling card: Botox is a prescription medicine.
+     * `alt: ""`: the visible caption names the link, so the photo is decorative there (as on the
+     * team cards and blog cards); its description would only lengthen the link's name.
+     */
+    // TODO: copy review (accessible name of the mobile scroll row, not in the design; the cards
+    // were "Resultater" while they showed stock photos captioned as results)
+    listLabel: "Behandlinger",
     items: [
       {
-        image: {
-          src: "/images/results/duo-pink.jpg",
-          alt: "To smilende kvinder foran en rosa baggrund",
-          position: "50% 50%",
-        },
-        caption: "lip filler, 2026",
+        image: { ...photos.sproejte, alt: "" },
+        caption: treatmentName("lip-filler"),
         href: treatmentHref("lip-filler"),
       },
       {
-        image: {
-          src: "/images/results/duo-color.jpg",
-          alt: "To smilende kvinder foran en beige og rosa baggrund",
-          position: "50% 50%",
-        },
-        // TODO: copy review — the hub's name in place of "botox" (a prescription medicine; 2026-10).
-        caption: "rynkebehandling, 2026",
-        href: treatmentHref("rynkebehandling"),
+        // Mike (he offers facial fillers, content/team.ts), unnamed here: a different face from
+        // the hero and the other two cards. No client, no injection.
+        image: { ...photos.mikeKlinik, alt: "" },
+        caption: treatmentName("kaebelinje"),
+        href: treatmentHref("kaebelinje"),
       },
       {
-        image: {
-          src: "/images/results/behandling-3.jpg",
-          alt: "Fillox-logoet på væggen i klinikken",
-          position: "50% 50%",
-        },
-        caption: "skinbooster, 2025",
+        image: { ...photos.behandlerVindue, alt: "" },
+        caption: treatmentName("skinbooster"),
         href: treatmentHref("skinbooster"),
       },
-    ] satisfies ResultPhoto[],
+    ] satisfies TreatmentPhoto[],
   },
 
   team: {
@@ -121,12 +125,12 @@ export const homePage = {
     label: "Kundeanmeldelser",
     /** Verified Trustpilot reviews, rotated (content/reviews.ts → reviewSets.home). */
     reviews: reviewsFor({ set: "home" }).reviews,
-    /** Desktop only (the mobile card has no photo). Decorative next to the quote. */
-    image: {
-      src: "/images/results/duo-pink.jpg",
-      alt: "",
-      position: "50% 50%",
-    } satisfies ImageRef,
+    /**
+     * Desktop only (the mobile card has no photo). Decorative next to the quote (alt=""): the
+     * empty treatment room, no person (content/photos.ts). Not the mirror photo: a woman looking
+     * at her face next to a client's review reads as that reviewer's result.
+     */
+    image: { ...photos.behandlingsrum, alt: "" } satisfies ImageRef,
   },
 
   clinics: {

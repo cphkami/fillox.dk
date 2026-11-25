@@ -3,6 +3,7 @@
  * name, contact details and clinics come from config/site.ts and content/clinics.ts;
  * this file only holds what the component cannot derive from them.
  */
+import { photos } from "./photos";
 
 /** schema.org day names. */
 export type SchemaDay = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
@@ -23,8 +24,8 @@ export const seoContent = {
 
   /**
    * Photo used in the structured data for a clinic without its own `seoImage`
-   * (content/clinics.ts); same placeholder as the /klinikker cards.
+   * (content/clinics.ts); the same treatment room as the /klinikker cards (content/photos.ts).
    */
-  // TODO: set seoImage on each clinic in content/clinics.ts once photos exist (geo is set).
-  clinicImage: "/images/results/behandling-3.jpg",
+  // TODO: set seoImage on each clinic in content/clinics.ts once photos of each clinic exist (geo is set).
+  clinicImage: photos.behandlingsrum.src,
 };

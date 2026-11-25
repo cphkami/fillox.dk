@@ -47,6 +47,7 @@ content/
   treatments.ts                every treatment (slug, name, category, priceFrom, short, detail?)
   team.ts                      practitioners
   reviews.ts                   verified Trustpilot reviews (verbatim) + where each is shown (see "Reviews")
+  photos.ts                    the clinic's own mood photos: file, size, alt, default crop (see "Photos")
   blog.ts                      blog posts
   prices.ts                    price list (Priser page)
   ui.ts                        shared UI strings ("Book tid", "Se priser", "Læs mere" …)
@@ -78,6 +79,8 @@ components/
   <page>/                      page-local components (owned by that page)
 app/                           routes (see below)
 design-reference/              the source design: screens/*.png, sections/*.html, uploads/
+public/images/                 fillox/ (the clinic's mood photos), resultater/ (before/after halves),
+                               team/ (portraits), clinics/kort.svg (the mobile clinic map)
 ```
 
 ## Routes
@@ -87,11 +90,11 @@ design-reference/              the source design: screens/*.png, sections/*.html
 | `/` | `6a` / `mf` |
 | (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
-| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo has a desktop crop in content (`hero.imagePositionDesktop`, 15% from 1024px). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
+| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo is the clinic's group photo (four practitioners, unnamed), with a desktop crop in content (`hero.imagePositionDesktop`, 50% 30% from 1024px); the doctor section shows `doctor.image` (Dr. Tom in the clinic, `DoctorSection` → `OwnPhoto`) instead of his team-card portrait. The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). Anette's palette: the name (H1) takes `text-emphasis` (plum); the closing "Book tid hos …" band (the design's powder) is the Lys Rosa `band`, because a beige panel reads as one block with the Sandbeige footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
-| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row). The design's before/after section (`ResultsSection`) is built but shown on no page: its lip filler pairs were one stock photo with invented captions, so they were removed before launch until real photos with consent exist (`content/treatments.ts`, README) |
+| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row). The design's before/after section (`ResultsSection`, "Før og efter") shows the clinic's own pairs on Kæbelinje only (see "Photos" → "Before/after"); the design's lip filler pairs were one stock photo with invented captions and are gone |
 | `/behandlinger/rynkebehandling` | no design: a long-form page (`detail.sections`, see "Long-form treatment pages") with the owner's agency text, verbatim. Replaces the Botox page: `/behandlinger/botox`, `/behandlinger/botox-for-maend` and the live `/rynkebehandling` redirect here |
 | `/behandlinger/andre-behandlingsmuligheder` | no design: long-form page under the hub (breadcrumb via `detail.parentSlug`, compact H1). Replaces the live `/ovrige-botox-behandlinger` and the lip flip, gummy smile, hyperhidrose and Traptox pages, which redirect here (the first three to their sections `#lip-flip`, `#gummy-smile`, `#svedtendens`; Traptox has no section) |
 | `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with offwhite text, Sandbeige accents, offwhite pills (sand on hover) and an offwhite focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
@@ -143,6 +146,8 @@ Botox (botulinumtoksin) is a prescription medicine and must not be advertised to
   sentences above, and the blog: three articles (`botox-for-foerste-gang`,
   `hvornaar-giver-det-mening-at-starte-med-botox`, `de-foerste-24-timer-efter-botox`) and the
   /blog filter chip "Botox" still name the product (open legal question, README).
+- **Photos without product or syringe, and no before/after** on the two wrinkle pages and the Botox
+  blog posts (see "Photos"): a before/after of a Botox result would advertise the medicine.
 - **No reviews, results, blog posts or "fra" price** on the two wrinkle pages (long-form pages
   show only what their content gives; `treatmentsWithoutReviews` is a second guard). Menus, cards
   and the home page still show the hub's `priceFrom` (lowest row on the price card).
@@ -198,6 +203,88 @@ in the content file's header.
 Navigation: "Ny hos Fillox?" is the second item of the "Om os" menu (`content/navigation.ts` →
 `mainNav`: the header dropdown and the mobile menu's "Om os" accordion; on that page the "Om os"
 trigger is marked current) and a footer link (`footerNav`, after "Om os").
+
+## Photos
+
+The clinic's own photos (Google Drive, the owner's approval of 2026-11-24: "the clients gave consent
+and the clinic may use all its content on its own website") replaced every stock photo. No stock is
+left in `public/images/`.
+
+- **Mood photos** — `public/images/fillox/`, registered in `content/photos.ts` (file, intrinsic
+  `width` / `height`, a default Danish `alt`, a default crop `position` on the face or subject). A
+  placement spreads an entry and overrides `position` (or `alt: ""` where the photo is decorative):
+  `{ ...photos.sproejte, position: "55% 12%" }`. Placements: home hero, home treatment cards,
+  home testimonial (`behandlingsrum`, decorative), /behandlinger hero, `categoryImages` /
+  `defaultImage` and the lip filler, "andre behandlingsmuligheder" and laser for mænd heroes
+  (`content/pages/treatments.ts`, `content/treatments.ts`), /om-os hero and doctor,
+  /ny-hos-fillox hero and closing band, the /klinikker cards and the clinics' JSON-LD image
+  (`content/seo.ts`), /priser's financing box, /ledige-stillinger (the group photo),
+  /content-creator, every blog post, and the default share image (`og-spejl.jpg`, 1200 × 630,
+  `content/layout.ts` → `meta.ogImage`).
+- **Share images** — link previews centre-crop og:image to 1.91 : 1, which cut the faces off the
+  portrait photos. Every photo that is a page's share image has a `share` crop
+  (`og-<file>.jpg`, ≈ 1.91 : 1, cut at the subject, at the file's own width up to 1200px: no
+  upscaling); `shareImage()` (lib/metadata.ts) publishes it. `pageShareImage()` (used by
+  `pageMetadata` and the blog posts) falls back to the site's default for a page photo narrower
+  than 1.5 : 1 without a `share` crop. A new share photo needs its crop (the alt text must still
+  hold for it).
+- **People** — only Dr. Tom (`tomKlinik`) and Mike (`mikeKlinik`) are identified and may be named in
+  an alt text. Every other practitioner, the group photo and every client stays unnamed (alt texts,
+  captions, file names, comments), and no unnamed practitioner's face sits next to a named author
+  (the featured blog post by Annika shows the mirror photo).
+- **Prescription medicine** — the rynkebehandling pages, the Botox blog posts and /ny-hos-fillox
+  (it leads to them) use photos without product, syringe, needle or vial and with no treatment in
+  progress (`spejl`, `behandlingsrum`, `behandlerVindue`, `behandlerPortraet2`), never as a
+  result; the syringe photos (`sproejte`, `behandlerSproejte`) are for filler pages and posts.
+  Judge the image itself, not its description: Drive 382DC544, first described as a
+  consultation, is an injection at the client's brow (a typical Botox site) and is used nowhere.
+  Not used either: both Academy training photos (the "croma" filler brand on the safety glasses,
+  next to the face), the practitioner with a Profhilo box (device advertising with a health
+  professional's endorsement) and the single "after" shots of clients (they read as results; one
+  shows a filler brand). README → "Før lancering" → "Fotos fra Drive" has the reasons and the
+  owner's checks.
+- **Home treatment cards** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` → `results`):
+  mood photos captioned with the treatment's name (from `content/treatments.ts`) and linking to it —
+  Lip filler (`sproejte`), Kæbelinje (`mikeKlinik`), Skinbooster (`behandlerVindue`). Not results:
+  no client, no year, no amount, no rynkebehandling. `alt: ""` on all three, as on the team and blog
+  cards: the caption names the link. `components/home/Results.tsx` → `photoSizes` asks for the
+  card width, or card height × aspect for a photo wider than the 5 : 6 card, × the 3% hover zoom.
+- **Resolution** — the files are 782–1548px wide. Every slot gets at least its CSS width at 1x
+  (`sizes` measured at 390 / 768 / 1024 / 1280 / 1440 / 1600), except the blog article header
+  (1440 × 620 on the 1600 canvas): only `spejl` (1548px) fills it; the others are drawn up to
+  1.84× there (`sproejte`, 782px; `behandlerFolder`, 854px, 1.69×). None is sharp at 2x in the
+  widest slots: larger originals of the same photos need no code change (README asks for them).
+- **`sizes` that follow the photo** — portrait photos replaced landscape stock in several slots, so
+  these now compute `sizes` from the image's aspect and the slot's measured height: `TreatmentHero`
+  (`heroSizes`: 860px slot height on template pages, 980 / 920px on long-form pages, whose hero is
+  taller), `TextPageHero`, `FeaturedPost`, `DoctorSection` → `OwnPhoto`; fixed values (for the
+  current photo; recompute when it changes) in `AboutHero`, `NewHereHero`, the home testimonial
+  (hidden below 1024px: ends in `1px`).
+
+### Before/after
+
+`content/treatments.ts` → "Before/after results" (the rules) and `chinResults`; files in
+`public/images/resultater/<pair>-foer.jpg` / `-efter.jpg`. Today one chin-and-lips profile pair on
+`/behandlinger/kaebelinje` (a second, IMG_5189, is held back: different head pose, light and
+sharpness on the two halves), heading "Før og efter", an intro that says it is the same person,
+shown with consent, and "Resultater varierer fra person til person" (shown at every width: the design
+hid the intro below 768px), captions with the treated area only. Each half has its own alt ("… før
+behandling med filler" / "Samme klients … efter …"). Both halves of a pair share one crop
+(`position`), and both need `width` / `height` (`BeforeAfter` requires them: the layout below is
+computed from them). Never: Botox pairs, amounts, time since treatment, "uden filter", "samme lys".
+
+`components/treatment/ResultsSection` picks a layout from the halves' aspect (`width` / `height`):
+
+| Layout | When | Card |
+|---|---|---|
+| `side` | any half is portrait | the design: before and after side by side in a 300 → 400 → 520px tall box |
+| `stacked` | all halves landscape, 2–3 pairs | before over after, each half in a slot of the section's common aspect (the geometric mean of all halves' aspects), so every card has the same shape |
+| `wide` | all halves landscape, 1 pair (Kæbelinje today) | before and after side by side across the row from 768px, in the same common-aspect slots |
+
+Columns from 768px = the number of pairs, up to 3, so one or two pairs fill the row. Below 768px the
+design's white 300px cards in a scroll row (stacked halves 280px wide). `sizes`: `sideSizes` (box
+height × aspect, or half a column) and `landscapeSizes` (the column, or half of it, × the photo's
+aspect over the slot's when it is wider), from the measured column widths (content width − gaps).
 
 ## Booking providers
 
@@ -411,12 +498,11 @@ clinics USP strip …)
 | `footer-line` | `rgb(51 33 29 / .18)` | dividers (decorative) |
 | `footer-card` / `footer-card-hover` | white 35% / 50% | phone / e-mail / booking cards |
 
-**Not changed by the palette (yet).** Some stock photos have salmon backdrops (`hero/hero-1.jpg`
-on /behandlinger, `results/duo-pink.jpg` in the home testimonial, the lip-filler hero) close to the rejected
-dusty rose; they need re-exporting with the backdrop graded toward Lys Rosa (an image job: a CSS
-filter would shift skin tones too). The Gecko booking theme follows the palette in
-`integrations/gecko/` (its own light fill `#F4F3EE`, because Gecko sits on the white card, not on
-the offwhite page); the live booking keeps the old theme until the new CSS is pasted into Gecko.
+**Not changed by the palette (yet).** The stock photos with salmon backdrops are gone (November
+2026: the clinic's own photos, see "Photos"; their rose-beige walls sit well with Lys Rosa). The
+Gecko booking theme follows the palette in `integrations/gecko/` (its own light fill `#F4F3EE`,
+because Gecko sits on the white card, not on the offwhite page); the live booking keeps the old
+theme until the new CSS is pasted into Gecko.
 
 The footer shows the black logo (`site.brand.logoDark`, as the header). Its only button is the
 newsletter's "Tilmeld" (owner, round 4: two CTAs in the footer made no sense); booking is the
@@ -738,7 +824,9 @@ at rest keeps the brown hover (hover / focus classes outrank a breakpoint class)
   **1536px** wide. Example: half of a surface band → `"(min-width: 1600px) 768px,
   (min-width: 1024px) 50vw, 100vw"`; a 3-column content grid with 24px gaps →
   `(1440 − 48) / 3 = 464px` → `"(min-width: 1600px) 464px, (min-width: 1024px) 30vw, …"`.
-  Source files are limited (hero JPGs are 1200 × 1500): don't upscale files.
+  Source files are limited (the clinic's photos are 782–1548px wide, see "Photos"): don't upscale
+  files. A photo whose aspect is wider than its cover slot is drawn at slot height × aspect: ask for
+  that width (the "Photos" section lists the components that compute it).
   A photo hidden below a breakpoint (`max-lg:hidden`) ends its `sizes` with `1px`, so phones
   fetch the tiniest variant (an eager / high-priority photo is still fetched and preloaded while
   hidden). Its `vw` values then go in `calc()` (`calc(44vw)`): a bare `44vw` makes next/image drop

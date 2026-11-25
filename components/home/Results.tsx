@@ -1,23 +1,41 @@
 import Link from "next/link";
 import { Container, Photo, ResponsiveText, ScrollRow, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
+import type { ImageRef } from "@/content/types";
+
+/** Card shape from 1024px (`aspect-[5/6]`) and the mobile card (230 × 280). */
+const CARD_ASPECT = 5 / 6;
+const MOBILE_CARD = { w: 230, h: 280 };
+/** The 3% hover zoom. */
+const HOVER_ZOOM = 1.03;
 
 /**
- * Rendered width of the result photos. The landscape photos are cover-cropped into
- * portrait 5:6 boxes, so they display at box height × aspect ratio (up to 1.63, plus the
- * 3% hover zoom), not at box width: mobile 230 × 280 → ~470px; 1024–1179 ≤ 300 × 360 →
- * ~600px; 1180–1279 ≤ 333 × 400 → ~670px; from xl the boxes fill a third of the content
- * width (~454 × 545 on the 1600 canvas → ~915px; 58vw between 1280 and 1600).
+ * `sizes` of a card photo: the card's width, or more when the photo is wider than the card
+ * (cover paints it card-height × aspect wide), × the hover zoom. Card widths: mobile 230px;
+ * 1024–1179 ≤ 300px; 1180–1279 ≤ 333px; from 1280 a third of the content width minus the gaps
+ * (≈ 28.4vw; 454px on the 1600 canvas).
  */
-const RESULT_PHOTO_SIZES =
-  "(min-width: 1600px) 920px, (min-width: 1280px) 58vw, (min-width: 1180px) 680px, (min-width: 1024px) 600px, 470px";
+function photoSizes(image: ImageRef): string {
+  const aspect = image.width && image.height ? image.width / image.height : CARD_ASPECT;
+  const k = Math.max(1, aspect / CARD_ASPECT) * HOVER_ZOOM;
+  const mobile = Math.max(MOBILE_CARD.w, MOBILE_CARD.h * aspect) * HOVER_ZOOM;
+  return [
+    `(min-width: 1600px) ${Math.ceil(454 * k)}px`,
+    `(min-width: 1280px) ${(28.4 * k).toFixed(1)}vw`,
+    `(min-width: 1180px) ${Math.ceil(333 * k)}px`,
+    `(min-width: 1024px) ${Math.ceil(300 * k)}px`,
+    `${Math.ceil(mobile)}px`,
+  ].join(", ");
+}
 
 /**
  * "Vi fremkalder, vi forandrer ikke". Desktop (6a): three centred photos with italic
- * captions on the page background. 1024–1279: as the design, a centred row of three
- * photos ≤ 300px wide (3 × 300 + 2 × 32 = 964px on the design's 1180 canvas); past 1180 the
- * photos grow with the viewport instead, keeping the design's 52px inset from the content
- * edge ((100% − 2 × 52 − 64) / 3). From xl they fill the content width in three columns.
+ * captions on the page background. The photos are the clinic's own mood photos, each captioned
+ * with and linking to a treatment (content/pages/home.ts → `results`); they are not results.
+ * 1024–1279: as the design, a centred row of three photos ≤ 300px wide (3 × 300 + 2 × 32 = 964px
+ * on the design's 1180 canvas); past 1180 the photos grow with the viewport instead, keeping the
+ * design's 52px inset from the content edge ((100% − 2 × 52 − 64) / 3). From xl they fill the
+ * content width in three columns.
  * Mobile (mf): sand panel with a horizontal scroll row.
  *
  * Below lg the sand panel sits on the surface margin; from lg the panel is transparent
@@ -57,7 +75,7 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
               <Link href={item.href} className="group block rounded-[20px] lg:rounded-[24px]">
                 <Photo
                   image={item.image}
-                  sizes={RESULT_PHOTO_SIZES}
+                  sizes={photoSizes(item.image)}
                   radius="var(--photo-radius)"
                   className="h-[280px] [--photo-radius:20px] lg:aspect-[5/6] lg:h-auto lg:shadow-photo lg:[--photo-radius:24px]"
                   imgClassName="transition-transform duration-500 group-hover:scale-[1.03]"

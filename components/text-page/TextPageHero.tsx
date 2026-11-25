@@ -1,8 +1,21 @@
 import { Container, Eyebrow, Photo } from "@/components/ui";
-import type { TextPageContent } from "@/content/types";
+import type { ImageRef, TextPageContent } from "@/content/types";
 import { cn } from "@/lib/cn";
 
 type TextPageHeroProps = { hero: TextPageContent["hero"]; titleId: string };
+
+/**
+ * Photo `sizes`. Desktop: the photo covers half the surface band (50vw, 768px on the 1600 canvas),
+ * at least 480px tall (576px at 1600; taller with a long intro). A portrait or square photo
+ * renders at the half band's width; a landscape one by height (≈ 520–600px × its aspect) where
+ * that is wider. Below 1024px the band's width (260 / 380px high).
+ */
+function photoSizes(image: ImageRef): string {
+  const aspect = image.width && image.height ? image.width / image.height : 1.63;
+  const wide = Math.ceil(Math.max(768, 600 * aspect));
+  const desktop = aspect > 1 ? `${Math.ceil(Math.max(616, 520 * aspect))}px` : "50vw";
+  return `(min-width: 1600px) ${wide}px, (min-width: 1024px) ${desktop}, 100vw`;
+}
 
 /**
  * Text page hero, in the language of the 6om / 6kl heroes:
@@ -48,10 +61,7 @@ export function TextPageHero({ hero, titleId }: TextPageHeroProps) {
         {image ? (
           <Photo
             image={image}
-            // Desktop: the landscape photo covers a half band that is only a little wider than
-            // tall, so it renders by height: min 480px (576px on the 1600 canvas) × up to ~1.63
-            // (duo-pink) → ≈ 780px at 1024–1280, ≈ 940px on the 1600 canvas.
-            sizes="(min-width: 1024px) 940px, 100vw"
+            sizes={photoSizes(image)}
             priority
             radius="var(--text-hero-radius)"
             className="mt-4 h-[260px] [--text-hero-radius:22px] md:mt-3 md:h-[380px] md:[--text-hero-radius:24px] lg:mt-0 lg:h-auto lg:min-h-fluid-480 lg:[--text-hero-radius:0px]"

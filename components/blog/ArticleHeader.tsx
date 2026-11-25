@@ -101,7 +101,6 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
         <div className="overflow-hidden rounded-[22px] md:rounded-[24px]">
           <Photo
             image={post.image}
-            position={post.blogImagePosition}
             sizes="(min-width: 1600px) 1440px, 100vw"
             priority
             className="h-[260px] md:h-[400px] lg:h-fluid-480/620"

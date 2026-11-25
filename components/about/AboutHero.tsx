@@ -14,8 +14,8 @@ type AboutHeroProps = { hero: AboutPageCopy["hero"]; titleId: string };
  *   6om's 64px: "Ekspertbehandling" is one long word (≈ 9.05em of Poppins 500), which must fit
  *   the column on one line: 48px at 1024–1279 (`text-h1-xs`: 434px in a 440px column at 1024),
  *   52 → 60px from 1280 (`text-h1-sm`).
- * - Photo crop: `image.position` (centred) below 1024px, where the wide cell shows the whole
- *   logo; `imagePositionDesktop` from 1024px, where the cell is a narrow portrait slice.
+ * - Photo crop: `image.position` below 1024px, where the cell is a landscape strip of the
+ *   portrait group photo; `imagePositionDesktop` from 1024px, where the cell is a portrait.
  * - Mobile (mo): rounded photo on top, text on cream below, full-width CTA. The H1 is 36px from
  *   396px and 9.1vw below (30px at 320), so the word fits the 280–350px column.
  * - Text: the eyebrow is the source's page title, the H1 its bold opening line, then the first
@@ -41,12 +41,11 @@ export function AboutHero({ hero, titleId }: AboutHeroProps) {
         <Photo
           image={hero.image}
           imgClassName="lg:object-(--about-hero-photo-lg)!"
-          // Desktop: the landscape photo (3:2) covers the photo column at the panel's height
-          // (≈ 760–850px with this text), so it is drawn ≈ 1.5 × that wide: ≈ 1140px from 1024,
-          // ≈ 1280px on the 1600 canvas. Mobile: 280px high → ≈ 420px wide (the full band from
-          // 768). The current file is only 800px wide (see the TODO in content/pages/about.ts);
-          // these sizes are ready for a larger original.
-          sizes="(min-width: 1600px) 1280px, (min-width: 1024px) 1140px, (min-width: 768px) 100vw, 420px"
+          // Desktop: the portrait group photo (1206 × 1468 = 0.82) covers the photo column (≈ 435 ×
+          // 800px at 1024, ≈ 715 × 760 on the 1600 canvas): it is drawn at the column's width, or
+          // at panel height × 0.82 where that is wider (≈ 660px at 1024). Below 1024px the band's
+          // width (280 / 440px high).
+          sizes="(min-width: 1600px) 720px, (min-width: 1024px) 680px, 100vw"
           priority
           radius="var(--hero-photo-radius)"
           className="mt-2 h-[280px] [--hero-photo-radius:24px] md:h-[440px] lg:order-last lg:mt-0 lg:h-auto lg:min-h-fluid-600/680 lg:[--hero-photo-radius:0px]"

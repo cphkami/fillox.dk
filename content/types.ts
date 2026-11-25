@@ -22,12 +22,21 @@ export type ImageRef = {
    */
   zoom?: number;
   /**
-   * Intrinsic pixel size of the file. Optional: only needed where the size is
-   * published, e.g. og:image:width / og:image:height for a blog post's share image.
+   * Intrinsic pixel size of the file. Give it for every photo: components compute `sizes` (and
+   * the before/after layout) from the aspect, and og:image publishes it.
    */
   width?: number;
   height?: number;
+  /**
+   * Link-preview crop of this photo (≈ 1.91 : 1, cut at its subject, never wider than the file).
+   * Previews (Facebook, LinkedIn, X) centre-crop og:image to 1.91 : 1, which cuts the faces off a
+   * portrait photo, so `shareImage()` (lib/metadata.ts) publishes this file instead.
+   */
+  share?: { src: string; width: number; height: number };
 };
+
+/** An image whose intrinsic size is known (where a layout is computed from it). */
+export type SizedImageRef = ImageRef & { width: number; height: number };
 
 export type Link = { label: string; href: string };
 
@@ -123,10 +132,14 @@ export type PriceRow = {
 export type FaqItem = { question: string; answer: string };
 
 export type BeforeAfter = {
-  before: ImageRef;
-  after: ImageRef;
-  caption: string; // "Pande · 2026"
-  /** Shorter caption on mobile when the design differs, e.g. "0,5 ml · 2026". */
+  /**
+   * Both halves need their size: ResultsSection picks its layout and the slot shape from the
+   * aspects (content/treatments.ts → "Before/after results").
+   */
+  before: SizedImageRef;
+  after: SizedImageRef;
+  caption: string; // "Hage og læber": the treated area only (no amount or year)
+  /** Shorter caption on mobile when the design differs. */
   mobileCaption?: string;
 };
 
@@ -510,12 +523,6 @@ export type BlogPost = {
   relatedPostSlugs?: string[];
   /** "Læs også" on mobile when the design differs (shows 2). */
   relatedPostSlugsMobile?: string[];
-  /**
-   * CSS object-position of `image` on the blog pages (6blog/mbl cards and thumbnails,
-   * 6art/mar article hero and "Læs også") when it differs from `image.position`,
-   * e.g. "50% 50%" (the design crops these photos centred).
-   */
-  blogImagePosition?: string;
 };
 
 /* --------------------------------------------------------------- Navigation */

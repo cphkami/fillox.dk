@@ -4,6 +4,7 @@ import { pricesPage } from "../prices";
 import { routes } from "../routes";
 import { ui } from "../ui";
 import { blogPage } from "./blog";
+import { photos } from "../photos";
 
 /**
  * Page copy for the treatment pages:
@@ -264,63 +265,26 @@ export const treatmentPage = {
 
   /**
    * Hero photo for treatments without `detail.heroImage`, by category slug
-   * (content/navigation.ts). The design has no photos for these treatments.
+   * (content/navigation.ts). The design has no photos for these treatments: the clinic's own mood
+   * photos (content/photos.ts). The hero crops a portrait photo to a 728 × 420 strip at 768–1023px,
+   * so `position` keeps the face in it.
    */
   // TODO: copy review (image choice + alt texts)
   categoryImages: {
-    fillers: {
-      src: "/images/hero/hero-1.jpg",
-      alt: "Kvinde med opsat hår foran en rosa baggrund",
-      position: "50% 35%",
-      width: 1200,
-      height: 1500,
-    },
-    rynkebehandling: {
-      src: "/images/results/duo-color.jpg",
-      alt: "To smilende kvinder foran en beige og rosa baggrund",
-      position: "50% 50%",
-      width: 1600,
-      height: 1096,
-    },
-    hudforbedring: {
-      src: "/images/hero/hero-2.jpg",
-      alt: "Kvinde i blåt lys",
-      position: "50% 35%",
-      width: 1200,
-      height: 1500,
-    },
-    "laser-harfjerning": {
-      src: "/images/results/duo-pink.jpg",
-      alt: "To smilende kvinder foran en rosa baggrund",
-      position: "50% 50%",
-      width: 2000,
-      height: 1228,
-    },
-    hartab: {
-      src: "/images/hero/hero-3.jpg",
-      alt: "Kvinde med langt brunt hår i aftenlys",
-      position: "50% 35%",
-      width: 1200,
-      height: 1500,
-    },
-    // Neutral clinic photo: the "for mænd" pages have no practitioner of their own.
-    "for-maend": {
-      src: "/images/results/behandling-3.jpg",
-      alt: "Fillox-logoet på væggen i klinikken",
-      position: "90% 50%",
-      width: 800,
-      height: 533,
-    },
+    // A syringe is fine on filler pages (not on the rynkebehandling pages).
+    fillers: photos.sproejte,
+    // Botox is a prescription medicine: a practitioner by a window, no product, syringe or
+    // treatment (content/photos.ts → rules).
+    rynkebehandling: photos.behandlerVindue,
+    hudforbedring: photos.behandlerVindue,
+    "laser-harfjerning": photos.behandlingsrum,
+    hartab: photos.behandlingKlient,
+    // Mike (identified) on the "for mænd" pages; also the /behandlinger/for-maend share image.
+    "for-maend": photos.mikeKlinik,
   } as Record<string, ImageRef>,
 
-  /** Used when a category has no image above. */
-  defaultImage: {
-    src: "/images/results/duo-pink.jpg",
-    alt: "To smilende kvinder foran en rosa baggrund",
-    position: "50% 50%",
-    width: 2000,
-    height: 1228,
-  } satisfies ImageRef,
+  /** Used when a category has no image above: the empty treatment room (no person, no product). */
+  defaultImage: photos.behandlingsrum satisfies ImageRef,
 
   /**
    * Practitioner shown on pages without `detail.practitionerSlug`, by treatment slug.
@@ -388,11 +352,8 @@ export const treatmentsOverview = {
     "Fillers, rynkebehandling, hudforbedring og laser. Fillers og rynkebehandling udføres af læger og sygeplejersker, og vi starter altid med en gratis konsultation.",
   /** Accessible name of the category jump links. */
   jumpLabel: "Hop til kategori",
-  heroImage: {
-    src: "/images/hero/hero-1.jpg",
-    alt: "Kvinde med opsat hår foran en rosa baggrund",
-    position: "50% 30%",
-  } satisfies ImageRef,
+  // The clinic's treatment room (content/photos.ts). TODO: copy review (image choice + alt text)
+  heroImage: photos.behandlingsrum satisfies ImageRef,
   /** One-line intro per category (by slug). */
   categoryIntros: {
     fillers: "Kontur, volumen og harmonisering af ansigtets proportioner.",

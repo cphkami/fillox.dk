@@ -42,7 +42,6 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
       <div className="size-[88px] shrink-0 overflow-hidden rounded-[14px] md:h-[220px] md:w-full md:rounded-none lg:aspect-[340/220] lg:h-auto lg:min-h-[220px]">
         <Photo
           image={{ ...post.image, alt: "" }}
-          position={post.blogImagePosition}
           sizes="(min-width: 1600px) 464px, (min-width: 1024px) 30vw, (min-width: 768px) 45vw, 88px"
           className="size-full"
         />

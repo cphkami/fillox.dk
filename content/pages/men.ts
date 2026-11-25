@@ -84,9 +84,9 @@ export const menPage = {
   },
 
   /**
-   * Share image: the men's treatment pages' hero photo, the Fillox logo on the clinic wall
-   * (content/pages/treatments.ts → categoryImages["for-maend"], 800 × 533). Neutral: no person,
-   * so the card does not pick a practitioner for the page.
+   * Share image: the men's treatment pages' hero photo, Mike in the clinic (content/pages/
+   * treatments.ts → categoryImages["for-maend"], content/photos.ts, 1290 × 1219). The page itself
+   * shows no photo of him there.
    */
   shareImage: menShareImage,
 

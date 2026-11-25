@@ -3,10 +3,23 @@ import { Eyebrow, Photo, buttonClasses } from "@/components/ui";
 import { blogPostHref } from "@/content/blog";
 import { blogPage as copy } from "@/content/pages/blog";
 import { getTeamMember } from "@/content/team";
-import type { BlogPost } from "@/content/types";
+import type { BlogPost, ImageRef } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { cardFocusRing, joinMeta, readingTime, shortReadingTime, stretchedLink } from "./postView";
 import { Responsive } from "./Responsive";
+
+/**
+ * Photo `sizes`: the photo column is 1.15 / 2.15 of the surface band (52vw; 822px on the 1600
+ * canvas, 1536px band) and 420 → 520px tall (min-h-fluid-420/520; ≈ 540 at 1024, where the text
+ * sets the height). A landscape photo wider than the column's shape is drawn at height × its
+ * aspect (spejl.jpg, 1.52: ≈ 820px at 1024).
+ */
+function photoSizes(image: ImageRef): string {
+  const aspect = image.width && image.height ? image.width / image.height : 1.5;
+  const byHeight = Math.ceil(540 * aspect);
+  const desktop = byHeight > 532 ? `${Math.max(byHeight, 832)}px` : "52vw";
+  return `(min-width: 1600px) ${Math.max(822, Math.ceil(520 * aspect))}px, (min-width: 1024px) ${desktop}, 100vw`;
+}
 
 /**
  * Featured article on /blog (6blog: photo left, text right; mbl: photo on top, short
@@ -24,9 +37,7 @@ export function FeaturedPost({ post }: { post: BlogPost }) {
     >
       <Photo
         image={{ ...post.image, alt: "" }}
-        position={post.blogImagePosition}
-        // Photo column = 1.15 / 2.15 of the surface band: 822px on the 1600px canvas (1536px band).
-        sizes="(min-width: 1600px) 822px, (min-width: 1024px) 52vw, 100vw"
+        sizes={photoSizes(post.image)}
         priority
         className="h-[240px] md:h-[360px] lg:h-auto lg:min-h-fluid-420/520"
       />

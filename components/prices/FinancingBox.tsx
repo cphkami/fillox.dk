@@ -31,12 +31,12 @@ type FinancingBoxProps = {
  * text column's padding follows the footer's top block, the H2 and the text use the fluid
  * tokens (48px and 18px at 1600px) and the photo grows in height: 376px at 1280 (the
  * design's 1180 panel height, where the H2 wraps) → 424px at 1600. It grows less than its
- * width so the text block (which only grows ~5%) still fills over half the panel height;
- * the 768px-wide slot shows ~83% of the 3:2 photo's height, the wall logo stays whole.
+ * width so the text block (which only grows ~5%) still fills over half the panel height.
  *
- * Asset note: the source photo is only 800×533. From ~1600px on a 2× screen the
- * 768px slot upscales it (softer letters on the wall logo); a ≥1600px-wide 3:2
- * original would fix that without any code change.
+ * Asset note: the photo (content/prices.ts → content/photos.ts `behandlerFolder`) is 854 × 782.
+ * The 768px-wide slot (≈ 1.8 : 1) shows a band of it around the face (`position`), at the
+ * slot's width: sharp at 1x, soft on a 2× screen from ~1024px; a larger original would fix that
+ * without any code change.
  */
 export function FinancingBox({ id, eyebrow, title, text, textShort, cta, image }: FinancingBoxProps) {
   const titleId = `${id}-title`;

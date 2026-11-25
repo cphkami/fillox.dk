@@ -193,6 +193,10 @@ sitet, skal værten med i CSP'en.
         `/blog/hvornaar-giver-det-mening-at-starte-med-botox`,
         `/blog/de-foerste-24-timer-efter-botox` og filterknappen "Botox" på `/blog`
         (`content/blog.ts`). Vi har ikke rørt dem: skal de skrives om (af bureauet) eller fjernes?
+        Desuden står "Botox for første gang" med Annika som navngiven forfatter (hendes portræt
+        står ved artiklen og i de strukturerede data). En sundhedsperson, der anbefaler et
+        lægemiddel i en reklame, er forbudt (BEK 253/2025 § 10, stk. 1, nr. 7): skal artiklen
+        stå uden forfatter, eller skrives om, så den ikke handler om produktet?
   - [ ] **Priser**: alle rækker på priskortet "Rynkebehandling" er uændrede (områder, pakker,
         tyggemuskler, hyperhidrose, Traptox). Konsultationskortet har stadig rækken
         "Lægekonsultation før første botox" — forslag med bureauets ord: "Lægefaglig
@@ -232,18 +236,19 @@ sitet, skal værten med i CSP'en.
       side "Andre behandlinger" (det fulde navn er for bredt til kolonnen ved 1024px); alle andre
       steder står "Andre behandlingsmuligheder". OK? (3) Sidens titel i søgeresultater er 61 tegn
       (én over vores grænse) — forslag: "Andre kosmetiske og medicinske behandlinger".
-      (4) Forsidens resultatbillede med teksten "rynkebehandling, 2026" er det samme stockfoto
-      som rynkesidens topbillede.
+      (4) ~~Forsidens resultatbillede "rynkebehandling, 2026"~~: løst 24/11-2026 (forsiden har
+      ikke længere et rynkekort, se "Fotos fra Drive" nedenfor).
 - [ ] **Om os** (`content/pages/about.ts`, bureauets nye tekst): (1) "Og du behøver ikke føle dig
       hjemme i en eksklusiv luksusklinik for at føle dig hjemme hos os." står ordret, men lyder
       oversat — bed bureauet se på den. (2) Dr. Toms titel: den nye tekst siger "grundlægger af
       Fillox" og "den medicinsk ansvarlige læge", hans behandlerkort "Æstetisk læge · Daglig
       leder" og "fagligt ansvarlig læge" (`content/team.ts`). Hvilken skal begge steder bruge?
-      (3) Dr. Toms portræt står to gange lige efter hinanden (lægeafsnittet og første
-      behandlerkort): vi mangler et andet foto af ham (fx når han underviser, mindst 1300 px
-      bredt). (4) Topbilledet er kun 800 × 533 og bliver blødt på store skærme: vi mangler en
-      større original (mindst 2200 × 1470; tjek `hero.imagePositionDesktop`, hvis den er beskåret
-      anderledes).
+      (3) ~~Dr. Toms portræt to gange~~ og (4) ~~det lille topbillede~~: løst 24/11-2026 med jeres
+      egne fotos (lægeafsnittet viser Dr. Tom i klinikken, toppen gruppebilledet af fire
+      behandlere, uden navne). Fillox Academy-afsnittet har stadig intet billede: det har ingen
+      plads til et i sit layout, og vi har ikke opfundet et nyt. De to kursusbilleder i Drive kan
+      ikke bruges, som de er: sikkerhedsbrillerne bærer fillermærket "croma" lige ved ansigtet.
+      Har I et kursusbillede uden mærker, og skal afsnittet have et?
 - [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Kubras tekster er et neutralt
       udkast (titel, City2, fillers, rynkebehandling og hudforbedring) — få hendes egne ord og et
       citat. Dr. Toms og Marias "Sådan arbejder …"-kort er skrevet i tredje person ud fra Om os.
@@ -258,43 +263,91 @@ sitet, skal værten med i CSP'en.
       ligesom behandlersiderne ("Book tid hos …"). Kun `/behandlere` slutter stadig med det sand-
       farvede "Fagligt ansvarlig"-bånd (`components/about/ResponsibleBand.tsx`). Skal det også være
       rosa?
-- [ ] **Før/efter-billeder fra Drive** (mappen "Før/efter - Hjemmeside", lagt op af Alberte
-      20/10-2026): FILLER har 3 billeder af læber ("FILLOX Lip Enhancement Comparison.png",
-      "Billede 28.jpg" og "Billede 28-kopi.jpg"); BOTOX, SUNEKOS, SKINBOOSTER og POLYNUKLEOTIDER
-      er tomme. De er ikke lagt på siden endnu: bekræft (1) skriftligt samtykke fra kunden til brug
-      på hjemmesiden, (2) at reglerne for markedsføring af kosmetisk behandling tillader billederne,
-      og (3) hvilken side de skal på (lip filler-siden). Botox-billeder må ikke bruges i
-      markedsføring (receptpligtig medicin). Nyt 24/10-2026 (lagt op af Annika): 13 billeder
-      mere i FILLER og 6 i BOTOX (bl.a. HEIC-filer, som skal konverteres); samme tre spørgsmål
-      gælder, og BOTOX-billederne bruges ikke. Nyt 27/10-2026 (lagt op af Alberte): 1 billede i
-      SUNEKOS ("Billede 11.PNG"); samme tre spørgsmål gælder (Sunekos-siden). Nyt 3/11-2026
-      (Alberte): alle billederne fra FILLER er flyttet til en ny mappe "FØR/EFTER - Nord
-      Magasin" (FILLER er nu tom) sammen med et nyt "Before and After Eye Enhancement.png", og
-      6 nye "Kopi af …"-billeder i BOTOX. Er Nord Magasin-billederne stadig til hjemmesiden, eller
-      kun til Nord Magasin? BOTOX-billederne bruges ikke.
+- [ ] **Fotos fra Drive (lagt på siden 24/11-2026)**. Du godkendte 24/11-2026, at klinikkens egne
+      fotos bruges i stedet for stockfotos ("kunderne har givet samtykke, og klinikken må bruge alt
+      sit indhold på sin egen hjemmeside"), og før/efter-billeder på behandlingssiderne. En
+      gennemgang af de danske regler samme dag (ikke juridisk rådgivning) sagde: før/efter er tilladt
+      for fillers og skinboosters på betingelser, aldrig for Botox (receptpligtig medicin,
+      lægemiddellovens § 66). Det er gjort:
+  - **Stemningsbilleder** (`public/images/fillox/`, `content/photos.ts`) i stedet for alle
+    stockfotos: forsiden (top, de tre behandlingskort, anmeldelserne), `/behandlinger` og alle
+    behandlingssider, Om os (gruppebilledet og Dr. Tom i klinikken), Ny hos Fillox?, `/klinikker`
+    (behandlingsrummet på alle fire kort og i Googles strukturerede data), `/priser`,
+    `/ledige-stillinger` (gruppebilledet), `/content-creator`, bloggen og delingsbillederne
+    (`og-*.jpg`: et bredt udsnit af hvert foto, så ansigterne ikke skæres af, når Facebook,
+    LinkedIn og X viser et link). Kun Dr. Tom og Mike er navngivet; de andre behandlere,
+    gruppebilledet og alle kunder står **uden navn** i alt-tekster og filnavne. Botox-siderne
+    (rynkebehandling og andre behandlingsmuligheder), de tre Botox-indlæg og Ny hos Fillox? viser
+    kun billeder uden produkt, sprøjte og behandling (vinduesbilledet, spejlet, behandlingsrummet,
+    et portræt af en smilende behandler). Ikke brugt: billedet med Profhilo-æsken (reklame for
+    medicinsk udstyr med en behandlers anbefaling, BEK 715/2022 § 6), de tre enkeltbilleder af
+    kunder lige efter en læbebehandling (de læses som resultater, og et af dem viser et fillermærke
+    på spejlet), begge kursusbilleder (fillermærket "croma" på sikkerhedsbrillerne) og billedet
+    382DC544 (en behandler giver en kunde en indsprøjtning ved øjenbrynet — det læses som en
+    Botox-behandling, uanset hvor det står; det stod først på rynkesiden som "konsultation" og er
+    fjernet 25/11-2026). Alt-tekster er markeret `TODO: copy review`.
+  - [ ] **Juridisk tjek af selve billederne**: gennemgangen 24/11-2026 godkendte billederne til
+    Botox-siderne ud fra en beskrivelse af dem, og én beskrivelse var forkert (382DC544 ovenfor).
+    Lad den, der tjekker, se på billederne på rynkesiden, de tre Botox-indlæg og Ny hos Fillox?
+    (vinduesbilledet, portrættet, spejlet og behandlingsrummet).
+  - [ ] **Hvem er på billederne?** Behandlerne på stemningsbillederne står uden navn, men to
+    behandlingssider viser en unavngiven behandler i toppen lige over en navngiven behandler
+    ("Maria" på lip filler, "Alberte" på hudsiderne). Læsere kan tro, det er samme person. Sig
+    gerne, hvem der er på hvilke billeder (så kan de stå på deres egne sider), ellers bruger vi
+    billeder uden personer dér.
+  - **Før/efter på Kæbelinje** (`/behandlinger/kaebelinje`, "Før og efter"): ét profilpar af hage og
+    læber (`public/images/resultater/hage-1-*`, fra "Billede28-kopi"), skåret ud af jeres egen
+    komposit med samme udsnit på begge halvdele og ingen anden redigering; teksten siger, at det er
+    samme person, vist med samtykke, og at resultater varierer. Ingen ml, tid eller "uden filter".
+    **Bekræft for parret** i journalen (BEK 834/2014 § 37): at før og efter er samme kunde, i den
+    rækkefølge (vi har fulgt jeres komposit, øverst = før, og den synlige forskel); at
+    "efter"-billedet er et opfølgningsbillede og ikke taget lige efter behandlingen; at kunden var
+    mindst 18 år; at der er skriftligt samtykke, som dækker hjemmesiden (sundhedsloven § 43, GDPR
+    art. 9) — billederne lå i "FØR/EFTER - Nord Magasin": bekræft, at samtykket dækker
+    hjemmesiden og ikke kun magasinet; og hvilken behandling det var (vi skriver "filler" og "Hage
+    og læber", fordi det er det, billederne viser — skal det stå på hage-siden i stedet?). Fjern
+    billedet, hvis samtykket trækkes tilbage.
+  - **Holdt tilbage** (filerne er klar, men opfylder ikke betingelserne endnu): læbeparrene fra
+    "Billede 28" og "Lip Enhancement Comparison" (efter-billedet har et blankt lag på læberne, som
+    før-billedet ikke har: en forskel i det behandlede område, og et tegn på, at det er taget lige
+    efter behandlingen, hvor læberne typisk stadig er hævede — lip filler-siden siger selv, at det
+    endelige resultat ses efter cirka en uge); IMG_7619/7633 (et stiksted på læben, og lyset er
+    kraftigere på efter-billedet); herrelæberne IMG_7904/7905 (meget forskellig hvidbalance; jeres
+    "Billede 2" kalder 7904 "før", men bekræft rækkefølgen i journalen); "Billede 3" (rækkefølgen kan
+    ikke ses sikkert); IMG_5189 (hagen i profil: hovedet er bøjet bagover på før-billedet og
+    lige på efter-billedet, så hage og læber ses fra en anden vinkel; baggrund, lys og skarphed
+    er også forskellige); IMG_7689/7690 (rødme lige efter behandlingen); Sunekos-øjnene "Billede 11"
+    (efter-billedet er lysere og jævnere belyst, hvilket i sig selv mindsker mørke rande, og
+    vipperne er sminket forskelligt). Har I opfølgningsbilleder i journalen med samme udsnit og lys
+    (dem, BEK 834 § 37 kræver), kan de komme på lip filler-, skinbooster- og Sunekos-siderne.
+    "Billede 4" er ikke et før/efter (begge halvdele er samme øjeblik). **Ingen Botox-før/efter.**
+  - Video (fx en videotop) må kun bruges på jeres egen hjemmeside, ikke på sociale medier. På
+    fillox.no er før/efter-billeder forbudt: kopiér ikke afsnittet dertil.
+  - [ ] **Større originaler**: filerne i Drive er 782–1548 px brede (telefon-eksporter).
+    Bloggens artikeltop er 1440 px bred på store skærme, så kun spejlbilledet er skarpt dér; de
+    andre forstørres op til 1,84 gange og ses lidt slørede (mest "0,5 eller 1 ml?", sprøjtebilledet
+    på 782 px, og "Lip filler for første gang", folderbilledet på 854 px). Send gerne de fulde
+    originaler fra kameraet/telefonen: de kan lægges ind uden kodeændringer.
 - [ ] **Farveprøver i Drive/Website** (7 PNG'er lagt op 2/11-2026: 6B3840, 5C3F38, 6A2630,
       6E4038, 74483C, 7A4B51, 57353A): ikke brugt. Skal en af dem erstatte plum (#6B3840) på
       sitet? Paletten ændres kun efter din besked.
-- [ ] **"Profesionelle billeder" i Drive** (ny mappe under Fillox.dk, lagt op af Alberte
-      22/10-2026, 15 billeder; +1 "IMG_1191.jpg" 27/10-2026): ikke lagt på siden. Fortæl hvad de forestiller, og hvor de skal
-      bruges (behandlere, klinikker, Om os, forsiden); viser de kunder, kræver det samtykke.
+- [x] **"Profesionelle billeder" i Drive** (22/10 og 27/10-2026): lagt på siden 24/11-2026 som
+      stemningsbilleder (se "Fotos fra Drive" ovenfor). Behold medarbejdernes skriftlige samtykke,
+      også for dem, der ikke er navngivet.
 - [x] **Lip filler-siden viste en usand påstand**: afsnittet "Resultater med lip filler" havde tre
       "før/efter"-par, hvor begge halvdele var det samme stockfoto, med teksterne "Lip filler · 0,5 ml ·
       2026" osv. under introen "Rigtige kunder … delt med samtykke og uden filtre". Afsnittet er
-      fjernet (24/11-2026) og kommer først igen med rigtige billeder (punktet nedenfor).
-- [ ] **Forsidens resultatbilleder** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` →
-      `results`): stockfotos med billedtekster som "lip filler, 2026", der linker til behandlingerne
-      og kan læses som resultater. Behold dem som stemningsbilleder (uden behandling og årstal i
-      teksten), erstat dem med rigtige billeder med samtykke, eller fjern afsnittet?
-- [ ] **Billeder**: rigtige før/efter-billeder med samtykke (`content/treatments.ts`: lip filler-
-      siden har intet resultat-afsnit, før de findes), foto +
-      alt-tekst pr. klinik (`content/pages/clinics.ts`, og `seoImage`/`geo` i
-      `content/clinics.ts`), større original af Om os-billedet og et andet foto af Dr. Tom (se
-      "Om os" ovenfor). Nogle stockfotos har en laksefarvet baggrund, der ligger tæt på den
-      støvede rosa, I fravalgte (`public/images/hero/hero-1.jpg` på /behandlinger, `results/duo-pink.jpg`
-      i anmeldelserne på forsiden, lip filler-heroen): få dem farvekorrigeret mod Lys Rosa
-      (ca. −20 % mætning, lidt lysere og køligere baggrund), eller vælg andre billeder ved de rosa
-      flader.
+      fjernet (24/11-2026); lip filler-siden har stadig intet før/efter-afsnit (se "Fotos fra Drive").
+- [x] **Forsidens resultatbilleder** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` →
+      `results`): stockfotos med "lip filler, 2026" osv. er erstattet (24/11-2026) af jeres egne
+      stemningsbilleder med behandlingens navn som eneste tekst (Lip filler, Kæbelinje, Skinbooster;
+      intet rynkekort). Ingen kunder og ingen resultater; før/efter står på behandlingssiderne.
+- [ ] **Billeder**: der er **ingen stockfotos** tilbage på siden (de ni filer i
+      `public/images/hero/` og `public/images/results/` er slettet; logovæggen "Fillox-Behandling-3"
+      findes stadig i `design-reference/uploads/`). Mangler stadig: et foto + alt-tekst pr. klinik
+      (`content/pages/clinics.ts` → `card.photos`, og `seoImage`/`geo` i `content/clinics.ts`; nu viser
+      alle fire kort samme behandlingsrum), og gerne større originaler af jeres fotos (se
+      "Opløsning" ovenfor).
 - [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
 - [ ] **Østerbro**: `/klinikker` siger stadig "Åbner 1. november" (`content/clinics.ts` →
       `openingNote` og `note`), og datoen er passeret. Er klinikken åben (så sæt `status: "open"`,
@@ -448,6 +501,11 @@ TIMMA-id'erne fra den nuværende fillox.no: `filloxdrammen`, `filloxlillestrom`,
   `public/__forms.html` samtidig.
 - **Priser**: skrives som tal i `content/**`; formatet (`1 499 kr`, `kr 1 499,-`) styres af
   `locale` og `pricePattern` i `config/site.ts`.
+- **Før/efter-billeder** er forbudt i markedsføring af kosmetiske indgreb i Norge: slet
+  `public/images/resultater/` og `results` / `resultsTitle` / `resultsIntro` i `content/treatments.ts`
+  (Kæbelinje), og brug kun billeder, I har lov til at bruge dér (`content/photos.ts`, med
+  `share`-udsnittene til delingsbilleder). Lægens foto på Om os (`content/pages/about.ts` →
+  `doctor.image`) kan udelades: så viser afsnittet hans portræt fra behandlerkortet.
 - **Gamle URL'er**: `content/redirects.ts` er den danske WordPress-liste — erstat den med
   fillox.no's gamle sitemap, så placeringer og links overlever skiftet.
 - **hreflang** mellem fillox.dk og fillox.no er ikke sat op (kræver en tabel over, hvilke

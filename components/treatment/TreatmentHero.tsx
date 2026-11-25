@@ -29,30 +29,27 @@ const h1Size = {
 const crumbLink = "relative -mx-1 px-1 py-[13px] hover:text-accent md:py-3 md:hover:text-accent-deep";
 
 /**
- * Photo slot height `sizes` assumes at 1024–1599px: min-h-fluid-640/720 reaches 720 at 1600, and at
- * 1024–1280 the narrower text column makes the panel about as tall (≈ 660–720px).
+ * Photo slot height `sizes` assumes at 1024–1599px. The slot is as tall as the text column, at
+ * least 640 → 720px (min-h-fluid-640/720); measured 665–850px on template pages and up to 971px on
+ * a long-form page (more intro paragraphs), so these are upper estimates.
  */
-const SLOT_MAX_H = 720;
-/**
- * The same from 1600px, where the fluid type and stack gaps make most panels taller than the
- * 720 minimum (732px; Botox / Lip Filler 767, the longest 809). Asked only there, so the
- * 1024–1599 range keeps its smaller file.
- */
-const SLOT_WIDE_H = 768;
+const SLOT_H = { template: 860, longform: 980 };
+/** The same from 1600px (measured 765–842px; a long-form page 905px). */
+const SLOT_WIDE_H = { template: 860, longform: 920 };
 /** Photo slot below 768px: (100vw − 40px) × 300px. */
 const MOBILE_SLOT_H = 300;
 
 /**
- * Photo `sizes`. The slot is ≈ square from 1024px (488–768px wide, 640–720 tall), so a
- * landscape photo (known `width`/`height`) is cropped from the sides and painted
- * slot-height × aspect wide (e.g. 2000 × 1228 → ≈ 1173px), wider than the slot. Its size
- * is that painted width, so it stays sharp on 1x screens. Other photos keep the slot width
- * (50/50 split of the panel: 768px on the 1600px canvas). The `image.zoom` scale is included.
+ * Photo `sizes`. The slot is ≈ 488–768px wide from 1024px (50/50 split of the panel; 768px on the
+ * 1600px canvas) and as tall as the text, so a photo whose aspect is wider than the slot's is
+ * cropped from the sides and painted slot-height × aspect wide (spejl.jpg, 1.52, in a 971px-tall
+ * slot: ≈ 1480px), wider than the slot. Its size is that painted width, so it stays sharp on 1x
+ * screens; a narrow portrait photo keeps the slot width (50vw). The `image.zoom` scale is included.
  * 768–1023: the photo spans the panel (420px tall, wide enough for photos up to ≈ 1.7 : 1).
- * Below 768 the 300px-tall slot paints a landscape photo 300px × aspect wide (2000 × 1228 →
- * 489px) until the viewport is wide enough for the slot to be wider than that.
+ * Below 768 the 300px-tall slot paints a landscape photo 300px × aspect wide (1548 × 1016 →
+ * 458px) until the viewport is wide enough for the slot to be wider than that.
  */
-function heroSizes(image: ImageRef): string {
+function heroSizes(image: ImageRef, longform: boolean): string {
   const zoom = Math.max(1, image.zoom ?? 1);
   const aspect = image.width && image.height ? image.width / image.height : 0;
   const box = zoom > 1 ? `calc((100vw - 40px) * ${zoom})` : "calc(100vw - 40px)";
@@ -61,10 +58,15 @@ function heroSizes(image: ImageRef): string {
   const mobile =
     coverFrom <= 320 ? box : coverFrom >= 768 ? coverPx : `(min-width: ${coverFrom}px) ${box}, ${coverPx}`;
   const below = `(min-width: 768px) ${zoom > 1 ? `${Math.ceil(100 * zoom)}vw` : "100vw"}, ${mobile}`;
-  const painted = Math.ceil(SLOT_MAX_H * aspect * zoom);
-  const paintedWide = Math.ceil(SLOT_WIDE_H * aspect * zoom);
-  if (painted > 768 * zoom) return `(min-width: 1600px) ${paintedWide}px, (min-width: 1024px) ${painted}px, ${below}`;
-  return `(min-width: 1600px) ${Math.ceil(768 * zoom)}px, (min-width: 1024px) ${Math.ceil(50 * zoom)}vw, ${below}`;
+  const kind = longform ? "longform" : "template";
+  const painted = Math.ceil(SLOT_H[kind] * aspect * zoom);
+  const paintedWide = Math.max(Math.ceil(768 * zoom), Math.ceil(SLOT_WIDE_H[kind] * aspect * zoom));
+  // The slot is half the panel (≈ 50vw): 488–616px at 1024–1279, 616–800px at 1280–1599. A photo
+  // painted wider than the slot asks for the larger of its painted width and the range's widest slot.
+  const range = (slotMax: number, vw: string) =>
+    painted > (slotMax * 512) / 616 ? `${Math.max(painted, Math.ceil(slotMax * zoom))}px` : vw;
+  const vw = `${Math.ceil(50 * zoom)}vw`;
+  return `(min-width: 1600px) ${paintedWide}px, (min-width: 1280px) ${range(800, vw)}, (min-width: 1024px) ${range(616, vw)}, ${below}`;
 }
 
 /**
@@ -216,7 +218,7 @@ export function TreatmentHero({ view }: { view: TreatmentView }) {
 
         <Photo
           image={hero.image}
-          sizes={heroSizes(hero.image)}
+          sizes={heroSizes(hero.image, view.longform)}
           priority
           className="order-4 h-[300px] shrink-0 rounded-[24px]! md:order-none md:h-[420px] md:rounded-none! lg:h-auto lg:min-h-fluid-640/720"
         />

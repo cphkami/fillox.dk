@@ -1,5 +1,6 @@
 import type { ImageRef, Link, PriceValue } from "./types";
 import { site } from "@/config/site";
+import { photos } from "./photos";
 
 /**
  * Priser page (design 6b desktop, mp mobile).
@@ -335,10 +336,8 @@ export const pricesPage = {
     text: "Spørg i klinikken eller ved booking, vi hjælper dig med en løsning, der passer.",
     textShort: "Spørg i klinikken eller vælg det ved booking.",
     cta: { label: "Book tid", href: site.booking.href } satisfies Link,
-    image: {
-      src: "/images/results/behandling-3.jpg",
-      alt: "Fillox-logoet på væggen i klinikken",
-      position: "50% 50%",
-    } satisfies ImageRef,
+    // A practitioner reading a leaflet (content/photos.ts; hidden below 768px).
+    // TODO: copy review (image choice + alt text)
+    image: photos.behandlerFolder satisfies ImageRef,
   },
 };

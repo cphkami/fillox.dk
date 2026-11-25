@@ -1,5 +1,6 @@
 import { routes } from "./routes";
 import type { BlogFilter, BlogPost } from "./types";
+import { photos } from "./photos";
 
 /**
  * Blog posts (design 6blog / mbl overview, 6art / mar article).
@@ -8,8 +9,11 @@ import type { BlogFilter, BlogPost } from "./types";
  * excerpt-only until Fillox delivers the text (the article page should render
  * excerpt + booking CTA when `body` is missing).
  *
- * Images follow the blog overview (6blog). Treatment-page cards in 6c/6bx show
- * other placeholder photos for some posts; the overview is treated as canonical.
+ * Images: the clinic's own mood photos (content/photos.ts; the design's were stock), one per post,
+ * all different. `position` keeps the face in the wide crops (the article header is 2.32 : 1).
+ * Only `spejl` (1548px) fills the article header's 1440px at 1x; the other files are 782–1105px
+ * wide and are drawn up to 1.84× there on the 1600 canvas (README: larger originals requested).
+ * TODO: copy review (image choice + alt).
  *
  * Dates other than the featured article's (12. september 2026) are placeholders
  * in the design's list order, newest first. // TODO: copy review
@@ -40,13 +44,8 @@ export const posts: BlogPost[] = [
     excerpt:
       "Fra den første lægekonsultation til den gratis kontrol to uger efter. Annika gennemgår hele forløbet, så du ved præcis, hvad du kan forvente.",
     excerptShort: "Annika gennemgår hele forløbet, fra lægekonsultation til gratis kontrol.",
-    image: {
-      src: "/images/results/duo-color.jpg",
-      alt: "To smilende kvinder foran en beige og rosa baggrund",
-      position: "50% 50%",
-      width: 1600,
-      height: 1096,
-    },
+    // No practitioner's face next to the author's name (Annika) and no product: the mirror photo.
+    image: photos.spejl,
     // TODO: fact check (owner): the design's example article, written in Annika's voice; fillox.dk
     // has no article by her. Facts (time, training, longevity) match fillox.dk/rynkebehandling.
     authorSlug: "annika",
@@ -124,13 +123,7 @@ export const posts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Fra konsultationen til den gratis kontrol: sådan foregår en behandling med lip filler hos Fillox, og hvad du kan forvente de første dage.",
-    image: {
-      src: "/images/results/duo-pink.jpg",
-      alt: "To smilende kvinder foran en rosa baggrund",
-      position: "50% 50%",
-      width: 2000,
-      height: 1228,
-    },
+    image: photos.behandlerFolder,
     treatmentSlugs: ["lip-filler"],
   },
   {
@@ -146,13 +139,8 @@ export const posts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Mængden afhænger af din læbeform og det udtryk, du ønsker. Her er forskellen på 0,5 og 1 ml, og hvorfor mange vælger at starte småt.",
-    image: {
-      src: "/images/results/before-after-2.jpg",
-      alt: "Nærbillede af læber",
-      position: "50% 50%",
-      width: 900,
-      height: 1125,
-    },
+    // Forehead to neck and the syringe in the 2.32 : 1 article header (rows ≈ 66–403 at 1600).
+    image: { ...photos.sproejte, position: "55% 12%" },
     treatmentSlugs: ["lip-filler"],
   },
   {
@@ -168,15 +156,9 @@ export const posts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Der findes ingen rigtig alder for den første behandling. Det handler om dine linjer, dit udtryk og dine ønsker, og om en ærlig vurdering.",
-    image: {
-      src: "/images/hero/hero-3.jpg",
-      alt: "Kvinde med langt brunt hår i aftenlys",
-      position: "50% 30%",
-      width: 1200,
-      height: 1500,
-    },
-    // The blog pages crop this portrait photo centred (6blog, 6art, mbl, mar).
-    blogImagePosition: "50% 50%",
+    // A practitioner's portrait: no product, syringe or treatment (a post about Botox; no author,
+    // so no named person next to the unnamed one). 15%: the forehead stays in the wide header.
+    image: { ...photos.behandlerPortraet2, position: "50% 15%" },
     treatmentSlugs: ["rynkebehandling"],
   },
   {
@@ -192,13 +174,7 @@ export const posts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Lidt hævelse og et par blå mærker er almindeligt efter en behandling med filler. Her er, hvad du kan forvente, og hvornår du skal kontakte os.",
-    image: {
-      src: "/images/results/before-after-1.jpg",
-      alt: "Nærbillede af læber og hage",
-      position: "50% 50%",
-      width: 900,
-      height: 638,
-    },
+    image: photos.behandlingKlient,
     treatmentSlugs: ["lip-filler"],
   },
   {
@@ -214,15 +190,8 @@ export const posts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Et par enkle råd til de første timer efter behandlingen, så du får mest ud af den: træning, sauna, makeup og søvn.",
-    image: {
-      src: "/images/hero/hero-2.jpg",
-      alt: "Kvinde i blåt lys",
-      position: "50% 30%",
-      width: 1200,
-      height: 1500,
-    },
-    // The blog pages crop this portrait photo centred (6blog, 6art, mbl, mar).
-    blogImagePosition: "50% 50%",
+    // The empty treatment room: no person, no product (a post about Botox).
+    image: photos.behandlingsrum,
     treatmentSlugs: ["rynkebehandling"],
     // Not in the mobile list (design mbl shows 5 of the 6 posts).
     hideInMobileList: true,
@@ -239,15 +208,7 @@ export const posts: BlogPost[] = [
     // TODO: copy review
     excerpt:
       "Begge giver huden fugt, men de virker forskelligt. Vi forklarer forskellen, og hvordan din behandler vurderer, hvad der passer til din hud.",
-    image: {
-      src: "/images/hero/hero-1.jpg",
-      alt: "Kvinde med opsat hår foran en rosa baggrund",
-      position: "50% 30%",
-      width: 1200,
-      height: 1500,
-    },
-    // The blog pages crop this portrait photo centred (6blog, 6art, mbl, mar).
-    blogImagePosition: "50% 50%",
+    image: { ...photos.behandlerPortraet1, position: "45% 22%" },
     treatmentSlugs: ["skinbooster", "profhilo"],
   },
 ];

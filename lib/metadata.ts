@@ -28,19 +28,40 @@ export function shareTitle(title: string): string {
   return layoutCopy.meta.titleTemplate.replace("%s", title);
 }
 
-/** Open Graph image for a content image; the size is added when the content knows it. */
+/**
+ * Open Graph image for a content image: its link-preview crop (`share`) when it has one, else the
+ * file itself. The size is added when the content knows it.
+ */
 export function shareImage(image: ImageRef) {
+  const file = image.share ?? image;
   return {
-    url: image.src,
+    url: file.src,
     alt: image.alt,
-    ...(image.width && image.height ? { width: image.width, height: image.height } : {}),
+    ...(file.width && file.height ? { width: file.width, height: file.height } : {}),
   };
+}
+
+/**
+ * Narrowest width : height a page's own share image may have. Link previews (Facebook, LinkedIn,
+ * X's large card) centre-crop og:image to 1.91 : 1, so a portrait photo loses its face there.
+ */
+const MIN_SHARE_ASPECT = 1.5;
+
+/**
+ * A page's share image: its own photo when that has a link-preview crop (`share`, content/
+ * photos.ts) or is landscape enough, else the site's default (content/layout.ts →
+ * meta.ogImage). A photo of unknown size is used as it is.
+ */
+export function pageShareImage(image: ImageRef): ImageRef {
+  const file = image.share ?? image;
+  if (!file.width || !file.height || file.width / file.height >= MIN_SHARE_ASPECT) return image;
+  return layoutCopy.meta.ogImage;
 }
 
 /**
  * Metadata of an ordinary route: title (through the root layout's template), description,
  * canonical `path` and a "website" Open Graph block. The share image defaults to the site's
- * (content/layout.ts → meta.ogImage).
+ * (content/layout.ts → meta.ogImage); a page's own photo goes through `pageShareImage`.
  *
  * `absoluteTitle`: the title already names the brand ("Ny hos Fillox? …"), so it is used as it
  * is, without the template's " · Fillox" (no brand twice, and it stays within ~60 characters).
@@ -60,7 +81,7 @@ export function pageMetadata(
       url: path,
       title: meta.absoluteTitle ? meta.title : shareTitle(meta.title),
       description: meta.description,
-      images: [shareImage(image)],
+      images: [shareImage(pageShareImage(image))],
     },
   };
 }

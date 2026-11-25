@@ -4,6 +4,7 @@ import { legalNav } from "../navigation";
 import { ui } from "../ui";
 import type { FormName } from "@/lib/forms";
 import { forms } from "../forms";
+import { photos as clinicPhotos } from "../photos";
 
 /**
  * Copy for /klinikker — "Find klinik" (design 6kl desktop, mk mobile). The clinics
@@ -90,19 +91,17 @@ export const clinicsPage = {
 
   card: {
     /**
-     * Desktop card photo for every clinic without its own entry in `photos` (design
-     * placeholder until real clinic photos exist). The same generic photo on all four cards
-     * adds nothing for screen readers, so it is decorative (alt="").
+     * Desktop card photo for every clinic without its own entry in `photos`: one of the clinic's
+     * treatment rooms (content/photos.ts; which clinic is not known, so it stands for all four).
+     * The same photo on all four cards adds nothing for screen readers, so it is decorative
+     * (alt="").
      *
-     * The placeholder file is only 800 × 533 (so is the design's upload), while the card
-     * photo is up to 752 CSS px wide (1504 device px on a retina MacBook): it looks soft on
-     * wide screens. Don't upscale it; replace it with real clinic photos (see `photos`).
+     * The file is a portrait (1086 × 1448); the card shows a 7:3 strip of it (up to 752 × 322 CSS
+     * px on the 1600 canvas), the plant and the chair at 60% × 60%. 1086px covers the slot at 1x,
+     * not at 2x: real landscape photos per clinic (see `photos`) will look sharper.
      */
-    photo: {
-      src: "/images/results/behandling-3.jpg",
-      alt: "",
-      position: "50% 50%",
-    } satisfies ImageRef,
+    // TODO: copy review (image choice)
+    photo: { ...clinicPhotos.behandlingsrum, alt: "" } satisfies ImageRef,
     /**
      * One photo per clinic, keyed by clinic slug (content/clinics.ts); replaces the
      * placeholder on that clinic's card. Needs, per clinic:

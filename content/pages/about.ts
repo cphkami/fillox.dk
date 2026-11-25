@@ -2,6 +2,7 @@ import type { ImageRef, Link, RichText } from "../types";
 import { site } from "@/config/site";
 import { aboutTeamAnchor, routes } from "../routes";
 import { teamMemberHref } from "../team";
+import { photos } from "../photos";
 
 /**
  * Anchor id of the team section on /om-os (content/routes.ts): the hero's "Mød vores team" link
@@ -56,23 +57,20 @@ export const aboutPage = {
       "Vi mener ikke, at en professionel æstetisk klinik behøver at være eksklusiv eller dyr for at være blandt de bedste. Til gengæld mener vi, at du skal kunne stille høje krav til den faglige kvalitet.",
       "Hos Fillox skal du møde dygtige mennesker, få ærlig rådgivning og føle dig velkommen. Uanset hvem du er, og hvilken behandling du overvejer.",
     ],
-    image: {
-      // TODO: asset (owner): replace with a larger original of this photo, at least 2200×1470
-      // (ideally 2400px wide). This file is 800×533; on wide screens it covers a ≈ 700×850
-      // cell, so it is upscaled (≈ 2× on retina) and the letters look soft.
-      src: "/images/results/behandling-3.jpg",
-      // TODO: copy review (alt text)
-      alt: "Fillox-logoet i spejlblanke bogstaver på væggen i klinikken",
-      /** Phones and tablets: the wide cell shows the whole word "FILLOX" centred. */
-      position: "50% 50%",
-    } satisfies ImageRef,
     /**
-     * Crop from 1024px (`lg`), where the photo is a portrait cell next to the text (≈ 0.4–0.57 of
-     * the photo's width, 1024 → 1710px): anchored near the left edge, so the cell shows the plant
-     * leaf and the word's beginning ("FIL…", "FILL…") instead of "ILL" from its middle. Vertical
-     * position is unused there (the photo's height fits the cell).
+     * The clinic's group photo (content/photos.ts, 1206 × 1468): four practitioners in Fillox
+     * uniforms, unnamed (the alt text names no one). It suits the hero's "Mød vores team" link.
+     * Phones and tablets: a landscape crop of the portrait photo (366 × 280 at 390, 720 × 440 at
+     * 768); the photo's default 15% keeps the two standing faces clear of the top edge and the two
+     * seated ones in the frame.
      */
-    imagePositionDesktop: "15% 50%",
+    // TODO: copy review (image choice + alt text)
+    image: photos.team satisfies ImageRef,
+    /**
+     * Crop from 1024px (`lg`), where the photo is a portrait cell next to the text (≈ 435–715px
+     * wide, 760–850px tall): the photo's full width fits, so only the vertical position counts.
+     */
+    imagePositionDesktop: "50% 30%",
     /** The source's closing "[Book en konsultation]". */
     primaryCta: { label: "Book en konsultation", href: site.booking.href } satisfies Link,
     /**
@@ -110,10 +108,14 @@ export const aboutPage = {
    */
   doctor: {
     id: "laegen",
-    // TODO: asset (owner): a second photo of Dr. Tom (teaching / at work, ≥ 1300px wide) for this
-    // section. It now shows his team-card portrait (team/tom.jpg, 509 × 800, enlarged here), which
-    // repeats as the first card of the team grid further down the page.
     slug: doctorSlug,
+    /**
+     * His photo in the clinic (content/photos.ts, 1223 × 1286), not his team-card portrait, which
+     * is the first card of the team grid further down the page. The alt text may name him.
+     * Optional: without the key, DoctorSection shows his team-card portrait.
+     */
+    // TODO: copy review (alt text)
+    image: photos.tomKlinik satisfies ImageRef,
     title: "En læge, der er en del af hverdagen",
     lead: "Hos Fillox er den medicinsk ansvarlige læge ikke blot et navn på hjemmesiden.",
     paragraphs: [

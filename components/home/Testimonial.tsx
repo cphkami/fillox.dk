@@ -36,12 +36,16 @@ export function Testimonial({ testimonial }: { testimonial: HomePage["testimonia
           <AllReviewsLink className="mt-5 self-center lg:mt-7 lg:self-start lg:text-on-band lg:hover:text-band-accent" />
         </div>
 
-        {/* Desktop only. The landscape photo (1.63) is cover-cropped into the right half
-            (~488–616 × 420 at 1024–1280, ~768 × 504 on the 1600 canvas), so it renders at box
-            height × aspect ratio (~685px, ~820px on the 1600 canvas), wider than the box. */}
+        {/* Desktop only. The portrait photo (behandlingsrum.jpg, 1086 × 1448 = 0.75) is
+            cover-cropped into the right half, whose height the longest review sets (measured:
+            488 × 614 at 1024, 616 × 555 at 1280, ≈ 768 × 504–560 on the 1600 canvas). Every box
+            is wider than 0.75, so it renders at the half band's width: 50vw − 24px (the surface
+            margins), 768px from 1600. A landscape photo here would render at box height × its
+            aspect instead: recompute. Hidden below 1024px: the 1px slot makes phones fetch the
+            tiniest variant. */}
         <Photo
           image={testimonial.image}
-          sizes="(min-width: 1600px) 830px, (min-width: 1280px) 54vw, 700px"
+          sizes="(min-width: 1600px) 768px, (min-width: 1024px) calc(50vw - 24px), 1px"
           className="min-h-fluid-420 max-lg:hidden"
         />
       </div>

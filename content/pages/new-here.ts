@@ -5,6 +5,7 @@ import { treatmentCategories, treatmentCategoryHref } from "../navigation";
 import { routes } from "../routes";
 import { getTreatment, treatmentHref } from "../treatments";
 import { ui } from "../ui";
+import { photos } from "../photos";
 
 /**
  * /ny-hos-fillox — "Ny hos Fillox?", the guide for first-time visitors. No design: built from the
@@ -83,15 +84,13 @@ export type NewHereNeed = {
   bookCta?: Link;
 };
 
-/** Hero photo, also the share image. */
+/**
+ * Hero photo (from 1024px only), also the share image (its link-preview crop): a smiling
+ * practitioner, a friendly first face for new clients (the clinic's own photo, content/photos.ts).
+ * No product, syringe or treatment: the page also leads to the rynkebehandling pages.
+ */
 // TODO: copy review (image choice + alt text)
-const heroImage: ImageRef = {
-  src: "/images/results/duo-color.jpg",
-  alt: "To smilende kvinder foran en beige og rosa baggrund",
-  position: "62% 40%",
-  width: 1600,
-  height: 1096,
-};
+const heroImage: ImageRef = photos.behandlerPortraet2;
 
 export const newHerePage = {
   path: routes.newHere,
@@ -365,19 +364,13 @@ export const newHerePage = {
     primaryCta: consultationCta,
     secondaryCta: { label: "Kontakt os for hjælp til at vælge tid", href: routes.contact } satisfies Link,
     /**
-     * The draft's [image] at the end of the page: a portrait (1200 × 1500), because from 1024px it
-     * fills the band's right column (about square); below 1024px it is a banner, cropped from the
-     * brows to the chin (position y 62%). The clinic's logo wall (behandling-3.jpg, 800 × 533)
-     * was tried here and lost letters in every crop of that column.
+     * The draft's [image] at the end of the page: a portrait, because from 1024px it fills the
+     * band's right column (about square); below 1024px it is a banner (≈ 366 × 200 on a phone),
+     * which shows the plant and the chair of the treatment room at 60% × 60%. The clinic's logo
+     * wall was tried here and lost letters in every crop of that column.
      */
-    // TODO: copy review (image choice; alt text as on /behandlinger and the blog)
-    image: {
-      src: "/images/hero/hero-1.jpg",
-      alt: "Kvinde med opsat hår foran en rosa baggrund",
-      position: "50% 62%",
-      width: 1200,
-      height: 1500,
-    } satisfies ImageRef,
+    // TODO: copy review (image choice + alt text)
+    image: photos.behandlingsrum satisfies ImageRef,
   },
 
   /** Fixed book bar below 768px (components/treatment/MobileBookBar): the page title + "Book tid". */

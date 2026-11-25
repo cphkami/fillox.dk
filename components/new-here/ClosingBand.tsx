@@ -9,9 +9,9 @@ import type { NewHerePage } from "@/content/pages/new-here";
  * Its id is where the mobile book bar slides away.
  *
  * Photo `sizes`: below 1024px the banner spans the band (100vw minus the surface margins); from
- * 1024px the portrait photo (4 : 5) covers the right column, 1 of 2.2 fr of the surface band
- * (measured: 444px at 1024, 633 at 1440, 698 from 1600), at the band's height (465–520px), so it
- * paints at the column's width.
+ * 1024px the portrait photo (behandlingsrum.jpg, 3 : 4) covers the right column, 1 of 2.2 fr of
+ * the surface band (measured: 444px at 1024, 633 at 1440, 698 from 1600), at the band's height
+ * (465–520px), so it paints at the column's width.
  */
 export function ClosingBand({ copy }: { copy: NewHerePage["closing"] }) {
   const titleId = `${copy.id}-title`;

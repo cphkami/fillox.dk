@@ -1,5 +1,6 @@
 import type { TextPageContent } from "../types";
 import { site } from "@/config/site";
+import { photos } from "../photos";
 
 /**
  * Copy for /content-creator (no design; rendered by components/text-page).
@@ -32,11 +33,8 @@ export const creatorPage: TextPageContent = {
     title: "Content creator",
     intro:
       "Laver du indhold om skønhed, hudpleje eller livsstil? Vi hører gerne fra content creators, der har lyst til at samarbejde med Fillox.",
-    image: {
-      src: "/images/results/duo-pink.jpg",
-      alt: "To smilende kvinder foran en rosa baggrund",
-      position: "58% 40%",
-    },
+    // The clinic's own photo (content/photos.ts). TODO: copy review (image choice + alt text)
+    image: photos.behandlerPortraet2,
   },
   body: [
     { type: "h2", text: "Send os en DM" },

@@ -9,7 +9,7 @@ import { buildArticleView } from "@/components/blog/articleView";
 import { absoluteUrl } from "@/components/seo";
 import { getPost, posts } from "@/content/blog";
 import { teamMemberHref } from "@/content/team";
-import { sharedOpenGraph, shareImage, shareTitle } from "@/lib/metadata";
+import { pageShareImage, sharedOpenGraph, shareImage, shareTitle } from "@/lib/metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       section: post.category,
       // Category and kind can be the same ("Efterpleje"): one tag each.
       tags: Array.from(new Set([post.category, post.kind].filter((t): t is string => Boolean(t)))),
-      images: [shareImage(post.image)],
+      images: [shareImage(pageShareImage(post.image))],
     },
   };
 }
