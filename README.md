@@ -73,7 +73,7 @@ npm run build            # kører check:market først (prebuild)
   eller sin række i ansigtstabellen (`faces`);
 - en behandlers `clinicSlugs` (det eneste sted, der står, hvor hun eller han arbejder) nævner en
   klinik, der ikke findes eller ikke er åben, en behandler ingen klinik har (undtagen dem i
-  `clinicsUnknown`, i dag Dr. Tom), en tekst om behandleren (kort, profil, "Din behandler" på
+  `clinicsUnknown`, i dag ingen), en tekst om behandleren (kort, profil, "Din behandler" på
   behandlingssiderne) nævner en anden klinik (også med små bogstaver, med eller uden mellemrum som
   "City 2", eller som "Frb" eller "Taastrup"), eller profilen ikke har kortet "Arbejder i";
 - der står æ, ø eller å i en streng i `app/`, `components/` eller `lib/` (tekst hører til i
@@ -330,9 +330,11 @@ på sitet, skal værten med i CSP'en (begge filer).
       ikke længere et rynkekort, se "Fotos fra Drive" nedenfor).
 - [ ] **Om os** (`content/pages/about.ts`, bureauets nye tekst): (1) "Og du behøver ikke føle dig
       hjemme i en eksklusiv luksusklinik for at føle dig hjemme hos os." står ordret, men lyder
-      oversat — bed bureauet se på den. (2) Dr. Toms titel: den nye tekst siger "grundlægger af
-      Fillox" og "den medicinsk ansvarlige læge", hans behandlerkort "Æstetisk læge · Daglig
-      leder" og "fagligt ansvarlig læge" (`content/team.ts`). Hvilken skal begge steder bruge?
+      oversat — bed bureauet se på den. (2) ~~Dr. Toms titel~~: løst 25/11-2026 ("lidt mere end
+      bare læge"): kortene siger nu "Æstetisk læge & grundlægger", Om os, `/behandlere` og hans
+      profil "Æstetisk læge · Grundlægger & daglig leder"; profilen nævner også fagligt ansvarlig
+      læge og undervisningen (fra fillox.dk og bureauets tekst). Har han en titel mere (fx
+      speciallæge), så skriv den.
       (3) **Dr. Toms foto**: hans nye portræt (grå uniform, 25/11-2026) er det eneste foto af ham.
       Lægeafsnittet viser det nu i et bredt udsnit (hele højden: fra hoved til hænder, planten og
       panelvæggen), og hans behandlerkort længere nede på siden viser samme foto tæt. Har I et
@@ -363,9 +365,9 @@ på sitet, skal værten med i CSP'en (begge filer).
       "Prioritet: Kundetilfredshed" (står også under "Sådan arbejder jeg") og Mike "Udvikling:
       Løbende uddannelse" (står i introen lige over). `/klinikker` siger stadig ikke "Samme
       behandlere" (`content/pages/clinics.ts`), da behandlerne arbejder på bestemte klinikker.
-  - [ ] **Dr. Tom**: hvilke klinikker arbejder han i? Han var ikke på listen, så hans profil siger
-        ikke, hvor han arbejder (`clinicsUnknown` i `content/team.ts`). Svaret giver ham kortet
-        "Arbejder i" som de andre.
+  - [x] **Dr. Tom**: arbejder på alle klinikker (du, 25/11-2026). Hans profil har nu "Arbejder i:
+        Alle klinikker", og bookingbåndet siger "Du møder Dr. Tom i alle vores klinikker." Åbner en
+        ny klinik, kommer han automatisk med.
   - [ ] En anmeldelse om Alberte (Jessica, Trustpilot 28/7-2025) siger "Fik lavet læber hos
         Alberte i Amager Centret", men hun arbejder på Frederiksberg. Anmeldelser citeres ordret, så
         den er **holdt tilbage** fra hendes profil og lip filler-siden, indtil du svarer (hun har
@@ -413,10 +415,10 @@ på sitet, skal værten med i CSP'en (begge filer).
         anmeldelser om læber nævner hende). Er det rigtigt, eller skal det være Mike?
   - [ ] Siden for mænd ("Du er i gode hænder") viser nu Alberte, Annika og **Mike** (i stedet for
         Maria). Er det i orden?
-  - [ ] Er Maria eller Kubra med på gruppebilledet med fire behandlere i sofaen (toppen af Om os og
-        `/ledige-stillinger`) eller på andre behandlerbilleder (behandleren med folderen og
-        behandleren i hvid kittel, fx på forsiden, `/priser`, behandlingssider og blogindlæg)? Hvis
-        ja, skal de skiftes.
+  - [x] Maria og Kubra er ikke med på gruppebilledet i sofaen (du, 25/11-2026). Det bliver.
+  - [ ] Er Maria eller Kubra på andre behandlerbilleder (behandleren med folderen og behandleren i
+        hvid kittel, fx på forsiden, `/priser`, behandlingssider og blogindlæg)? Hvis ja, skal de
+        skiftes.
 - [ ] **Nye portrætter** (du, 25/11-2026): Tom (grå uniform), Alberte (sort), Annika og Mike har nye
       fotos, `public/images/team/<slug>-2026.jpg` (fra Drive, uden metadata, ikke forstørret), på
       alle sider; de gamle portrætter og stemningskopierne af de fire fotos er slettet.
@@ -475,7 +477,8 @@ på sitet, skal værten med i CSP'en (begge filer).
     bunden.
   - [ ] **Hvem er på billederne?** Delvist besvaret 25/11-2026 (portrætterne, og vinduesbilledet
     er Alberte; på hudsiderne står det over "Din behandler: Alberte" eller uden navn). Stadig åbent:
-    sprøjtebillederne, folderbilledet, behandlingen i hvid kittel og gruppebilledet. Sprøjtebilledet
+    sprøjtebillederne, folderbilledet og behandlingen i hvid kittel (gruppebilledet: Maria og Kubra er
+    ikke med, 25/11-2026; de fire forbliver unavngivne). Sprøjtebilledet
     med armene over kors ligner tydeligt Albertes portræt (samme fotografering, positur, handsker
     og baggrund), så det står ikke længere øverst på lip filler-siden over "Din behandler: Annika":
     toppen dér viser nu spejlbilledet (25/11-2026). Næsekorrektion viser behandlingsrummet i

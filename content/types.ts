@@ -385,7 +385,7 @@ export type TeamMember = {
   image: ImageRef;
   /** Full name when it differs, e.g. "Dr. Tom Haugland" (Om os, profile). */
   fullName?: string;
-  /** Longer title on Om os / profile, e.g. "Æstetisk læge · Daglig leder". */
+  /** Longer title on Om os / profile, e.g. "Æstetisk læge · Grundlægger & daglig leder". */
   title?: string;
   /** Title on mobile when the design differs (mo, mb), e.g. "Sygeplejerske · Fillers & botox". */
   titleShort?: string;

@@ -26,14 +26,16 @@ import { formatList } from "@/lib/format";
  *   the three team grids with the placeholder in the photo's slot, no profile page, no link. See
  *   "A new member" at the end of this comment for what to add when photos and texts arrive.
  * - Titles ("tom er self læge mm men de andre skriver vi bare kosmetiske sygeplejerske"): Dr. Tom
- *   keeps his; everyone else is `nurse` below (title "Kosmetisk sygeplejerske", role
+ *   is the doctor, and more than that ("tror også hans titel er lidt mere end bare læge": æstetisk
+ *   læge, grundlægger, daglig leder, fagligt ansvarlig; sources at his entry); everyone else is `nurse` below (title "Kosmetisk sygeplejerske", role
  *   "Sygeplejerske"). That also answered Alberte's profession, which the live site never gave.
  * - Clinics ("Frederikke = Østerbro / Simone = city2 og Amager / Mike = frb og Amager / Annika =
  *   Østerbro og city2 / Alberte = FRB"): `worksAt` below → `clinicSlugs`, in the owner's order.
  *   It is the ONLY source of where someone works: every text that names a practitioner's clinic
  *   is built from it, never written by hand (clinicNames, full names: the booking band and the new
  *   members' card sentence; clinicShortList, short names as in the design: the "Arbejder i"
- *   fact). Dr. Tom's clinics were not given (`clinicsUnknown`).
+ *   fact). Dr. Tom works in every clinic ("Tom er på alle klinikker"): the texts say "alle vores
+ *   klinikker" / "Alle klinikker" for him.
  *
  * Only Alberte has a full profile design (6alb / ma); the other profiles follow her template
  * (intro, facts, "Sådan arbejder jeg", offers, reviews, booking band) with their own facts.
@@ -117,6 +119,9 @@ const bookWith = practitionerBookingHref;
  * here changes them all.
  */
 const worksAt = {
+  // The owner, 2026-11-25: "Tom er på alle klinikker" — every open clinic, so a new clinic includes
+  // him too.
+  tom: openClinics.map((clinic) => clinic.slug),
   alberte: ["frederiksberg"],
   annika: ["osterbro", "city2"],
   mike: ["frederiksberg", "amager-centret"],
@@ -128,10 +133,8 @@ const worksAt = {
  * Members whose clinics are not known, so they have no `clinicSlugs` and no text about where they
  * work. Everyone else must have at least one clinic (npm run check:market, rule 17).
  */
-// TODO (owner): which clinics does Dr. Tom work in? ("Tom" was not in the owner's list of
-// 2026-11-25.) Then give him a row in `worksAt`, `clinicSlugs` and the "Arbejder i" fact, and
-// empty this list.
-export const clinicsUnknown: readonly string[] = ["tom"];
+// Empty since the owner answered for Dr. Tom (2026-11-25: "Tom er på alle klinikker").
+export const clinicsUnknown: readonly string[] = [];
 
 /** An open clinic (content/clinics.ts). Throws on an unknown or closed clinic. */
 function openClinic(slug: string) {
@@ -140,25 +143,38 @@ function openClinic(slug: string) {
   return clinic;
 }
 
+/** Whether `clinicSlugs` is every open clinic (Dr. Tom): the texts then say so instead of a list. */
+const worksEverywhere = (clinicSlugs: readonly string[]) =>
+  openClinics.length > 1 && openClinics.every((clinic) => clinicSlugs.includes(clinic.slug));
+
+/** Wording for a practitioner who works in every open clinic. */
+// TODO: copy review
+const everyClinic = { sentence: "alle vores klinikker", fact: "Alle klinikker" };
+
 /**
  * Where a practitioner works, as a sentence's text, from `clinicSlugs`: "Fillox Østerbro og Fillox
- * City2" (the clinics' full names in the given order, joined the Danish way). Every sentence that
+ * City2" (the clinics' full names in the given order, joined the Danish way; "alle vores klinikker"
+ * for someone in every open clinic). Every sentence that
  * states a practitioner's clinic goes through it (the booking band, the new members' card
  * sentence); the "Arbejder i" fact uses clinicShortList. Throws on an empty list or an unknown clinic.
  */
 export function clinicNames(clinicSlugs: readonly string[]): string {
   if (!clinicSlugs.length) throw new Error("team: clinicNames() needs at least one clinic");
+  clinicSlugs.forEach(openClinic);
+  if (worksEverywhere(clinicSlugs)) return everyClinic.sentence;
   return formatList(clinicSlugs.map((slug) => openClinic(slug).fullName));
 }
 
 /**
  * The "Arbejder i" fact's value, from `clinicSlugs`: the clinics' short names joined with "&", as
  * in the design (6alb / ma: "City2 & Amager") and the other fact values ("Dine ønsker & behov"),
- * e.g. "Frederiksberg & Amager Centret". A name never breaks inside (no-break spaces), so a value
+ * e.g. "Frederiksberg & Amager Centret" ("Alle klinikker" for someone in every open clinic). A name never breaks inside (no-break spaces), so a value
  * on two lines breaks between clinics. Throws on an empty list or an unknown clinic.
  */
 export function clinicShortList(clinicSlugs: readonly string[]): string {
   if (!clinicSlugs.length) throw new Error("team: clinicShortList() needs at least one clinic");
+  clinicSlugs.forEach(openClinic);
+  if (worksEverywhere(clinicSlugs)) return everyClinic.fact;
   const names = clinicSlugs.map((slug) => openClinic(slug).name.replace(/ /g, " "));
   return names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} & ${names[names.length - 1]}`;
 }
@@ -382,8 +398,16 @@ const members: TeamRosterMember[] = [
     slug: "tom",
     name: "Dr. Tom",
     fullName: "Dr. Tom Haugland",
-    role: "Æstetisk læge",
-    title: "Æstetisk læge · Daglig leder",
+    // More than "læge" (the owner, 2026-11-25: "tror også hans titel er lidt mere end bare læge"):
+    // "grundlægger af Fillox" (the owner's new Om Fillox text, content/pages/about.ts), "daglig
+    // leder i Fillox-kæden" and "Fagligt ansvarlig er æstetisk læge Tom Haugland" (fillox.dk/om-os,
+    // also fillox.no/om-oss). The cards show `role`; /om-os, /behandlere and his profile `title`.
+    // TODO: copy review (owner: the exact title wording)
+    role: "Æstetisk læge & grundlægger",
+    title: "Æstetisk læge · Grundlægger & daglig leder",
+    // Below 768px (profile eyebrow, /om-os and /behandlere cards): the title on one line at 390px.
+    titleShort: "Æstetisk læge & grundlægger",
+    clinicSlugs: worksAt.tom,
     // In the clinic, grey-beige uniform (the owner, 2026-11-25). Also the /om-os doctor section's
     // photo, there in a wider crop (content/pages/about.ts).
     image: {
@@ -394,20 +418,22 @@ const members: TeamRosterMember[] = [
       share: { src: "/images/team/og-tom-2026.jpg", width: 1200, height: 628 },
     },
     // Also the "Din behandler" text on /behandlinger/naesekorrektion (no practitionerText there).
-    bio: "Tom er uddannet læge i Oslo og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere. Han er fagligt ansvarlig læge i Fillox, og næsekorrektioner udføres af ham.",
+    bio: "Tom er uddannet læge i Oslo, grundlægger af Fillox og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere. Han er fagligt ansvarlig læge i Fillox, og næsekorrektioner udføres af ham.",
     bioShort:
-      "Uddannet læge i Oslo og fagligt ansvarlig i Fillox. Specialområde: ansigtskonturering samt næse- og hagekorrektioner.",
+      "Uddannet læge i Oslo, grundlægger af Fillox og fagligt ansvarlig læge. Specialområde: ansigtskonturering samt næse- og hagekorrektioner.",
     link: { label: "Se hvad Dr. Tom tilbyder", href: profileHref("tom") },
     bookingHref: bookWith("tom"),
     profile: {
       intro:
-        "Tom er uddannet læge i Oslo og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere, og han er fagligt ansvarlig læge i Fillox.",
+        "Tom er uddannet læge i Oslo, grundlægger af Fillox og daglig leder i Fillox-kæden. Hans specialområde er ansigtskonturering samt næse- og hagekorrektioner med hyaluronsyrefillere, og han er fagligt ansvarlig læge i Fillox.",
       introShort:
-        "Tom er uddannet læge i Oslo og daglig leder i Fillox. Specialområde: ansigtskonturering samt næse- og hagekorrektioner.",
+        "Tom er uddannet læge i Oslo, grundlægger og daglig leder af Fillox. Specialområde: ansigtskonturering samt næse- og hagekorrektioner.",
       primaryCta: { label: "Book tid hos Dr. Tom", href: bookWith("tom") },
       secondaryCta: seeTreatments,
+      // "Arbejder i" first, as on the other profiles; "Uddannet: Læge i Oslo" gave it its place
+      // (the intro and "Uddannelse & ansvar" still say it).
       facts: [
-        { label: "Uddannet", value: "Læge i Oslo" },
+        worksInFact(worksAt.tom),
         { label: "Specialområde", value: "Ansigtskonturering, næse & hage" },
         { label: "Rolle", value: "Fagligt ansvarlig læge" },
       ],
@@ -460,23 +486,29 @@ const members: TeamRosterMember[] = [
       },
       // /om-os: "uddannet læge i Oslo og … daglig leder i Fillox-kæden", "Fagligt ansvarlig er
       // æstetisk læge Tom Haugland", "Annika er uddannet kosmetisk sygeplejske i Fillox af Dr.
-      // Tom"; /priser: "Næsekorrektion — Udføres af Dr. Tom". No years are documented.
+      // Tom"; /priser: "Næsekorrektion — Udføres af Dr. Tom"; the owner's new Om Fillox text
+      // (content/pages/about.ts): "grundlægger af Fillox", "står for intern undervisning",
+      // "international underviser". No years are documented.
       experience: {
         title: "Uddannelse & ansvar",
         items: [
           { period: "Uddannelse", text: "Uddannet læge i Oslo." },
-          { period: "Ledelse", text: "Daglig leder i Fillox-kæden." },
+          { period: "Ledelse", text: "Grundlægger af Fillox og daglig leder i Fillox-kæden." },
           {
             period: "Fagligt ansvar",
             periodShort: "Ansvar",
             text: "Fagligt ansvarlig læge i Fillox. Næsekorrektioner udføres af Tom.",
           },
-          { period: "Undervisning", text: "Har uddannet Annika som kosmetisk sygeplejerske i Fillox." },
+          {
+            period: "Undervisning",
+            text: "Står for den interne undervisning i Fillox og underviser også internationalt. Har blandt andet uddannet Annika som kosmetisk sygeplejerske.",
+          },
         ],
       },
       booking: {
         title: "Book tid hos Dr. Tom",
-        text: "Vælg behandling og klinik. Behandling hos læge har et specialist-tillæg efter aftale.",
+        // TODO: copy review
+        text: `${meetAt("Dr. Tom", worksAt.tom)} Behandling hos læge har et specialist-tillæg efter aftale.`,
         cta: { label: "Book tid hos Dr. Tom", href: bookWith("tom") },
       },
     },

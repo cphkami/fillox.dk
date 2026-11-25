@@ -582,8 +582,10 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   "&", as in 6alb / ma "City2 & Amager" and the other fact values: "Frederiksberg & Amager
   Centret"; no-break spaces inside a name, so a two-line value breaks between clinics). In the
   fact rows below 768px the label keeps its width (`shrink-0`) and the value wraps balanced. Dr.
-  Tom's clinics are unknown (`clinicsUnknown`, a TODO for the owner), so nothing says where he
-  works. A verbatim review that places a practitioner elsewhere is held back from the sets until
+  Tom works in every open clinic (owner, 2026-11-25): `worksAt.tom` is derived from `openClinics`,
+  and both helpers then say so ("alle vores klinikker" / "Alle klinikker") instead of listing
+  four names. `clinicsUnknown` is empty and stays as the escape hatch for a member whose clinics
+  are not known yet. A verbatim review that places a practitioner elsewhere is held back from the sets until
   the owner answers (`content/reviews.ts`: Jessica, Alberte "i Amager Centret").
 - **check:market** — rule 16: a member without a portrait has no profile page, offers, crops, link,
   booking link, author bio or share image; a member with a profile page has a portrait file with
