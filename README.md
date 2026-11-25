@@ -436,9 +436,9 @@ tredjepartsscript, en ny iframe eller et nyt tag i containeren på sitet, skal v
 - [ ] **Østerbro** er åben (du, 25/11-2026) på **Nordre Frihavnsgade 13A, 2100 København Ø**
       (postnummer og kortplacering tjekket mod OpenStreetMap). Den står nu som åben klinik på
       /klinikker, i menuerne, i footeren, på /kontakt, på forsiden og i de strukturerede data, og
-      "Få besked"-formularen er fjernet helt. **Mangler**: åbningstider (indtil da vises ingen tider
-      for Østerbro), linket til klinikkens Google Maps-sted ("Rutevejledning" søger i dag på
-      adressen) og Østerbros Gecko-kalender-id (Gecko kender behandlingsstedet "Fillox - Østerbro",
+      "Få besked"-formularen er fjernet helt. Åbningstider fra dig 25/11-2026: man–fre 9–18, lør
+      10–17, søndag lukket. **Mangler**: linket til klinikkens Google Maps-sted ("Rutevejledning"
+      søger i dag på adressen) og Østerbros Gecko-kalender-id (Gecko kender behandlingsstedet "Fillox - Østerbro",
       id 14667). Alt sættes i `content/clinics.ts`.
 - [ ] **City2: adresse og weekendtider** (`content/clinics.ts`): fillox.dk/kontakt siger både
       "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop, centrets egen adresse); weekend

@@ -102,9 +102,12 @@ export const clinics: Clinic[] = withBookingLinks([
     // From the owner, 25 November 2026: "Nordre Frihavnsgade 13A", "2100 København Ø" (postcode and
     // the map position below checked against OpenStreetMap: Indre Østerbro).
     address: ["Nordre Frihavnsgade 13A", "2100 København Ø"],
-    // TODO (owner): opening hours. Until then the clinic shows no hours (the card, menus and footer
-    // leave the hours out, and the structured data has no openingHoursSpecification).
-    hours: [],
+    // From the owner, 25 November 2026: "9-18 i hverdagene og 10-17 lørdag, søndag er der lukket".
+    hours: [
+      { days: "Man–fre", hours: "9–18" },
+      { days: "Lør", hours: "10–17" },
+    ],
+    hoursSummary: "Man–fre 9–18 · Lør 10–17",
     // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to
     // preselect it. Gecko's public booking page lists the clinic as "Fillox - Østerbro"
     // (behandlingssted id 14667).
