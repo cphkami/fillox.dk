@@ -56,17 +56,24 @@ import { formatList } from "@/lib/format";
  *   ("ansigtskonturering samt næse- og hagekorrektioner"; /om-os adds "og trådløft", which is not
  *   offered any more (content/redirects.ts), so his texts leave it out too); Annika and Mike their
  *   reviews (Annika: lip filler, Botox, fillers, skinbooster/Sunekos; Mike: lip filler, Botox,
- *   fillers incl. hage); Alberte the design's (still to be confirmed, see her entry). Names, short
- *   texts and prices come from content/treatments.ts and the price list (content/prices.ts), so
- *   they never drift from /priser.
+ *   fillers incl. hage); Alberte her profile's skin treatments, kept on the owner's answer (asked
+ *   about the treatments on her profile: "ved ikke tjek hvad vi har skrevet tidligere, nok det
+ *   hele", 2026-11-25), the injectables her reviews name (lip filler: Qlr, Lisette Nielsen,
+ *   Jessica; filler: Jh, who names no area) and rynkebehandling (the owner, 2026-11-25: "ja hun
+ *   laver også rynkebehandling"). Names, short texts and prices come
+ *   from content/treatments.ts and the price list (content/prices.ts), so they never drift from
+ *   /priser; the wrinkle card is `wrinkleOffer` on all three profiles (never the product name).
  * - An offer's `treatmentSlug` also makes treatment pages without a practitioner of their own
  *   pick the first member who offers it as "Din behandler" (components/treatment/treatmentView.ts;
  *   a treatment nobody offers shows no practitioner block). So only treatments whose page already
- *   has its practitioner (lip filler → Annika, næsekorrektion → Tom, skinbooster and Alberte's
- *   offers → Alberte, who comes first; the rynkebehandling hub is a long-form page and shows no
- *   practitioner, content/types.ts) carry one; Tom's chin and contouring offers and the nurses'
- *   "Fillers i ansigtet" are unlinked, so kindben, kæbelinje and hage keep their pages as they
- *   are. A card-only member has no offers, so no treatment page can pick one.
+ *   has its practitioner (lip filler → Annika, set on the page itself (content/treatments.ts →
+ *   practitionerSlug; the owner, 2026-11-25: "ok"), so Alberte's lip filler offer, the first in
+ *   team order, does not take it over; næsekorrektion → Tom; skinbooster and Alberte's skin offers →
+ *   Alberte, who comes first; the rynkebehandling hub is a long-form page and shows no
+ *   practitioner, content/types.ts, so the nurses' wrinkle offers pick nobody) carry one; Tom's
+ *   chin and contouring offers and the nurses' "Fillers i ansigtet" are unlinked, so kindben,
+ *   kæbelinje and hage keep their pages as they are. A card-only member has no offers, so no
+ *   treatment page can pick one.
  * - `experience` only where it is documented: Tom (education and roles on /om-os, and "Annika
  *   er uddannet … i Fillox af Dr. Tom"). The others have no dated education on the live site.
  *
@@ -249,7 +256,7 @@ function consultationPrice(label: string): PriceValue {
  */
 const facialFillers: TeamOffer = {
   name: "Fillers i ansigtet",
-  description: "Kindben, kæbelinje og hage formet med hyaluronsyre, pr. område op til 1 ml.",
+  description: "Kindben, kæbelinje og hage formet med hyaluronsyre, pr. område op til 1\u00a0ml.",
   price: fromPrice("kindben", "kaebelinje", "hage"),
 };
 
@@ -529,14 +536,23 @@ const members: TeamRosterMember[] = [
       share: { src: "/images/team/og-alberte-2026.jpg", width: 1105, height: 579 },
     },
     clinicSlugs: worksAt.alberte,
-    // TODO: fact check (owner), still open: her education and what she performs. The offers below
-    // are the design's (laser, microneedling, skinbooster, ansigtsbehandling, PRF hud), not
-    // confirmed for her. Until then the design's unsourced claims stay out: the specialty "Laser &
-    // hudforbedring", the "Erfaring & uddannelse" timeline (2021 kosmetolog, 2022 laser/IPL, 2023
-    // Fillox, løbende kurser), the design's title ("Kosmetisk behandler") and clinics (City2 &
-    // Amager), which the owner has now answered differently, and the design's sample review (her
-    // real Trustpilot reviews are in content/reviews.ts). bio, bioShort, intro and the two facts
-    // about her approach come from her "Ansatte" pop-up and quote on https://fillox.dk/om-os/.
+    // What she performs (the offers below): the design's skin treatments (laser, microneedling,
+    // skinbooster, ansigtsbehandling, PRF hud), kept on the owner's answer (asked about the
+    // treatments on her profile: "ved ikke tjek hvad vi har skrevet tidligere, nok det hele",
+    // 2026-11-25); the injectables her own Trustpilot reviews name
+    // (content/reviews.ts): lip filler (Qlr "Jeg har fået lavet læber hos Alberte", Lisette Nielsen
+    // "et perfekt resultat af mine læber", Jessica "Fik lavet læber hos Alberte") and filler (Jh,
+    // about her visits to Alberte: "Jeg har aldrig prøvet hverken filler eller microneedeling
+    // før"; no area named); and rynkebehandling (the owner, 2026-11-25: "ja hun laver også
+    // rynkebehandling").
+    // TODO: fact check (owner), still open: her education, and whether she does the areas the
+    // shared "Fillers i ansigtet" card names (kindben, kæbelinje, hage; Jh names none). Until then
+    // the design's unsourced claims stay out: the specialty "Laser & hudforbedring", the "Erfaring & uddannelse" timeline (2021
+    // kosmetolog, 2022 laser/IPL, 2023 Fillox, løbende kurser), the design's title ("Kosmetisk
+    // behandler") and clinics (City2 & Amager), which the owner has answered differently, and the
+    // design's sample review (her real Trustpilot reviews are in content/reviews.ts). bio, bioShort,
+    // intro and the two facts about her approach come from her "Ansatte" pop-up and quote on
+    // https://fillox.dk/om-os/.
     bio: "Alberte holder sig konstant orienteret inden for den nyeste viden og de seneste fremskridt i den kosmetiske verden.",
     bioShort: "Holder sig konstant orienteret i den nyeste viden inden for den kosmetiske verden.",
     quote: "“Min tilgang er at forbedre og ikke forandre.”",
@@ -587,7 +603,12 @@ const members: TeamRosterMember[] = [
         // Prices from the price list (https://fillox.dk/priser/): laser from 500 (Overlæbe, Hage …),
         // Microneedling 1 behandling 1.200 (999 until the live list changed, 2026-11-17),
         // skinboosters from 1.499 (Ejal 40), Signatur behandling 999, PRF Hud 1 behandling 2.499;
-        // the fillers consultation (v. kosmetisk sygeplejerske) is free.
+        // lip filler, "Fillers i ansigtet" and rynkebehandling as on Annika's and Mike's profiles
+        // (the same helpers and `wrinkleOffer`, never the product name); the fillers consultation
+        // (v. kosmetisk sygeplejerske) is free.
+        // Order: her skin treatments first (the profile's focus, as designed), then lip filler,
+        // fillers and rynkebehandling, the consultation last. Nine cards: three full rows of thirds
+        // from 72rem, rows of two from 768px with the consultation full width (offerSpan).
         items: [
           // Live (/harfjerning): diode laser, settings adapted to the skin type and hair.
           treatmentOffer("laser-harfjerning", {
@@ -600,6 +621,14 @@ const members: TeamRosterMember[] = [
           }),
           treatmentOffer("signatur-ansigtsbehandling", { description: "Peeling, maske og LED med Dr. Dennis\u00a0Gross." }),
           treatmentOffer("prf-hud"),
+          // Lip filler and fillers: her reviews; rynkebehandling: the owner (see the comment at
+          // `clinicSlugs`). Lip filler links to its page, whose "Din behandler" stays Annika (set on
+          // the page, content/treatments.ts); "Fillers i ansigtet" is unlinked, as for the other
+          // nurses (header, "Offers"); rynkebehandling links to the hub, a long-form page that shows
+          // no practitioner.
+          treatmentOffer("lip-filler"),
+          facialFillers,
+          wrinkleOffer,
           consultationOffer("Alberte"),
         ],
       },

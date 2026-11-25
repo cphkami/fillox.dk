@@ -463,7 +463,10 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   takes reviews that name that person, `general` only reviews that name nobody and fit every
   page — nothing about needles, anaesthesia or a "sygeplejerske", which a laser page or a
   doctor's profile would contradict). The file's header lists what is left out on purpose
-  (reviews naming Botox, former staff, Fillox Oslo …).
+  (reviews naming Botox, former staff, Fillox Oslo …); a review that places a practitioner at a
+  clinic outside their `clinicSlugs` goes into the sets only once the owner confirms they worked
+  there then (Jessica's, Alberte "i Amager Centret": confirmed 2026-11-25, in
+  `practitioners.alberte` and `treatments["lip-filler"]`, 6 reviews each).
 - **Wrinkle pages** — `treatmentsWithoutReviews` (`rynkebehandling`, `andre-behandlingsmuligheder`,
   which replaced the Botox, lip flip, gummy smile, hyperhidrose, Traptox and Botox for mænd pages)
   show no reviews section at all: Botox is a prescription medicine, and even general reviews would
@@ -543,6 +546,26 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   (`content/redirects.ts`), the reviews that named Maria are left out (`content/reviews.ts`; none
   named Kubra), the lip filler page's "Din behandler" is Annika and the men's page shows Mike in
   Maria's place. No treatment page had Kubra as "Din behandler".
+- **Offers** (`profile.offers`, "Det tilbyder … dig") — what each practitioner is documented to
+  perform (sources in the team.ts header): Dr. Tom his specialty on /om-os; Annika and Mike what
+  their reviews name; Alberte her profile's skin treatments (laser, microneedling, skinbooster,
+  ansigtsbehandling, PRF hud; kept on the owner's answer, 2026-11-25: "ved ikke tjek hvad vi har
+  skrevet tidligere, nok det hele"), then lip filler and "Fillers i ansigtet" from her own
+  reviews (Jh's "filler" names no area; open owner question in README) and rynkebehandling (owner, 2026-11-25: "ja hun laver også
+  rynkebehandling"), the free consultation last (9 cards: three full rows of thirds from 72rem,
+  rows of 2 from 768px with the last card full width, `offerSpan`). Names, texts and prices come
+  from `content/treatments.ts` and the price list (`treatmentOffer`, `fromPrice`, `facialFillers`,
+  `wrinkleOffer`), so a card never drifts from /priser; the wrinkle card is "Rynkebehandling" on
+  Alberte's, Annika's and Mike's profiles, never the product name (see "Prescription medicine").
+  An offer's `treatmentSlug` also picks "Din behandler" on a treatment page that does not name
+  its own (`detail.practitionerSlug`, `practitionerBySlug`): the first member in team order who
+  offers it (`components/treatment/treatmentView.ts` → `findPractitioner`). Lip filler names
+  Annika on the page (owner, 2026-11-25: "ok"), so Alberte's lip filler card does not take it
+  over; næsekorrektion names Dr. Tom; the skin pages (and laser for mænd) show Alberte; the
+  rynkebehandling hub is a long-form page (no practitioner), so the wrinkle cards pick nobody;
+  "Fillers i ansigtet" and Dr. Tom's chin and contouring cards are unlinked, so kindben,
+  kæbelinje and hage show no practitioner. A new linked offer can change "Din behandler" on a
+  page: compare every treatment page's practitioner before and after.
 - **Members without a profile page** — `content/types.ts` models two kinds: `TeamMember` (has
   `profile` and a portrait `image`: a page at /behandlere/<slug>) and `TeamCardOnlyMember` (no
   `profile`, `link`, `bookingHref`, `authorBio` or share image; `image` optional): a new
@@ -585,8 +608,10 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   Tom works in every open clinic (owner, 2026-11-25): `worksAt.tom` is derived from `openClinics`,
   and both helpers then say so ("alle vores klinikker" / "Alle klinikker") instead of listing
   four names. `clinicsUnknown` is empty and stays as the escape hatch for a member whose clinics
-  are not known yet. A verbatim review that places a practitioner elsewhere is held back from the sets until
-  the owner answers (`content/reviews.ts`: Jessica, Alberte "i Amager Centret").
+  are not known yet. A verbatim review that places a practitioner at a clinic outside their
+  `clinicSlugs` goes into the review sets only when the owner confirms they worked there at the
+  time (`content/reviews.ts` header): Jessica's (Alberte "i Amager Centret") is on Alberte's
+  profile and the lip filler page again since the owner's "ok det fint" (2026-11-25).
 - **check:market** — rule 16: a member without a portrait has no profile page, offers, crops, link,
   booking link, author bio or share image; a member with a profile page has a portrait file with
   its pixel size, a share image file and a face-table row; `team` is exactly the members with a

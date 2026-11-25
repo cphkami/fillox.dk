@@ -263,7 +263,8 @@ på sitet, skal værten med i CSP'en (begge filer).
         eller et andet mærke af stoffet, og et bookingkort til rynkesiderne. De gamle
         preview-adresser `/blog/botox-…` giver 404 og har ingen viderestilling, så produktnavnet
         ikke lever videre i en adresse. Åbent:
-    - [ ] **Fagligt tjek af en læge** (alle blokke markeret `TODO: fagligt tjek (læge)`), især
+    - [ ] **Fagligt tjek af en læge** (aftalt med ejeren 25/11-2026, afventer; alle blokke
+          markeret `TODO: fagligt tjek (læge)`), især
           efterplejen, og hvornår man skal ringe til vagtlægen eller 112. fillox.dk siger kun 2
           timer før let træning og 24 timer før hård træning; det gamle udkasts råd (ikke ligge ned
           i 4 timer, ikke massere området) står ikke på fillox.dk og er udeladt. Skal lægen tilføje
@@ -293,7 +294,7 @@ på sitet, skal værten med i CSP'en (begge filer).
         prisrække uden link: skal den have et afsnit?
   - [ ] **"fra 799 kr" for rynkebehandling** står stadig i menuerne, på forsiden (bestseller #01),
         på siden for mænd og i behandlernes priskort ("Rynkebehandling" lige over
-        kundeanmeldelserne hos Annika og Mike, `wrinkleOffer` i `content/team.ts`). Er en
+        kundeanmeldelserne hos Alberte, Annika og Mike, `wrinkleOffer` i `content/team.ts`). Er en
         pris ved siden af behandlingen i orden?
   - [ ] **Siden for mænd** (`content/pages/men.ts`): FAQ-svaret "Hvor lang tid tager det?" bruger
         nu rynkesidens ord (lægefaglig forundersøgelse, mindst to dages betænkningstid);
@@ -368,12 +369,12 @@ på sitet, skal værten med i CSP'en (begge filer).
   - [x] **Dr. Tom**: arbejder på alle klinikker (du, 25/11-2026). Hans profil har nu "Arbejder i:
         Alle klinikker", og bookingbåndet siger "Du møder Dr. Tom i alle vores klinikker." Åbner en
         ny klinik, kommer han automatisk med.
-  - [ ] En anmeldelse om Alberte (Jessica, Trustpilot 28/7-2025) siger "Fik lavet læber hos
-        Alberte i Amager Centret", men hun arbejder på Frederiksberg. Anmeldelser citeres ordret, så
-        den er **holdt tilbage** fra hendes profil og lip filler-siden, indtil du svarer (hun har
-        stadig fem anmeldelser, lip filler-siden også). Arbejdede hun i Amager Centret dengang? Så
-        sætter vi den på igen (`content/reviews.ts` → `reviewSets.practitioners.alberte` og
-        `reviewSets.treatments["lip-filler"]`).
+  - [x] En anmeldelse om Alberte (Jessica, Trustpilot 28/7-2025) siger "Fik lavet læber hos
+        Alberte i Amager Centret", men hun arbejder på Frederiksberg i dag. Du svarede 25/11-2026
+        "ok det fint" til, om hun arbejdede i Amager Centret dengang, så anmeldelsen er sat på igen
+        på sin gamle plads på hendes profil og på lip filler-siden (`content/reviews.ts` →
+        `reviewSets.practitioners.alberte` og `reviewSets.treatments["lip-filler"]`; seks
+        anmeldelser begge steder).
 - [x] **Kubra er stoppet** (du, 25/11-2026: "Kubra er også ude"): hun er fjernet overalt
       (behandlerlisten, forsiden, Om os, `/behandlere`, profilen og hendes foto), og
       `/behandlere/kubra` sender videre (308) til Om os → behandlerne. Ingen anmeldelse nævnte hende,
@@ -389,9 +390,10 @@ på sitet, skal værten med i CSP'en (begge filer).
       billedet kommer. Intet andet er skrevet om dem (intet efternavn, ingen uddannelse,
       behandlinger eller citater), og de har ingen profilside endnu: `/behandlere/simone` og
       `/behandlere/frederikke` giver 404, intet linker dertil, og deres kort er ikke links.
-  - [ ] Send deres **fotos** (portræt, gerne som de andres: lys væg, sort Fillox-uniform).
-  - [ ] **Et par linjer om hver** og **hvilke behandlinger de udfører**. Så får de en profilside
-        som de andre og kan stå som "Din behandler" på behandlingssiderne.
+  - [ ] Send deres **fotos** (portræt, gerne som de andres: lys væg, sort Fillox-uniform). Du
+        sender dem senere (25/11-2026: "sender senere").
+  - [ ] **Et par linjer om hver** og **hvilke behandlinger de udfører** (kommer også senere). Så
+        får de en profilside som de andre og kan stå som "Din behandler" på behandlingssiderne.
   - **Sådan kommer et foto på** (`content/team.ts`, tre trin):
     1. Læg filen i `public/images/team/`, fx `simone-2026.jpg` (et portræt, ca. 4:5 eller mere
        kvadratisk, sRGB, uden metadata, mindst 1000 px bredt; beskær et liggende foto først).
@@ -411,8 +413,10 @@ på sitet, skal værten med i CSP'en (begge filer).
       `/behandlere/maria` sender videre (308) til Om os → behandlerne. De fem anmeldelser, der
       nævner hende, er taget ud (31 tilbage); kunden "Maria" i en anmeldelse om Mike er en anden og
       står der stadig.
-  - [ ] Lip filler-siden viser nu **Annika** som "Din behandler" (hun tilbyder lip filler, og flere
-        anmeldelser om læber nævner hende). Er det rigtigt, eller skal det være Mike?
+  - [x] Lip filler-siden viser **Annika** som "Din behandler" (hun tilbyder lip filler, og flere
+        anmeldelser om læber nævner hende). Bekræftet 25/11-2026 ("ok"). Det står på selve siden
+        (`content/treatments.ts` → `practitionerSlug`), så det bliver Annika, selv om Alberte og
+        Mike også har lip filler på deres profiler.
   - [ ] Siden for mænd ("Du er i gode hænder") viser nu Alberte, Annika og **Mike** (i stedet for
         Maria). Er det i orden?
   - [x] Maria og Kubra er ikke med på gruppebilledet i sofaen (du, 25/11-2026). Det bliver.
@@ -485,8 +489,9 @@ på sitet, skal værten med i CSP'en (begge filer).
     stedet for billedet af en behandler, der gør en sprøjte klar, over "Din behandler: Dr. Tom".
     Sprøjtebillederne står stadig uden navn øverst på kindben, kæbelinje, hage og tear trough
     (ingen navngiven behandler dér), på forsidens lip filler-kort og i to artikler. Er det
-    Alberte på begge sprøjtebilleder, og er hun uddannet til at give injektioner (se "Alberte"
-    nedenfor)?
+    Alberte på begge sprøjtebilleder? (Hun er kosmetisk sygeplejerske og giver injektioner:
+    skinbooster, PRF hud, lip filler, fillers og rynkebehandling står på hendes profil, se
+    "Alberte" nedenfor.)
   - **Før/efter på Kæbelinje** (`/behandlinger/kaebelinje`, "Før og efter"): ét profilpar af hage og
     læber (`public/images/resultater/hage-1-*`, fra "Billede28-kopi"), skåret ud af jeres egen
     komposit med samme udsnit på begge halvdele og ingen anden redigering; teksten siger, at det er
@@ -553,7 +558,8 @@ på sitet, skal værten med i CSP'en (begge filer).
       ingen af behandlernes portrætter: Skinbooster-artiklen har sprøjtebilledet, rynkeartiklerne
       behandlingsrummet, spejlet og vinduesbilledet. Filterknappen "Botox" hedder nu
       "Rynkebehandling".
-  - [ ] **Fagligt tjek af en læge** før lancering: alle blokke markeret `TODO: fagligt tjek
+  - [ ] **Fagligt tjek af en læge** før lancering (alle syv artikler; aftalt med ejeren 25/11-2026,
+        afventer): alle blokke markeret `TODO: fagligt tjek
         (læge)` (bl.a. hævelse, blå mærker og hvornår man skal ringe; rynkeartiklerne: se "Botox og
         markedsføring"). Konkrete spørgsmål til lægen:
     - [ ] "Hævelse og blå mærker" kalder "Blå mærker eller misfarvning" normalt (fra fillox.dk's
@@ -668,10 +674,25 @@ på sitet, skal værten med i CSP'en (begge filer).
       laser hårfjerning? Ellers skal formuleringen ændres (af jer eller bureauet). (Alberte er
       kosmetisk sygeplejerske, du 25/11-2026, så for hende passer det.)
 - [ ] **Alberte** (`content/team.ts`): titel og klinik er afklaret 25/11-2026 (kosmetisk
-      sygeplejerske, Fillox Frederiksberg). Stadig åbent: hendes uddannelse (designets tidslinje
-      "2021 kosmetolog, 2022 laser/IPL …" og specialet "Laser & hudforbedring" er ikke med, da intet
-      bekræfter dem), og hvad hun udfører: hendes priskort er designets (laser, microneedling,
-      skinbooster, ansigtsbehandling, PRF hud). Bekræft eller ret listen.
+      sygeplejerske, Fillox Frederiksberg).
+  - [x] **Hvad hun udfører** (du, 25/11-2026, om behandlingerne på hendes profil: "ved ikke tjek
+        hvad vi har skrevet tidligere, nok det hele"): laser hårfjerning, microneedling,
+        skinbooster, signatur-ansigtsbehandling og PRF hud bliver på hendes profil ud fra det svar.
+        Dertil er **lip filler** og **fillers i ansigtet** kommet på, fordi hendes egne
+        Trustpilot-anmeldelser nævner læber og filler (Jh nævner ikke hvilket område) ("Jeg har fået lavet læber hos Alberte", "et perfekt resultat af mine læber", "Fik lavet
+        læber hos Alberte" og "Jeg har aldrig prøvet hverken filler eller microneedeling før" om
+        hendes behandlinger), og **rynkebehandling** (du, 25/11-2026: "ja hun laver også
+        rynkebehandling"). De har samme navn, tekst og pris som hos Annika og Mike (fra
+        prislisten; rynkekortet hedder "Rynkebehandling", aldrig produktnavnet). Rækkefølgen:
+        hudbehandlingerne først (hendes profils fokus i designet), så lip filler, fillers og
+        rynkebehandling, og "Gratis konsultation" sidst: ni kort, tre hele rækker af tre fra 1152 px
+        og rækker af to fra 768 px med konsultationen i fuld bredde. Lip filler-siden viser stadig
+        Annika som "Din behandler", rynkesiden viser ingen behandler, og ingen anden
+        behandlingsside har fået en ny behandler.
+  - [ ] Hendes **uddannelse**: designets tidslinje ("2021 kosmetolog, 2022 laser/IPL …") og specialet
+        "Laser & hudforbedring" er ikke med, da intet bekræfter dem.
+  - [ ] Laver Alberte også filler i **kindben, kæbelinje og hage** (kortet "Fillers i ansigtet")?
+        Hendes anmeldelse nævner kun "filler" uden område; ellers fjernes kortet fra hendes profil.
 - [x] **"10.000+ behandlinger"** i forsidens hero (`content/pages/home.ts` → `stats`): bekræftet
       25/11-2026 ("10.000+ behandlinger er det vi har lavet indtil videre").
 - [x] **Instagram**: kontoen er @fillox.dk (tidligere @fillox_dk), bekræftet af ejeren 25/11-2026.
