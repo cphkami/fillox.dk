@@ -5,6 +5,7 @@ import { Header } from "@/components/layout/Header";
 import { OrganizationJsonLd } from "@/components/seo";
 import { site } from "@/config/site";
 import { layoutCopy } from "@/content/layout";
+import { isIndexable } from "@/lib/indexing";
 import { pageColor, sharedOpenGraph, shareImage } from "@/lib/metadata";
 import "./globals.css";
 
@@ -54,8 +55,9 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
   // Large image previews in Google Search and Discover (the old WordPress site sent the same).
   // index / follow are the default and stay unset, so the noindex routes' own `robots` (which
-  // replaces this one as a whole) and the 404's noindex never meet an "index" here.
-  robots: { "max-image-preview": "large" },
+  // replaces this one as a whole) and the 404's noindex never meet an "index" here. A build that
+  // is not indexable (the netlify.app copy before the domain moves: lib/indexing.ts) is noindex.
+  robots: isIndexable ? { "max-image-preview": "large" } : { index: false, follow: false },
   // Favicons come from the app/favicon.ico (16/32/48, made from icon.png), app/icon.png and
   // app/apple-icon.png file conventions; app/manifest.ts links the web app manifest.
 };
