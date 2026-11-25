@@ -743,9 +743,10 @@ beige lives in its cards.
 Text selection in the footer is the default Lys Rosa (the band's white highlight would vanish on
 offwhite).
 
-**Logo.** `public/brand/fillox-logo-koks.png` (`site.brand.logoDark`: header, mobile menu, footer,
-Organization JSON-LD) is koks `#3D3D3D` (the owner, 2026-11-25: "ikke er helt mørk … #222222 agtig";
-the former file was ink `#242724`, which #222222 would not visibly change): 10.4:1 on offwhite.
+**Logo.** `public/brand/fillox-logo-espresso.png` (`site.brand.logoDark`: header, mobile menu,
+footer, Organization JSON-LD) is espresso `#3B2A28`, the `heading` colour (the owner, 2026-11-25:
+"ikke er helt mørk … #222222 agtig", then, from a comparison of five colours, "synes den der
+espresso ser meget lækkert ud"; the former file was ink `#242724`): 13.0:1 on offwhite.
 `fillox-logo-sand.png` is unchanged.
 
 **Not changed by the palette (yet).** The stock photos with salmon backdrops are gone (November

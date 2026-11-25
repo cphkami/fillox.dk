@@ -445,9 +445,8 @@ på sitet, skal værten med i CSP'en (begge filer).
 - [x] **Footer og logo** (du, 25/11-2026: "footer har den samme farve som header, lidt lysere
       beige" og logoet "ikke helt mørk … #222222 agtig"): footeren har nu headerens farve
       (offwhite) med en tynd streg øverst, og dens kort (telefon, e-mail, booking, Trustpilot) er
-      lys beige. Logoet er koks `#3D3D3D` i stedet for `#242724` (som #222222 ikke ville ændre
-      synligt). Vil I hellere have det varmt mørkebrunt som overskrifterne (`#3B2A28`) eller lysere,
-      er det én fil (`public/brand/fillox-logo-koks.png`).
+      lys beige. Logoet er espresso `#3B2A28`, samme farve som overskrifterne (du valgte den ud
+      fra en sammenligning; før `#242724`). Filen er `public/brand/fillox-logo-espresso.png`.
 - [ ] **Båndet lige over footeren**: designets lyse bånd var i ét med den beige footer (footeren er
       offwhite siden 25/11-2026, så det er ikke længere et problem). Om os slutter nu med det rosa bånd "Velkommen til Fillox" (den nye tekst),
       ligesom behandlersiderne ("Book tid hos …"). Kun `/behandlere` slutter stadig med det sand-
