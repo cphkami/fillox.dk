@@ -68,6 +68,14 @@ npm run build            # kører check:market først (prebuild)
   (som scriptet kører) ikke sender præcis den liste på `/:path*` (eller sætter en af dem på en
   anden sti), eller CSP'en ikke tillader booking-udbyderen (Geckos script og kalender, eller
   TIMMA-siden) og, med en GTM-container, `www.googletagmanager.com`;
+- en behandler (`content/team.ts`) uden foto har en profilside, et delingsbillede eller et
+  priskort, eller en behandler med profilside mangler foto (filen i `public/`), delingsbillede
+  eller sin række i ansigtstabellen (`faces`);
+- en behandlers `clinicSlugs` (det eneste sted, der står, hvor hun eller han arbejder) nævner en
+  klinik, der ikke findes eller ikke er åben, en behandler ingen klinik har (undtagen dem i
+  `clinicsUnknown`, i dag Dr. Tom), en tekst om behandleren (kort, profil, "Din behandler" på
+  behandlingssiderne) nævner en anden klinik (også med små bogstaver, med eller uden mellemrum som
+  "City 2", eller som "Frb" eller "Taastrup"), eller profilen ikke har kortet "Arbejder i";
 - der står æ, ø eller å i en streng i `app/`, `components/` eller `lib/` (tekst hører til i
   `content/`; udviklerværktøjet i `components/dev/` er undtaget).
 
@@ -208,7 +216,7 @@ på sitet, skal værten med i CSP'en (begge filer).
 - [ ] **Priser ændret i WordPress efter kopien** (live /priser ændret 17/11-2026; `content/prices.ts`
       er kopieret 1/10-2026). Rettet 24/11-2026 efter live: Opløsning af filler (Hyalase) 899 → 999 kr,
       Microneedling 999 / 2.499 → 1.200 / 3.000 kr (følger med på behandlingssiden, i menuerne, på
-      `/ny-hos-fillox` og i Albertes og Kubras priskort). Alle 111 rækker er ellers ens. Åbent:
+      `/ny-hos-fillox` og i Albertes priskort). Alle 111 rækker er ellers ens. Åbent:
   - [ ] Aftal et **content-freeze** på priserne i WordPress frem til lanceringen. På
         lanceringsdagen: hent https://fillox.dk/priser/ igen, sammenlign række for række med
         `content/prices.ts`, og ret afvigelser dér.
@@ -333,37 +341,95 @@ på sitet, skal værten med i CSP'en (begge filer).
       billede: det har ingen plads til et i sit layout, og vi har ikke opfundet et nyt. De to
       kursusbilleder i Drive kan ikke bruges, som de er: sikkerhedsbrillerne bærer fillermærket
       "croma" lige ved ansigtet. Har I et kursusbillede uden mærker, og skal afsnittet have et?
-- [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Kubras tekster er et neutralt
-      udkast (titel, City2, fillers, rynkebehandling og hudforbedring) — få hendes egne ord og et
-      citat. Dr. Toms "Sådan arbejder …"-kort er skrevet i tredje person ud fra Om os.
-      `/klinikker` siger ikke længere "Samme behandlere" (`content/pages/clinics.ts`), da
-      behandlerne arbejder på bestemte klinikker — bekræft.
+- [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Dr. Toms "Sådan arbejder …"-kort
+      er skrevet i tredje person ud fra Om os. Nye sætninger at godkende (25/11-2026): booking-båndet
+      nederst på Albertes, Annikas og Mikes profiler ("Du møder Annika i Fillox Østerbro og Fillox
+      City2. Første konsultation er altid gratis.") og Simones og Frederikkes kort (se nedenfor).
+- [x] **Titler** (du, 25/11-2026: "tom er self læge mm men de andre skriver vi bare kosmetiske
+      sygeplejerske"): Alberte, Annika, Mike, Simone og Frederikke er "Kosmetisk sygeplejerske"
+      ("Sygeplejerske" på forsidens kort) på kortene, profilerne, "Din behandler" på
+      behandlingssiderne, i alt-teksterne og i de strukturerede data. Dr. Tom er uændret. Det
+      afklarer også Albertes titel (før stod hun som "Behandler").
+- [x] **Hvem arbejder hvor** (du, 25/11-2026: "Frederikke = Østerbro / Simone = city2 og Amager /
+      Mike = frb og Amager / Annika = Østerbro og city2 / Alberte = FRB"): det står ét sted,
+      `clinicSlugs` i `content/team.ts`, og alle tekster om, hvor en behandler arbejder, bygges
+      derfra: kortet "Arbejder i" øverst på Albertes, Annikas og Mikes profiler (med klinikkernes
+      korte navne som i designet, fx "Frederiksberg & Amager Centret"), booking-båndet nederst på dem
+      og Simones og Frederikkes kort (med de fulde navne, "Fillox Frederiksberg og Fillox Amager
+      Centret"). `npm run check:market` fejler, hvis en tekst om en behandler i `content/team.ts`
+      eller i "Din behandler" på behandlingssiderne nævner en anden klinik (anmeldelser og andre
+      sider tjekkes ikke). Designet har tre faktakort, så "Arbejder i" tog en plads:
+      Alberte mistede "Fillox på Trustpilot" (det eneste kort, der ikke handlede om hende), Annika
+      "Prioritet: Kundetilfredshed" (står også under "Sådan arbejder jeg") og Mike "Udvikling:
+      Løbende uddannelse" (står i introen lige over). `/klinikker` siger stadig ikke "Samme
+      behandlere" (`content/pages/clinics.ts`), da behandlerne arbejder på bestemte klinikker.
+  - [ ] **Dr. Tom**: hvilke klinikker arbejder han i? Han var ikke på listen, så hans profil siger
+        ikke, hvor han arbejder (`clinicsUnknown` i `content/team.ts`). Svaret giver ham kortet
+        "Arbejder i" som de andre.
+  - [ ] En anmeldelse om Alberte (Jessica, Trustpilot 28/7-2025) siger "Fik lavet læber hos
+        Alberte i Amager Centret", men hun arbejder på Frederiksberg. Anmeldelser citeres ordret, så
+        den er **holdt tilbage** fra hendes profil og lip filler-siden, indtil du svarer (hun har
+        stadig fem anmeldelser, lip filler-siden også). Arbejdede hun i Amager Centret dengang? Så
+        sætter vi den på igen (`content/reviews.ts` → `reviewSets.practitioners.alberte` og
+        `reviewSets.treatments["lip-filler"]`).
+- [x] **Kubra er stoppet** (du, 25/11-2026: "Kubra er også ude"): hun er fjernet overalt
+      (behandlerlisten, forsiden, Om os, `/behandlere`, profilen og hendes foto), og
+      `/behandlere/kubra` sender videre (308) til Om os → behandlerne. Ingen anmeldelse nævnte hende,
+      og ingen behandlingsside viste hende som "Din behandler" (Alberte står før hende på de sider,
+      de begge tilbød), så de er uændrede. Hendes udkast til tekster skal derfor ikke godkendes.
+- [ ] **Nye behandlere: Simone og Frederikke** (du, 25/11-2026: "vi har fået nye profiler, Simone &
+      Frederikke … afventer deres billeder. men så ved du at der skal være placeholders"; "Tommy" er
+      Dr. Tom). De står på forsiden, på Om os og på `/behandlere` som kort nr. 5 og 6, så der igen er
+      to hele rækker af tre, med navn, "Kosmetisk sygeplejerske" og én sætning ud fra det, du har
+      skrevet: "Du møder Simone i Fillox City2 og Fillox Amager Centret." / "Du møder Frederikke i
+      Fillox Østerbro." (`// TODO: copy review`). I stedet for et foto står en rosa flade med
+      forbogstavet og "Billede på vej" i samme størrelse som fotoene, så intet flytter sig, når
+      billedet kommer. Intet andet er skrevet om dem (intet efternavn, ingen uddannelse,
+      behandlinger eller citater), og de har ingen profilside endnu: `/behandlere/simone` og
+      `/behandlere/frederikke` giver 404, intet linker dertil, og deres kort er ikke links.
+  - [ ] Send deres **fotos** (portræt, gerne som de andres: lys væg, sort Fillox-uniform).
+  - [ ] **Et par linjer om hver** og **hvilke behandlinger de udfører**. Så får de en profilside
+        som de andre og kan stå som "Din behandler" på behandlingssiderne.
+  - **Sådan kommer et foto på** (`content/team.ts`, tre trin):
+    1. Læg filen i `public/images/team/`, fx `simone-2026.jpg` (et portræt, ca. 4:5 eller mere
+       kvadratisk, sRGB, uden metadata, mindst 1000 px bredt; beskær et liggende foto først).
+    2. Sæt `image` på hendes post (`src`, `alt: "Simone, kosmetisk sygeplejerske hos Fillox"`,
+       `width`, `height`), og tilføj hende i ansigtstabellen `faces`: åbn filen i et billedprogram,
+       der viser markørens position, aflæs pixelsøjlen midt i ansigtet (`x`) og pixelrækkerne for
+       pupillerne (`eyes`) og linjen mellem læberne (`mouth`), og del med billedets bredde (`x`)
+       eller højde (`eyes`, `mouth`): pupiller i række 268 af 1118 → `eyes: 0.24`. Se de tre
+       teamgitre ved 390 og 1440 px: øjnene skal stå på linje med de andres. Kortene viser så
+       fotoet i stedet for pladsholderen (stadig uden link).
+    3. Når teksterne kommer: tilføj `profile` (intro, fakta med "Arbejder i", behandlinger,
+       booking-bånd), `link`, `bookingHref`, `bio` og `image.share` (`og-<fil>.jpg`, et bredt udsnit
+       til delinger), som hos de andre. Så får hun en profilside og en plads i sitemap'et, og
+       kortene bliver links. `npm run check:market` fejler, hvis et trin er halvt gjort.
 - [ ] **Maria er stoppet** (du, 25/11-2026: "Maria er ikke længere i Fillox … hun er ude"): hun er
       fjernet overalt (behandlerlisten, forsiden, Om os, `/behandlere`, profilen og hendes foto), og
       `/behandlere/maria` sender videre (308) til Om os → behandlerne. De fem anmeldelser, der
       nævner hende, er taget ud (31 tilbage); kunden "Maria" i en anmeldelse om Mike er en anden og
       står der stadig.
   - [ ] Lip filler-siden viser nu **Annika** som "Din behandler" (hun tilbyder lip filler, og flere
-        anmeldelser om læber nævner hende). Er det rigtigt, eller skal det være Mike eller Kubra?
+        anmeldelser om læber nævner hende). Er det rigtigt, eller skal det være Mike?
   - [ ] Siden for mænd ("Du er i gode hænder") viser nu Alberte, Annika og **Mike** (i stedet for
         Maria). Er det i orden?
-  - [ ] Er Maria med på gruppebilledet med fire behandlere i sofaen (toppen af Om os og
-        `/ledige-stillinger`)? Hvis ja, skal det skiftes.
+  - [ ] Er Maria eller Kubra med på gruppebilledet med fire behandlere i sofaen (toppen af Om os og
+        `/ledige-stillinger`) eller på andre behandlerbilleder (behandleren med folderen og
+        behandleren i hvid kittel, fx på forsiden, `/priser`, behandlingssider og blogindlæg)? Hvis
+        ja, skal de skiftes.
 - [ ] **Nye portrætter** (du, 25/11-2026): Tom (grå uniform), Alberte (sort), Annika og Mike har nye
       fotos, `public/images/team/<slug>-2026.jpg` (fra Drive, uden metadata, ikke forstørret), på
-      alle sider; de gamle portrætter og stemningskopierne af de fire fotos er slettet. Kubra er
-      uændret. Vinduesbilledet er også Alberte: det står fortsat uden navn som stemningsbillede og
-      aldrig ved siden af en anden navngiven behandler. På forsiden står Alberte nu højere (hele
-      hovedet med luft over, på linje med de andre). Med fem behandlere står de i rækker af 3 + 2
-      med den nederste række centreret (forsiden fra 768 px, Om os og `/behandlere` fra 1024 px;
-      2 + 2 + 1 på Om os og `/behandlere` fra 560 til 1023 px).
-  - [ ] Er 3 + 2 godt, eller skal de stå på én række af 5, som i det oprindelige design?
+      alle sider; de gamle portrætter og stemningskopierne af de fire fotos er slettet.
+      Vinduesbilledet er også Alberte: det står fortsat uden navn som stemningsbillede og aldrig ved
+      siden af en anden navngiven behandler. På forsiden står Alberte nu højere (hele hovedet med
+      luft over, på linje med de andre). Med seks behandlere står de igen i to hele rækker af 3, som
+      du bad om 3/10-2026 (forsiden fra 768 px, Om os og `/behandlere` fra 1024 px; 2 + 2 + 2 på Om
+      os og `/behandlere` fra 560 til 1023 px).
   - [ ] Annikas foto er beskåret helt tæt over håret, så hendes ansigt står lidt større og tættere
         på kanten end de andres på behandlerkortene, under "Din behandler" på lip filler-siden og
         øverst på hendes profil. Har I en version med mere luft over hovedet?
   - [ ] Større originaler: de fire nye portrætter er 976–1290 px brede, og Toms foto forstørres op
-        til ca. 1,85× på behandlerkortene. Kubras foto (716 px bredt) forstørres lidt (ca. 1,07×)
-        øverst på hendes profil på store skærme. Send gerne de fulde originaler.
+        til ca. 1,85× på behandlerkortene. Send gerne de fulde originaler.
   - Profilernes topbillede viser nu hele hovedet også i smalle vinduer (480–639 px), og ansigtet
     står midt i billedet på iPad på højkant (768–1023 px).
 - [ ] **Booking hos en bestemt behandler**: `/booking?behandler=<slug>` åbner Gecko-kalenderen
@@ -596,11 +662,13 @@ på sitet, skal værten med i CSP'en (begge filer).
       medlemskabet stadig? (Handelsbetingelserne nævner stadig abonnement.)
 - [ ] **"Kun læger & sygeplejersker"** (trust-chippen på `/priser`) og "udført af læger og
       sygeplejersker" (sitets titel og beskrivelse, `content/layout.ts`, forsiden): gælder det også
-      laser hårfjerning og Alberte (se næste punkt)? Ellers skal formuleringen ændres (af jer eller
-      bureauet).
-- [ ] **Alberte** (`content/team.ts`): titel, uddannelse og klinikker er ikke bekræftet (live giver
-      hende ingen titel). Hendes priskort viser bl.a. Skinbooster og PRF (injektioner). Bekræft, hvad
-      hun er uddannet som, og hvad hun udfører.
+      laser hårfjerning? Ellers skal formuleringen ændres (af jer eller bureauet). (Alberte er
+      kosmetisk sygeplejerske, du 25/11-2026, så for hende passer det.)
+- [ ] **Alberte** (`content/team.ts`): titel og klinik er afklaret 25/11-2026 (kosmetisk
+      sygeplejerske, Fillox Frederiksberg). Stadig åbent: hendes uddannelse (designets tidslinje
+      "2021 kosmetolog, 2022 laser/IPL …" og specialet "Laser & hudforbedring" er ikke med, da intet
+      bekræfter dem), og hvad hun udfører: hendes priskort er designets (laser, microneedling,
+      skinbooster, ansigtsbehandling, PRF hud). Bekræft eller ret listen.
 - [x] **"10.000+ behandlinger"** i forsidens hero (`content/pages/home.ts` → `stats`): bekræftet
       25/11-2026 ("10.000+ behandlinger er det vi har lavet indtil videre").
 - [x] **Instagram**: kontoen er @fillox.dk (tidligere @fillox_dk), bekræftet af ejeren 25/11-2026.

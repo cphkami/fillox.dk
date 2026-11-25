@@ -17,3 +17,13 @@ export function formatDecimal(value: number): string {
 export function formatInteger(value: number): string {
   return numberFormat.format(value);
 }
+
+const listFormat = new Intl.ListFormat(site.locale, { style: "long", type: "conjunction" });
+
+/**
+ * ["A", "B", "C"] → "A, B og C" (DK): a list joined the way the market's language does it (the
+ * conjunction comes from the locale, so no copy lives here). One item is returned as it is.
+ */
+export function formatList(items: readonly string[]): string {
+  return listFormat.format(items);
+}

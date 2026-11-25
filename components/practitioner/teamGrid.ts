@@ -1,8 +1,11 @@
 /**
- * Centring the short last row of a team grid (five members: 3 + 2 on three columns, 2 + 2 + 1 on
- * two). The grid has twice as many tracks as it shows columns and every card spans two, so a card
- * can start half a card in; the gaps work out the same: a card is (width − 2 × gap) / 3 wide on 6
- * tracks, as on 3. The utilities are written out here so Tailwind finds them.
+ * Centring the short last row of a team grid, when the team does not fill it (five members:
+ * 3 + 2 on three columns, 2 + 2 + 1 on two). With six (the team since 2026-11-25: 3 + 3, and
+ * 2 + 2 + 2) every row is full and no card is moved; the helper stays so a seventh member, or one
+ * leaving, never leaves a lone card at the left edge. The grid has twice as many tracks as it
+ * shows columns and every card spans two, so a card can start half a card in; the gaps work out
+ * the same: a card is (width − 2 × gap) / 3 wide on 6 tracks, as on 3. The utilities are written
+ * out here so Tailwind finds them.
  *
  *   list:  md:grid-cols-6        item: md:col-span-2 + teamGridStart(i, n, 3, "md")
  */

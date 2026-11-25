@@ -23,7 +23,17 @@ const rowClasses =
  * The item is aligned to the row's start (its own snap position): with scroll-snap, a
  * minimal "nearest" scroll can snap straight back to where it started and leave the item
  * cut off.
+ *
+ * The row's LAST tab stop is aligned to the start even when it is already fully in view, so
+ * the row scrolls as far towards its end as it can while the focused item stays fully visible:
+ * cards after it without a tab stop of their own (a team member without a profile page,
+ * components/home/Team.tsx) come into view as far as they fit (Tab never reaches them, and the
+ * next Tab leaves the row). Scrolling all the way to the end would push the focused card itself
+ * out of view in a narrow row.
  */
+const TABBABLE =
+  'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]';
+
 export function revealFocusedItem(event: FocusEvent<HTMLElement>) {
   const row = event.currentTarget;
   const target = event.target;
@@ -31,12 +41,19 @@ export function revealFocusedItem(event: FocusEvent<HTMLElement>) {
   const listItem = target.closest("li");
   const item = listItem && row.contains(listItem) ? listItem : target;
   if (item === row) return;
-  const style = getComputedStyle(row);
-  const rowBox = row.getBoundingClientRect();
-  const itemBox = item.getBoundingClientRect();
-  const start = rowBox.left + (parseFloat(style.scrollPaddingLeft) || 0);
-  const end = rowBox.right - (parseFloat(style.scrollPaddingRight) || 0);
-  if (itemBox.left >= start - 1 && itemBox.right <= end + 1) return;
+  const tabStops = [...row.querySelectorAll<HTMLElement>(TABBABLE)].filter(
+    (el) => el.tabIndex >= 0 && el.getClientRects().length > 0,
+  );
+  const last = tabStops[tabStops.length - 1];
+  const isLastTabStop = Boolean(last && (last === target || last.contains(target)));
+  if (!isLastTabStop) {
+    const style = getComputedStyle(row);
+    const rowBox = row.getBoundingClientRect();
+    const itemBox = item.getBoundingClientRect();
+    const start = rowBox.left + (parseFloat(style.scrollPaddingLeft) || 0);
+    const end = rowBox.right - (parseFloat(style.scrollPaddingRight) || 0);
+    if (itemBox.left >= start - 1 && itemBox.right <= end + 1) return;
+  }
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   item.scrollIntoView({ block: "nearest", inline: "start", behavior: reduceMotion ? "auto" : "smooth" });
 }

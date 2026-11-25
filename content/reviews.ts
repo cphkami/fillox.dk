@@ -21,7 +21,10 @@ import type { CustomerReview, ReviewSets } from "./types";
  *   and from this list (Sally Villumsen, Camilla, Gitte Varming, Melissa Paludan, Sarah Mari
  *   Nielsen). The reviewer called "Maria" (tp-69f8db8a…, about Mike) is a client and stays;
  * - reviews about Fillox Oslo, anonymous reviewers ("Consumer"), reviews that give a
- *   practitioner a title they do not have, and reviews in other languages.
+ *   practitioner a title they do not have, and reviews in other languages;
+ * - reviews that place a practitioner at a clinic outside their clinicSlugs (content/team.ts) stay
+ *   in this list but out of the sets until the owner confirms (Jessica, tp-6887906b…: Alberte "i
+ *   Amager Centret"; she works at Frederiksberg).
  *
  * Adding a review: copy it from its Trustpilot page into `reviews` (newest first), then add
  * its id to the sets where it belongs. A practitioner set only takes reviews that name that
@@ -397,9 +400,10 @@ export const reviewSets: ReviewSets = {
     tom: [
       "tp-662fbf1b5324f53bc92637e3", // Sofii Diaz
     ],
+    // Jessica (tp-6887906b…: "hos Alberte i Amager Centret") is held back here and in lip-filler:
+    // Alberte works at Frederiksberg (content/team.ts). Owner question (README); restore if she worked there then.
     alberte: [
       "tp-68f39a0d08d74344dec57867", // Nour
-      "tp-6887906b6563f6dce40919b7", // Jessica
       "tp-68885ff8e481b225331552cb", // Lisette Nielsen
       "tp-69026ece954bc499fc3ddb68", // Qlr
       "tp-6898418be73fd2011079f98e", // Jh
@@ -427,7 +431,7 @@ export const reviewSets: ReviewSets = {
       "tp-6ab3d188b09e9f629f95ce8a", // Sarah Louise Kristiansen
       "tp-685be49bf3450e262884e97d", // Miya Kisbye
       "tp-69eccd907b18c45698f3d2a5", // K.H
-      "tp-6887906b6563f6dce40919b7", // Jessica
+      // Jessica (tp-6887906b…) held back: it places Alberte at Amager Centret (practitioners.alberte).
       "tp-69fdde069fc37839f18be885", // Emma (in place of a review naming Maria, 2026-11-25)
       "tp-68627b53fb5db385c73e2eae", // Victoria
     ],

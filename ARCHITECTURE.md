@@ -90,7 +90,9 @@ scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes
                                their links, filters, related posts and reading times, no
                                prescription-medicine name, no price card on wrinkle posts); security
                                headers (netlify.toml = config/securityHeaders.ts, the CSP allows the
-                               booking provider + GTM)
+                               booking provider + GTM); the team (no photo → no profile page; a
+                               profile page → photo, share image, face row) and where practitioners
+                               work (clinicSlugs: open clinics, texts agree; "Team" below)
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
 components/
   layout/                      Header (DesktopNav, MegaMenu, DropdownMenu, MobileMenu), Footer
@@ -476,7 +478,8 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   never presented as being about that person or treatment.
   Practitioner profiles (`components/practitioner/profile.ts` → `ownReviews`): one rule for
   everyone — at least one review that names the practitioner, filled up to 3 with general ones
-  (Dr. Tom: 1 + 2); none of their own, no reviews section at all (Kubra), because a section of
+  (Dr. Tom: 1 + 2); none of their own, no reviews section at all (no profile is in that state
+  today), because a section of
   general reviews only would read as testimonials about a person no review names. The fill-up
   on a profile also skips `generalNotOnProfiles` (general reviews that praise one unnamed
   "behandler", which would read as being about that practitioner).
@@ -530,23 +533,78 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
 ## Team (practitioners)
 
 - **Data** — `content/team.ts` (order = display order: Dr. Tom, the fagligt ansvarlig læge,
-  first): Dr. Tom, Alberte, Annika, Mike, Kubra. Profiles (/behandlere/<slug>) follow Alberte's
-  design (6alb / ma) with each practitioner's own documented facts; the file's header lists the
-  sources and what is left out. Maria left Fillox (owner, 2026-11-25): her entry, photo and
-  profile are gone, `/behandlere/maria` redirects (308) to `/om-os#behandlere`
-  (`content/redirects.ts`), the reviews that name her are left out (`content/reviews.ts`), the
-  lip filler page's "Din behandler" is Annika and the men's page shows Mike in her place.
+  first): Dr. Tom, Alberte, Annika, Mike, Simone, Frederikke. Profiles (/behandlere/<slug>) follow
+  Alberte's design (6alb / ma) with each practitioner's own documented facts; the file's header
+  lists the sources and what is left out. Titles (owner, 2026-11-25): Dr. Tom keeps his doctor
+  titles; everyone else is "Kosmetisk sygeplejerske" (`nurse` in team.ts: `title`, and `role`
+  "Sygeplejerske" for the home cards), which is also the profile's JSON-LD `jobTitle`. Maria and
+  Kubra left Fillox (owner, 2026-11-25): their entries, photos and profiles are gone,
+  `/behandlere/maria` and `/behandlere/kubra` redirect (308) to `/om-os#behandlere`
+  (`content/redirects.ts`), the reviews that named Maria are left out (`content/reviews.ts`; none
+  named Kubra), the lip filler page's "Din behandler" is Annika and the men's page shows Mike in
+  Maria's place. No treatment page had Kubra as "Din behandler".
+- **Members without a profile page** — `content/types.ts` models two kinds: `TeamMember` (has
+  `profile` and a portrait `image`: a page at /behandlere/<slug>) and `TeamCardOnlyMember` (no
+  `profile`, `link`, `bookingHref`, `authorBio` or share image; `image` optional): a new
+  practitioner whose photo and texts have not arrived (Simone and Frederikke, owner 2026-11-25:
+  only their first names, title and clinics are known, and their entries say nothing else).
+  `content/team.ts` exports `teamRoster` (everyone, `TeamRosterMember[]`: only the three team
+  grids take it) and `team` (`TeamMember[]`, the members with a profile page: generateStaticParams,
+  the sitemap, `getTeamMember`, the profile's "Mød resten af teamet" row, "Din behandler" on
+  treatment pages, the men's page, blog authors, structured data). So nothing outside the grids
+  can be handed a member without a photo or link to a page that does not exist; a card-only slug
+  is a 404 (`dynamicParams = false`). In the grids `hasProfilePage(member)` decides the link: a
+  card-only member's card is the same card (name, title, one sentence in the same type and
+  places) without a link, hover effect or tab stop. In the home scroll row (< 768px) they come
+  last: `components/ui/ScrollRow.tsx` → `revealFocusedItem` always aligns the row's last tab stop
+  (Mike's card) to the row's start, even when it is already in view, so they show as far as they
+  fit while the focused card stays fully visible (at 390px Simone whole, Frederikke in part; the
+  arrow keys scroll the rest).
+  Adding the photo and later the texts is three steps (team.ts header, "A new member"; README →
+  "Nye behandlere").
+- **Portrait placeholder** — `components/practitioner/PortraitPlaceholder.tsx`, one component for
+  all three grids, chosen by the data (no `image`), never by slug: the photo's slot with the same
+  aspect and radius classes as the photos beside it (so nothing moves when the photo arrives), the
+  band surface (Lys Rosa), the first letter in a lighter disc in the heading font and the band
+  accent (≥ 6.4:1), centred at 41% where the faces sit, and "Billede på vej" (`ui.portraitPending`,
+  `text-small`: 14px, 15px at 1600; band body colour, 9.9:1) right under the disc. Markup and CSS
+  only (no image request): the disc (46cqw), letter (24cqw) and gap (4cqw) are container units, so
+  the mark is the same share of a 150px slot and of a ≈ 350px one (the slots at 1280px), and stop
+  growing there (10rem / 5.25rem / 0.875rem), so the letter never dwarfs the caption in the 450px
+  slots at 1600px. `aria-hidden` (the card's text carries the name).
+- **Where practitioners work** — `clinicSlugs` (content/clinics.ts slugs, the owner's order) is the
+  only source: Alberte Frederiksberg; Annika Østerbro, City2; Mike Frederiksberg, Amager Centret;
+  Simone City2, Amager Centret; Frederikke Østerbro. Every text that states a practitioner's clinic
+  is built from it: sentences with `clinicNames()` (full names joined the locale's way with
+  `lib/format.ts` → `formatList`: "Fillox Østerbro og Fillox City2": the booking band's sentence
+  and the card-only members' sentence), the profile's "Arbejder i" fact (first of the three, as in
+  6alb; it took the place of one fact on each profile) with `clinicShortList()` (short names with
+  "&", as in 6alb / ma "City2 & Amager" and the other fact values: "Frederiksberg & Amager
+  Centret"; no-break spaces inside a name, so a two-line value breaks between clinics). In the
+  fact rows below 768px the label keeps its width (`shrink-0`) and the value wraps balanced. Dr.
+  Tom's clinics are unknown (`clinicsUnknown`, a TODO for the owner), so nothing says where he
+  works. A verbatim review that places a practitioner elsewhere is held back from the sets until
+  the owner answers (`content/reviews.ts`: Jessica, Alberte "i Amager Centret").
+- **check:market** — rule 16: a member without a portrait has no profile page, offers, crops, link,
+  booking link, author bio or share image; a member with a profile page has a portrait file with
+  its pixel size, a share image file and a face-table row; `team` is exactly the members with a
+  profile. Rule 17: every `clinicSlugs` entry is an open clinic, listed once; everyone has one
+  except `clinicsUnknown`; no text about a practitioner (their team.ts entry, their "Din
+  behandler" block on treatment pages) names a clinic outside their `clinicSlugs`, in any case or
+  spacing ("city 2") or by an alias (`CLINIC_ALIASES` in the script: "Frb", "Taastrup"; reviews
+  are verbatim and exempt); a profile with clinics has the `clinicShortList(clinicSlugs)` fact.
 - **Grids** — home ("Mød dem, der behandler dig"), /om-os and /behandlere show every member as
-  an equal card in rows of 3 (the owner, October 2026). With five members the short last row is
-  centred (`components/practitioner/teamGrid.ts`): the grid has twice the tracks, every card spans
-  two, and `teamGridStart` moves the first card of a short row half a card in. Home: 3 + 2 from
-  768px (below, the scroll row); /om-os and /behandlere: 2 + 2 + 1 at 560–1023px, 3 + 2 from
-  1024px. No member is featured any more: `TeamMember.featured` (content/types.ts) is unused, and
-  6om's wide Dr. Tom photo was deleted before launch (2026-11).
+  an equal card in rows of 3 (the owner, October 2026: "2 rækker, 3 i hver række"). Six members
+  fill them: home 3 + 3 from 768px (below, the scroll row); /om-os and /behandlere 2 + 2 + 2 at
+  560–1023px, 3 + 3 from 1024px. A short last row (five or seven members) would be centred
+  (`components/practitioner/teamGrid.ts`): the grid has twice the tracks, every card spans two, and
+  `teamGridStart` moves the first card of a short row half a card in. No member is featured any
+  more: `TeamMember.featured` (content/types.ts) is unused, and 6om's wide Dr. Tom photo was
+  deleted before launch (2026-11).
 - **Portraits** — the owner's new photos of 2026-11-25: `public/images/team/<slug>-2026.jpg`
   (Tom, Alberte, Annika, Mike: re-encoded from the Drive originals, sRGB, no metadata, never
-  upscaled; new file names so no CDN serves the old ones), Kubra keeps `kubra.jpg`. Each member
-  has a `share` crop (`og-<file>.jpg`, ≈ 1.91 : 1 at the face) for the profile's og:image.
+  upscaled; new file names so no CDN serves the old ones). Each member with a profile page has a
+  `share` crop (`og-<file>.jpg`, ≈ 1.91 : 1 at the face) for the profile's og:image.
   Framed from a face table in `content/team.ts` (`faces`: nose line, eye and mouth lines measured
   per file on a 1% grid; `framedPortrait(member, slot)`), so every face in a grid sits on one
   line and at one size: `teamSlots.portrait` (4:5) for the /om-os and /behandlere cards from
@@ -556,10 +614,10 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   men's page cards). The treatment pages' "Din behandler" uses `CropPhoto`: the card crop, plus
   `smCrop` (660:400, eyes at 33%) at 640–767px, where the slot is landscape. The profile hero
   crops come from the same table (`components/practitioner/profile.ts` → `HERO_SLOTS`; the sm
-  eye line is 31%, so Kubra's hair is not cut; the desktop crop takes its horizontal position from
-  the narrowest frame, 360 × 636 at 768px, and its vertical one from the 1280 frame; the mobile
-  crop's vertical position also keeps the head whole in the widest mobile frame, 615 × 440 at
-  639px, where Kubra's 4:5 photo is drawn much taller); no designed
+  eye line is 31%, so a 4:5 portrait's hair is not cut; the desktop crop takes its horizontal
+  position from the narrowest frame, 360 × 636 at 768px, and its vertical one from the 1280 frame;
+  the mobile crop's vertical position also keeps the head whole in the widest mobile frame,
+  615 × 440 at 639px, where a 4:5 photo is drawn much taller); no designed
   crop is left. On an axis a photo fills exactly in its slot, `faceCrop` puts the photo's top (not
   its middle) at the top, so a frame of another shape that draws the same crop (the profile hero
   below 640px gets wider than tall) never cuts the head. Annika's photo is cut
@@ -567,8 +625,8 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   `sizes` describes the width the photo is drawn at (cover × zoom): `drawnWidthScale` on the team
   cards and the men's page cards (`MenCare`), and per breakpoint from the measured slots in `PractitionerHero` and the treatment
   pages' `PractitionerSection`. A new photo needs its
-  `faces` entry, and should be a portrait (crop a landscape photo to 4:5 first: Kubra's
-  original is `design-reference/uploads/kubra-original.jpg`).
+  `faces` entry (how to measure: the comment above `faces`), and should be a portrait (crop a
+  landscape photo to 4:5 first).
 
 ## Design tokens (Anette's palette, 2026-10-10)
 
@@ -966,7 +1024,7 @@ at rest keeps the brown hover (hover / focus classes outrank a breakpoint class)
   ratio and grow modestly (`lg:min-h-fluid-720/800`).
   Exception: the home team grid ("Mød dem, der behandler dig", `components/home/Team.tsx`)
   stops at 64rem from 1280px, centred under its centred heading, with squarer 33:34
-  portraits: five members are two rows (3 + 2, the short row centred), and filling the panel
+  portraits: six members are two rows of 3 (a short row would be centred), and filling the panel
   with 4:5 portraits made the section ≈ 1.7 screens tall at 1710px. The full team grids (/om-os,
   /behandlere) fill.
 - Centred headings + intros stay centred at their `ch` width; single-line rows (USP band,

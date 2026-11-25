@@ -10,7 +10,7 @@ import { clinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
 import { homePage } from "@/content/pages/home";
 import { routes } from "@/content/routes";
-import { team } from "@/content/team";
+import { teamRoster } from "@/content/team";
 import { bestsellers } from "@/content/treatments";
 import { sharedOpenGraph, shareImage } from "@/lib/metadata";
 
@@ -39,7 +39,7 @@ export default function HomePage() {
       <UspBand usps={homePage.usps} />
       <Bestsellers copy={homePage.bestsellers} items={bestsellers} />
       <Results copy={homePage.results} />
-      <Team copy={homePage.team} members={team} />
+      <Team copy={homePage.team} members={teamRoster} />
       <Testimonial testimonial={homePage.testimonial} />
       <Clinics copy={homePage.clinics} clinics={clinics} clinicsHref={routes.clinics} />
     </>

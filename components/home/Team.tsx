@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { CropPhoto } from "@/components/practitioner/CropPhoto";
+import { PortraitPlaceholder } from "@/components/practitioner/PortraitPlaceholder";
 import { teamGridStart } from "@/components/practitioner/teamGrid";
 import { ArrowLink, Container, ScrollRow, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
-import type { TeamMember } from "@/content/types";
+import type { ImageRef, TeamRosterMember } from "@/content/types";
 import { cn } from "@/lib/cn";
-import { drawnWidthScale, framedPortrait, teamMemberHref, teamSlots } from "@/content/team";
+import { drawnWidthScale, framedPortrait, hasProfilePage, teamMemberHref, teamSlots } from "@/content/team";
 
 /**
  * "Mød hele teamet →". It sits under the heading on desktop and under the row on
@@ -22,18 +23,47 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
   );
 }
 
+/** The photo slot of a card: 4:5 in the mobile row, 33:34 in the grid; the placeholder's too. */
+const SLOT = "aspect-[4/5] rounded-[18px] md:aspect-[33/34] md:rounded-[20px]";
+
 /**
- * "Mød dem, der behandler dig". Every practitioner as an equal card (the owner: all side by side,
- * rows of 3, as on /om-os), in team order (Dr. Tom first).
+ * A member's portrait in its two crops (the visible name and role label the card, so the photo is
+ * decorative here). `sizes`: 3 columns, at most (64rem − 2 × 28) / 3 ≈ 323px from 1280px, ≈ 29vw
+ * from 768px, 150px cards below; × how much wider than its slot the crop is drawn (zoom), so it
+ * stays sharp.
+ */
+function Portrait({ member }: { member: { slug: string; image: ImageRef; crops?: { about?: ImageRef } } }) {
+  const row = member.crops?.about ?? member.image;
+  const grid = framedPortrait(member, teamSlots.square);
+  const rowScale = drawnWidthScale(row, teamSlots.portrait.aspect);
+  const gridScale = drawnWidthScale(grid, teamSlots.square.aspect);
+  return (
+    <CropPhoto
+      mobile={{ ...row, alt: "" }}
+      desktop={{ ...grid, alt: "" }}
+      sizes={[
+        `(min-width: 1280px) ${Math.ceil(330 * gridScale)}px`,
+        `(min-width: 768px) ${Math.ceil(29 * gridScale)}vw`,
+        `${Math.ceil(150 * rowScale)}px`,
+      ].join(", ")}
+      className={SLOT}
+      imgClassName="transition-transform duration-500 group-hover:[transform:scale(1.03)]"
+    />
+  );
+}
+
+/**
+ * "Mød dem, der behandler dig". Everyone on the team as an equal card (the owner: all side by
+ * side, rows of 3, as on /om-os), in team order (Dr. Tom first).
  *
  * - Mobile (mf, < 768px): the design's horizontal scroll row on the page background, 150px cards,
- *   link under the row. Kept rather than a 2-column grid: five cards in three rows would add
+ *   link under the row. Kept rather than a 2-column grid: six cards in three rows would add
  *   ≈ 550px to an already long front page, while the row shows two and a half portraits (so it
  *   reads as scrollable) and "Mød hele teamet" leads to the full grid on /om-os.
  * - From 768px: a 3-column grid (cards are only a portrait, name and role, so three fit at 768px
- *   too); five members are a row of 3 and a centred row of 2 (components/practitioner/teamGrid.ts:
- *   6 tracks, each card spans 2). From 1024px (6a) it sits in the secondary beige panel, with
- *   "Mød hele teamet →" under the heading.
+ *   too); six members are two full rows (a short last row would be centred,
+ *   components/practitioner/teamGrid.ts: 6 tracks, each card spans 2). From 1024px (6a) it sits in
+ *   the secondary beige panel, with "Mød hele teamet →" under the heading.
  * - Height: 6a showed five 188 × 268 cards in ONE row; two rows of 4:5 portraits filling the panel
  *   made the section 1,413px tall at 1280 and 1,708px at 1710 (≈ 1.7 screens for photo, name and
  *   role, with the full team one click away). So from 768px the portraits are the squarer 33:34
@@ -42,7 +72,10 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
  *   "Grids fill the canvas" (ARCHITECTURE.md → Wide layout).
  * - Portraits: framed from the face table (content/team.ts → framedPortrait), the same for every
  *   member: the 4:5 team-card crop in the mobile row (150 × 188, as on /om-os and /behandlere),
- *   the square crop (teamSlots.square) from 768px.
+ *   the square crop (teamSlots.square) from 768px. A member without a photo gets the placeholder
+ *   in the same slot (PortraitPlaceholder).
+ * - A member with a profile page is a link to it. A card-only member (content/types.ts: no
+ *   profile page yet) is the same card as plain content: no link, no hover effect, not focusable.
  * - Names are Poppins (font-heading): accent on mobile, heading colour from 768px under a 1px
  *   accent rule. On hover the name is underlined (and turns accent): heading (espresso) and accent
  *   (plum) are both dark (1.5:1 apart), so the colour change alone was barely visible.
@@ -51,7 +84,7 @@ function TeamLink({ link, className }: { link: HomePage["team"]["link"]; classNa
  * link has 6px of padding under the role label, so the focus ring's rounded corner (radius 18 /
  * 20px + 3px offset) clears its first letter instead of crossing it.
  */
-export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamMember[] }) {
+export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamRosterMember[] }) {
   return (
     <Container as="section" gutter="surface" aria-labelledby="home-team-title" className="leading-[1.5]">
       <div className="flex flex-col gap-4 px-2 py-14 md:px-4 lg:gap-0 lg:rounded-[24px] lg:bg-secondary lg:px-14 lg:py-fluid-84 xl:px-16 2xl:px-20">
@@ -66,7 +99,9 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
         <TeamLink link={copy.link} className="mb-fluid-48 text-center text-ui-sm leading-[1.5] max-lg:hidden" />
 
         {/* Below 768px: scroll row bleeding to the right edge; the 6px padding keeps focus rings
-            unclipped, and ScrollRow brings a keyboard-focused card fully into view. */}
+            unclipped, and ScrollRow brings a keyboard-focused card fully into view (the last
+            linked card is aligned to the start, so the cards without a link after it show as far
+            as they fit). */}
         <ScrollRow
           unstyled
           aria-label={copy.listLabel}
@@ -76,43 +111,40 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamM
           )}
         >
           {members.map((member, i) => {
-            const row = member.crops?.about ?? member.image;
-            const grid = framedPortrait(member, teamSlots.square);
-            const rowScale = drawnWidthScale(row, teamSlots.portrait.aspect);
-            const gridScale = drawnWidthScale(grid, teamSlots.square.aspect);
+            const card = (
+              <>
+                {member.image ? (
+                  <Portrait member={{ ...member, image: member.image }} />
+                ) : (
+                  <PortraitPlaceholder name={member.name} className={SLOT} />
+                )}
+                <h3
+                  className={cn(
+                    "mt-2.5 font-heading text-[16px] text-accent decoration-1 underline-offset-4 group-hover:underline",
+                    "md:mt-[18px] md:border-t md:border-accent md:pt-3.5 md:text-h4 md:tracking-display md:text-heading md:group-hover:text-accent",
+                  )}
+                >
+                  {member.name}
+                </h3>
+                <p className="text-[13px] text-muted md:mt-1 md:text-micro md:tracking-[2px] md:text-accent md:uppercase">
+                  {member.role}
+                </p>
+              </>
+            );
             return (
               <li
                 key={member.slug}
                 className={cn("w-[150px] flex-none snap-start md:col-span-2 md:w-auto", teamGridStart(i, members.length, 3, "md"))}
               >
-                <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] pb-1.5 md:rounded-[20px]">
-                  {/* The visible name and role label the link, so the portrait is decorative here.
-                      `sizes`: 3 columns, at most (64rem − 2 × 28) / 3 ≈ 323px from 1280px, ≈ 29vw
-                      from 768px, 150px cards below; × how much wider than its slot the crop is
-                      drawn (zoom), so it stays sharp. */}
-                  <CropPhoto
-                    mobile={{ ...row, alt: "" }}
-                    desktop={{ ...grid, alt: "" }}
-                    sizes={[
-                      `(min-width: 1280px) ${Math.ceil(330 * gridScale)}px`,
-                      `(min-width: 768px) ${Math.ceil(29 * gridScale)}vw`,
-                      `${Math.ceil(150 * rowScale)}px`,
-                    ].join(", ")}
-                    className="aspect-[4/5] rounded-[18px] md:aspect-[33/34] md:rounded-[20px]"
-                    imgClassName="transition-transform duration-500 group-hover:[transform:scale(1.03)]"
-                  />
-                  <h3
-                    className={cn(
-                      "mt-2.5 font-heading text-[16px] text-accent decoration-1 underline-offset-4 group-hover:underline",
-                      "md:mt-[18px] md:border-t md:border-accent md:pt-3.5 md:text-h4 md:tracking-display md:text-heading md:group-hover:text-accent",
-                    )}
-                  >
-                    {member.name}
-                  </h3>
-                  <p className="text-[13px] text-muted md:mt-1 md:text-micro md:tracking-[2px] md:text-accent md:uppercase">
-                    {member.role}
-                  </p>
-                </Link>
+                {hasProfilePage(member) ? (
+                  <Link href={teamMemberHref(member.slug)} className="group block rounded-[18px] pb-1.5 md:rounded-[20px]">
+                    {card}
+                  </Link>
+                ) : (
+                  // No profile page: the same box without the link (and without `group`, so the
+                  // hover styles above never apply).
+                  <div className="pb-1.5">{card}</div>
+                )}
               </li>
             );
           })}

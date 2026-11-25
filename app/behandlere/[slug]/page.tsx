@@ -15,7 +15,11 @@ import { sharedOpenGraph, shareImage, shareTitle } from "@/lib/metadata";
 
 type Props = { params: Promise<{ slug: string }> };
 
-/** Only the team members in content/team.ts exist; anything else is a 404. */
+/**
+ * Only the members with a profile page exist (content/team.ts → `team`: those with a `profile`);
+ * anything else is a 404, a card-only member's slug included (a new practitioner whose texts
+ * have not arrived is a card in the team grids and has no page, content/types.ts).
+ */
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -61,9 +65,9 @@ export default async function PractitionerPage({ params }: Props) {
   const id = (part: string) => `${member.slug}-${part}`;
   // "Se behandlinger ↓" (#behandlinger) points at the offers section.
   const anchor = profile.secondaryCta?.href.startsWith("#") ? profile.secondaryCta.href.slice(1) : undefined;
-  // A profile without sections of its own (a new member whose details are not confirmed yet)
-  // shows the rest of the team before the closing booking band, so the band never sits right
-  // under the hero's identical button.
+  // A profile without sections of its own (only an intro and facts) shows the other practitioners
+  // before the closing booking band, so the band never sits right under the hero's identical
+  // button. `team` holds the members with a profile page, so the row never links to a 404.
   const hasSections = Boolean(
     profile.approach || profile.offers || profile.experience || profile.reviews.reviews.length > 0,
   );

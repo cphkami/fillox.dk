@@ -339,7 +339,7 @@ export type TeamProfile = {
   heroImage?: ImageRef;
   primaryCta: Link; // "Book tid hos Alberte"
   secondaryCta?: Link; // "Se behandlinger" → "#behandlinger"
-  /** Fact cards under the hero, e.g. Arbejder i / Specialer / Trustpilot. */
+  /** Fact cards under the hero, e.g. Arbejder i / Tilgang / Fokus (6alb: three cards). */
   facts: { label: string; value: string }[];
   approach?: {
     eyebrow: string; // "Sådan arbejder jeg"
@@ -368,6 +368,15 @@ export type TeamProfile = {
   booking?: { title: string; text: string; cta: Link };
 };
 
+/**
+ * A practitioner with a profile page (/behandlere/<slug>): a portrait (`image`) and `profile`.
+ *
+ * Everything outside the team grids works with this type (content/team.ts → `team`,
+ * getTeamMember): the profile pages and their "other practitioners" row, the sitemap, "Din
+ * behandler" on treatment pages, the men's page, blog authors and avatars, structured data. So
+ * none of them can be handed a member without a photo or link to a page that does not exist.
+ * Someone who is only a card in the team grids is a `TeamCardOnlyMember`.
+ */
 export type TeamMember = {
   slug: string; // route: /behandlere/[slug]
   name: string; // "Dr. Tom"
@@ -397,7 +406,13 @@ export type TeamMember = {
   link?: Link;
   /** Booking link that preselects this practitioner. */
   bookingHref?: string;
-  /** Clinics the practitioner works in (content/clinics.ts slugs). */
+  /**
+   * Clinics the practitioner works in (content/clinics.ts slugs, in the owner's order). The ONLY
+   * source of where someone works: every text that names a practitioner's clinic is built from it
+   * (content/team.ts → clinicNames, clinicShortList …), never written by hand. `npm run check:market`
+   * checks the slugs (open clinics) and that everyone has at least one, except the members listed
+   * in content/team.ts → clinicsUnknown.
+   */
   clinicSlugs?: string[];
   /** Page-specific crops from the design (fall back to `image`). */
   crops?: {
@@ -406,9 +421,40 @@ export type TeamMember = {
     /** Practitioner block on a treatment page (6c / 6bx). */
     practitioner?: ImageRef;
   };
-  /** Extended profile content for /behandlere/[slug]. Only Alberte has a full design. */
-  profile?: TeamProfile;
+  /**
+   * The profile page's content (/behandlere/[slug]; only Alberte has a full design). Having a
+   * `profile` IS having a profile page: generateStaticParams, the sitemap and every link to a
+   * profile are built from the members that have one.
+   */
+  profile: TeamProfile;
 };
+
+/**
+ * A team member who is, for now, only a card in the team grids (home, /om-os, /behandlere): a new
+ * practitioner whose photo and texts have not arrived. No `profile` = NO profile page (the URL is
+ * a 404 and nothing links to it), so the card is not a link, and the member is never a blog
+ * author, a "Din behandler" or a card on the men's page.
+ *
+ * `image` may be missing too: the grids then draw the placeholder in the photo's slot
+ * (components/practitioner/PortraitPlaceholder), chosen by this field, never by slug. With an
+ * `image` (the photo arrived before the texts) the card shows the photo and still links nowhere.
+ * `npm run check:market` (rule 16) checks both states.
+ */
+export type TeamCardOnlyMember = Pick<
+  TeamMember,
+  "slug" | "name" | "role" | "fullName" | "title" | "titleShort" | "bio" | "bioShort" | "quote" | "clinicSlugs"
+> & {
+  /** Portrait; omitted until the photo arrives (the grids draw the placeholder). */
+  image?: ImageRef;
+  crops?: Pick<NonNullable<TeamMember["crops"]>, "about">;
+  profile?: undefined;
+  link?: undefined;
+  bookingHref?: undefined;
+  authorBio?: undefined;
+};
+
+/** Anyone on the team: what the team grids take (content/team.ts → `teamRoster`). */
+export type TeamRosterMember = TeamMember | TeamCardOnlyMember;
 
 /* ------------------------------------------------------------------ Reviews */
 

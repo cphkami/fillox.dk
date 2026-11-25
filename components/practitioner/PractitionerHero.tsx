@@ -139,10 +139,12 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
               key={fact.label}
               className="flex justify-between gap-3 rounded-2xl bg-white shadow-card px-[18px] py-3.5 text-[15px] md:flex-col md:justify-start md:gap-0 md:rounded-[24px] md:px-6 md:py-6 lg:px-[30px] lg:py-7 xl:px-fluid-30 xl:py-fluid-28"
             >
-              <dt className="text-muted md:mb-2 md:text-micro md:font-bold md:tracking-[2px] md:text-accent md:uppercase">
+              {/* Below 768px label and value share a row: the label keeps its width (never "Arbejder" /
+                  "i"), the value wraps in balanced lines (two clinics break between them). */}
+              <dt className="shrink-0 text-muted md:mb-2 md:text-micro md:font-bold md:tracking-[2px] md:text-accent md:uppercase">
                 {fact.label}
               </dt>
-              <dd className="text-right font-semibold md:py-[.2em] md:text-left md:font-heading md:text-h4 md:leading-[1.1] md:tracking-display md:text-heading lg:text-h3">
+              <dd className="min-w-0 text-right font-semibold text-balance md:py-[.2em] md:text-left md:font-heading md:text-h4 md:leading-[1.1] md:tracking-display md:text-heading lg:text-h3">
                 {fact.value}
               </dd>
             </div>

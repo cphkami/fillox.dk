@@ -31,9 +31,9 @@ export const clinicsPage = {
   hero: {
     eyebrow: "Find klinik",
     title: "Her finder du Fillox",
-    // TODO: copy review (owner): 6kl / mk say "Samme behandlere, …", but practitioners work at
-    // given clinics (Kubra in City2, content/team.ts), so the line only promises prices and
-    // standard. Restore it if the practitioners do work at every clinic.
+    // 6kl / mk say "Samme behandlere, …", but each practitioner works at one or two given clinics
+    // (the owner's list of 2026-11-25, content/team.ts → clinicSlugs), so the line only promises
+    // prices and standard.
     intro: "Fire klinikker i og omkring København. Samme priser og samme standard, uanset hvor du booker.",
     introShort: "Fire klinikker i København og omegn. Samme priser, samme kvalitet.",
   },

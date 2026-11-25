@@ -2,21 +2,23 @@ import { teamGridStart } from "@/components/practitioner/teamGrid";
 import { Container } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import type { AboutPageCopy } from "@/content/pages/about";
-import type { TeamMember } from "@/content/types";
+import type { TeamRosterMember } from "@/content/types";
 import { TeamMemberCard } from "./TeamMemberCard";
 
-type TeamSectionProps = { copy: AboutPageCopy["team"]; members: TeamMember[]; titleId: string };
+type TeamSectionProps = { copy: AboutPageCopy["team"]; members: TeamRosterMember[]; titleId: string };
 
 /**
  * "Mød menneskene bag Fillox" (6om / mo "Mød vores behandlere", with the owner's new heading and
  * intro, October 2026): the centred heading and its two short paragraphs (`text-body`, 52ch),
  * then the grid. The source's "[Mød vores team]" button is the hero's in-page link to this
  * section (its id is the `behandlere` anchor that the nav and other pages link to).
- * Every member as an equal card, in team order (Dr. Tom, the
+ * Everyone on the team as an equal card (content/team.ts → teamRoster: also the members who
+ * have no profile page or photo yet), in team order (Dr. Tom, the
  * fagligt ansvarlig læge, first): 3 columns from 1024px (the owner: rows of 3, replacing 6om's
  * wide Dr. Tom block above a row of four). 2 columns from 560px (three columns at 768px would
- * leave the bios ≈ 25 characters wide), 1 below, as in mo. A short last row is centred (five
- * members: 3 + 2 from 1024px, 2 + 2 + 1 below; components/practitioner/teamGrid.ts). The
+ * leave the bios ≈ 25 characters wide), 1 below, as in mo. Six members fill the rows (3 + 3 from
+ * 1024px, 2 + 2 + 2 below); a short last row would be centred
+ * (components/practitioner/teamGrid.ts). The
  * single column is at most 26rem wide (centred), so the portraits (33:34 below 768px, 4:5 from
  * there, TeamMemberCard) stay ≈ 400px high at most on large phones.
  * Dr. Tom's role is introduced above the grid on /om-os (DoctorSection) and stays in his bio.

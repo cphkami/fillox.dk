@@ -72,6 +72,14 @@ export const ui = {
   separator: " · ",
   /** Screen-reader note after a link that opens in a new tab (shown in brackets). */
   opensInNewTab: "åbner i en ny fane",
+
+  /* -------------------------------------------------------------------- Team */
+  /**
+   * Small caption in the portrait placeholder of a team member whose photo has not arrived
+   * (components/practitioner/PortraitPlaceholder, the three team grids).
+   */
+  // TODO: copy review
+  portraitPending: "Billede på vej",
 } as const;
 
 export type UiStrings = typeof ui;

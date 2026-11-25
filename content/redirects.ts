@@ -119,7 +119,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/behandlinger/traptox", destination: "/behandlinger/andre-behandlingsmuligheder", note: "Traptox (preview)" },
 
   /* ---------------------------------------- Behandlere, der ikke længere er i Fillox */
-  // Her profile was on the previews; an old link lands on the team section of /om-os
+  // Their profiles were on the previews; an old link lands on the team section of /om-os
   // (routes.aboutTeam, written out: this file stays dependency-free).
   { source: "/behandlere/maria", destination: "/om-os#behandlere", note: "Maria er stoppet i Fillox (2026-11-25)" },
+  { source: "/behandlere/kubra", destination: "/om-os#behandlere", note: "Kubra er stoppet i Fillox (2026-11-25)" },
 ];

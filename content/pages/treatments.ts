@@ -66,7 +66,7 @@ export const treatmentPage = {
     quote: (text: string) => `“${text}”`,
     /**
      * Section heading when `detail.practitionerHeading` is missing, built from the team
-     * member's name and title: "Alberte, kosmetisk behandler".
+     * member's name and title: "Alberte, kosmetisk sygeplejerske".
      */
     heading: (name: string, title: string) => `${name}, ${title.charAt(0).toLocaleLowerCase(site.locale)}${title.slice(1)}`,
   },

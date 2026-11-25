@@ -5,9 +5,10 @@ import { framedPortrait, type FaceSlot } from "@/content/team";
 import type { ImageRef, Link, TeamMember, TeamProfile } from "@/content/types";
 
 /**
- * Everything the profile page renders, with the fallbacks applied, so members
- * without a full `profile` (or with a partial one) still get a complete page.
- * Optional sections stay `undefined` and are simply not rendered.
+ * Everything the profile page renders, with the fallbacks applied, so a member with a partial
+ * `profile` still gets a complete page. Optional sections stay `undefined` and are simply not
+ * rendered. Only members with a `profile` have a page (content/types.ts → TeamMember); a
+ * card-only member never gets here.
  */
 export type ResolvedProfile = {
   slug: string;
@@ -55,20 +56,20 @@ const HERO_SLOTS = {
   /** Below 640px: 440px high, 366px wide at 390. */
   mobile: { aspect: 366 / 440, eyes: 0.28 },
   /**
-   * The widest mobile frame, 615 × 440 at 639px: a photo narrower than `mobile` (Kubra's 4:5)
+   * The widest mobile frame, 615 × 440 at 639px: a photo narrower than `mobile` (a 4:5 portrait)
    * overflows above and below and is drawn much taller here, so the vertical position must also
-   * keep her crown in this frame. Eye line 34%: her crown sits 0.19 of the photo above her eyes.
+   * keep the crown in this frame. Eye line 34%: room for a crown 0.19 of the photo above the eyes.
    */
   mobileWide: { aspect: 615 / 440, eyes: 0.34 },
   /**
    * 640–767px: 560px high and landscape, ≈ 680px wide, so the photo fills it by its width and is
-   * cut above and below. Eye line 31%: with 28% Kubra's 4:5 photo lost the top of her hair.
+   * cut above and below. Eye line 31%: with 28% a 4:5 portrait lost the top of the hair.
    */
   sm: { aspect: 680 / 560, eyes: 0.31 },
   /**
    * From 768px: half the panel, 616 × 675 at 1280 (≈ 0.79 at 1024, 0.96 at 1600). The eye line
-   * (vertical position) is placed in this slot, where a photo narrower than the frame overflows
-   * above and below (Kubra's).
+   * (vertical position) is placed in this slot, where a photo narrower than the frame (a 4:5
+   * portrait) overflows above and below.
    */
   desktop: { aspect: 616 / 675, eyes: 0.28 },
   /**
@@ -109,8 +110,8 @@ function desktopCrop(member: TeamMember): ImageRef {
  * The practitioner's verified reviews (the ones that name them), filled up to 3 with general
  * ones under the generic heading (reviewsFor; general reviews that praise one unnamed person
  * are left out on profiles, content/reviews.ts → generalNotOnProfiles). A practitioner without a
- * single review of their own (Kubra) gets no section: general reviews only would read as
- * testimonials about someone no review names.
+ * single review of their own gets no section: general reviews only would read as testimonials
+ * about someone no review names.
  */
 function ownReviews(slug: string): ReviewSelection {
   const selection = reviewsFor({ practitioner: slug, seed: slug });
@@ -125,11 +126,11 @@ export function resolveProfile(member: TeamMember): ResolvedProfile {
   const p = member.profile;
   const copy = practitionerPage.fallback;
   const bookingHref = member.bookingHref ?? site.booking.href;
-  const primaryCta = p?.primaryCta ?? { label: copy.bookCta(member.name), href: bookingHref };
-  const offers = p?.offers && p.offers.items.length > 0 ? p.offers : undefined;
+  const primaryCta = p.primaryCta;
+  const offers = p.offers && p.offers.items.length > 0 ? p.offers : undefined;
   // An in-page secondary CTA ("Se behandlinger ↓") only makes sense when its target exists.
   const secondaryCta =
-    p?.secondaryCta && (!p.secondaryCta.href.startsWith("#") || offers) ? p.secondaryCta : undefined;
+    p.secondaryCta && (!p.secondaryCta.href.startsWith("#") || offers) ? p.secondaryCta : undefined;
 
   return {
     slug: member.slug,
@@ -137,23 +138,23 @@ export function resolveProfile(member: TeamMember): ResolvedProfile {
     displayName: member.fullName ?? member.name,
     title: member.title ?? member.role,
     titleShort: member.titleShort,
-    intro: p?.intro ?? member.bio,
-    introShort: p ? p.introShort : member.bioShort,
+    intro: p.intro,
+    introShort: p.introShort,
     // With a designed hero crop (`profile.heroImage`) the mobile hero shows `image` (the team-card
     // crop); without one, the crops frame the face (or keep the top of the portrait, so the head
     // is never cut). No member has a designed crop since the new photos (2026-11-25).
-    mobileImage: p?.heroImage ? member.image : mobileCrop(member),
+    mobileImage: p.heroImage ? member.image : mobileCrop(member),
     smCrop: framedPortrait(member, HERO_SLOTS.sm, topOf(member.image)),
-    desktopImage: p?.heroImage ?? desktopCrop(member),
+    desktopImage: p.heroImage ?? desktopCrop(member),
     primaryCta,
     secondaryCta,
-    facts: p?.facts ?? [],
-    approach: p?.approach && p.approach.items.length > 0 ? p.approach : undefined,
+    facts: p.facts,
+    approach: p.approach && p.approach.items.length > 0 ? p.approach : undefined,
     offers,
     offersCtaHref: bookingHref,
-    experience: p?.experience && p.experience.items.length > 0 ? p.experience : undefined,
+    experience: p.experience && p.experience.items.length > 0 ? p.experience : undefined,
     reviews: ownReviews(member.slug),
-    booking: p?.booking ?? {
+    booking: p.booking ?? {
       title: copy.booking.title(member.name),
       text: copy.booking.text,
       cta: primaryCta,

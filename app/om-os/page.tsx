@@ -8,7 +8,7 @@ import { TeamSection } from "@/components/about/TeamSection";
 import { WelcomeBand } from "@/components/about/WelcomeBand";
 import { aboutPage } from "@/content/pages/about";
 import { routes } from "@/content/routes";
-import { getTeamMember, team } from "@/content/team";
+import { getTeamMember, teamRoster } from "@/content/team";
 import { pageMetadata } from "@/lib/metadata";
 
 const PATH = routes.about;
@@ -42,7 +42,7 @@ export default function AboutPage() {
         paragraphs={value.paragraphs}
         className="pb-2 md:pb-6 lg:pb-fluid-24"
       />
-      <TeamSection copy={aboutPage.team} members={team} titleId="about-team-title" />
+      <TeamSection copy={aboutPage.team} members={teamRoster} titleId="about-team-title" />
       <WelcomeBand copy={aboutPage.welcome} />
     </>
   );

@@ -219,7 +219,8 @@ export const menPage = {
    * content/team.ts with their own quotes from fillox.dk/om-os: Alberte (the owner's example),
    * Annika (who offers rynkebehandling) and Mike (fillers incl. the jawline area, and
    * rynkebehandling; in place of Maria, who has left Fillox, the owner 2026-11-25), so the people
-   * match the treatments on the list. Kubra has no quote of her own yet. Each card links to the
+   * match the treatments on the list. Only practitioners with a profile page can be listed
+   * (getTeamMember; a new member without photo and texts is not one). Each card links to the
    * practitioner's profile; no "Book tid hos …": the booking calendar cannot preselect a
    * practitioner (lib/booking.ts → practitionerBookingHref). `position` is the 4:5 team-card crop
    * from the face table (the member's `image` carries its zoom), so the faces sit on one line.

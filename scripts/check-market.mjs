@@ -59,6 +59,19 @@
  *     that list (everything the Next.js server answers) and no other rule that sets one of them; the
  *     CSP lets in the booking provider (Gecko's script and calendar, or the TIMMA page) and, with a
  *     GTM container, www.googletagmanager.com.
+ * 16. the team (content/team.ts → teamRoster): slugs are unique; a member without a portrait photo
+ *     (`image`) has no profile page (`profile`), no share image, no offers, no link and no booking
+ *     link (the team grids draw the placeholder and the card is not a link); a member with a
+ *     profile page has a portrait whose file is in public/ with its pixel size, a share image
+ *     whose file is in public/, and a row in the face table (`faces`); a photo in `image` is a
+ *     file in public/.
+ * 17. where practitioners work (`clinicSlugs`, the only source): every slug is an open clinic in
+ *     content/clinics.ts, listed once; every member has at least one, except those listed in
+ *     content/team.ts → clinicsUnknown, which lists existing members that have none; no text about
+ *     a practitioner (their content/team.ts entry, their "Din behandler" block on treatment pages)
+ *     names a clinic outside their clinicSlugs, in any case or spacing ("city 2") or by an alias
+ *     ("Frb", "Taastrup"; reviews are verbatim and not checked); a profile with clinics has the
+ *     fact clinicShortList(clinicSlugs) ("Arbejder i").
  *
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
@@ -281,7 +294,8 @@ for (const file of ["app", "components", "lib"]
 
 // 10. Reviews: verbatim excerpts and consistent sets.
 const { reviews, reviewSets, treatmentsWithoutReviews } = await importSite("content/reviews.ts");
-const { team } = await importSite("content/team.ts");
+// `team`: the practitioners with a profile page (review sets, blog authors); `teamRoster`: everyone.
+const { team, teamRoster, clinicsUnknown, hasMeasuredFace } = await importSite("content/team.ts");
 const { treatments } = await importSite("content/treatments.ts");
 const ELLIPSIS = "…";
 const squash = (text) => text.replace(/\s+/g, " ").trim();
@@ -335,7 +349,9 @@ const isGeneral = (review) => !review.practitioners?.length && !review.treatment
 isGeneral.reason = "names a practitioner or treatment (general reviews must fit every page)";
 checkSet("general", reviewSets.general, isGeneral);
 for (const [slug, ids] of Object.entries(reviewSets.practitioners)) {
-  if (!teamSlugs.has(slug)) errors.push(`content/reviews.ts reviewSets.practitioners: "${slug}" is not in content/team.ts`);
+  if (!teamSlugs.has(slug)) {
+    errors.push(`content/reviews.ts reviewSets.practitioners: "${slug}" is not a practitioner with a profile page in content/team.ts`);
+  }
   const names = (review) => review.practitioners?.includes(slug);
   names.reason = `does not name ${slug} (practitioners)`;
   checkSet(`practitioners.${slug}`, ids, names);
@@ -409,7 +425,8 @@ for (const slug of treatmentsWithoutReviews) {
   const { allPosts } = await importSite("content/blog.ts");
   const collectionSlugs = {
     treatments: treatmentSlugs,
-    practitioners: teamSlugs,
+    // Everyone, also a member without a profile page yet: its slug becomes a page later.
+    practitioners: new Set(teamRoster.map((member) => member.slug)),
     blog: new Set(allPosts.map((post) => post.slug)),
   };
   for (const path of staticAppRoutes()) {
@@ -748,6 +765,149 @@ const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config
     if (!allows(directive, url)) {
       errors.push(`config/securityHeaders.ts: ${cspHeaderName} ${directive} does not allow ${new URL(url).origin} (${what})`);
     }
+  }
+}
+
+// 16. The team: a member without a photo is a card only; a member with a profile page has a photo.
+{
+  const inPublic = (src) => {
+    const file = join(root, "public", ...String(src).split("/").filter(Boolean));
+    return existsSync(file) && statSync(file).isFile();
+  };
+  const seen = new Set();
+  for (const member of teamRoster) {
+    const where = `content/team.ts "${member.slug}"`;
+    if (seen.has(member.slug)) errors.push(`${where}: the slug is used twice`);
+    seen.add(member.slug);
+    const { image, profile } = member;
+    if (image && !inPublic(image.src)) errors.push(`${where}: image "${image.src}" is not a file in public/`);
+    if (image?.share && !inPublic(image.share.src)) {
+      errors.push(`${where}: share image "${image.share.src}" is not a file in public/`);
+    }
+    if (!image) {
+      // No portrait: the grids draw the placeholder, and nothing else may show or link to the member.
+      if (profile) errors.push(`${where}: has a profile page but no portrait (image); add the photo first`);
+      if (profile?.offers?.items?.length) errors.push(`${where}: has offers but no portrait (image)`);
+      if (member.crops) errors.push(`${where}: has crops but no portrait (image)`);
+    }
+    if (!profile) {
+      // No profile page (/behandlere/<slug> is a 404): nothing may link to it or preselect the member.
+      if (member.link) errors.push(`${where}: has a card link but no profile page (profile)`);
+      if (member.bookingHref) errors.push(`${where}: has a booking link but no profile page (profile)`);
+      if (member.authorBio) errors.push(`${where}: has an authorBio but no profile page (a blog author links to the profile)`);
+      if (image?.share) errors.push(`${where}: has a share image but no profile page (og:image of the profile)`);
+    } else if (image) {
+      if (!image.width || !image.height) errors.push(`${where}: image needs its pixel width and height (the crops are computed from them)`);
+      if (!image.share) errors.push(`${where}: a profile page needs image.share (og-<file>.jpg, the link-preview crop)`);
+      if (!hasMeasuredFace(member.slug)) {
+        errors.push(`${where}: a profile page needs a row in the face table (content/team.ts → faces), so the portrait is framed like the others`);
+      }
+    }
+  }
+  // `team` is exactly the members with a profile page (pages, sitemap, links are built from it).
+  const withProfile = teamRoster.filter((member) => member.profile).map((member) => member.slug);
+  if (withProfile.join() !== team.map((member) => member.slug).join()) {
+    errors.push(`content/team.ts: \`team\` (${team.map((m) => m.slug).join(", ")}) is not the members with a profile (${withProfile.join(", ")})`);
+  }
+}
+
+// 17. Where practitioners work: clinicSlugs are open clinics; everyone has one unless listed as unknown.
+{
+  const openSlugs = new Set(openClinics.map((clinic) => clinic.slug));
+  const { clinics } = await importSite("content/clinics.ts");
+  const allSlugs = new Set(clinics.map((clinic) => clinic.slug));
+  const rosterSlugs = new Set(teamRoster.map((member) => member.slug));
+  for (const slug of clinicsUnknown) {
+    if (!rosterSlugs.has(slug)) errors.push(`content/team.ts clinicsUnknown: "${slug}" is not a team member`);
+  }
+  if (new Set(clinicsUnknown).size !== clinicsUnknown.length) errors.push(`content/team.ts clinicsUnknown: a member is listed twice`);
+  for (const member of teamRoster) {
+    const where = `content/team.ts "${member.slug}"`;
+    const slugs = member.clinicSlugs ?? [];
+    const unknown = clinicsUnknown.includes(member.slug);
+    if (!Array.isArray(slugs)) {
+      errors.push(`${where}: clinicSlugs must be a list of clinic slugs`);
+      continue;
+    }
+    if (unknown && slugs.length) {
+      errors.push(`${where}: has clinicSlugs and is listed in clinicsUnknown; remove it from that list`);
+    } else if (!unknown && !slugs.length) {
+      errors.push(`${where}: no clinicSlugs (where does the practitioner work?); add them, or list the member in clinicsUnknown with a TODO`);
+    }
+    if (new Set(slugs).size !== slugs.length) errors.push(`${where}: a clinic is listed twice in clinicSlugs`);
+    for (const slug of slugs) {
+      if (!allSlugs.has(slug)) errors.push(`${where}: clinicSlugs "${slug}" is not a clinic in content/clinics.ts`);
+      else if (!openSlugs.has(slug)) errors.push(`${where}: clinicSlugs "${slug}" is not an open clinic (content/clinics.ts → status)`);
+    }
+  }
+
+  // Every text about a practitioner agrees with `clinicSlugs`: a clinic it names (its short name,
+  // the first word of a two-word one: "Amager", or an alias below) must be one of them, in any
+  // case and with or without a space inside ("city 2", "AMAGER CENTRET", "Frb."). Texts are the
+  // member's own (bio, quote, alt, profile: intro, facts, booking band …) and their "Din
+  // behandler" block on treatment pages. Reviews are verbatim and not checked. A profile with
+  // clinics also states them: one fact is clinicShortList(clinicSlugs) (the "Arbejder i" card).
+  // Other names for a clinic (content/clinics.ts slugs): the owner writes "frb"; City2 is in
+  // Taastrup. Another market's slugs differ: an alias for a slug that is not a clinic is a note.
+  const CLINIC_ALIASES = { frederiksberg: ["Frb"], city2: ["Taastrup"] };
+  for (const slug of Object.keys(CLINIC_ALIASES)) {
+    if (!allSlugs.has(slug)) notes.push(`scripts/check-market.mjs CLINIC_ALIASES: "${slug}" is not a clinic in content/clinics.ts (update the aliases)`);
+  }
+  const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // Any whitespace between words ("Amager Centret", also with a no-break space), an optional one
+  // between letters and digits ("City2" / "City 2").
+  const loose = (term) =>
+    term.split(/\s+/).map((word) => escape(word).replace(/(\p{L})(\p{N})/gu, "$1\\s?$2")).join("\\s*");
+  const clinicTerms = clinics.map((clinic) => {
+    const words = clinic.name.split(/\s+/);
+    const terms = [
+      ...new Set([clinic.name, words.length > 1 ? words[0] : null, ...(CLINIC_ALIASES[clinic.slug] ?? [])].filter(Boolean)),
+    ];
+    return { clinic, pattern: new RegExp(`(?<![\\p{L}\\p{N}])(${terms.map(loose).join("|")})(?![\\p{L}\\p{N}])`, "iu") };
+  });
+  /** Every string in `value`, skipping links, paths and slugs (not prose). */
+  const SKIP = new Set(["src", "href", "slug", "clinicSlugs", "treatmentSlug", "position"]);
+  const strings = (value, key = "") => {
+    if (SKIP.has(key)) return [];
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value)) return value.flatMap((v) => strings(v));
+    if (value && typeof value === "object") return Object.entries(value).flatMap(([k, v]) => strings(v, k));
+    return [];
+  };
+  const checkMentions = (member, texts, where) => {
+    const own = new Set(member.clinicSlugs ?? []);
+    for (const text of texts) {
+      for (const { clinic, pattern } of clinicTerms) {
+        if (own.has(clinic.slug) || !pattern.test(text)) continue;
+        errors.push(
+          `${where}: names ${clinic.fullName} ("${text.slice(0, 60)}…"), which is not in "${member.slug}"'s clinicSlugs ` +
+            `(${[...own].join(", ") || "none"}); build the text from clinicSlugs (content/team.ts → clinicNames / clinicShortList)`,
+        );
+      }
+    }
+  };
+  const { clinicShortList } = await importSite("content/team.ts");
+  for (const member of teamRoster) {
+    const where = `content/team.ts "${member.slug}"`;
+    checkMentions(member, strings(member), where);
+    const slugs = member.clinicSlugs ?? [];
+    if (member.profile && slugs.length && slugs.every((slug) => openSlugs.has(slug))) {
+      const value = clinicShortList(slugs);
+      if (!(member.profile.facts ?? []).some((fact) => fact.value === value)) {
+        errors.push(
+          `${where}: the profile's facts do not say where the practitioner works (a fact with the value "${value}", built with clinicShortList)`,
+        );
+      }
+    }
+  }
+  const { buildTreatmentView } = await importSite("components/treatment/treatmentView.ts");
+  const rosterBySlug = new Map(teamRoster.map((member) => [member.slug, member]));
+  for (const treatment of treatments) {
+    const block = buildTreatmentView(treatment).practitioner;
+    if (!block) continue;
+    const { heading, mobileTitle, text, mobileText, quote } = block;
+    const member = rosterBySlug.get(block.member.slug) ?? block.member;
+    checkMentions(member, [heading, mobileTitle, text, mobileText, quote].filter(Boolean), `/behandlinger/${treatment.slug} "Din behandler"`);
   }
 }
 
