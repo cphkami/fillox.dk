@@ -53,10 +53,11 @@ export const blogPage = {
   filterHref: (filterSlug: string) =>
     filterSlug === ALL_FILTER ? BLOG_PATH : `${BLOG_PATH}?${FILTER_PARAM}=${encodeURIComponent(filterSlug)}`,
 
+  // TODO: copy review (not in the design). The title says what the blog is about ("Blog · Fillox"
+  // said nothing); the description is the hero intro with the team, 70–160 characters.
   meta: {
-    title: "Blog",
-    // TODO: copy review (meta description is not in the design; it is the hero intro)
-    description: "Ærlige svar om behandlinger, forløb og efterpleje fra Fillox-holdet.",
+    title: "Blog om behandlinger og efterpleje",
+    description: "Ærlige svar om behandlinger, forløb og efterpleje fra Fillox-holdet, så du ved, hvad du kan forvente.",
   },
 
   hero: {

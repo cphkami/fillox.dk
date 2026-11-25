@@ -58,7 +58,7 @@ export function RelatedPosts({ posts }: { posts: NonNullable<TreatmentView["post
           <Eyebrow className="mb-3.5 max-md:hidden">{posts.eyebrow}</Eyebrow>
           <h2
             id={copy.sectionIds.posts}
-            className="font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
+            className="font-heading text-[28px] leading-[1.15] tracking-display text-balance text-heading md:mb-3 md:text-[40px] md:leading-[1.1] xl:text-h2"
           >
             {posts.title}
           </h2>

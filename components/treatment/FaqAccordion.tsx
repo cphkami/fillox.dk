@@ -51,7 +51,7 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
                   cssOpenOnMobile && "max-md:pb-2",
                 )}
               >
-                <span>{item.question}</span>
+                <span className="text-balance">{item.question}</span>
                 <span
                   aria-hidden="true"
                   className="flex shrink-0 items-center justify-center font-semibold text-accent md:size-[38px] md:rounded-full md:border md:border-accent md:text-[18px] md:font-normal md:tracking-normal"

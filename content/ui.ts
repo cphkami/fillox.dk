@@ -53,7 +53,7 @@ export const ui = {
   reviewsLabel: "Kundeanmeldelser",
   /** aria-roledescription of the review carousel and of each review in it (read by screen readers). */
   carouselRole: "karrusel",
-  slideRole: "slide",
+  slideRole: "dias",
   /** Each review's label and its dot button: "Anmeldelse 2 af 5". */
   reviewPosition: "Anmeldelse {n} af {total}",
   /** Accessible name of the group of dot buttons. */

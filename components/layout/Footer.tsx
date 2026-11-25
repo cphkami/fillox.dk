@@ -13,6 +13,7 @@ import { ui } from "@/content/ui";
 import { containerClasses } from "@/components/ui/Container";
 import { FooterNewsletter } from "./FooterNewsletter";
 import { FooterTrust } from "./FooterTrust";
+import { logoSizes } from "./logoSizes";
 import { NavLink } from "./NavLink";
 
 type ContactCard = {
@@ -35,9 +36,12 @@ const contactCards: ContactCard[] = [
   },
 ];
 
-/** The legal links and the "Cookieindstillinger" button: 44px rows below lg, an 8px hit area around them from lg. */
+/**
+ * The legal links and the "Cookieindstillinger" button: 44px rows below lg; from lg an invisible
+ * hit area 8px wider on each side and 44px high, centred on the text (the text does not move).
+ */
 const legalLinkClasses =
-  "hover:text-on-footer hover:underline hover:decoration-1 hover:underline-offset-[3px] max-lg:inline-flex max-lg:min-h-11 max-lg:items-center lg:relative lg:after:absolute lg:after:-inset-x-2 lg:after:-inset-y-2";
+  "hover:text-on-footer hover:underline hover:decoration-1 hover:underline-offset-[3px] max-lg:inline-flex max-lg:min-h-11 max-lg:items-center lg:relative lg:after:absolute lg:after:-inset-x-2 lg:after:inset-y-[calc(50%-22px)]";
 
 const cardClasses =
   "group block rounded-[18px] bg-footer-card px-5 py-4 transition-colors hover:bg-footer-card-hover focus-visible:bg-footer-card-hover lg:rounded-[20px] lg:px-7 lg:py-[22px]";
@@ -127,6 +131,7 @@ export function Footer() {
               alt={site.name}
               width={site.brand.logoWidth}
               height={site.brand.logoHeight}
+              sizes={logoSizes(24, 28, 30)}
               // 24px mobile · 28px desktop · 28 → 30px from 1280 (in proportion to the 22 / 30 → 32px header logo).
               className="h-6 w-auto self-start forced-colors:bg-white forced-colors:forced-color-adjust-none lg:h-7 xl:h-[clamp(28px,calc(20px+0.625vw),30px)]"
             />
@@ -169,10 +174,12 @@ export function Footer() {
 
         {/* Footer links + legal. Not prefetched (still client-side navigation): they are on every
             page, and prefetching them all on scroll costs more mobile data than the rare click saves. */}
-        <div className="flex flex-col gap-[22px] lg:flex-row lg:flex-wrap lg:items-baseline lg:justify-between lg:gap-4 lg:pt-7">
+        {/* When the links and the legal line wrap onto two rows (1024–1279px), 28px between the rows
+            keeps their 44px hit areas from overlapping. */}
+        <div className="flex flex-col gap-[22px] lg:flex-row lg:flex-wrap lg:items-baseline lg:justify-between lg:gap-x-4 lg:gap-y-7 lg:pt-7">
           {/* Below lg the links are 44px rows (touch targets) with no gap; the padding above and the
               negative margin below keep the first and last line where the design has them. From lg
-              (one row) an invisible after: box enlarges each link's hit area by 8px on every side. */}
+              (one row) an invisible after: box enlarges each link's hit area to 44px high and 8px wider on each side. */}
           <nav aria-label={layoutCopy.footer.navLabel} className="max-lg:-mb-[11px]">
             <ul className="grid grid-cols-2 gap-x-4 border-t border-footer-line pt-[7px] text-ui-sm text-on-footer md:grid-cols-3 lg:flex lg:flex-wrap lg:gap-7 lg:border-0 lg:pt-0">
               {footerNav.map((l) => (
@@ -180,7 +187,7 @@ export function Footer() {
                   <NavLink
                     href={l.href}
                     prefetch={false}
-                    className="hover:text-footer-accent hover:underline hover:decoration-1 hover:underline-offset-[3px] max-lg:inline-flex max-lg:min-h-11 max-lg:items-center lg:relative lg:after:absolute lg:after:-inset-x-2 lg:after:-inset-y-2"
+                    className="hover:text-footer-accent hover:underline hover:decoration-1 hover:underline-offset-[3px] max-lg:inline-flex max-lg:min-h-11 max-lg:items-center lg:relative lg:after:absolute lg:after:-inset-x-2 lg:after:inset-y-[calc(50%-22px)]"
                   >
                     {l.label}
                   </NavLink>
@@ -191,12 +198,14 @@ export function Footer() {
           <div className="text-[12px] leading-[1.8] text-footer-body lg:flex lg:flex-wrap lg:gap-6 lg:text-small lg:leading-normal">
             <p>{copyright}</p>
             <nav aria-label={layoutCopy.footer.legalLabel}>
-              {/* 44px touch targets below lg; the negative margin keeps the line where it was. */}
-              <ul className="flex flex-wrap max-lg:-my-[11px] lg:gap-6">
+              {/* 44px touch targets below lg; the negative margin keeps the line where it was. Below
+                  360px the three do not fit one line: one per row, without the separator dots (a
+                  wrapped "· Cookieindstillinger" would start its line with a dot). */}
+              <ul className="flex flex-wrap max-lg:-my-[11px] max-[359px]:flex-col max-[359px]:items-start lg:gap-6">
                 {legalNav.map((l, i) => (
                   <li key={l.href} className="max-lg:flex max-lg:items-center">
                     {i > 0 ? (
-                      <span aria-hidden="true" className="lg:hidden">
+                      <span aria-hidden="true" className="max-[359px]:hidden lg:hidden">
                         &nbsp;·&nbsp;
                       </span>
                     ) : null}
@@ -208,7 +217,7 @@ export function Footer() {
                 {/* Reopens the cookie banner (components/consent); only when the market has tags. */}
                 {site.analytics.gtmId ? (
                   <li className="max-lg:flex max-lg:items-center">
-                    <span aria-hidden="true" className="lg:hidden">
+                    <span aria-hidden="true" className="max-[359px]:hidden lg:hidden">
                       &nbsp;·&nbsp;
                     </span>
                     <ConsentSettingsButton label={consentCopy.footerButton} className={legalLinkClasses} />

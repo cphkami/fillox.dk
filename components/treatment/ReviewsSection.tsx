@@ -32,7 +32,7 @@ export function ReviewsSection({ reviews }: { reviews: NonNullable<TreatmentView
           <Eyebrow>{reviews.eyebrow}</Eyebrow>
           <h2
             id={copy.sectionIds.reviews}
-            className="mt-2.5 font-heading text-[28px] leading-[1.15] tracking-display text-heading md:mt-3.5 md:text-[40px] md:leading-[1.1] xl:text-h2"
+            className="mt-2.5 font-heading text-[28px] leading-[1.15] tracking-display text-balance text-heading md:mt-3.5 md:text-[40px] md:leading-[1.1] xl:text-h2"
           >
             {reviews.title}
           </h2>

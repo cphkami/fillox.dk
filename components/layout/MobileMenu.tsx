@@ -12,6 +12,7 @@ import { site } from "@/config/site";
 import type { NavItem } from "@/content/types";
 import { ui } from "@/content/ui";
 import { cn } from "@/lib/cn";
+import { logoSizes } from "./logoSizes";
 import type { HeaderData } from "./menuData";
 import { useAriaCurrent } from "./NavLink";
 
@@ -216,6 +217,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                 alt=""
                 width={site.brand.logoWidth}
                 height={site.brand.logoHeight}
+                sizes={logoSizes(22)}
                 className="h-[22px] w-auto"
               />
             </Link>

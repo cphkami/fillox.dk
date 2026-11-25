@@ -99,7 +99,7 @@ export function Bestsellers({ copy, items }: { copy: HomePage["bestsellers"]; it
                   {item.number}
                 </span>
                 <div className="min-w-0 flex-1 lg:contents">
-                  <h3 className={cn("font-heading text-[18px] text-heading lg:text-h3 lg:tracking-display lg:text-on-band", fade, headingOnActive)}>
+                  <h3 className={cn("font-heading text-[min(18px,5.25vw)] text-heading lg:text-h3 lg:tracking-display lg:text-on-band", fade, headingOnActive)}>
                     {item.name}
                   </h3>
                   <p

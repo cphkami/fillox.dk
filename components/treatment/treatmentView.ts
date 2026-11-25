@@ -50,7 +50,7 @@ export type PriceGroup = {
 
 export type TreatmentView = {
   slug: string;
-  /** Display name: breadcrumb, book band, book bar ("Lip Filler"); the H1 unless `heading` says more. */
+  /** Display name: breadcrumb, book band, book bar ("Lip filler"); the H1 unless `heading` says more. */
   title: string;
   /** The H1 (detail.heading, else `title`). */
   heading: string;

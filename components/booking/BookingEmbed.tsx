@@ -3,6 +3,7 @@ import { openClinics } from "@/content/clinics";
 import { layoutCopy } from "@/content/layout";
 import { timmaReservationUrl } from "@/lib/booking";
 import { cn } from "@/lib/cn";
+import { BookingUnavailable } from "./BookingUnavailable";
 import { GeckoEmbed } from "./GeckoEmbed";
 import { TimmaEmbed, type TimmaClinic } from "./TimmaEmbed";
 
@@ -21,7 +22,8 @@ import { TimmaEmbed, type TimmaClinic } from "./TimmaEmbed";
  * Adding a provider = a variant in config/types.ts (BookingConfig) + a case here.
  *
  * `className` styles the card around the embed (app/booking/page.tsx). Gecko's card keeps a
- * 640px minimum height, so the page does not jump while the calendar loads; the TIMMA card wraps
+ * 640px minimum height, so the page does not jump while the calendar loads; when the calendar
+ * cannot load, `BookingUnavailable` (phone and e-mail) shows in it instead; the TIMMA card wraps
  * the picker, and its iframe reserves its own height once a clinic is chosen.
  */
 export function BookingEmbed({ className }: { className?: string }) {
@@ -34,6 +36,7 @@ export function BookingEmbed({ className }: { className?: string }) {
             host={booking.geckoHost}
             icCode={booking.geckoIcCode}
             title={layoutCopy.booking.iframeTitle}
+            fallback={<BookingUnavailable />}
             className="mx-auto xl:max-w-[1184px]"
           />
         </div>

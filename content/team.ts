@@ -400,6 +400,13 @@ function faceCrop(image: ImageRef & { width: number; height: number }, face: Fac
   return { ...image, position: `${pct(x)} ${pct(y)}`, zoom: zoom === 1 ? undefined : zoom };
 }
 
+/**
+ * The price list's "Specialist-tillæg (behandling v. læge) · valgfrit · efter aftale"
+ * (content/prices.ts → konsultation), said wherever Dr. Tom's "fra" prices are shown.
+ * TODO: copy review
+ */
+const DOCTOR_SURCHARGE = "Behandling hos læge har et specialist-tillæg efter aftale.";
+
 const members: TeamRosterMember[] = [
   {
     slug: "tom",
@@ -470,10 +477,12 @@ const members: TeamRosterMember[] = [
         ],
       },
       // His specialty on /om-os. Prices are "fra": a doctor's treatment has the price list's
-      // specialist-tillæg on top ("efter aftale"; the booking band says so). Hage and the
-      // contouring areas are unlinked (see "Offers" in the header).
+      // specialist-tillæg on top ("efter aftale"), said under the cards (`note`, every width) and in
+      // the booking band (hidden below 768px). Hage and the contouring areas are unlinked (see
+      // "Offers" in the header).
       offers: {
         ...offersCopy("Dr. Tom"),
+        note: DOCTOR_SURCHARGE,
         items: [
           treatmentOffer("naesekorrektion", {
             description: "Ujævnheder på næseryggen og formen på næsespidsen, rettet med filler uden kirurgi.",
@@ -515,7 +524,7 @@ const members: TeamRosterMember[] = [
       booking: {
         title: "Book tid hos Dr. Tom",
         // TODO: copy review
-        text: `${meetAt("Dr. Tom", worksAt.tom)} Behandling hos læge har et specialist-tillæg efter aftale.`,
+        text: `${meetAt("Dr. Tom", worksAt.tom)} ${DOCTOR_SURCHARGE}`,
         cta: { label: "Book tid hos Dr. Tom", href: bookWith("tom") },
       },
     },

@@ -108,7 +108,10 @@ export const contactPage = {
       id: "email",
       label: ui.writeUs,
       value: site.contact.email,
-      note: "Svar inden for 24 timer",
+      // The design's 6ko card said "Svar inden for 24 timer", the mobile intro (mc) and the thank-you
+      // text "én hverdag": one promise on the whole site, the one already in two places (README).
+      // TODO: copy review (the owner's reply-time commitment)
+      note: "Svar inden for én hverdag",
       href: site.contact.emailHref,
       tone: "plain",
     },
@@ -159,8 +162,8 @@ export const contactPage = {
     /** Shown in place of the form after sending, and as the /kontakt/tak page (no-JS fallback). */
     success: {
       title: "Tak for din besked",
-      // Same promise as the mobile intro (mc: "Vi svarer inden for én hverdag"). Note that the
-      // 6ko e-mail card says "Svar inden for 24 timer"; both are design copy.
+      // Same promise as the mobile intro (mc: "Vi svarer inden for én hverdag") and the e-mail card
+      // (6ko's "Svar inden for 24 timer" changed to match).
       text: "Vi har modtaget din henvendelse, og en af vores behandlere svarer dig inden for én hverdag.",
       again: "Send en ny besked",
     },

@@ -21,6 +21,21 @@ export const metadata: Metadata = pageMetadata(meta, PATH);
 const rowHref = (slug: string | undefined, anchor: string | undefined) =>
   slug && getTreatment(slug) ? `${treatmentHref(slug)}${anchor ? `#${anchor}` : ""}` : undefined;
 
+/**
+ * Row labels that link to more than one page ("Hage": the filler page and laser hårfjerning). Their
+ * links get the card's name as hidden text, so a screen reader's link list tells them apart.
+ */
+const ambiguousLabels = (() => {
+  const targets = new Map<string, Set<string>>();
+  for (const card of priceCards) {
+    for (const row of card.rows) {
+      const href = rowHref(row.treatmentSlug, row.treatmentAnchor);
+      if (href) targets.set(row.label, (targets.get(row.label) ?? new Set()).add(href));
+    }
+  }
+  return new Set([...targets].filter(([, hrefs]) => hrefs.size > 1).map(([label]) => label));
+})();
+
 /** Price cards with prices formatted on the server (lib/format), ready for the client component. */
 const categories: PriceCategoryView[] = priceCards.map((card) => ({
   id: card.id,
@@ -32,6 +47,7 @@ const categories: PriceCategoryView[] = priceCards.map((card) => ({
     note: row.note,
     price: formatPriceValue(row.price),
     href: rowHref(row.treatmentSlug, row.treatmentAnchor),
+    linkContext: ambiguousLabels.has(row.label) ? pricesPage.rowLinkContext(card.title) : undefined,
   })),
 }));
 

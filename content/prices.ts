@@ -328,6 +328,12 @@ export const pricesPage = {
   trustChips: ["Gratis konsultation", "Kun læger & sygeplejersker", "Vagtlæge 24/7", "Finansiering mulig"],
   /** Accessible name of the mobile jump-chip row. */
   chipsLabel: "Hop til kategori",
+  /**
+   * Hidden text after a row's link when another card has a link with the same label ("Hage" on
+   * Fillers and on Laser hårfjerning), so the two read "Hage (fillers)" and "Hage (laser
+   * hårfjerning)" in a screen reader's link list. TODO: copy review (not visible)
+   */
+  rowLinkContext: (cardTitle: string) => ` (${cardTitle.toLocaleLowerCase(site.locale)})`,
   financing: {
     /** Anchor id (legacy /finansiering redirects to /priser#finansiering). */
     id: "finansiering",

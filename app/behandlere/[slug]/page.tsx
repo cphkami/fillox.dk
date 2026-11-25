@@ -31,7 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const member = getTeamMember(slug);
   if (!member) return {};
   const profile = resolveProfile(member);
-  const title = practitionerPage.meta.title(profile.displayName, profile.title);
+  // The short title when there is one (Dr. Tom: "Æstetisk læge & grundlægger"), so the search title
+  // stays ≤ 60 characters; the page and its JSON-LD keep the full title.
+  const title = practitionerPage.meta.title(profile.displayName, profile.titleShort ?? profile.title);
   // The first intro that fits a search snippet (70–160 characters). The full intro names the
   // person, so it wins when it fits (team bios, ~115 characters); a profile's desktop intro
   // runs ~240 characters, so profiles use their short (mobile) intro.

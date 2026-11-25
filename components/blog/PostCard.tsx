@@ -62,7 +62,7 @@ export function PostCard({ post, variant = "list", headingLevel: Heading = "h3",
         {/* 19px (6blog / 6art), from 1280px growing to 22px at 1600 (19 → 22, the token formula):
             the size of the treatment pages' blog-card titles (text-h4), and in step with the
             photo, which grows ~1.36× with the canvas. */}
-        <Heading className="mt-0.5 font-heading text-[16px] leading-[1.4] text-heading md:mt-0 md:text-[19px] md:leading-[1.35] md:tracking-[-.01em] xl:text-[length:clamp(19px,calc(7px+0.9375vw),22px)]">
+        <Heading className="mt-0.5 font-heading text-[16px] leading-[1.4] text-balance text-heading md:mt-0 md:text-[19px] md:leading-[1.35] md:tracking-[-.01em] xl:text-[length:clamp(19px,calc(7px+0.9375vw),22px)]">
           <Link
             href={blogPostHref(post.slug)}
             // Mobile rows: heading and accent colours are too close to show hover alone, so the

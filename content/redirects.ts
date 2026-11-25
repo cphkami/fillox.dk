@@ -19,7 +19,7 @@
 export type LegacyRedirect = {
   /** Legacy path (Next.js path-to-regexp syntax), no trailing slash. */
   source: string;
-  /** New route. May include a #fragment for category anchors on /behandlinger. */
+  /** New route. May include a #fragment: category anchors on /behandlinger, price cards on /priser. */
   destination: string;
   /** Legacy page title / reason, for reviewers. */
   note?: string;
@@ -33,11 +33,13 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/fillers/kaebelinje", destination: "/behandlinger/kaebelinje", note: "Kæbelinje" },
   { source: "/fillers/tear-trough", destination: "/behandlinger/tear-trough", note: "Tear Trough" },
   { source: "/fillers/naesekorrektion", destination: "/behandlinger/naesekorrektion", note: "Næsekorrektion" },
-  { source: "/fillers/ansigtskonturering", destination: "/behandlinger#fillers", note: "Ansigtskonturering (ingen egen side)" },
-  { source: "/fillers/ansiktskulpturering", destination: "/behandlinger#fillers", note: "Gammel slug for ansigtskonturering" },
-  { source: "/fillers/nasolabiale-linjer", destination: "/behandlinger#fillers", note: "Nasolabiale linjer (ingen egen side)" },
-  { source: "/fillers/marionettelinjer", destination: "/behandlinger#fillers", note: "Marionettelinjer (ingen egen side)" },
-  { source: "/fillers/marionette-linjer", destination: "/behandlinger#fillers", note: "Gammel slug for marionettelinjer" },
+  // No page of their own: the fillers card on /priser names them with their price (/behandlinger
+  // does not mention them, so a redirect there would read as a soft 404).
+  { source: "/fillers/ansigtskonturering", destination: "/priser#fillers", note: "Ansigtskonturering (ingen egen side)" },
+  { source: "/fillers/ansiktskulpturering", destination: "/priser#fillers", note: "Gammel slug for ansigtskonturering" },
+  { source: "/fillers/nasolabiale-linjer", destination: "/priser#fillers", note: "Nasolabiale linjer (ingen egen side)" },
+  { source: "/fillers/marionettelinjer", destination: "/priser#fillers", note: "Marionettelinjer (ingen egen side)" },
+  { source: "/fillers/marionette-linjer", destination: "/priser#fillers", note: "Gammel slug for marionettelinjer" },
   { source: "/fillers/haender", destination: "/behandlinger#fillers", note: "Hænder (ikke i nyt udbud)" },
   { source: "/fillers/faq-om-fillers-behandling", destination: "/behandlinger#fillers", note: "FAQ om fillers" },
 
@@ -104,8 +106,8 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/filler/kjevelinje", destination: "/behandlinger/kaebelinje" },
   { source: "/filler/tear-trough", destination: "/behandlinger/tear-trough" },
   { source: "/filler/nesekorreksjon", destination: "/behandlinger/naesekorrektion" },
-  { source: "/filler/nasolabiale-linjer", destination: "/behandlinger#fillers" },
-  { source: "/filler/ansiktskulpturering", destination: "/behandlinger#fillers" },
+  { source: "/filler/nasolabiale-linjer", destination: "/priser#fillers" },
+  { source: "/filler/ansiktskulpturering", destination: "/priser#fillers" },
   { source: "/filler-oslo/hender", destination: "/behandlinger#fillers" },
 
   /* ------------- Pages of this site that were shown in previews and later merged (2026-10) */

@@ -358,9 +358,12 @@ aspect over the slot's when it is wider), from the measured column widths (conte
   own content (prices through `listPrice()` from `content/prices.ts`, so a price change follows) or
   the live fillox.dk, with a `// source:` comment per block; blocks marked `TODO: fagligt tjek
   (læge)` need a doctor's review. A `links` block puts arrow links under the closing paragraph, or
-  mid-article: the aftercare articles put the on-call line as a `tel:` link (`site.contact.phoneHref`,
-  tap to call) under their warning signs, and "Lip filler for første gang" links
-  `/blog/haevelse-og-blaa-maerker#kontakt-os`. check:market lets `tel:` links pass and checks
+  mid-article: every article with warning signs ("Hævelse og blå mærker", "De første 24 timer …",
+  "Lip filler for første gang") puts the on-call line as a `tel:` link (`site.contact.phoneHref`,
+  tap to call) under them, and "Lip filler for første gang" and "Skinbooster eller Profhilo" link
+  `/blog/haevelse-og-blaa-maerker#kontakt-os`. The excerpt is also the meta description, the share
+  text and the JSON-LD description, so it stays ≤ 160 characters. "Hævelse og blå mærker" is tagged
+  with every filler page (`treatmentSlugs`), so each one's "Fra bloggen" links the warning signs. check:market lets `tel:` links pass and checks
   that a `/blog/<slug>#id` link lands on a heading of that post. Every article that mentions the
   follow-up check states the live policy's conditions (once per treatment, within 21 days).
 - **Author**: a post without `authorSlug` is signed by the team, "Fillox-holdet"
@@ -426,7 +429,7 @@ type `ClinicBookingIds`).
 
 | Provider | Market | Config | Per clinic | /booking |
 |---|---|---|---|---|
-| `gecko` | fillox.dk | `href`, `geckoHost`, `geckoIcCode` | `geckoCalendarId` (optional) | Gecko's `iframe.js` injects ONE calendar for every clinic (`GeckoEmbed`, which also preconnects to `geckoHost`), capped at 1184px and centred in the white card (min-height 640px) |
+| `gecko` | fillox.dk | `href`, `geckoHost`, `geckoIcCode` | `geckoCalendarId` (optional) | Gecko's `iframe.js` injects ONE calendar for every clinic (`GeckoEmbed`, which also preconnects to `geckoHost`), capped at 1184px and centred in the white card (min-height 640px); when it cannot load (no JS: `<noscript>`; iframe.js fails: at once; no iframe after 8s) the card shows `BookingUnavailable` (`content/layout.ts` → `booking.unavailable` + phone / e-mail pills) in a `role="status"` region, removed when the iframe arrives |
 | `timma` | fillox.no | `href`, `timmaBaseUrl` (`https://bestill.timma.no/reservation/`) | `timmaId` (required on open clinics) | clinic picker (a button per open clinic with a `timmaId`) + that clinic's TIMMA page in an iframe at full width (`TimmaEmbed`) |
 
 - `components/booking/BookingEmbed.tsx` (server) switches on `site.booking.provider` and
@@ -496,8 +499,9 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   / play, previous / next and (box ≥ 28rem) dot buttons (each its own tab stop; inactive dots
   ≥ 3:1), all 44px; swipe on touch. Any step stops the rotation; `aria-live` is "off" while it
   actually rotates and "polite" whenever it is paused (hover, focus, button, reduced motion),
-  so the review a user moves to is announced. Each slide is a `div role="group"
-  aria-roledescription="slide"` around a plain `<figure>`. Without JavaScript the controls
+  so the review a user moves to is announced. Each slide is a `div role="group"` with
+  `aria-roledescription` = `ui.slideRole` ("dias"; the carousel's is `ui.carouselRole`,
+  "karrusel") around a plain `<figure>`. Without JavaScript the controls
   keep their space but stay `invisible` until hydration. Tab order is slide link → pause →
   previous → dots → next (controls below the quote, as designed); focus inside pauses the
   rotation, so the review never changes before a keyboard user reaches pause (WCAG 2.2.2).
@@ -547,7 +551,9 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   named Kubra), the lip filler page's "Din behandler" is Annika and the men's page shows Mike in
   Maria's place. No treatment page had Kubra as "Din behandler".
 - **Offers** (`profile.offers`, "Det tilbyder … dig") — what each practitioner is documented to
-  perform (sources in the team.ts header): Dr. Tom his specialty on /om-os; Annika and Mike what
+  perform (sources in the team.ts header): Dr. Tom his specialty on /om-os (with `offers.note`, the doctor's
+  specialist surcharge, under the cards at every width: his booking band, which says it too, is
+  hidden below 768px); Annika and Mike what
   their reviews name; Alberte her profile's skin treatments (laser, microneedling, skinbooster,
   ansigtsbehandling, PRF hud; kept on the owner's answer, 2026-11-25: "ved ikke tjek hvad vi har
   skrevet tidligere, nok det hele"), then lip filler and "Fillers i ansigtet" from her own
@@ -990,10 +996,13 @@ tracking stay as they are. All tokens follow one formula, a → b:
 | "Book tid" (Button `sm`) | compact 44px, 15px | 119 × 49px | 123 × 51 → 135 × 54px |
 | Mobile-menu logo | 22px | — | — |
 | Footer logo | 24px | 28px | 28 → 30px |
+| Footer links (nav + legal) | 44px rows | invisible `after:` hit area 44px high, 8px wider each side | same |
 | `scroll-padding-top` | 88px | 106px | 108 → 113px |
 
 - Nav triggers have an invisible `before:` hit area (≥ 44px high) that leaves the underline
   in place; the underline marks the current section / open menu, not hover.
+- The three logo `<Image>`s pass `sizes={logoSizes(…heights)}` (`components/layout/logoSizes.ts`,
+  widths from the PNG's proportions), so the srcset picks a ≈ 128–384px file, not 640 / 1440px.
 - **The dropdowns do not scale.** From 1024px the Priser, Find klinik and Om os panels use
   fixed sizes: titles 16px/600, links 15px, secondary text 14px, uppercase micro
   labels 12px, "Se alle →" 15px/600 (`ArrowLink size="menu"`). Frame: white, 20px radius,

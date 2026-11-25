@@ -125,7 +125,7 @@ export function TreatmentHero({ view }: { view: TreatmentView }) {
           <h1
             style={titleFit}
             className={cn(
-              "order-2 font-heading text-[length:min(36px,100cqi/var(--title-fit))] leading-[1.08] tracking-display text-heading [overflow-wrap:break-word] md:mb-[22px] md:leading-[1.02] md:tracking-hero xl:mb-fluid-22",
+              "order-2 font-heading text-[length:min(36px,100cqi/var(--title-fit))] leading-[1.08] tracking-display text-balance text-heading [overflow-wrap:break-word] md:mb-[22px] md:leading-[1.02] md:tracking-hero xl:mb-fluid-22",
               h1Size[view.headingSize ?? "default"],
             )}
           >

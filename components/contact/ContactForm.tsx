@@ -317,9 +317,11 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                 <span className="ms-1.5 shrink-0 md:ms-3">▾</span>
               </span>
             ) : (
+              /* Caret only (no JS / before hydration), in the overlay's box (inset-0): React reuses this
+                 span for the overlay, so the same box means no layout shift when the page hydrates. */
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 end-0 flex items-center pe-[21px] text-[16px] text-placeholder xl:text-body"
+                className="pointer-events-none absolute inset-0 flex items-center justify-end px-[21px] text-[16px] text-placeholder xl:text-body"
               >
                 ▾
               </span>

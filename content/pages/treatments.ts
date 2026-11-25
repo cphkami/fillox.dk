@@ -215,8 +215,13 @@ export const treatmentPage = {
     title: "Klar til at booke?",
     /** Text when `detail.bookingText` is missing. */
     fallbackText: "Første konsultation er altid gratis.",
-    /** "Book Lip Filler · fra 999 kr" (price part omitted when unknown). */
-    cta: (name: string, price?: string) => (price ? `Book ${name} · ${price}` : `Book ${name}`),
+    /**
+     * "Book Lip filler · fra 999 kr" (price part omitted when unknown). No-break spaces before the
+     * dot and inside the price, so a wrapped pill breaks as "Book Skinbooster · / fra 1.499 kr",
+     * never between "fra", the amount and "kr".
+     */
+    cta: (name: string, price?: string) =>
+      price ? `Book ${name}\u00a0· ${price.replace(/ /g, "\u00a0")}` : `Book ${name}`,
   },
 
   /**
@@ -247,7 +252,7 @@ export const treatmentPage = {
   fallbackAbout: {
     categoryText: {
       fillers:
-        "Filleren er lavet af hyaluronsyre, et stof der findes naturligt i huden, og er tilsat lidocain, et bedøvelsesmiddel. Resultatet ses med det samme, og det endelige resultat ses, når hævelsen har lagt sig. Filleren kan opløses igen, hvis der er behov for det.",
+        "Filleren er lavet af hyaluronsyre, et stof, der findes naturligt i huden, og er tilsat lidocain, et bedøvelsesmiddel. Resultatet ses med det samme, og det endelige resultat ses, når hævelsen har lagt sig. Filleren kan opløses igen, hvis der er behov for det.",
       hudforbedring:
         "Mange får det bedste resultat med et forløb over flere behandlinger, og din behandler anbefaler, hvad der passer til netop din hud.",
       "laser-harfjerning":
@@ -272,8 +277,10 @@ export const treatmentPage = {
    */
   // TODO: copy review (image choice + alt texts)
   categoryImages: {
-    // A syringe is fine on filler pages (not on the rynkebehandling pages).
-    fillers: photos.sproejte,
+    // A syringe is fine on filler pages (not on the rynkebehandling pages). 5%: the whole head with
+    // air above it (the default 25% cut the crown at 390, 768 and from 1280px), the syringe and the
+    // upper glove still in the crop at every width (checked at 390, 768, 1024, 1440 and 1600).
+    fillers: { ...photos.sproejte, position: "55% 5%" },
     // Botox is a prescription medicine: only photos without product, syringe or treatment
     // (content/photos.ts → rules). The hub shows the practitioner reading a leaflet: its "Læs mere"
     // cards already show the other three such photos (the room, the mirror, the window; content/

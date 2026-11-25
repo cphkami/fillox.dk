@@ -103,6 +103,11 @@ export function OffersSection({ offers, bookingHref, id, titleId }: OffersSectio
           );
         })}
       </ul>
+      {/* About every price above (e.g. a doctor's surcharge), so it shows at every width: the closing
+          booking band, which says it too, is hidden below 768px. */}
+      {offers.note ? (
+        <p className="mt-4 text-small leading-[1.6] text-muted md:mt-6 md:text-center">{offers.note}</p>
+      ) : null}
     </Container>
   );
 }

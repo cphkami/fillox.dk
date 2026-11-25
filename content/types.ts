@@ -220,7 +220,7 @@ export type Treatment = {
    * `priceFrom` still shows in menus, cards and on the home page).
    */
   detail?: {
-    /** Page title (breadcrumb, book bar; the H1 unless `heading`) when it differs from `name`, e.g. "Lip Filler". */
+    /** Page title (breadcrumb, book bar; the H1 unless `heading`) when it differs from `name`, e.g. "Andre behandlingsmuligheder". */
     title?: string;
     /**
      * H1 when it says more than `title`, e.g. "Andre kosmetiske og medicinske behandlingsmuligheder".
@@ -354,6 +354,11 @@ export type TeamProfile = {
     /** Button label on mobile, e.g. "Book". */
     ctaLabelShort?: string;
     items: TeamOffer[];
+    /**
+     * A line under the cards, at every width, about all their prices (Dr. Tom: the doctor's
+     * specialist surcharge on top of the "fra" prices).
+     */
+    note?: string;
   };
   experience?: {
     title: string; // "Erfaring & uddannelse"

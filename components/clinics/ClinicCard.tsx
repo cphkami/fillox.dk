@@ -146,7 +146,7 @@ export function ClinicCard({ clinic, copy, comingSoon, priorityPhoto }: ClinicCa
                   {copy.bookShort}
                   <span className="sr-only">{copy.bookShortContext(clinic.fullName)}</span>
                 </span>
-                <span className="max-lg:hidden">{copy.bookLabel(clinic.name)}</span>
+                <span className="max-lg:hidden">{copy.bookLabel(clinic.fullName)}</span>
               </Link>
               {clinic.directionsHref ? (
                 <a

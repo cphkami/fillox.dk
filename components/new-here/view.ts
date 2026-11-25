@@ -10,7 +10,7 @@ import { formatPriceFrom } from "@/lib/content";
 export type NeedTreatmentRow = {
   slug: string;
   /**
-   * The treatment page's own short name (`detail.title`: "Lip Filler", "Andre
+   * The treatment page's own short name (`detail.title ?? name`: "Lip filler", "Andre
    * behandlingsmuligheder"), as the /behandlinger cards (TreatmentCard), the blog's booking card
    * and the treatment page's H1 / book bar show it. Not `name`: that is the menus' name, shortened
    * for the mega menu's narrow columns ("Andre behandlinger", content/treatments.ts).

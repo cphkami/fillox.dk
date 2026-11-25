@@ -164,7 +164,7 @@ const fillerFaq = {
   aftercare: {
     question: "Hvad skal jeg undgå bagefter?",
     answer:
-      "Rør ikke ved området de første 6 timer, derefter kan du vaske det forsigtigt med vand og sæbe. Hold området væk fra sol og solarium, til hævelse og rødme er væk, begræns alkohol 24 timer før og efter, og undgå Aspirin, Ibux og Voltaren, som kan give mere blødning og blå mærker.",
+      "Rør ikke ved området de første 6 timer, derefter kan du vaske det forsigtigt med vand og sæbe. Undgå sol og solarium, indtil hævelse og rødme er forsvundet, begræns alkohol 24 timer før og efter, og undgå Aspirin, Ibux og Voltaren, som kan give mere blødning og blå mærker.",
   },
   // TODO: copy review — the live site names these brands on every filler page except lip filler
   // (Revanesse, as on the price list). Fillox to confirm the brands still in use.
@@ -200,6 +200,8 @@ const prfFaq = {
 
 /* ---------------------------------------------------- template pages (6c) */
 
+// fillox.dk/fillers/kaebelinje. "Kæbelinje for mænd" shows the same facts, list and FAQ with the
+// text without its lines about women (`kaebelinjeAboutMen` below).
 const kaebelinjeAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
   facts: [
     { label: "Pris", value: from(lowestListPrice("kaebelinje")) },
@@ -222,6 +224,15 @@ const kaebelinjeAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
     fillerFaq.pain,
     fillerFaq.sideEffects,
     fillerFaq.products,
+  ],
+};
+
+/** The page for men: the text above without "… hos kvinder" and "… eller feminine træk". TODO: copy review */
+const kaebelinjeAboutMen: typeof kaebelinjeAbout = {
+  ...kaebelinjeAbout,
+  about: [
+    "Kæbelinjen definerer maskulinitet. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene bliver skarpere, både forfra og i profil, og huden i den nederste del af ansigtet strammes op med det samme.",
+    "Vi tilpasser behandlingen efter dine ønsker. Behandlingen kan også give en mere lige kæbelinje, hvis huden er blevet ujævn eller slap med alderen.",
   ],
 };
 
@@ -250,6 +261,13 @@ const prfHarAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
   ],
 };
 
+/** Laser hårfjerning's last FAQ item; not on "Laser for mænd" (`laserAboutMen`). */
+const laserForMenFaq: FaqItem = {
+  question: "Kan mænd også få laser hårfjerning?",
+  answer:
+    "Ja. Behandlingen tilbydes både til kvinder og mænd. Til mænd har vi også faste priser på kombinerede områder som ryg, skuldre og bryst.",
+};
+
 const laserAbout: Pick<Detail, "about" | "goodFor" | "faq"> = {
   about: [
     "Vores diodelaser behandler hårsækkene målrettet. Et forløb består typisk af 6–8 behandlinger med 4–8 ugers mellemrum, så vi rammer hårene i den aktive vækstfase. AI-genkendelse hjælper os med at tilpasse indstillingerne til din hudtype og hårstruktur, og den indbyggede køling beskytter huden og gør behandlingen behagelig.",
@@ -272,12 +290,19 @@ const laserAbout: Pick<Detail, "about" | "goodFor" | "faq"> = {
       answer:
         "Området kan føles let ujævnt og følsomt og være lyserødt i nogle timer, lidt som en mild solskoldning. Forbrændinger og blærer kan forekomme, men er sjældne. Beskyt huden med solcreme efter behandlingen.",
     },
-    {
-      question: "Kan mænd også få laser hårfjerning?",
-      answer:
-        "Ja. Behandlingen tilbydes både til kvinder og mænd. Til mænd har vi også faste priser på kombinerede områder som ryg, skuldre og bryst.",
-    },
+    laserForMenFaq,
   ],
+};
+
+/**
+ * "Laser for mænd": the same text and FAQ without "Bikini og brasil" and without the question
+ * whether men can have it. The list names the areas of the men's packages
+ * (content/prices.ts → laser-maend) and the general list's "Armhuler, arme og ben". TODO: copy review
+ */
+const laserAboutMen: typeof laserAbout = {
+  ...laserAbout,
+  goodFor: ["Ryg og skuldre", "Bryst og mave", "Nakke og skæglinje", "Armhuler, arme og ben"],
+  faq: laserAbout.faq?.filter((item) => item !== laserForMenFaq),
 };
 
 const laserFacts = (price: number) => [
@@ -298,8 +323,10 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("lip-filler"),
     short: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi.",
     detail: {
-      title: "Lip Filler",
-      lead: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, du kan altid bygge på senere.",
+      // No `title`: the page, its breadcrumb, book bar, booking card and blog cards use the name
+      // ("Lip filler", as in the menus, on /priser and in the posts); the design's "Lip Filler" was
+      // the only capital F on the site.
+      lead: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, så du altid kan bygge på senere.",
       // The clinic's own photo (content/photos.ts) with no team member in it: the syringe photo it
       // showed (behandlerSproejte) looks like Alberte's portrait (same shoot, pose, gloves and
       // backdrop; the owner is asked, README) and sat one band above "Din behandler: Annika"
@@ -383,7 +410,7 @@ export const treatments: Treatment[] = [
       mobile: {
         lead: "Naturlig volumen og symmetri, formet efter din læbeform. Vi doserer konservativt, så du altid kan bygge på senere.",
         about: [
-          "Lip filler er lavet af hyaluronsyre, et stof der findes naturligt i huden. Behandlingen giver diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
+          "Lip filler er lavet af hyaluronsyre, et stof, der findes naturligt i huden. Behandlingen giver diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
         ],
         pricesIntro: "Mange starter med 0,5 ml. Din behandler anbefaler mængden ved konsultationen.",
       },
@@ -413,7 +440,7 @@ export const treatments: Treatment[] = [
         {
           question: "Hvordan foregår behandlingen?",
           answer:
-            "Vi starter med en analyse af dit ansigt, og sammen aftaler I det ønskede resultat. Filleren sprøjtes ind med en meget tynd nål, og i kinderne placeres den normalt dybere i huden end i andre områder.",
+            "Vi starter med en analyse af dit ansigt, og sammen aftaler vi det ønskede resultat. Filleren sprøjtes ind med en meget tynd nål, og i kinderne placeres den normalt dybere i huden end i andre områder.",
         },
         fillerFaq.results("Det endelige resultat ses efter cirka en uge, når hævelsen har lagt sig."),
         fillerFaq.pain,
@@ -450,7 +477,9 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("tear-trough"),
     short: "Filler under øjnene, der mindsker hulhed og mørke rande.",
     detail: {
-      lead: "Filler under øjnene, der giver volumen, mindsker mørke rande og udglatter overgangen til kinden. En af de bedste ikke-kirurgiske løsninger på trætte øjne.",
+      // Also the meta description. "En af de bedste ikke-kirurgiske løsninger på trætte øjne" is left
+      // out: a superlative no source documents (no guarantees, no overstated claims). TODO: copy review
+      lead: "Filler under øjnene, der giver volumen, mindsker mørke rande og udglatter overgangen til kinden.",
       heroImage: categoryImage("fillers"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("tear-trough")) },
@@ -467,7 +496,7 @@ export const treatments: Treatment[] = [
         {
           question: "Hvorfor er placeringen så vigtig?",
           answer:
-            "Placeres filleren for overfladisk, giver det et flot resultat med det samme, men problemer efter få uger: ujævnheder bliver synlige, området kan hæve, fordi lymfedrænagen blokeres, og huden kan få et hvidligt skær (Tyndall-effekt). Vores behandlere er grundigt uddannet i at placere filleren rigtigt, så du undgår det.",
+            "Placeres filleren for overfladisk, giver det et flot resultat med det samme, men problemer efter få uger: ujævnheder bliver synlige, området kan hæve, fordi lymfedrænagen blokeres, og huden kan få et hvidligt skær (Tyndall-effekt). Vores behandlere er grundigt uddannet i at placere filleren rigtigt, så risikoen for det bliver så lille som muligt.", // TODO: copy review (no guarantee: "så du undgår det")
         },
         fillerFaq.results("Det bedste resultat ses efter 2–4 uger."),
         fillerFaq.pain,
@@ -536,9 +565,10 @@ export const treatments: Treatment[] = [
         "Der findes forskellige muligheder for at behandle rynker, men hvilken behandling der er relevant, afhænger af både årsagen til rynkerne, hudens tilstand og dine ønsker.",
         "Hos Fillox møder du behandlere med sundhedsfaglig baggrund, som arbejder efter fælles faglige standarder og får løbende undervisning gennem Fillox Academy. Vi hjælper dig med at forstå mulighederne og finde frem til, hvad der giver mening for dig.",
       ],
-      // The source's second paragraph (it says what the page is about).
+      // The source's second paragraph (it says what the page is about), shortened to ≤ 160 characters
+      // (168: cut off in search results); the page shows the source's own sentence. TODO: copy review
       metaDescription:
-        "Der findes forskellige muligheder for at behandle rynker, men hvilken behandling der er relevant, afhænger af både årsagen til rynkerne, hudens tilstand og dine ønsker.",
+        "Der findes forskellige muligheder for at behandle rynker. Hvilken behandling der er relevant, afhænger af årsagen, hudens tilstand og dine ønsker.",
       primaryCta: { label: "Book en konsultation", href: site.booking.href },
       sections: [
         {
@@ -908,10 +938,13 @@ export const treatments: Treatment[] = [
           answer:
             "Ikke meget. Ejal 40 ligger på cirka 2 ud af 10 på smerteskalaen, så bedøvelse er ikke nødvendig. Vil du have bedøvende creme, så sig det til klinikken, da cremen skal virke i cirka 30 minutter.",
         },
+        // fillox.dk/skinbooster/ejal-40 and /profhilo: "De første 12 timer … ikke gnide eller massere
+        // området … Man bør også undgå … makeup/hudcreme, … sauna, træne samt … ekstra kolde eller varme
+        // temperaturer". TODO: fagligt tjek (læge): do the 12 hours cover the second half too?
         {
           question: "Kan jeg gå på arbejde dagen efter?",
           answer:
-            "Ja. Stikkene kan ligne myggestik, men de forsvinder som regel inden for 12–24 timer, og der kan komme et par blå mærker. Gnid og massér ikke området de første 12 timer, og spring makeup, sauna og træning over. Efter Sunekos omkring øjnene kan der være hævelse i 24–72 timer.",
+            "Ja. Stikkene kan ligne myggestik, men de forsvinder som regel inden for 12–24 timer, og der kan komme et par blå mærker. De første 12 timer skal du lade være med at gnide eller massere området og undgå makeup og hudcreme, sauna, træning og stærk kulde eller varme. Efter Sunekos omkring øjnene kan der være hævelse i 24–72 timer.",
         },
       ],
     },
@@ -952,10 +985,13 @@ export const treatments: Treatment[] = [
           answer:
             "Ikke meget. Profhilo ligger på cirka 2 ud af 10 på smerteskalaen, så bedøvelse er ikke nødvendig. Vil du have bedøvende creme, så sig det til klinikken, da cremen skal virke i cirka 30 minutter.",
         },
+        // fillox.dk/skinbooster/ejal-40 and /profhilo: "De første 12 timer … ikke gnide eller massere
+        // området … Man bør også undgå … makeup/hudcreme, … sauna, træne samt … ekstra kolde eller varme
+        // temperaturer". TODO: fagligt tjek (læge): do the 12 hours cover the second half too?
         {
           question: "Kan jeg gå på arbejde dagen efter?",
           answer:
-            "Ja. Stikkene kan ligne myggestik, men de forsvinder normalt inden for 12–24 timer, og der kan komme et par blå mærker. Gnid og massér ikke området de første 12 timer, og spring makeup, sauna og træning over.",
+            "Ja. Stikkene kan ligne myggestik, men de forsvinder normalt inden for 12–24 timer, og der kan komme et par blå mærker. De første 12 timer skal du lade være med at gnide eller massere området og undgå makeup og hudcreme, sauna, træning og stærk kulde eller varme.",
         },
       ],
     },
@@ -1077,7 +1113,9 @@ export const treatments: Treatment[] = [
     name: "Laser hårfjerning",
     categorySlug: "laser-harfjerning",
     priceFrom: lowestListPrice("laser-harfjerning"),
-    short: "Permanent hårfjerning til alle hudtyper, fra overlæbe til hel krop.",
+    // The design's "Permanent hårfjerning …" (6alb) is an overstated claim: the page's own FAQ says it
+    // cannot be guaranteed that every hair goes. "Langvarig" as in the lead. TODO: copy review
+    short: "Langvarig hårfjerning til alle hudtyper, fra overlæbe til hel krop.",
     detail: {
       lead: "Effektiv og langvarig hårfjerning med diodelaser. Indbygget køling gør behandlingen behagelig, og den kan udføres på hele kroppen, for både kvinder og mænd.",
       heroImage: categoryImage("laser-harfjerning"),
@@ -1116,7 +1154,7 @@ export const treatments: Treatment[] = [
     detail: {
       lead: "Kæbelinjen definerer maskulinitet. Filler giver en tydeligere overgang mellem hoved og hals, en mere markant profil og et slankere ansigt.",
       heroImage: categoryImage("for-maend"),
-      ...kaebelinjeAbout,
+      ...kaebelinjeAboutMen,
     },
   },
   {
@@ -1145,7 +1183,7 @@ export const treatments: Treatment[] = [
       // practitioner section shows Alberte. TODO: copy review (image choice)
       heroImage: photos.behandlingsrum,
       facts: laserFacts(lowestListPrice("laser-harfjerning")),
-      ...laserAbout,
+      ...laserAboutMen,
       pricesTitle: "Priser for mænd",
       pricesIntro: `Faste priser på kombinerede områder. Enkelte områder koster ${from(lowestListPrice("laser-harfjerning"))} og står på prislisten.`,
       prices: cardRows("laser-maend"),

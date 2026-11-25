@@ -87,7 +87,8 @@ export function SectionHeading({
       <Tag
         id={id}
         className={cn(
-          "font-heading text-[28px] tracking-display md:text-[40px] xl:text-h2",
+          // Balanced lines: no word alone on the last line ("Mød dem, der behandler / dig" at 390px).
+          "font-heading text-[28px] tracking-display text-balance md:text-[40px] xl:text-h2",
           leadings[leading],
           t.title,
           titleClassName,

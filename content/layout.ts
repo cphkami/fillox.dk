@@ -194,6 +194,17 @@ export const layoutCopy = {
     // TODO: copy review (not in the design)
     iframeTitle: "Online booking hos Fillox",
     /**
+     * In the booking card when the calendar cannot load: without JavaScript, when the provider's
+     * script is blocked or fails, or when no calendar has appeared after a few seconds
+     * (components/booking/BookingUnavailable.tsx). The phone and e-mail buttons under it come from
+     * config/site.ts. The message disappears as soon as the calendar arrives.
+     */
+    // TODO: copy review (not in the design)
+    unavailable: {
+      title: "Kalenderen kunne ikke indlæses",
+      text: "Ring eller skriv til os, så finder vi en tid sammen.",
+    },
+    /**
      * Clinic picker above the calendar. Only used with a per-clinic booking provider
      * (config/site.ts → booking.provider "timma", as on fillox.no); the Gecko calendar
      * (fillox.dk) has its own clinic selector.

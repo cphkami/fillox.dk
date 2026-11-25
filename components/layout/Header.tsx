@@ -6,6 +6,7 @@ import { layoutCopy } from "@/content/layout";
 import { desktopHiddenNav } from "@/content/navigation";
 import { ui } from "@/content/ui";
 import { DesktopNav } from "./DesktopNav";
+import { logoSizes } from "./logoSizes";
 import { MobileMenu } from "./MobileMenu";
 import { buildHeaderData } from "./menuData";
 
@@ -35,6 +36,7 @@ export function Header() {
             alt=""
             width={site.brand.logoWidth}
             height={site.brand.logoHeight}
+            sizes={logoSizes(22, 30, 32)}
             // Eager + low priority, not `preload`: the logo is never the LCP. React emits a preload link for
             // every eager <img> unless its fetchPriority is "low", and that link would compete with the hero's.
             loading="eager"

@@ -57,11 +57,15 @@ export function MobileBookBar({ name, price, cta, hideAtId }: MobileBookBarProps
     >
       <div className="flex items-center justify-between gap-3 rounded-full bg-white py-2 pr-2 pl-[22px] shadow-float">
         <p className="min-w-0 text-[14px]">
-          <span className="block truncate font-semibold">{name}</span>
+          {/* Up to two lines, a long word hyphenated (the page is lang="da"; broken anywhere where the
+              browser has no Danish hyphenation), never cut off: "Rynkebe- / handling" next to "Book en
+              konsultation" at 320px, where it was "Rynkebe…". */}
+          <span className="line-clamp-2 leading-[1.25] font-semibold hyphens-auto [overflow-wrap:anywhere]">{name}</span>
           {/* 14px (the design's 13, raised to the small-text minimum); the 48px button still sets the bar's height. */}
           {price ? <span className="block text-[14px] text-muted">{price}</span> : null}
         </p>
-        <ButtonLink href={cta.href} size="compact" className="h-12! px-6!">
+        {/* 16px side padding below 380px leaves the name room for "Rynkebehandling" on one line at 360px. */}
+        <ButtonLink href={cta.href} size="compact" className="h-12! px-6! max-[379px]:px-4!">
           {cta.label}
         </ButtonLink>
       </div>

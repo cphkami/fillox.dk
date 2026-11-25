@@ -85,8 +85,12 @@ export const clinicsPage = {
      */
     // TODO: real photo + alt text per clinic (city2, amager-centret, frederiksberg, osterbro).
     photos: {} as Partial<Record<string, ImageRef>>,
-    /** Desktop booking button: "Book i City2". */
-    bookLabel: (clinicName: string) => `${ui.bookAt} ${clinicName}`,
+    /**
+     * Desktop booking button with the clinic's full name: "Book i Fillox Frederiksberg" (the design's
+     * "Book i Frederiksberg" / "Book i Østerbro" took the wrong preposition: "på Frederiksberg").
+     * TODO: copy review
+     */
+    bookLabel: (clinicFullName: string) => `${ui.bookAt} ${clinicFullName}`,
     /** Mobile booking button (mk). */
     bookShort: "Book her",
     /** Visually hidden context after "Book her", so the link names the clinic. */

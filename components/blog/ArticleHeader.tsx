@@ -58,7 +58,9 @@ export function ArticleHeader({ view }: { view: ArticleView }) {
 
         <Eyebrow>{joinMeta(post.category, post.kind)}</Eyebrow>
 
-        <h1 className="font-heading text-[36px] leading-[1.08] tracking-display text-pretty text-heading md:text-[48px] md:tracking-hero xl:text-h1-xs">{post.title}</h1>
+        {/* 36px from 390px; below that 9.25vw (29.6px at 320), so a long word ("Rynkebehandling") fits
+            the 280px column, as TextPageHero. */}
+        <h1 className="font-heading text-[min(36px,9.25vw)] leading-[1.08] tracking-display text-pretty break-words text-heading md:text-[48px] md:tracking-hero xl:text-h1-xs">{post.title}</h1>
 
         <div className="flex items-center gap-2.5 md:gap-3">
           {/* The practitioner's portrait, or the Fillox mark for "Fillox-holdet". */}

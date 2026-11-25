@@ -14,6 +14,8 @@ export type PriceRowView = {
   price: string;
   /** Treatment page the label links to, when the row has one. */
   href?: string;
+  /** Hidden text after the link's label when another row's link has the same label (" (laser hårfjerning)"). */
+  linkContext?: string;
 };
 
 export type PriceCategoryView = {
@@ -167,6 +169,7 @@ export function PriceCategories({ categories, chipsLabel }: PriceCategoriesProps
                             className="decoration-rule-strong decoration-1 underline-offset-[3px] hover:underline pointer-coarse:after:absolute pointer-coarse:after:inset-0"
                           >
                             {row.label}
+                            {row.linkContext ? <span className="sr-only">{row.linkContext}</span> : null}
                           </Link>
                         ) : (
                           row.label
