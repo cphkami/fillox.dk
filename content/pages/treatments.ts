@@ -152,9 +152,10 @@ export const treatmentPage = {
      */
     // TODO: copy review (group headings not in the design; /priser has them as one list)
     groups: {
-      // Hyalase dissolves filler: a service of its own, not an amount of lip filler (not tagged
-      // "lip-filler" in content/prices.ts, so it never sets the "fra" price, the 0,3 ml row).
-      "lip-filler": [{ title: "Andre ydelser", labels: ["Opløsning af filler (Hyalase)"] }],
+      // Dissolving filler is a service of its own, not an amount of lip filler (not tagged
+      // "lip-filler" in content/prices.ts, so it never sets the "fra" price, the 0,3 ml row). The
+      // label without the product name (Hyalase, a prescription medicine; owner 2026-11-26).
+      "lip-filler": [{ title: "Andre ydelser", labels: ["Opløsning af filler"] }],
     } as Record<string, PriceGroupCopy[]>,
   },
 
@@ -250,13 +251,18 @@ export const treatmentPage = {
    */
   // TODO: copy review
   fallbackAbout: {
+    // Owner 2026-11-26 ("ret det hele som du har skrevet til mig. alt fra punkt 1-9"): fillers without
+    // the active substance (before: "tilsat lidocain, et bedøvelsesmiddel"; lægemiddelloven § 66,
+    // https://www.retsinformation.dk/eli/lta/2023/339); laser without a promise (before: "… og giver
+    // en varig reduktion af hårvæksten"; VEJ 9319/2013 pkt. 6.2,
+    // https://www.retsinformation.dk/eli/retsinfo/2013/9319). TODO: copy review
     categoryText: {
       fillers:
-        "Filleren er lavet af hyaluronsyre, et stof, der findes naturligt i huden, og er tilsat lidocain, et bedøvelsesmiddel. Resultatet ses med det samme, og det endelige resultat ses, når hævelsen har lagt sig. Filleren kan opløses igen, hvis der er behov for det.",
+        "Filleren er lavet af hyaluronsyre, et stof, der findes naturligt i huden, og er tilsat et lokalbedøvende middel. Resultatet ses med det samme, og det endelige resultat ses, når hævelsen har lagt sig. Filleren kan opløses igen, hvis der er behov for det.",
       hudforbedring:
         "Mange får det bedste resultat med et forløb over flere behandlinger, og din behandler anbefaler, hvad der passer til netop din hud.",
       "laser-harfjerning":
-        "Laseren virker på hårsækkene og giver en varig reduktion af hårvæksten. Du betaler pr. område eller en samlet pris for hele kroppen.",
+        "Laseren virker på hårsækkene og kan give en varig reduktion af hårvæksten. Du betaler pr. område eller en samlet pris for hele kroppen.",
       hartab:
         "Behandlingen virker direkte i hovedbunden og gives typisk som en kur over flere behandlinger, som du kan købe samlet til en lavere pris.",
       "for-maend":
@@ -335,7 +341,7 @@ export const treatmentPage = {
     kaebelinje: ["Kæbelinjer", "Ansigtskonturering · 4 ml"],
     "kaebelinje-for-maend": ["Kæbelinjer", "Ansigtskonturering · 4 ml"],
     hage: ["Hage", "Ansigtskonturering · 4 ml"],
-    // The most booked areas; the full list (25 areas, men's areas, packages) is on /priser.
+    // The most booked areas; the full list (25 areas, the two package cards) is on /priser.
     "laser-harfjerning": [
       "Helt ansigt",
       "Overlæbe",
@@ -375,7 +381,9 @@ export const treatmentsOverview = {
     // TODO: copy review — new with the owner's two pages (2026-10); no product name.
     rynkebehandling:
       "Find den rette behandling af rynker og fine linjer, og læs om andre kosmetiske og medicinske behandlingsmuligheder.",
-    hudforbedring: "Skinboosters, microneedling, PRF og ansigtsbehandlinger, der styrker huden.",
+    // "kan" (before: "…, der styrker huden."): owner 2026-11-26, VEJ 9319/2013 pkt. 6.2,
+    // https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+    hudforbedring: "Skinboosters, microneedling, PRF og ansigtsbehandlinger, der kan styrke huden.",
     "laser-harfjerning": "Laser til kvinder og mænd, pr. område eller med en samlet pris for hele kroppen.",
     hartab: "Behandlinger af hovedbunden ved tyndt hår og begyndende hårtab.",
     "for-maend": "Behandlinger doseret efter mænds anatomi, mimik og udtryk.",

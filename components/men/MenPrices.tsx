@@ -3,7 +3,8 @@ import { cn } from "@/lib/cn";
 import type { MenPriceRow } from "./menView";
 
 /**
- * "Laserpakker for mænd" folded out under the treatment list (content/prices.ts → "laser-maend"):
+ * The body-area laser packages ("Laserpakker, overkrop", the same for everyone) folded out under
+ * the treatment list (content/prices.ts → "laser-overkrop"):
  * a native <details> on the list's hairlines, so the eight packages do not outweigh the other
  * three treatments, and work without JavaScript. Closed: the title, "8 pakker · fra 1.000 kr"
  * and a 44px "+" circle (as the FAQ). Open: the intro and the rows (16px label, semibold price,

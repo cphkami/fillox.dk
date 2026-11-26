@@ -102,13 +102,19 @@ export const layoutCopy = {
      */
     // TODO: copy review (owner's request, not in the design: eyebrow, title, text, success, privacy line)
     // Owner note: `text` is what the visitor consents to, so it names what the mails are about
-    // (Forbrugerombudsmanden expects the kind of products). Newsletter offers must never promote
-    // Botox or other prescription medicines (no advertising them to the public), the same reason
-    // the Botox pages show no reviews.
+    // (markedsføringsloven § 10; Forbrugerombudsmanden, "Spamforbuddet" 2021, ch. 7.2: the consent
+    // must be informed). No offers: owner 2026-11-26, point 4 of the pre-launch audit ("ret det med
+    // priser osv"); was "Få tilbud, nyheder og tips …" and "… nyheder og gode tilbud." The newsletter
+    // sends news, articles and tips: no time-limited discounts, gifts or competitions on treatments
+    // (VEJ nr. 9319 af 26/06/2013, pkt. 5.1, https://www.retsinformation.dk/eli/retsinfo/2013/9319),
+    // and never rynkebehandling or other prescription medicines (lægemiddelloven § 66). Should it
+    // ever carry offers, change this text, /blog (content/pages/blog.ts → newsletter) and the
+    // privacy policy (content/pages/legal.ts, "12. Nyhedsbrev") first.
     newsletter: {
       eyebrow: "Nyhedsbrev",
       title: "Tilmeld dig vores nyhedsbrev",
-      text: "Få tilbud, nyheder og tips om vores behandlinger på e-mail.",
+      // TODO: copy review (2026-11-26, without "tilbud")
+      text: "Få nyheder og gode råd om vores behandlinger på e-mail.",
       formName: forms.newsletter,
       placeholder: "Din e-mail",
       submit: "Tilmeld",
@@ -122,7 +128,8 @@ export const layoutCopy = {
       },
       success: {
         title: "Tak for din tilmelding",
-        text: "Du hører fra os, så snart vi har nyheder og gode tilbud.",
+        // TODO: copy review (2026-11-26, without "og gode tilbud")
+        text: "Du hører fra os, så snart vi har nyheder.",
       },
       /**
        * The line under the field, worded as on /blog (content/pages/blog.ts → newsletter.privacy).

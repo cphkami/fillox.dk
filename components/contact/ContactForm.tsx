@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -31,6 +32,14 @@ const PHONE_PATTERN = /^\+?[\d\s()-]+$/;
 
 /** Tailwind's md breakpoint (48rem): below it the mobile design (mc) applies. */
 const MOBILE_QUERY = "(max-width: 47.99rem)";
+
+/**
+ * The privacy-policy links in the fine print: the text pages' link style (components/text-page/RichText),
+ * one unbroken line, and an invisible hit area 15px above and below the link's own box (15–16px high at
+ * text-fine, so the target is 45–46px; 12px gave 39–41px). It stays clear of the submit button.
+ */
+const inlineLinkClasses =
+  "relative font-medium whitespace-nowrap text-accent underline decoration-rule-strong underline-offset-[3px] transition-colors after:absolute after:-inset-x-1 after:-inset-y-[15px] hover:decoration-accent";
 
 /**
  * Mobile (mc): white pills, 52px high. Desktop (6ko): cream fields, 16px radius, 59px high.
@@ -65,10 +74,11 @@ type ContactFormProps = {
 
 /**
  * "Send en besked" (6ko / mc): name, phone, e-mail, clinic and message, plus a consent
- * box on mobile. Validates on submit, posts to Netlify Forms via lib/forms.ts, and shows
- * inline errors, a submit error and a success message. Without JavaScript the form posts
- * straight to Netlify (method="post" to `copy.noJsAction`, a static file that forwards to
- * the /kontakt/tak thank-you page).
+ * box on mobile. Both widths link to the privacy policy's contact-form section: the consent
+ * label on mobile, a fine-print line above the button from 768px. Validates on submit, posts
+ * to Netlify Forms via lib/forms.ts, and shows inline errors, a submit error and a success
+ * message. Without JavaScript the form posts straight to Netlify (method="post" to
+ * `copy.noJsAction`, a static file that forwards to the /kontakt/tak thank-you page).
  */
 export function ContactForm({ copy, clinics, titleId, className }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
@@ -378,7 +388,14 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
                 <path d="M3.5 8.5l3 3 6-7" />
               </svg>
             </span>
-            <span>{copy.consent.label}</span>
+            <span>
+              {copy.consent.label}
+              {/* A link inside the label: clicking it follows the link and leaves the box as it is. */}
+              <Link href={copy.consent.link.href} className={inlineLinkClasses}>
+                {copy.consent.link.label}
+              </Link>
+              {copy.consent.end}
+            </span>
           </label>
           {errors.consent ? (
             <ErrorText id={id("consent-error")} className="mt-2">
@@ -386,6 +403,17 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
             </ErrorText>
           ) : null}
         </div>
+
+        {/* Where the consent box is hidden (6ko has none), the link to the privacy policy stands alone. */}
+        {copy.consent.showOnDesktop ? null : (
+          <p className="text-fine leading-[1.5] text-pretty text-muted max-md:hidden md:col-span-2">
+            {copy.privacy.text}{" "}
+            <Link href={copy.privacy.link.href} className={inlineLinkClasses}>
+              {copy.privacy.link.label}
+            </Link>
+            {copy.privacy.end}
+          </p>
+        )}
 
         {submitFailed ? (
           <p role="alert" className="text-small leading-[1.6] font-semibold text-accent md:col-span-2">

@@ -402,10 +402,17 @@ function faceCrop(image: ImageRef & { width: number; height: number }, face: Fac
 
 /**
  * The price list's "Specialist-tillæg (behandling v. læge) · valgfrit · efter aftale"
- * (content/prices.ts → konsultation), said wherever Dr. Tom's "fra" prices are shown.
- * TODO: copy review
+ * (content/prices.ts → konsultation), said wherever Dr. Tom's "fra" prices are shown: under his
+ * offers (every width) and in his booking band. Not for næsekorrektion: its price-list row is
+ * already the price with him ("Næsekorrektion · op til 1 ml, v. Dr. Tom · 3.999 kr"; live
+ * fillox.dk/priser: "Næsekorrektion — Udføres af Dr. Tom"). The owner (2026-11-26), asked whether
+ * the surcharge also applies to næsekorrektion: "lad 9 bliv som det er medmindre det står i
+ * priserne". Before: "Behandling hos læge har et specialist-tillæg efter aftale." (read as if it
+ * applied to all three of his offers). "hos læge", not his name: the booking band says it right
+ * after "Du møder Dr. Tom …". TODO: copy review
  */
-const DOCTOR_SURCHARGE = "Behandling hos læge har et specialist-tillæg efter aftale.";
+const DOCTOR_SURCHARGE =
+  "Prisen på næsekorrektion gælder behandling hos læge. Ved de andre behandlinger har behandling hos læge et specialist-tillæg efter aftale.";
 
 const members: TeamRosterMember[] = [
   {
@@ -477,9 +484,9 @@ const members: TeamRosterMember[] = [
         ],
       },
       // His specialty on /om-os. Prices are "fra": a doctor's treatment has the price list's
-      // specialist-tillæg on top ("efter aftale"), said under the cards (`note`, every width) and in
-      // the booking band (hidden below 768px). Hage and the contouring areas are unlinked (see
-      // "Offers" in the header).
+      // specialist-tillæg on top ("efter aftale"), except næsekorrektion, whose price is already his
+      // (DOCTOR_SURCHARGE), said under the cards (`note`, every width) and in the booking band
+      // (hidden below 768px). Hage and the contouring areas are unlinked (see "Offers" in the header).
       offers: {
         ...offersCopy("Dr. Tom"),
         note: DOCTOR_SURCHARGE,

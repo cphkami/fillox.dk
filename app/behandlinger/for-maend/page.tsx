@@ -21,8 +21,8 @@ export const metadata: Metadata = pageMetadata(copy.meta, copy.path, copy.shareI
  * buttons), cream sections on straight hairlines, one sand panel. No rose bands, no reviews
  * (Botox for mænd is on the list; see content/pages/men.ts).
  *
- * Order: hero → the four treatments (with their prices; the men's laser packages fold out under
- * them) → how it works → "Dine behandlere" (care: three practitioners and their own quotes) →
+ * Order: hero → the four treatments (with their prices; the body-area laser packages,
+ * "Laserpakker, overkrop", the same for everyone, fold out under them) → how it works → "Dine behandlere" (care: three practitioners and their own quotes) →
  * FAQ → booking band. Nothing about choosing a male practitioner (owner, round 4: men are glad
  * that e.g. Alberte takes good care of them; see content/pages/men.ts).
  */

@@ -21,7 +21,8 @@ const NAME_INDENT = "pl-[calc(2rem+0.75rem)] md:pl-[calc(3.5rem+1.5rem)]";
  * Below 768px the price moves under the one-liner, so the name keeps the full width. The price
  * carries its note ("op til 1 ml"), so a "fra" price never reads lower than it is.
  *
- * Under the list: "Laserpakker for mænd" as a fold-out row (MenPrices) and "Se alle priser".
+ * Under the list: the body-area laser packages ("Laserpakker, overkrop") as a fold-out row
+ * (MenPrices) and "Se alle priser".
  * The page has no price section of its own: the prices are on the rows.
  */
 export function MenTreatments({

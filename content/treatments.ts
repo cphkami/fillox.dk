@@ -146,10 +146,14 @@ const WRINKLES = "rynkebehandling";
 
 /** Fillers: fillox.dk/fillers/* and /fillers/faq-om-fillers-behandling. */
 const fillerFaq = {
+  // Without the active substance (before: "tilsat lidocain, et bedøvelsesmiddel"): lidocaine is a
+  // prescription medicine's active substance, so the Botox rule applies (owner 2026-11-26: "ret det
+  // hele som du har skrevet til mig. alt fra punkt 1-9"; lægemiddelloven § 66,
+  // https://www.retsinformation.dk/eli/lta/2023/339). Same wording on every page. TODO: copy review
   pain: {
     question: "Gør det ondt?",
     answer:
-      "Vores fillers er tilsat lidocain, et bedøvelsesmiddel, der virker under behandlingen og i den første tid bagefter. Har du brug for det, kan du også få bedøvende creme før behandlingen.",
+      "Vores fillers er tilsat et lokalbedøvende middel, der virker under behandlingen og i den første tid bagefter. Har du brug for det, kan du også få bedøvende creme før behandlingen.",
   },
   /** "Hvornår kan jeg se resultatet?" with the page's own timing. */
   results: (finalResult: string): FaqItem => ({
@@ -209,8 +213,12 @@ const kaebelinjeAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
     { label: "Holdbarhed", value: "ca. 12–18 mdr" },
     { label: "Restitution", value: "Ingen reel" },
   ],
+  // No result promised (before: "… så ansigtstrækkene bliver skarpere … og huden i den nederste del af
+  // ansigtet strammes op med det samme"). Owner 2026-11-26: "ret det hele som du har skrevet til mig.
+  // alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2 ("Det vil normalt være sjældent, at man kan garantere
+  // samme resultat"), https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
   about: [
-    "Kæbelinjen definerer maskulinitet hos mænd og giver mere karakter hos kvinder. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene bliver skarpere, både forfra og i profil, og huden i den nederste del af ansigtet strammes op med det samme.",
+    "Kæbelinjen definerer maskulinitet hos mænd og giver mere karakter hos kvinder. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene kan blive skarpere, både forfra og i profil, og huden i den nederste del af ansigtet kan se strammere ud.",
     "Vi tilpasser behandlingen efter dine ønsker, hvad enten du ønsker mere maskuline eller feminine træk. Behandlingen kan også give en mere lige kæbelinje, hvis huden er blevet ujævn eller slap med alderen.",
   ],
   goodFor: ["En mere markant kæbelinje", "En skarpere profil", "En mere lige kæbelinje", "Slap hud langs kæben"],
@@ -231,7 +239,8 @@ const kaebelinjeAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
 const kaebelinjeAboutMen: typeof kaebelinjeAbout = {
   ...kaebelinjeAbout,
   about: [
-    "Kæbelinjen definerer maskulinitet. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene bliver skarpere, både forfra og i profil, og huden i den nederste del af ansigtet strammes op med det samme.",
+    // No result promised, as in `kaebelinjeAbout` above (owner 2026-11-26). TODO: copy review
+    "Kæbelinjen definerer maskulinitet. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene kan blive skarpere, både forfra og i profil, og huden i den nederste del af ansigtet kan se strammere ud.",
     "Vi tilpasser behandlingen efter dine ønsker. Behandlingen kan også give en mere lige kæbelinje, hvis huden er blevet ujævn eller slap med alderen.",
   ],
 };
@@ -243,8 +252,11 @@ const prfHarAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
     { label: "Holdbarhed", value: "ca. 6–12 mdr" },
     { label: "Restitution", value: "Ingen reel" },
   ],
+  // No result promised (before: "Det nærer hårsækkene, øger blodcirkulationen og styrker det hår, du
+  // har."). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ
+  // 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
   about: [
-    "Vi kombinerer PRF (platelet-rich fibrin) fra dit eget blod med mesoterapi, hvor næringsstoffer, vitaminer og mineraler sprøjtes direkte ind i hovedbunden. Det nærer hårsækkene, øger blodcirkulationen og styrker det hår, du har.",
+    "Vi kombinerer PRF (platelet-rich fibrin) fra dit eget blod med mesoterapi, hvor næringsstoffer, vitaminer og mineraler sprøjtes direkte ind i hovedbunden. Det kan nære hårsækkene, øge blodcirkulationen og styrke det hår, du har.",
     "Målet er både at stimulere ny hårvækst og at give håret mere glans og styrke. Behandlingen bruger kroppens egne ressourcer, kræver ingen kirurgi og tilpasses dine behov, og du kan gå direkte tilbage til hverdagen.",
   ],
   goodFor: ["Hårtab", "Tyndere hår", "Mere glans og styrke", "Både mænd og kvinder"],
@@ -261,11 +273,17 @@ const prfHarAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
   ],
 };
 
-/** Laser hårfjerning's last FAQ item; not on "Laser for mænd" (`laserAboutMen`). */
+/**
+ * Laser hårfjerning's last FAQ item; not on "Laser for mænd" (`laserAboutMen`). Before 2026-11-26:
+ * "Til mænd har vi også faste priser på kombinerede områder …". The packages are for everyone now,
+ * one price per combination (the owner 2026-11-26, "ret det med priser osv osv.. det ikke mening";
+ * ligestillingsloven § 2, https://www.retsinformation.dk/eli/lta/2025/5; content/prices.ts →
+ * laser-overkrop). TODO: copy review
+ */
 const laserForMenFaq: FaqItem = {
   question: "Kan mænd også få laser hårfjerning?",
   answer:
-    "Ja. Behandlingen tilbydes både til kvinder og mænd. Til mænd har vi også faste priser på kombinerede områder som ryg, skuldre og bryst.",
+    "Ja. Behandlingen tilbydes både til kvinder og mænd, og priserne er de samme for alle. Vi har også faste priser på kombinerede områder som ryg, skuldre og bryst.",
 };
 
 const laserAbout: Pick<Detail, "about" | "goodFor" | "faq"> = {
@@ -296,14 +314,22 @@ const laserAbout: Pick<Detail, "about" | "goodFor" | "faq"> = {
 
 /**
  * "Laser for mænd": the same text and FAQ without "Bikini og brasil" and without the question
- * whether men can have it. The list names the areas of the men's packages
- * (content/prices.ts → laser-maend) and the general list's "Armhuler, arme og ben". TODO: copy review
+ * whether men can have it. The list names the areas of the body-area packages
+ * (content/prices.ts → laser-overkrop, for everyone) and the general list's "Armhuler, arme og
+ * ben". TODO: copy review
  */
 const laserAboutMen: typeof laserAbout = {
   ...laserAbout,
   goodFor: ["Ryg og skuldre", "Bryst og mave", "Nakke og skæglinje", "Armhuler, arme og ben"],
   faq: laserAbout.faq?.filter((item) => item !== laserForMenFaq),
 };
+
+/**
+ * The body-area package card (content/prices.ts): the laser-for-maend page's price list, under the
+ * card's own title. Packages for everyone since 2026-11-26 (see the card), so the list is no
+ * longer called "Priser for mænd".
+ */
+const LASER_BODY_CARD = "laser-overkrop";
 
 const laserFacts = (price: number) => [
   { label: "Pris", value: from(price) },
@@ -368,15 +394,17 @@ export const treatments: Treatment[] = [
         row("Revanesse 0,5 ml", listPrice(FILLERS, "Lip filler · Revanesse 0,5 ml")),
         row("Revanesse 0,7 ml", listPrice(FILLERS, "Lip filler · Revanesse 0,7 ml")),
         row("Revanesse 1,0 ml", listPrice(FILLERS, "Lip filler · Revanesse 1,0 ml")),
-        row("Opløsning af filler (Hyalase)", listPrice(FILLERS, "Opløsning af filler (Hyalase)"), {
-          mobileLabel: "Opløsning af filler",
-        }),
+        // The price list's label without the product name (content/prices.ts; owner 2026-11-26), so
+        // no shorter mobile label is needed any more.
+        row("Opløsning af filler", listPrice(FILLERS, "Opløsning af filler")),
       ],
       faq: [
         {
           question: "Gør behandlingen ondt?",
+          // No active substance (before: "tilsat lidocain, et bedøvelsesmiddel"), as `fillerFaq.pain`
+          // (owner 2026-11-26). TODO: copy review
           answer:
-            "Læberne er følsomme, så de fleste mærker noget ubehag, men tåler det godt. Filleren er tilsat lidocain, et bedøvelsesmiddel, og du kan også få bedøvende creme før behandlingen.",
+            "Læberne er følsomme, så de fleste mærker noget ubehag, men tåler det godt. Filleren er tilsat et lokalbedøvende middel, og du kan også få bedøvende creme før behandlingen.",
         },
         {
           question: "Hvor længe holder resultatet?",
@@ -391,7 +419,11 @@ export const treatments: Treatment[] = [
         fillerFaq.aftercare,
         {
           question: "Kan filler opløses igen?",
-          answer: `Ja. Filler af hyaluronsyre kan opløses med Hyalase. Opløsning koster ${formatPrice(listPrice(FILLERS, "Opløsning af filler (Hyalase)"))} pr. område pr. gang.`,
+          // No product name (before: "… kan opløses med Hyalase. Opløsning koster …"): Hyalase is a
+          // prescription medicine (owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra
+          // punkt 1-9"; lægemiddelloven § 66, https://www.retsinformation.dk/eli/lta/2023/339). Also
+          // the FAQPage JSON-LD answer. TODO: copy review
+          answer: `Ja. Filler af hyaluronsyre kan opløses igen. Opløsning af filler koster ${formatPrice(listPrice(FILLERS, "Opløsning af filler"))} pr. område pr. gang.`,
         },
         {
           question: "Hvilken filler bruger I?",
@@ -409,8 +441,10 @@ export const treatments: Treatment[] = [
       bookingText: "Eller book en gratis konsultation, hvis du er i tvivl.",
       mobile: {
         lead: "Naturlig volumen og symmetri, formet efter din læbeform. Vi doserer konservativt, så du altid kan bygge på senere.",
+        // "kan give", as the desktop text (before: "Behandlingen giver …"; owner 2026-11-26, VEJ
+        // 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319). TODO: copy review
         about: [
-          "Lip filler er lavet af hyaluronsyre, et stof, der findes naturligt i huden. Behandlingen giver diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
+          "Lip filler er lavet af hyaluronsyre, et stof, der findes naturligt i huden. Behandlingen kan give diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
         ],
         pricesIntro: "Mange starter med 0,5 ml. Din behandler anbefaler mængden ved konsultationen.",
       },
@@ -421,9 +455,14 @@ export const treatments: Treatment[] = [
     name: "Kindben",
     categorySlug: "fillers",
     priceFrom: lowestListPrice("kindben"),
-    short: "Filler, der giver markerede kindben og genopretter tabt volumen.",
+    // No result promised (before: "Filler, der giver markerede kindben og genopretter …"; lead
+    // "… genopretter også tabt volumen og strammer huden op"; about "… fylden strammer huden op, så du
+    // fremstår slankere i ansigtet …"). Owner 2026-11-26: "ret det hele som du har skrevet til mig.
+    // alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319.
+    // TODO: copy review
+    short: "Filler, der kan give markerede kindben og genoprette tabt volumen.",
     detail: {
-      lead: "Markerede kindben giver en flot profil og løfter ansigtet. Filler i kindbenene genopretter også tabt volumen og strammer huden op.",
+      lead: "Markerede kindben kan give en flot profil og løfte ansigtet. Filler i kindbenene kan også genoprette tabt volumen og give en strammere hud.",
       heroImage: categoryImage("fillers"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("kindben")) },
@@ -432,7 +471,7 @@ export const treatments: Treatment[] = [
         { label: "Restitution", value: "Ingen reel" },
       ],
       about: [
-        "Med hyaluronsyre genskaber vi volumen og blødhed i ansigtet. Du ser effekten med det samme, og fylden strammer huden op, så du fremstår slankere i ansigtet og med en klarere karakter.",
+        "Med hyaluronsyre genskaber vi volumen og blødhed i ansigtet. Du ser effekten med det samme, og fylden kan stramme huden op, så du kan fremstå slankere i ansigtet og med en klarere karakter.",
         "Behandlingen passer både til dig, der har mistet volumen i kinderne med alderen, og til dig, der ønsker mere fylde og et konturet look. Skal du bruge mere end 1 ml, fx til kindben og kæbelinje, er ansigtskonturering med 4 ml ofte et godt valg.",
       ],
       goodFor: ["Tabt volumen i kinderne", "Mere markerede kindben", "Et slankere ansigt", "Opstramning af huden"],
@@ -455,9 +494,13 @@ export const treatments: Treatment[] = [
     name: "Kæbelinje",
     categorySlug: "fillers",
     priceFrom: lowestListPrice("kaebelinje"),
-    short: "Filler, der giver en tydeligere kæbelinje og en mere markant profil.",
+    // No result promised (before: "Filler, der giver …"; lead "Filler i kæbelinjen giver … og du
+    // fremstår slankere i ansigtet."). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt
+    // fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319.
+    // TODO: copy review
+    short: "Filler, der kan give en tydeligere kæbelinje og en mere markant profil.",
     detail: {
-      lead: "Filler i kæbelinjen giver en tydeligere overgang mellem hoved og hals og en mere markant profil, og du fremstår slankere i ansigtet.",
+      lead: "Filler i kæbelinjen kan give en tydeligere overgang mellem hoved og hals og en mere markant profil, så du kan fremstå slankere i ansigtet.",
       heroImage: categoryImage("fillers"),
       ...kaebelinjeAbout,
       ...chinResults,
@@ -475,11 +518,14 @@ export const treatments: Treatment[] = [
     name: "Tear trough",
     categorySlug: "fillers",
     priceFrom: lowestListPrice("tear-trough"),
-    short: "Filler under øjnene, der mindsker hulhed og mørke rande.",
+    // "kan" (before: "… der mindsker hulhed …"; lead "… der giver volumen, mindsker mørke rande og
+    // udglatter …"): owner 2026-11-26, "ret det hele som du har skrevet til mig. alt fra punkt 1-9";
+    // VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+    short: "Filler under øjnene, der kan mindske hulhed og mørke rande.",
     detail: {
       // Also the meta description. "En af de bedste ikke-kirurgiske løsninger på trætte øjne" is left
       // out: a superlative no source documents (no guarantees, no overstated claims). TODO: copy review
-      lead: "Filler under øjnene, der giver volumen, mindsker mørke rande og udglatter overgangen til kinden.",
+      lead: "Filler under øjnene, der kan give volumen, mindske mørke rande og udglatte overgangen til kinden.",
       heroImage: categoryImage("fillers"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("tear-trough")) },
@@ -512,7 +558,11 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("naesekorrektion"),
     short: "Næsekorrektion uden kirurgi med filler, udført af Dr. Tom.",
     detail: {
-      lead: "Næsekorrektion med filler, et ikke-kirurgisk næsejob, retter ujævnheder langs næseryggen og kan ændre formen på næsespidsen. Udføres af Dr. Tom.",
+      // Also the meta description. "kan rette", as the page's own about text ("Filler kan rette
+      // ujævnheder …"; before: "… retter ujævnheder langs næseryggen og kan ændre …"). Owner
+      // 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013
+      // pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+      lead: "Næsekorrektion med filler, et ikke-kirurgisk næsejob, kan rette ujævnheder langs næseryggen og ændre formen på næsespidsen. Udføres af Dr. Tom.",
       // Not the fillers category photo (sproejte: a blonde practitioner from Alberte's shoot preparing
       // a syringe), which would sit above "Din behandler: Dr. Tom", who performs the treatment: the
       // empty treatment room, no person. TODO: copy review (image choice)
@@ -525,7 +575,10 @@ export const treatments: Treatment[] = [
       ],
       about: [
         "Filler kan rette ujævnheder langs næseryggen, så næsen ser mindre og mere strømlinet ud. Den kan også bruges til at ændre formen på næsespidsen, så en bred næse ser smallere ud, eller en flad næse løftes.",
-        "Der skal kun en lille mængde filler til for at gøre en markant forskel, og vi stræber altid efter et naturligt og medicinsk sikkert resultat. Næsekorrektion med filler kan være et godt alternativ til en kirurgisk operation.",
+        // No result promised (before: "Der skal kun en lille mængde filler til for at gøre en markant
+        // forskel"). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9";
+        // VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+        "Ofte kan en lille mængde filler gøre en tydelig forskel, og vi stræber altid efter et naturligt og medicinsk sikkert resultat. Næsekorrektion med filler kan være et godt alternativ til en kirurgisk operation.",
       ],
       goodFor: ["Ujævnheder på næseryggen", "Formen på næsespidsen", "Et alternativ til kirurgi"],
       faq: [
@@ -537,8 +590,10 @@ export const treatments: Treatment[] = [
         fillerFaq.results("Det endelige resultat ses efter cirka 2 uger, når hævelsen har lagt sig."),
         {
           question: "Gør det ondt?",
+          // No active substance (before: "tilsat lidocain, et bedøvelsesmiddel"), as `fillerFaq.pain`
+          // (owner 2026-11-26). TODO: copy review
           answer:
-            "Vores fillers er tilsat lidocain, et bedøvelsesmiddel, der virker under behandlingen og i den første tid bagefter, så de fleste oplever ikke behandlingen som særlig smertefuld.",
+            "Vores fillers er tilsat et lokalbedøvende middel, der virker under behandlingen og i den første tid bagefter, så de fleste oplever ikke behandlingen som særlig smertefuld.",
         },
         fillerFaq.sideEffects,
         fillerFaq.products,
@@ -906,7 +961,12 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("skinbooster"),
     short: "Fugt, glød og forbedring af hudens kvalitet.",
     detail: {
-      lead: "Skinboosters med hyaluronsyre, der fugter, strammer slap hud op og forbedrer hudens kvalitet. Vi bruger Ejal 40 og Sunekos.",
+      // No result promised (before: lead "… der fugter, strammer slap hud op og forbedrer …"; about
+      // "Den strammer slap hud op, mindsker rynker og forbedrer …" and "Sunekos … er særligt god til …
+      // så resultatet ser naturligt ud"; "bruges særligt til" as in content/blog.ts). Owner 2026-11-26:
+      // "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2 and 12,
+      // https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+      lead: "Skinboosters med hyaluronsyre, der kan fugte, stramme slap hud op og forbedre hudens kvalitet. Vi bruger Ejal 40 og Sunekos.",
       heroImage: categoryImage("hudforbedring"),
       // Ejal 40: ca. 20 min, omtrent 12 mdr, 12–24 timer; Sunekos: ca. 30 min, cirka 6 mdr, ingen.
       facts: [
@@ -918,8 +978,8 @@ export const treatments: Treatment[] = [
       about: [
         // TODO: source — "40 mg" is not on fillox.dk/skinbooster/ejal-40 or /skinbooster, and no volume
         // is given (the blog leaves it out). Owner: source and volume, or drop "med 40 mg".
-        "Ejal 40 er en biorevitaliserende gel med 40 mg hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den strammer slap hud op, mindsker rynker og forbedrer hudtone og elasticitet.",
-        "Sunekos kombinerer hyaluronsyre og aminosyrer og er særligt god til svære områder som mørke rande og poser under øjnene, linjer på overlæben og hudkvaliteten på panden. Sunekos er ikke en filler, så resultatet ser naturligt ud.",
+        "Ejal 40 er en biorevitaliserende gel med 40 mg hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den kan stramme slap hud op, mindske rynker og forbedre hudtone og elasticitet.",
+        "Sunekos kombinerer hyaluronsyre og aminosyrer og bruges særligt til svære områder som mørke rande og poser under øjnene, linjer på overlæben og hudkvaliteten på panden. Sunekos er ikke en filler, og målet er et naturligt resultat.",
       ],
       goodFor: ["Slap hud og rynker", "Mørke rande og poser under øjnene", "Hudtone og elasticitet", "Fugt og spændstighed"],
       faq: [
@@ -956,7 +1016,14 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("profhilo"),
     short: "Hyaluronsyre, der stimulerer kollagen og elastin, til løs hud i ansigtet og på halsen.",
     detail: {
-      lead: "Profhilo er en ny type hyaluronsyre til løs hud i ansigtet og på halsen. Den stimulerer hudens eget kollagen og elastin for et naturligt resultat.",
+      // Claims that need documentation are left out (owner 2026-11-26: "ret det hele som du har
+      // skrevet til mig. alt fra punkt 1-9"; lov om markedsføring af sundhedsydelser § 2, stk. 4, VEJ
+      // 9319/2013 pkt. 6.2 and 12, https://www.retsinformation.dk/eli/retsinfo/2013/9319): "en ny type
+      // hyaluronsyre" (fillox.dk/skinbooster/profhilo, which itself names an award from 2016), "…, en
+      // effekt du ikke får med traditionelle fillers" (about) and "Resultatet ses med det samme" (FAQ;
+      // the live page: "Resultaterne … er øjeblikkelige", and also "du ofte kan se en klar forbedring
+      // allerede efter én behandling"). "en type hyaluronsyre" as in content/blog.ts. TODO: copy review
+      lead: "Profhilo er en type hyaluronsyre til løs hud i ansigtet og på halsen. Den stimulerer hudens eget kollagen og elastin for et naturligt resultat.",
       heroImage: categoryImage("hudforbedring"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("profhilo")) },
@@ -966,7 +1033,7 @@ export const treatments: Treatment[] = [
       ],
       about: [
         "Profhilo er fremstillet i Schweiz med en patenteret teknologi. Takket være termisk tværbinding er hyaluronsyren modstandsdygtig over for det enzym, der naturligt nedbryder den, så effekten holder længe.",
-        "Profhilo stimulerer produktionen af flere typer kollagen og elastin, en effekt du ikke får med traditionelle fillers. Vi sprøjter produktet ind i 5 punkter på hver side af ansigtet, 1 ml på hver side.",
+        "Profhilo stimulerer produktionen af flere typer kollagen og elastin. Vi sprøjter produktet ind i 5 punkter på hver side af ansigtet, 1 ml på hver side.",
       ],
       goodFor: ["Løs hud i ansigtet", "Løs hud på halsen", "Naturlige anti-age-resultater"],
       faq: [
@@ -978,7 +1045,7 @@ export const treatments: Treatment[] = [
         {
           question: "Hvornår kan jeg se resultatet?",
           answer:
-            "Resultatet ses med det samme og holder cirka 12 måneder. Effekten aftager gradvist over de sidste måneder.",
+            "Mange ser en effekt med det samme, og resultatet holder cirka 12 måneder. Effekten aftager gradvist over de sidste måneder.",
         },
         {
           question: "Gør det ondt?",
@@ -1001,9 +1068,18 @@ export const treatments: Treatment[] = [
     name: "Microneedling",
     categorySlug: "hudforbedring",
     priceFrom: lowestListPrice("microneedling"),
-    short: "Stimulerer hudens egen kollagen for jævnere tekstur og glød.",
+    // On /behandlinger and Alberte's offers (content/team.ts). "kan give", as the lead (before:
+    // "… egen kollagen for jævnere tekstur og glød."; "eget": kollagen is neuter, as in Profhilo's
+    // lead). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ
+    // 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+    short: "Stimulerer hudens eget kollagen og kan give jævnere tekstur og glød.",
     detail: {
-      lead: "Microneedling med Infini giver en sund hudkvalitet med naturlige ingredienser. Huden strammes op, fugtes og beroliges.",
+      // Also the meta description. No result promised (before: "… giver en sund hudkvalitet … Huden
+      // strammes op, fugtes og beroliges."; FAQ "Du ser en effekt med det samme, men den bedste effekt
+      // ses 1–2 uger senere."). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra
+      // punkt 1-9"; VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319.
+      // TODO: copy review
+      lead: "Microneedling med Infini kan give en sund hudkvalitet med naturlige ingredienser. Behandlingen kan stramme huden op, fugte og berolige den.",
       heroImage: categoryImage("hudforbedring"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("microneedling")) },
@@ -1025,7 +1101,7 @@ export const treatments: Treatment[] = [
         {
           question: "Hvornår kan jeg se resultatet?",
           answer:
-            "Du ser en effekt med det samme, men den bedste effekt ses 1–2 uger senere. Vi anbefaler mindst tre behandlinger for et langtidsholdbart resultat.",
+            "Mange ser en effekt med det samme, men den bedste effekt ses typisk 1–2 uger senere. Vi anbefaler mindst tre behandlinger for et langtidsholdbart resultat.",
         },
         {
           question: "Er der bivirkninger?",
@@ -1046,7 +1122,12 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("prf-hud"),
     short: "Kroppens egne vækstfaktorer til naturlig hudforbedring.",
     detail: {
-      lead: "PRF bruger kroppens egne ressourcer til at forny huden og øge kollagenproduktionen, for bedre tekstur, færre fine linjer og et friskere udseende.",
+      // No result promised (before: "…, for bedre tekstur, færre fine linjer og et friskere udseende."
+      // and "… og giver en naturlig hudforbedring …"). Owner 2026-11-26: "ret det hele som du har
+      // skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2,
+      // https://www.retsinformation.dk/eli/retsinfo/2013/9319. Two sentences (one sentence with
+      // "… og øge kollagenproduktionen og kan give …" read heavily). TODO: copy review
+      lead: "PRF bruger kroppens egne ressourcer til at forny huden og øge kollagenproduktionen. Det kan give bedre tekstur, færre fine linjer og et friskere udseende.",
       heroImage: categoryImage("hudforbedring"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("prf-hud")) },
@@ -1055,7 +1136,7 @@ export const treatments: Treatment[] = [
         { label: "Restitution", value: "Ingen reel" },
       ],
       about: [
-        "PRF (platelet-rich fibrin) er plasma fra dit eget blod. Det indeholder vækstfaktorer, der stimulerer hudens fornyelse, og giver en naturlig hudforbedring uden kunstige fyldstoffer.",
+        "PRF (platelet-rich fibrin) er plasma fra dit eget blod. Det indeholder vækstfaktorer, der stimulerer hudens fornyelse, og kan give en naturlig hudforbedring uden kunstige fyldstoffer.",
         "PRF bruges især mod fine linjer og rynker, dårlig hudtekstur, akne-ar og pigmentering. For den bedste hudkvalitet anbefaler vi tre behandlinger med en måneds mellemrum.",
       ],
       goodFor: ["Fine linjer og rynker", "Hudtekstur og store porer", "Akne-ar og pigmentering", "Tør eller solskadet hud"],
@@ -1079,7 +1160,12 @@ export const treatments: Treatment[] = [
     priceFrom: lowestListPrice("signatur-ansigtsbehandling"),
     short: "Peeling, maske og LED med Dr. Dennis Gross.",
     detail: {
-      lead: "Klinisk ansigtsbehandling med Dr. Dennis Gross: peeling, gel-maske og LED-lys for glød, bedre hudstruktur og fugt. Synlige resultater fra første gang.",
+      // No result promised (before: "Synlige resultater fra første gang." and the FAQ "Du ser resultater
+      // allerede efter første behandling: …"). Owner 2026-11-26: "ret det hele som du har skrevet til
+      // mig. alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2 ("Det vil normalt være sjældent, at man kan
+      // garantere samme resultat"), https://www.retsinformation.dk/eli/retsinfo/2013/9319.
+      // TODO: copy review
+      lead: "Klinisk ansigtsbehandling med Dr. Dennis Gross: peeling, gel-maske og LED-lys for glød, bedre hudstruktur og fugt. Mange oplever en synlig forskel efter første behandling.",
       heroImage: categoryImage("hudforbedring"),
       // fillox.dk/hudforbedring/infini-microneedling-copy: ca. 60 min, restitution 1–3 dage, no
       // stated longevity. Its FAQ is the microneedling page's (pen, numbing cream), so it is not used.
@@ -1097,7 +1183,7 @@ export const treatments: Treatment[] = [
       faq: [
         {
           question: "Hvornår kan jeg se resultatet?",
-          answer: "Du ser resultater allerede efter første behandling: mere glød, en jævnere hud og intens fugt.",
+          answer: "Mange oplever en forskel allerede efter første behandling: mere glød, en jævnere hud og intens fugt.",
         },
         {
           question: "Kan jeg fortsætte behandlingen derhjemme?",
@@ -1129,7 +1215,10 @@ export const treatments: Treatment[] = [
     name: "PRF hår",
     categorySlug: "hartab",
     priceFrom: lowestListPrice("prf-har"),
-    short: "PRF fra dit eget blod og mesoterapi i hovedbunden, der styrker håret.",
+    // On /behandlinger and in the team's offers. "kan", as `prfHarAbout` (before: "…, der styrker
+    // håret."). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ
+    // 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+    short: "PRF fra dit eget blod og mesoterapi i hovedbunden, der kan styrke håret.",
     detail: {
       lead: "PRF fra dit eget blodplasma kombineret med mesoterapi i hovedbunden. En skræddersyet behandling, der skal styrke og genoplive dit hår.",
       heroImage: categoryImage("hartab"),
@@ -1150,9 +1239,12 @@ export const treatments: Treatment[] = [
     name: "Kæbelinje for mænd",
     categorySlug: "for-maend",
     priceFrom: lowestListPrice("kaebelinje"),
-    short: "Filler, der giver en mere markant kæbelinje og en skarpere profil.",
+    // "kan", as on Kæbelinje (before: "Filler, der giver …"; lead "Filler giver en tydeligere …").
+    // Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013
+    // pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+    short: "Filler, der kan give en mere markant kæbelinje og en skarpere profil.",
     detail: {
-      lead: "Kæbelinjen definerer maskulinitet. Filler giver en tydeligere overgang mellem hoved og hals, en mere markant profil og et slankere ansigt.",
+      lead: "Kæbelinjen definerer maskulinitet. Filler kan give en tydeligere overgang mellem hoved og hals, en mere markant profil og et slankere ansigt.",
       heroImage: categoryImage("for-maend"),
       ...kaebelinjeAboutMen,
     },
@@ -1184,9 +1276,11 @@ export const treatments: Treatment[] = [
       heroImage: photos.behandlingsrum,
       facts: laserFacts(lowestListPrice("laser-harfjerning")),
       ...laserAboutMen,
-      pricesTitle: "Priser for mænd",
-      pricesIntro: `Faste priser på kombinerede områder. Enkelte områder koster ${from(lowestListPrice("laser-harfjerning"))} og står på prislisten.`,
-      prices: cardRows("laser-maend"),
+      // Was "Priser for mænd" / "Faste priser på kombinerede områder." (2026-11-26: the packages are
+      // for everyone, see LASER_BODY_CARD). TODO: copy review ("de samme for alle")
+      pricesTitle: priceCards.find((c) => c.id === LASER_BODY_CARD)?.title,
+      pricesIntro: `Faste priser på kombinerede områder, de samme for alle. Enkelte områder koster ${from(lowestListPrice("laser-harfjerning"))} og står på prislisten.`,
+      prices: cardRows(LASER_BODY_CARD),
     },
   },
 ];

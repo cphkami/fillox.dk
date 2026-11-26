@@ -22,9 +22,11 @@ import { treatmentPage } from "./treatments";
  * gender and offers no choice of practitioner; the "Dine behandlere" section is about care.
  *
  * Prices are read from the price list through the treatments (Treatment.priceFrom) and the
- * "Laserpakker for mænd" card (content/prices.ts → id "laser-maend"), never typed here. The
+ * "Laserpakker, overkrop" card (content/prices.ts → id "laser-overkrop"), never typed here. The
  * prices sit on the treatment rows (with the price list's note, e.g. "op til 1 ml"); the laser
- * packages fold out under the list, so one treatment does not outweigh the other three.
+ * packages fold out under the list, so one treatment does not outweigh the other three. The
+ * packages are the same for everyone (since 2026-11-26, see the card): the page shows them, but
+ * never calls them prices for men.
  *
  * Tone (the owner, round 5: "more personal, maybe some humour; men want laser hair removal"):
  * warm, direct, "du", short sentences, a wink at most a few times (the hero, the laser row, the
@@ -52,7 +54,7 @@ import { treatmentPage } from "./treatments";
 export const menCategorySlug = "for-maend";
 
 /** Id of the price card shown on the page (content/prices.ts). */
-const LASER_CARD = "laser-maend";
+const LASER_CARD = "laser-overkrop";
 
 /** A treatment's "fra" amount. Throws when the treatment or its price is gone. */
 function priceFrom(slug: string): number {
@@ -157,7 +159,11 @@ export const menPage = {
       {
         slug: "kaebelinje-for-maend",
         name: "Kæbelinje",
-        text: "Filler, der giver en skarpere kæbelinje og en mere markant profil. Formet efter dit ansigt, ikke efter en skabelon.",
+        // "kan", as on the Kæbelinje for mænd page (before: "Filler, der giver …"). Owner 2026-11-26:
+        // "ret det hele som du har skrevet til mig. alt fra punkt 1-9" (point 5, result promises);
+        // VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319.
+        // TODO: copy review
+        text: "Filler, der kan give en skarpere kæbelinje og en mere markant profil. Formet efter dit ansigt, ikke efter en skabelon.",
       },
       {
         slug: "rynkebehandling",
@@ -169,9 +175,9 @@ export const menPage = {
       },
     ] as { slug: string; name: string; text: string; priceNote?: string }[],
     /**
-     * The real men's price list, "Laserpakker for mænd" (live: the "Mænd" list under laser),
-     * folded out under the list. Same facts as the laser-for-maend page's price intro, plus the
-     * course length.
+     * The body-area laser packages, "Laserpakker, overkrop" (live: the "Mænd" list under laser;
+     * for everyone since 2026-11-26, content/prices.ts), folded out under the list. Same facts as
+     * the laser-for-maend page's price intro, plus the course length.
      */
     laserPackages: {
       id: "priser",
@@ -276,7 +282,10 @@ export const menPage = {
       },
       {
         question: "Hvad koster det?",
-        answer: `Laser hårfjerning koster ${from(priceFrom("laser-for-maend"))} pr. område, og et forløb er typisk 6–8 behandlinger. Til mænd er der også faste pakkepriser på kombinerede områder som ryg, skuldre og bryst. PRF mod hårtab koster ${from(priceFrom("hartab-for-maend"))} for én behandling og gives typisk som en kur over flere behandlinger. Kæbelinje koster ${formatPrice(priceFrom("kaebelinje-for-maend"))} for op til 1 ml, men ofte skal der mere filler til, og 3–8 ml kan være nødvendigt. Rynkebehandling koster ${from(priceFrom("rynkebehandling"))} pr. område. Ved konsultationen får du den endelige pris, også på et helt forløb.`,
+        // "Der er også faste pakkepriser …" was "Til mænd er der også …" before 2026-11-26: the
+        // packages are for everyone (the owner, "ret det med priser osv osv.. det ikke mening";
+        // ligestillingsloven § 2, https://www.retsinformation.dk/eli/lta/2025/5). TODO: copy review
+        answer: `Laser hårfjerning koster ${from(priceFrom("laser-for-maend"))} pr. område, og et forløb er typisk 6–8 behandlinger. Der er også faste pakkepriser på kombinerede områder som ryg, skuldre og bryst. PRF mod hårtab koster ${from(priceFrom("hartab-for-maend"))} for én behandling og gives typisk som en kur over flere behandlinger. Kæbelinje koster ${formatPrice(priceFrom("kaebelinje-for-maend"))} for op til 1 ml, men ofte skal der mere filler til, og 3–8 ml kan være nødvendigt. Rynkebehandling koster ${from(priceFrom("rynkebehandling"))} pr. område. Ved konsultationen får du den endelige pris, også på et helt forløb.`,
       },
     ] satisfies FaqItem[],
   },

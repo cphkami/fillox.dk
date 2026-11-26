@@ -11,8 +11,8 @@ type ResponsiveProps = {
  * the shared `ResponsiveText` (components/ui), with two extras for the blog copy.
  *
  * - Same text: rendered once.
- * - Mobile text = desktop text with one passage left out ("Få tips og tilbud" /
- *   "Få tips og tilbud i din indbakke"): the shared words are rendered once and only the
+ * - Mobile text = desktop text with one passage left out ("Få tips og nyheder" /
+ *   "Få tips og nyheder i din indbakke"): the shared words are rendered once and only the
  *   extra passage is hidden below 768px, so the DOM holds the desktop text exactly once.
  * - Otherwise (an editorial rewrite): both versions are rendered and the hidden one is
  *   display:none (assistive technology reads only the visible one). The mobile copy is

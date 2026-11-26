@@ -50,9 +50,10 @@
  *     tel: links pass), and a reading time that matches its text (≈ 200
  *     words a minute); "Alle artikler om …" links on treatment pages open a chip that /blog shows;
  *     no filter chip and no published post names a prescription medicine (Botox, its active
- *     substance or another brand of it) in its slug, title, excerpts, category, kind, tags, image,
- *     headings, booking card or links, and no published post shows a booking card (with its "fra"
- *     price) for a page in content/reviews.ts → treatmentsWithoutReviews (the rynkebehandling pages).
+ *     substance or another brand of it; hyaluronidase / Hyalase; lidocaine / Xylocain) in its slug,
+ *     title, excerpts, category, kind, tags, image, headings, booking card or links, and no published
+ *     post shows a booking card (with its "fra" price) for a page in content/reviews.ts →
+ *     treatmentsWithoutReviews (the rynkebehandling pages).
  * 15. security headers: netlify.toml's [[headers]] for "/*" (files the CDN serves) lists exactly
  *     the names and values of config/securityHeaders.ts, and no other [[headers]] block sets one of
  *     them; next.config.ts → headers() (evaluated) returns exactly one rule on "/:path*" with exactly
@@ -72,6 +73,13 @@
  *     names a clinic outside their clinicSlugs, in any case or spacing ("city 2") or by an alias
  *     ("Frb", "Taastrup"; reviews are verbatim and not checked); a profile with clinics has the
  *     fact clinicShortList(clinicSlugs) ("Arbejder i").
+ * 18. the other prescription medicines of rule 14 (hyaluronidase / Hyalase, which dissolves filler;
+ *     lidocaine / Xylocain, the anaesthetic in fillers) are named in no text a visitor reads: every
+ *     row of the price list (labels, notes), every text of content/treatments.ts (FAQ answers
+ *     included), of the team (content/team.ts: cards, bios, offers) and of every page's copy
+ *     (each export of content/pages/*.ts), and every text of a published post, its body included.
+ *     Botox is not checked here: the rynkebehandling hub keeps the agency's FAQ "Hvad er forskellen
+ *     på Botox og filler?" (an open legal question, README).
  *
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
@@ -497,6 +505,11 @@ for (const slug of treatmentsWithoutReviews) {
   }
 }
 
+// Prescription medicines other than Botox that the site never names (owner 2026-11-26, the same rule as
+// for Botox): hyaluronidase, which dissolves filler (Hyalase), and the local anaesthetic lidocaine
+// (Xylocain). Rule 14 (posts) and rule 18 (price list, treatment pages, post bodies).
+const OTHER_PRESCRIPTION_NAME = /hyalase|hyaluronidase|lidocain|lidokain|xylocain/i;
+
 // 14. Blog: posts on hold are linked from nowhere; published posts are signed by the team, consistent and
 //     name no prescription medicine.
 const blog = await importSite("content/blog.ts");
@@ -511,9 +524,12 @@ const blog = await importSite("content/blog.ts");
   const SLUG = /^[a-z0-9-]+$/;
   const WORDS_PER_MINUTE = 200;
   // Botox is a prescription medicine: never advertised to the public, also not on the clinic's own
-  // site (lægemiddelloven § 66; owner 2026-11-25). The brands of botulinum toxin and its name.
-  const PRESCRIPTION_NAME =
-    /botox|botulin|vistabel|bocouture|xeomin|azzalure|dysport|alluzience|letybo|nuceiva|jeuveau|relfydess|daxxify/i;
+  // site (lægemiddelloven § 66; owner 2026-11-25). The brands of botulinum toxin and its name, and the
+  // other prescription medicines above (owner 2026-11-26).
+  const PRESCRIPTION_NAME = new RegExp(
+    `botox|botulin|vistabel|bocouture|xeomin|azzalure|dysport|alluzience|letybo|nuceiva|jeuveau|relfydess|daxxify|${OTHER_PRESCRIPTION_NAME.source}`,
+    "i",
+  );
   /** The pages about a prescription medicine (no reviews, no price): no booking card points there. */
   const prescriptionPages = new Set(treatmentsWithoutReviews);
   for (const filter of allBlogFilters) {
@@ -908,6 +924,46 @@ const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config
     const { heading, mobileTitle, text, mobileText, quote } = block;
     const member = rosterBySlug.get(block.member.slug) ?? block.member;
     checkMentions(member, [heading, mobileTitle, text, mobileText, quote].filter(Boolean), `/behandlinger/${treatment.slug} "Din behandler"`);
+  }
+}
+
+// 18. Hyaluronidase and lidocaine are named nowhere a visitor reads: price list, treatment pages, posts,
+//     the team's cards and profiles, and every page's copy (content/pages/*.ts).
+{
+  const { priceCards } = await importSite("content/prices.ts");
+  const pageDir = join(root, "content", "pages");
+  const pageModules = await Promise.all(
+    readdirSync(pageDir)
+      .filter((file) => file.endsWith(".ts"))
+      .sort()
+      .map(async (file) => [`content/pages/${file}`, await importSite(`content/pages/${file}`)]),
+  );
+  /** Every string in `value`, with the path to it ("detail.faq.4.answer"); functions are skipped. */
+  const textsOf = (value, path = "") => {
+    if (typeof value === "string") return [[path, value]];
+    if (Array.isArray(value)) return value.flatMap((v, i) => textsOf(v, path ? `${path}.${i}` : String(i)));
+    if (value && typeof value === "object") {
+      return Object.entries(value).flatMap(([k, v]) => textsOf(v, path ? `${path}.${k}` : k));
+    }
+    return [];
+  };
+  const sources = [
+    ...priceCards.map((card) => [`content/prices.ts "${card.id}"`, card.rows]),
+    ...treatments.map((treatment) => [`content/treatments.ts "${treatment.slug}"`, treatment]),
+    ...blog.posts.map((post) => [`content/blog.ts "${post.slug}"`, post]),
+    ...teamRoster.map((member) => [`content/team.ts "${member.slug}"`, member]),
+    ...pageModules.flatMap(([file, mod]) => Object.entries(mod).map(([name, value]) => [`${file} ${name}`, value])),
+  ];
+  for (const [where, value] of sources) {
+    for (const [path, text] of textsOf(value)) {
+      const name = OTHER_PRESCRIPTION_NAME.exec(text)?.[0];
+      if (name) {
+        errors.push(
+          `${where} ${path}: names a prescription medicine ("${name}"); describe it without the name ` +
+            `(e.g. "Opløsning af filler", "et lokalbedøvende middel")`,
+        );
+      }
+    }
   }
 }
 

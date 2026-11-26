@@ -88,7 +88,10 @@ scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes
                                the Trustpilot numbers (config/site.ts) are > 60 days old; the blog
                                (posts on hold linked from nowhere, published posts signed by the team,
                                their links, filters, related posts and reading times, no
-                               prescription-medicine name, no price card on wrinkle posts); security
+                               prescription-medicine name, no price card on wrinkle posts); no
+                               hyaluronidase / lidocaine name anywhere a visitor reads (price list,
+                               treatments, team, every content/pages module, post bodies; rule 18,
+                               see "Prescription medicine"); security
                                headers (netlify.toml = config/securityHeaders.ts, the CSP allows the
                                booking provider + GTM); the team (no photo → no profile page; a
                                profile page → photo, share image, face row) and where practitioners
@@ -121,20 +124,20 @@ public/images/                 fillox/ (the clinic's mood photos), resultater/ (
 | `/` | `6a` / `mf` |
 | (header mega menu, mobile menu) | `mega-menu-v2.webp` (replaces `6menu`) / `mm1`, `mm2`, `mm3` |
 | (header "Priser" dropdown) | no design: dropdown like "Find klinik", built from `content/prices.ts` (nav item kind `"prices"`); a plain link in the mobile menu |
-| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo is the clinic's group photo (four practitioners, unnamed), with a desktop crop in content (`hero.imagePositionDesktop`, 50% 30% from 1024px); the doctor section shows `doctor.image` (`DoctorSection` → `OwnPhoto`): Dr. Tom's team photo uncropped at full height (head to hands, the plant, the panelled wall), where his team card further down is a head-and-shoulders close-up (it is the only photo of him, 2026-11-25). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
+| `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`, except "rynkebehandling" for "botox" in the Academy paragraph, 2026-11-26): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo is the clinic's group photo (four practitioners, unnamed), with a desktop crop in content (`hero.imagePositionDesktop`, 50% 30% from 1024px); the doctor section shows `doctor.image` (`DoctorSection` → `OwnPhoto`): Dr. Tom's team photo uncropped at full height (head to hands, the plant, the panelled wall), where his team card further down is a head-and-shoulders close-up (it is the only photo of him, 2026-11-25). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). Anette's palette: the name (H1) takes `text-emphasis` (plum); the closing "Book tid hos …" band (the design's powder) is the Lys Rosa `band`, because a beige panel reads as one block with the Sandbeige footer right under it |
-| `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged) |
+| `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged). Laser has three cards: single areas, "Laserpakker, overkrop" (`laser-overkrop`, chip "Laser overkrop": the live "Mænd" list, for everyone since 2026-11-26) and "Laserpakker"; each area combination has one price, and no card or row ties a price to gender (owner 2026-11-26; ligestillingsloven § 2). The package rows link to laser hårfjerning |
 | `/behandlinger` | overview built from existing components (no dedicated design) |
 | `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row). The design's before/after section (`ResultsSection`, "Før og efter") shows the clinic's own pairs on Kæbelinje only (see "Photos" → "Before/after"); the design's lip filler pairs were one stock photo with invented captions and are gone |
 | `/behandlinger/rynkebehandling` | no design: a long-form page (`detail.sections`, see "Long-form treatment pages") with the owner's agency text, verbatim. Replaces the Botox page: `/behandlinger/botox`, `/behandlinger/botox-for-maend` and the live `/rynkebehandling` redirect here |
 | `/behandlinger/andre-behandlingsmuligheder` | no design: long-form page under the hub (breadcrumb via `detail.parentSlug`, compact H1). Replaces the live `/ovrige-botox-behandlinger` and the lip flip, gummy smile, hyperhidrose and Traptox pages, which redirect here (the first three to their sections `#lip-flip`, `#gummy-smile`, `#svedtendens`; Traptox has no section) |
-| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with offwhite text, Sandbeige accents, offwhite pills (sand on hover) and an offwhite focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
+| `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with offwhite text, Sandbeige accents, offwhite pills (sand on hover) and an offwhite focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Prices sit on the treatment rows; the laser packages fold out under the list (`MenPrices`, a native `<details>`: the "Laserpakker, overkrop" card from `content/prices.ts`, the same prices for everyone, never called prices for men). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
 | `/ny-hos-fillox` | no design: "Ny hos Fillox?", the guide for first-time visitors (`routes.newHere`; see "Ny hos Fillox?") |
 | `/klinikker` | `6kl` / `mk` |
-| `/kontakt` | `6ko` / `mc` |
+| `/kontakt` | `6ko` / `mc`. The form links to the privacy policy's "14. Kontaktformular" (`/privatlivspolitik#kontaktformular`, `content/pages/legal.ts` → `privacyContactFormAnchor`): inside the consent label below 768px ("… som beskrevet i privatlivspolitikken"), and a `text-fine` line above the button from 768px while `consent.showOnDesktop` is false (copy `content/pages/contact.ts` → `form.consent.link` / `form.privacy`; links in the text pages' style, one unbroken line, an invisible 15px hit area above and below) |
 | `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` (see "Blog"). A post without its written article (`content/blog.ts` → `hasArticleBody`) gets an excerpt page (noindex, not in the sitemap) and shows no reading time anywhere: article header, blog cards, "Læs også" and the treatment pages' article cards (`components/blog/postView.ts` → `readingTime`, `shortReadingTime`) |
 | `/booking` | no design: intro band + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
-| `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style |
+| `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style. The legal texts (`content/pages/legal.ts`) come from the live fillox.dk but are no longer verbatim (owner 2026-11-26): the terms are corrected (language; business terms unchanged). Withdrawal: gift cards and subscriptions bought online, by phone or otherwise outside the clinics get the statutory 14 days (forbrugeraftaleloven §§ 18–20, 22, 25: no reason needed, the used part is paid for, the rest refunded within 14 days); clinic purchases keep the live 14-day promise as Fillox's own term ("medmindre du har taget gavekortet i brug"). The privacy policy has the new sections 12 (newsletter), 13 (cookies, `content/consent.ts`) and 14 (contact form; its art. 9 basis for health information in the message is an open launch blocker, README → "Helbredsoplysninger i formularen") |
 
 ## The owner's agency texts (2026-10)
 
@@ -143,7 +146,11 @@ texts are used **verbatim** (Danish); the only edits are splitting them into the
 turning the author's `[button placeholders]` into links / buttons, and typography (quotes, dashes,
 a no-break space before " – ", an invisible soft hyphen). Copy the site had to add (meta
 descriptions, accessible names, alt texts, link labels) is marked `// TODO: copy review`. Each
-content file's header names its source document and lists every deviation.
+content file's header names its source document and lists every deviation. Changed with the
+owner's approval of 2026-11-26 (pre-launch audit): "botox" → "rynkebehandling" in the Om os
+Academy paragraph, and on Ny hos Fillox the skin-tone card's "lys- og laserbehandling" → "PRF" and
+the light-and-laser card → a laser hair removal card (Fillox Danmark has only a diode laser for
+hair removal).
 
 | Page | Source | Content |
 |---|---|---|
@@ -167,17 +174,26 @@ Botox (botulinumtoksin) is a prescription medicine and must not be advertised to
   hub — the FAQ question "Hvad er forskellen på Botox og filler?" (a visible h3 and the FAQPage
   JSON-LD question name) and its answer, the FAQ answer "Ved kosmetisk behandling med
   botulinumtoksin …" and the "konsultation" section's paragraph "Hvis der er tale om en
-  behandling med botulinumtoksin …" — and one sentence in the Om os Academy paragraph. The FAQ
-  heading and its JSON-LD are an open owner / legal question (README → "Juridisk gennemlæsning").
+  behandling med botulinumtoksin …". The Om os Academy paragraph says "rynkebehandling" since
+  2026-11-26 (owner's approval). The FAQ heading and its JSON-LD are an open owner / legal question
+  (README → "Juridisk gennemlæsning").
+- **Other prescription medicines** (owner 2026-11-26, the same rule): hyaluronidase, which
+  dissolves filler (brand Hyalase), and the local anaesthetic in fillers (lidocaine) are never
+  named. The price row is "Opløsning af filler" (looked up by that label in `content/treatments.ts`,
+  `content/blog.ts` and `content/pages/treatments.ts` → `prices.groups`), the texts say "kan
+  opløses igen" and "tilsat et lokalbedøvende middel". check:market rule 14 rejects these names in
+  what a published post shows, and rule 18 in every price row, every treatment text (FAQs
+  included), the team's texts, every export of `content/pages/*.ts` and every published post's
+  body.
 - **Changed for this (2026-10, each `// TODO: copy review`)**: the price card's eyebrow ("MIMISKE
   RYNKER M.M.", the hub's term; "RYNKEBEHANDLING" would repeat the card title next to it) and
   /priser's mobile chip ("Rynkebehandling") in `content/prices.ts` (the header "Priser" dropdown shows
   the eyebrow on every page); the /priser meta description; `content/layout.ts` → `meta.description` (the
   default description and the Organization JSON-LD); the mega menu's "For mænd" note; the
   men's page; the home page's results caption (the bestseller #01 already said "Rynkebehandling").
-- **Unchanged on purpose**: every price-list row label and amount (the area rows, the area
-  packages, "Lægekonsultation før første botox" in the consultation card), the verbatim agency
-  sentences above.
+- **Unchanged on purpose**: every price-list row label and amount on the Rynkebehandling card (the
+  area rows, the area packages), the verbatim agency sentences above. The consultation card's row
+  is "Lægekonsultation før første rynkebehandling" since 2026-11-26 (live: "… før første botox").
 - **Rynkebehandling blog posts** (owner, 2026-11-25): the three former Botox posts were rewritten
   about the treatment and published (`rynkebehandling-for-foerste-gang`,
   `hvornaar-giver-rynkebehandling-mening`, `de-foerste-24-timer-efter-rynkebehandling`; category
@@ -529,7 +545,8 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   columns from a 42rem rows panel) or above them; "Se alle priser →" to the /priser card the rows
   come from. Copy: `content/pages/treatments.ts` → `reviews.score`, `prices.note`.
   Rules (fix round): the big "fra" price only when a row has that amount (Laser for mænd lists
-  combined areas from 1.000 kr, so it shows none); the note is left out when the intro mentions
+  the "Laserpakker, overkrop" card under the card's own title, combined areas from 1.000 kr, the
+  same for everyone, so it shows none); the note is left out when the intro mentions
   kontrol or the list has the free konsultation / kontrol rows, which fallback lists show full
   width under the rows; "Book tid" in the card from 768px (below, the book bar). Row groups with a
   small heading (`prices.groups`: lip filler's "Andre ydelser"; the Botox page's groups went with
@@ -553,7 +570,8 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
 - **Offers** (`profile.offers`, "Det tilbyder … dig") — what each practitioner is documented to
   perform (sources in the team.ts header): Dr. Tom his specialty on /om-os (with `offers.note`, the doctor's
   specialist surcharge, under the cards at every width: his booking band, which says it too, is
-  hidden below 768px); Annika and Mike what
+  hidden below 768px; `DOCTOR_SURCHARGE` leaves out næsekorrektion, whose price-list row is
+  already the price with him, owner 2026-11-26); Annika and Mike what
   their reviews name; Alberte her profile's skin treatments (laser, microneedling, skinbooster,
   ansigtsbehandling, PRF hud; kept on the owner's answer, 2026-11-25: "ved ikke tjek hvad vi har
   skrevet tidligere, nok det hele"), then lip filler and "Fillers i ansigtet" from her own
@@ -784,11 +802,17 @@ one link to the profile in a new tab, a `footer-card` pill ≥ 44px, a full-widt
   `content/layout.ts` → `newsletterThanks`; `check:market` rule 5 checks the forward), so the address
   never lands in the URL.
 - Consent: no checkbox (nothing pre-ticked); the visitor's own signup after the text that says what
-  they get ("tilbud, nyheder og tips om vores behandlinger"), and the line under the field (same
-  wording on /blog) linking to the privacy policy's newsletter section (`routes.privacyNewsletter`,
-  `content/pages/legal.ts` → "12. Nyhedsbrev": purpose, legal basis, retention, processors,
-  unsubscribing; pending the owner's legal review). Newsletter offers must never promote Botox or
-  other prescription medicines.
+  they get ("Få nyheder og gode råd om vores behandlinger på e-mail."; /blog: "nye artikler og gode
+  råd om vores behandlinger"), and the line under the field (same wording on /blog) linking to the
+  privacy policy's newsletter section (`routes.privacyNewsletter`, `content/pages/legal.ts` → "12.
+  Nyhedsbrev": purpose, legal basis, retention, processors and the transfer basis for Netlify,
+  unsubscribing; pending the owner's legal review).
+- **What the newsletter sends** (owner 2026-11-26): news, articles and advice only. No offers, no
+  time-limited discounts, gifts or competitions on treatments (VEJ 9319/2013 pkt. 5.1), and never
+  rynkebehandling or another prescription medicine (lægemiddelloven § 66). The consent covers what
+  the signup text describes (markedsføringsloven § 10): before a newsletter ever carries offers,
+  change the footer text (`content/layout.ts` → `footer.newsletter`, also the confirmation), the
+  /blog band (`content/pages/blog.ts` → `newsletter`) and section 12 together.
 - The white field has a 1px border ≥ 3:1 against its surface (footer-accent 90% → 3.8:1, band-accent
   85% → 4.2:1).
 - /blog: its band sits right above the footer, so it carries `data-newsletter-band` and the footer

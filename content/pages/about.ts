@@ -91,7 +91,12 @@ export const aboutPage = {
     statement:
       "Et godt resultat kræver den rette behandling. Men endnu vigtigere er behandlerens kompetence til at vælge og udføre den korrekt.",
     paragraphs: [
-      "Det er let at finde en klinik, der tilbyder botox, filler, laser eller hudforbedrende behandlinger. Men det kræver erfaring og faglig forståelse at vide, hvilken behandling der er den rigtige\u00A0– og hvornår en anden løsning vil give et bedre resultat.",
+      // The source's sentence with "rynkebehandling" in place of "botox", the rest verbatim: the
+      // owner's Botox rule (2026-11-25: no prescription-medicine name in visible copy, also on the
+      // clinic's own site) and their answer of 2026-11-26 ("ret det hele som du har skrevet til mig.
+      // alt fra punkt 1-9"); lægemiddelloven § 66, https://www.retsinformation.dk/eli/lta/2023/339.
+      // TODO: copy review
+      "Det er let at finde en klinik, der tilbyder rynkebehandling, filler, laser eller hudforbedrende behandlinger. Men det kræver erfaring og faglig forståelse at vide, hvilken behandling der er den rigtige\u00A0– og hvornår en anden løsning vil give et bedre resultat.",
       "Derfor investerer vi målrettet i vores behandleres kompetencer.",
       [
         "Gennem vores eget uddannelsesprogram, ",

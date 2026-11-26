@@ -151,8 +151,12 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   sender videre til `/nyhedsbrev/tak`. Filerne i `public/` indeholder ingen tekst.
 - Nyhedsbrevet: privatlivspolitikken har et afsnit om det (`content/pages/legal.ts`, "12.
   Nyhedsbrev"), som begge tilmeldinger linker til. Skal godkendes af Fillox inden lancering (se
-  TODO'en dér: mailværktøj, databehandleraftaler, overførsel til USA). Tilbud i nyhedsbrevet må
-  aldrig reklamere for Botox eller andre receptpligtige lægemidler.
+  TODO'en dér: mailværktøjet og databehandleraftalen med det, og hvor længe beviset for samtykket
+  gemmes; overførslen til USA via Netlify står i afsnittet siden 26/11-2026). Nyhedsbrevet sender
+  kun nyheder, artikler og gode råd, ingen tilbud, og aldrig reklame for rynkebehandling eller
+  andre receptpligtige lægemidler (se "'Tilbud' i nyhedsbrevet").
+- Kontaktformularen: afsnittet "14. Kontaktformular" i privatlivspolitikken, som formularen linker
+  til (se "Privatlivspolitikken og kontaktformularen").
 - Spam: honeypot-feltet `bot-field`.
 - Notifikationer (e-mail ved ny besked) sættes op i Netlify under **Forms → Form notifications**.
 
@@ -227,7 +231,8 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   - [ ] `content/pages/treatments.ts`: fallback-tekster, FAQ'er, oversigtssiden `/behandlinger`
   - [ ] `content/pages/practitioner.ts`: behandlersider (tekst i booking-båndet pr. behandler)
   - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande — og **beslut, om desktop
-        også skal have samtykke-feltet** (kun i mobildesignet). E-mail-kortet siger nu "Svar inden
+        også skal have samtykke-feltet** (kun i mobildesignet; juristen, se "Privatlivspolitikken og
+        kontaktformularen": helbredsoplysninger kræver udtrykkeligt samtykke). E-mail-kortet siger nu "Svar inden
         for én hverdag" (designet 6ko: "Svar inden for 24 timer") ligesom mobilintroen og
         takkesiden, så sitet kun giver ét løfte (25/11-2026): **det er jeres løfte om svartid.**
         Foretrækker I 24 timer, ændres det alle tre steder.
@@ -238,7 +243,20 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   - [ ] `content/consent.ts`: cookiebanneret og afsnittet "13. Cookies" i privatlivspolitikken
         (nye tekster, se "Cookiebanner og måling" nedenfor)
   - [ ] `content/pages/jobs.ts` og `content/pages/creator.ts`: hele siderne (ikke i designet)
-  - [ ] `content/pages/legal.ts`: meta-beskrivelser og "Juridisk"-eyebrow
+  - [ ] `content/pages/legal.ts`: meta-beskrivelser og "Juridisk"-eyebrow, og siden 26/11-2026 hele
+        `/handelsbetingelser`, afsnit 14 i privatlivspolitikken og de nye sætninger i afsnit 12
+        (formålet og overførslen til USA; se "Handelsbetingelserne" og "Privatlivspolitikken og
+        kontaktformularen")
+  - [ ] **Rettet efter ejerens svar 26/11-2026** (punkt 1–7 og 9 i gennemgangen, alle markeret
+        `// TODO: copy review`): de nye sætninger i `content/treatments.ts`, `content/blog.ts`,
+        `content/pages/treatments.ts` (løfter om resultater, opløsning af filler, "et lokalbedøvende
+        middel"), `content/pages/new-here.ts` (hudtone-kortet og kortet "Laser hårfjerning"),
+        `content/pages/about.ts` ("rynkebehandling"), `content/prices.ts` ("Opløsning af filler",
+        "Lægekonsultation før første rynkebehandling", "Laserpakker, overkrop" og chippen "Laser
+        overkrop"), `content/pages/men.ts` (kæbelinje-rækken og FAQ'en om pris), `content/team.ts` (Dr.
+        Toms tillægssætning), `content/layout.ts` og `content/pages/blog.ts` (nyhedsbrevet),
+        `content/pages/contact.ts` (linkene til privatlivspolitikken) og `content/pages/legal.ts`. Se
+        de enkelte punkter nedenfor.
   - [ ] **Rettet efter gennemgangen 25/11-2026** (alle markeret `// TODO: copy review`):
     - Tear trough lover ikke længere: FAQ'en siger "… placere filleren rigtigt, så risikoen for det
       bliver så lille som muligt" (før "så du undgår det"), og "En af de bedste ikke-kirurgiske
@@ -247,16 +265,17 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       "Permanent hårfjerning …"; sidens egen FAQ siger, at det ikke kan garanteres).
     - Siderne for mænd taler ikke længere til kvinder: Kæbelinje for mænd uden "… og giver mere
       karakter hos kvinder" og "… eller feminine træk"; Laser for mænd har "Godt til" ryg og
-      skuldre, bryst og mave, nakke og skæglinje, armhuler, arme og ben (fra pakkerne for mænd),
-      ikke "Bikini og brasil", og ikke FAQ'en "Kan mænd også få laser hårfjerning?".
+      skuldre, bryst og mave, nakke og skæglinje, armhuler, arme og ben (fra pakkerne på
+      overkroppen), ikke "Bikini og brasil", og ikke FAQ'en "Kan mænd også få laser hårfjerning?".
     - "Lip filler" staves sådan overalt (før "Lip Filler" i sidens overskrift, brødkrumme,
       bookingknapper, `/behandlinger`-kortet, `/ny-hos-fillox` og bookingkortet i artiklerne).
     - Lip filler-introen: "Vi doserer konservativt, så du altid kan bygge på senere." (kommafejl);
       Kindben-FAQ'en: "… og sammen aftaler vi det ønskede resultat."
     - Klinikkernes bookingknapper på `/klinikker` (desktop) siger "Book i Fillox Frederiksberg"
       (designets "Book i Frederiksberg" / "Book i Østerbro": forkert forholdsord).
-    - Dr. Toms priskort siger på alle bredder "Behandling hos læge har et specialist-tillæg efter
-      aftale." (før kun i booking-båndet, som ikke vises under 768 px).
+    - Dr. Toms priskort siger på alle bredder (før kun i booking-båndet, som ikke vises under
+      768 px), at hans behandlinger har et specialist-tillæg efter aftale; siden 26/11-2026 undtagen
+      næsekorrektion (se "Lægetillægget og Næsekorrektion").
     - Metateksten på rynkesiden er bureauets sætning forkortet til 146 tegn (siden selv er uændret),
       og bloggen hedder "Blog om behandlinger og efterpleje" i søgeresultater.
     - Skærmlæsere kalder hver anmeldelse "dias" (før det engelske "slide"), og de to links "Hage" på
@@ -269,38 +288,77 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       (ændret 17/11-2026) starter skinboosters ved Ejal 40 til 1.499 kr (Microneedling, nu 1.200 kr,
       er ikke en skinbooster).
 - [ ] **Priser ændret i WordPress efter kopien** (live /priser ændret 17/11-2026; `content/prices.ts`
-      er kopieret 1/10-2026). Rettet 24/11-2026 efter live: Opløsning af filler (Hyalase) 899 → 999 kr,
+      er kopieret 1/10-2026). Rettet 24/11-2026 efter live: Opløsning af filler 899 → 999 kr,
       Microneedling 999 / 2.499 → 1.200 / 3.000 kr (følger med på behandlingssiden, i menuerne, på
-      `/ny-hos-fillox` og i Albertes priskort). Alle 111 rækker er ellers ens. Åbent:
+      `/ny-hos-fillox` og i Albertes priskort). Alle 111 rækker var ellers ens. Siden 26/11-2026 har
+      prislisten 108 rækker: tre laserpakker er taget ud, og to etiketter er ændret (se
+      "Laserpriser for mænd og kvinder", "Hyalase" og "Botox og markedsføring" → "Priser"). Åbent:
   - [ ] Aftal et **content-freeze** på priserne i WordPress frem til lanceringen. På
         lanceringsdagen: hent https://fillox.dk/priser/ igen, sammenlign række for række med
-        `content/prices.ts`, og ret afvigelser dér.
+        `content/prices.ts`, og ret afvigelser dér. Spring de tre laserpakker over, der er taget ud
+        26/11-2026 ("Mave + bryst" 1.700, "Ryg + skuldre" 2.750 og "Ryg + skuldre + mave + bryst"
+        3.900 kr), og læs "Laserpakker for mænd" som "Laserpakker, overkrop", "Opløsning af filler
+        (Hyalase)" som "Opløsning af filler" og "Lægekonsultation før første botox" som "… før første
+        rynkebehandling".
   - [ ] Live hedder overskriften nu **"Microneedling & Exosomer"**. Skal rækkerne på det nye site
         nævne exosomer? (Vi skriver ikke selv en ny etiket.)
 - [ ] **Trustpilot-tallene på lanceringsdagen**: 4,7 og 172 anmeldelser er aflæst 1/10-2026 og står i
       forsidens hero, footer-strimlen og profilernes fakta. Aflæs score og antal på
       https://dk.trustpilot.com/review/fillox.dk, og opdatér `score`, `reviewCount` og `checked` i
       `config/site.ts` samtidig (Trustpilot afviser automatiske opslag, så det skal gøres i en browser).
-- [ ] **Juridisk**: registreret adresse og mailadresse til databeskyttelse (`info@` på
-      privatlivssiden, `kontakt@` i `config/site.ts`) — `content/pages/legal.ts`.
-- [ ] **Privatlivspolitikken og kontaktformularen** (juristen): formularen på `/kontakt` sender navn,
-      telefon, e-mail, klinik og en fritekst, der kan indeholde helbredsoplysninger, til Netlify Forms.
-      Politikken nævner kun Gecko som databehandler (afsnit 3) og Netlify kun for nyhedsbrevet
-      (afsnit 12), og intet afsnit siger, hvad der sker med det, man skriver i formularen. Forslag: et
-      afsnit "Kontaktformularen" med felterne, formålet (at besvare din henvendelse), retsgrundlaget
-      (art. 6, stk. 1, litra a/f, og art. 9, stk. 2, litra a, hvis du skriver helbredsoplysninger),
-      Netlify som databehandler og overførselsgrundlaget til USA, og hvornår beskeder slettes efter
-      besvarelse; og et link dertil ved formularen (mobilens samtykke-felt har i dag intet link).
-- [ ] **"Tilbud" i nyhedsbrevet** (juristen): footeren lover "Få tilbud, nyheder og tips om vores
-      behandlinger på e-mail.", kvitteringen "… så snart vi har nyheder og gode tilbud", afsnit 12 i
-      privatlivspolitikken det samme, og `/blog` "Én mail om måneden med nye artikler og månedens
-      tilbud" (designets tekst). For sundhedsydelser nævner VEJ 9319/2013 pkt. 5.1 spottilbud,
-      "her og nu"-rabatter, gaver og konkurrencer som usaglige. Skal nyhedsbrevet indeholde tilbud?
-      Teksten ved tilmeldingen skal beskrive det, der faktisk sendes (markedsføringsloven § 10), så
-      den rettes først, når I har besluttet det (forslag uden tilbud: "Få nyheder og gode råd om vores
-      behandlinger på e-mail."). Forslag til en regel for nyhedsbrevet: ingen tidsbegrænsede rabatter,
-      gaver eller konkurrencer på behandlinger, og aldrig rynkebehandling eller andre receptpligtige
-      lægemidler.
+- [ ] **Juridisk**: registreret adresse og mailadresse til databeskyttelse (`info@` i afsnit 1 på
+      privatlivssiden, `kontakt@` i `config/site.ts` og i afsnit 12 og 14) — `content/pages/legal.ts`.
+- [x] **Privatlivspolitikken og kontaktformularen** (du, 26/11-2026: "ret det hele som du har
+      skrevet til mig. alt fra punkt 1-9"): nyt afsnit "14. Kontaktformular" (`#kontaktformular`) med
+      felterne, formålet, retsgrundlaget (art. 6, stk. 1, litra f og a, og art. 9, stk. 2, litra a for
+      helbredsoplysninger i beskeden; det sidste holder ikke endnu, se "Helbredsoplysninger i
+      formularen" nedenfor), opbevaring, Netlify, Inc. som databehandler og overførslen til
+      USA via EU-U.S. Data Privacy Framework (Netlify, Inc står som "Active" på
+      dataprivacyframework.gov, tjekket 26/11-2026); afsnit 12 har fået samme overførselsgrundlag.
+      Formularen linker dertil: samtykke-feltet på mobil ("… som beskrevet i privatlivspolitikken")
+      og en linje over knappen fra 768 px ("Vi bruger dine oplysninger til at besvare din
+      henvendelse. Læs mere i vores privatlivspolitik."). Opfølgning:
+  - [ ] **Slet besvarede beskeder i Netlify** (Forms → "kontakt"): afsnit 14 lover, at en henvendelse
+        slettes, når den er besvaret og fulgt op, og Netlify gemmer dem, til de slettes. Aftal en fast
+        rytme, fx hver måned.
+  - [ ] **Helbredsoplysninger i formularen (jer og juristen, skal løses før lanceringen)**: afsnit 14
+        siger, at helbredsoplysninger i beskeden behandles på grundlag af udtrykkeligt samtykke (art.
+        9, stk. 2, litra a), men det holder ikke, som formularen er bygget (juridisk gennemgang
+        26/11-2026): fra 768 px er der intet samtykke-felt (designet 6ko), og mobilens felt ("… gemmer
+        mine oplysninger for at besvare min henvendelse") nævner ikke helbredsoplysninger. Desuden siger
+        Netlifys databehandleraftale (Exhibit I, punkt 4), at der ikke må sendes følsomme oplysninger
+        til Netlify, medmindre aftalen udtrykkeligt tillader det. Og mobilens felt skal udfyldes for
+        at sende, så det er ikke et frivilligt samtykke til selve besvarelsen (art. 7, stk. 4); samme
+        formål hviler nu på to grundlag (art. 6, stk. 1, litra f og a). Vælg én vej: (1) et
+        samtykke-felt på alle bredder (`showOnDesktop` i `content/pages/contact.ts`, se "Copy review"
+        → `content/pages/contact.ts`), der nævner helbredsoplysninger, og en formularudbyder, hvis
+        aftale dækker dem; eller (2) bed i formularen om ikke at skrive helbredsoplysninger (ring i
+        stedet), og lad juristen vælge grundlaget for dem, der kommer alligevel (fx art. 9, stk. 2,
+        litra h, og databeskyttelsesloven § 7, stk. 3, hvis det er autoriserede sundhedspersoner med
+        tavshedspligt, der svarer). Afsnit 14 rettes efter valget (`content/pages/legal.ts`).
+  - [ ] **IP-adresse i Netlify Forms**: Netlify har oplyst (supportforum 2020–2021, ikke i deres
+        dokumentation), at IP-adressen gemmes med hver indsendelse. Åbn en indsendelse eller
+        CSV-eksporten under Forms, og se, hvad der gemmes ud over felterne. Står der mere (IP-adresse,
+        browser, henvisende side), skal afsnit 12 og 14 nævne det.
+  - [ ] **Juristen**: slår I e-mail-notifikationer til i Netlify Forms (se "Netlify Forms"), ligger
+        beskederne også i jeres mailboks. Skal mailudbyderen nævnes som databehandler i afsnit 14 (og
+        overførslen, hvis den er uden for EU)?
+  - [ ] **EU-U.S. Data Privacy Framework** blev opretholdt af EU-Retten 3/9-2025 (T-553/23), men
+        sagen er anket til EU-Domstolen (C-703/25 P, anket 31/10-2025; vi har ikke fundet en afgørelse
+        26/11-2026). Netlify, Inc stod som "Active" på dataprivacyframework.gov 26/11-2026. Tjek før
+        lanceringen, at rammen stadig gælder, og at Netlify stadig står på listen; ellers bruger
+        Netlifys databehandleraftale EU's standardkontraktbestemmelser (DPA § 14.3), og afsnit 12 og 14
+        skal rettes.
+- [x] **"Tilbud" i nyhedsbrevet** (du, 26/11-2026: "ret det med priser osv osv.. det ikke
+      mening"): nyhedsbrevet lover kun nyheder, artikler og gode råd. Footeren siger "Få nyheder og
+      gode råd om vores behandlinger på e-mail.", kvitteringen "Du hører fra os, så snart vi har
+      nyheder.", `/blog` "Få tips og nyheder i din indbakke" og "Én mail om måneden med nye artikler
+      og gode råd om vores behandlinger. Ingen spam.", og afsnit 12 i privatlivspolitikken det
+      samme (VEJ 9319/2013 pkt. 5.1; markedsføringsloven § 10).
+  - **Regel for nyhedsbrevet**: kun nyheder, artikler og gode råd om behandlingerne. Ingen
+    tidsbegrænsede rabatter, "månedens tilbud", gaver eller konkurrencer på behandlinger, og aldrig
+    rynkebehandling eller andre receptpligtige lægemidler (lægemiddelloven § 66). Vil I senere sende
+    tilbud, skal tilmeldingsteksterne (footeren, `/blog`) og afsnit 12 rettes først.
 - [ ] **Botox og markedsføring** (juridisk vurdering). Botox er receptpligtig medicin og må ikke
       reklameres for over for offentligheden. Bureauets nye tekster (oktober 2026) løser
       hovedparten: Botox-siden er erstattet af `/behandlinger/rynkebehandling` og
@@ -316,8 +374,10 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       på rynkesiden — FAQ-spørgsmålet "Hvad er forskellen på Botox og filler?" (en synlig
       overskrift og spørgsmålets navn i de strukturerede data, FAQPage) og svaret på det, FAQ-svaret
       "Ved kosmetisk behandling med botulinumtoksin …" og afsnittet "Hvis der er tale om en
-      behandling med botulinumtoksin …" under konsultationen — og én sætning i Fillox
-      Academy-afsnittet på Om os (se "Juridisk gennemlæsning" nedenfor). Rynkesiderne viser ingen anmeldelser,
+      behandling med botulinumtoksin …" under konsultationen (se "Juridisk gennemlæsning"
+      nedenfor). Fillox Academy-afsnittet på Om os siger siden 26/11-2026 "rynkebehandling" (se "Om
+      os" nedenfor), og det samme gælder for de andre receptpligtige lægemidler (se "Hyalase").
+      Rynkesiderne viser ingen anmeldelser,
       resultater eller "fra"-pris (`treatmentsWithoutReviews` i `content/reviews.ts`). Rynkesiden
       har igen "Læs mere om rynkebehandling" med de tre rynkeartikler (nedenfor); siden om andre
       behandlingsmuligheder har ingen blogsektion. Stadig åbent:
@@ -366,10 +426,14 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
     - [ ] Skal siden om andre behandlingsmuligheder også have en blogsektion? (De tre artikler
           handler om rynker.)
   - [ ] **Priser**: alle rækker på priskortet "Rynkebehandling" er uændrede (områder, pakker,
-        tyggemuskler, hyperhidrose, Traptox). Konsultationskortet har stadig rækken
-        "Lægekonsultation før første botox" — forslag med bureauets ord: "Lægefaglig
-        forundersøgelse før første behandling". Traptox nævnes ikke på nogen side og er nu en
-        prisrække uden link: skal den have et afsnit?
+        tyggemuskler, hyperhidrose, Traptox). Konsultationskortets række hedder siden 26/11-2026
+        "Lægekonsultation før første rynkebehandling" (live: "… før første botox"; rettet efter din
+        Botox-regel som en del af punkt 1, du 26/11-2026: "ret det hele"). Kravet om en lægefaglig
+        forundersøgelse gælder behandling med botulinumtoksin, men "rynkebehandling" dækker på
+        rynkesiden også filler og microneedling mod linjer; bureauets ord, "Lægefaglig
+        forundersøgelse før første behandling", undgår den tvetydighed. Hvilken vælger I (eller
+        juristen)? Traptox nævnes ikke på nogen side og er nu en prisrække uden link: skal den have et
+        afsnit?
   - [ ] **"fra 799 kr" for rynkebehandling** står stadig i menuerne, på forsiden (bestseller #01),
         på siden for mænd og i behandlernes priskort ("Rynkebehandling" lige over
         kundeanmeldelserne hos Alberte, Annika og Mike, `wrinkleOffer` i `content/team.ts`). Er en
@@ -379,39 +443,39 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         "cirka 15 minutter" og "Den er gratis" er taget ud. Skal det igen stå, at
         lægekonsultationen er gratis? (De tre rynkeartikler siger heller ikke "gratis" om den
         lægefaglige forundersøgelse eller kontrollen.)
-  - [ ] **Om os**: "Det er let at finde en klinik, der tilbyder botox, filler, laser …" er
-        bureauets sætning og står ordret. Behold den, eller bed bureauet om en ny formulering
-        (fx "rynkebehandling, filler, laser …") — ret den ikke selv.
-- [ ] **Hyalase** (juridisk vurdering, gennemgangen 25/11-2026): handelsnavnet på lægemidlet, der
-      opløser filler (hyaluronidase), står fire steder, de tre med prisen 999 kr: prisrækken
-      "Opløsning af filler (Hyalase)" (`/priser` og lip filler-sidens priskort, `content/prices.ts`),
-      FAQ-svaret "Kan filler opløses igen?" på lip filler-siden (også i de strukturerede data,
-      FAQPage), "0,5 eller 1 ml?" ("… opløses med Hyalase. Det koster 999 kr pr. område pr. gang.")
-      og "Lip filler for første gang". Hyaluronidase bruges off-label, og klinikker får det efter
-      alt at dømme på en udleveringstilladelse fra Lægemiddelstyrelsen, så det er sandsynligvis
-      receptpligtigt, og samme regel som for Botox (lægemiddelloven § 66) kan gælde. **Bekræft hos
-      juristen**, om navnet må stå. Er svaret nej: prisrækken bliver "Opløsning af filler", FAQ-svaret
-      og blogsætningerne "Filler af hyaluronsyre kan opløses igen, hvis der bliver brug for det."
-      (prisen og "opløses" kan blive), og opslagene på prisrækkens etiket følger med
-      (`listPrice` i `content/treatments.ts` og `content/blog.ts`, `groups` i
-      `content/pages/treatments.ts`). Spørg samtidig, om "Filleren er tilsat lidocain" er i orden
-      (lidocain er en del af det CE-mærkede udstyr, ikke et selvstændigt lægemiddel; lavere risiko).
-      Teksten er ikke ændret.
-- [ ] **Løfter om resultater** (`content/treatments.ts`, tekster fra fillox.dk eller bureauet):
-      flere sider lover et resultat uden "kan": Signatur-ansigtsbehandling "Synlige resultater fra
-      første gang." og FAQ'en "Du ser resultater allerede efter første behandling …", Kæbelinje
-      "… huden i den nederste del af ansigtet strammes op med det samme", Kindben "… strammer huden
-      op" og "så du fremstår slankere i ansigtet", Skinbooster "Den strammer slap hud op, mindsker
-      rynker …", Microneedling (introen og metateksten) "Huden strammes op, fugtes og beroliges." og
-      Næsekorrektion "Der skal kun en lille mængde filler til for at gøre en markant forskel".
-      Profhilo kaldes "en ny type hyaluronsyre" (produktet er fra 2015) med "en effekt du ikke får
-      med traditionelle fillers", og den slags faktiske påstande skal kunne dokumenteres. VEJ
-      9319/2013 pkt. 5.2.1 og 6.2: ingen overdrevne påstande, og samme resultat kan sjældent
-      garanteres. Forslag: "… kan give mere fylde og en strammere hud", "Mange oplever en synlig
-      forskel efter første behandling", Profhilo "en hyaluronsyre til løs hud …" (uden "ny"), og
-      sammenligningen med traditionelle fillers dokumenteret eller fjernet. Godkender I (eller
-      juristen) den slags formuleringer? (Tear trough-sidens "så du undgår det" og "En af de bedste
-      …" er rettet 25/11-2026, se "Copy review".)
+  - [x] **Om os** (du, 26/11-2026: "ret det hele som du har skrevet til mig"): bureauets sætning
+        siger nu "Det er let at finde en klinik, der tilbyder rynkebehandling, filler, laser eller
+        hudforbedrende behandlinger." (før "botox"); resten af afsnittet er ordret. Rettet efter din
+        Botox-regel som en del af punkt 1, så sig det til bureauet.
+- [x] **Hyalase** (du, 26/11-2026: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"):
+      handelsnavnet står ingen steder. Prisrækken hedder "Opløsning af filler" (`/priser` og lip
+      filler-sidens priskort; prisen 999 kr pr. område er uændret), FAQ-svaret på lip filler-siden
+      (også i FAQPage) siger "Ja. Filler af hyaluronsyre kan opløses igen. Opløsning af filler koster
+      999 kr pr. område pr. gang.", og de to blogartikler siger det samme uden navnet. Efter samme
+      regel er "tilsat lidocain, et bedøvelsesmiddel" overalt blevet "tilsat et lokalbedøvende
+      middel" (FAQ'en om smerter på fillersiderne, lip filler, næsekorrektion, hage og to
+      artikler); punkt 1 nævnte kun Hyalase, så siger juristen, at lidocain i en CE-mærket filler er
+      i orden, kan den gamle tekst komme tilbage. `npm run check:market` (regel 14 og 18) afviser nu Hyalase/hyaluronidase og
+      lidocain/Xylocain i prislisten, på behandlingssiderne, hos behandlerne, i alle siders tekster og
+      i hele teksten i udgivne blogindlæg.
+- [x] **Løfter om resultater** (du, 26/11-2026: "ret det hele som du har skrevet til mig"): rettet
+      med "kan", "mange" og "typisk" (VEJ 9319/2013 pkt. 6.2: samme resultat kan sjældent
+      garanteres) på kindben, kæbelinje (også for mænd og rækken på `/behandlinger/for-maend`), tear
+      trough, næsekorrektion (introen, metateksten og "Ofte kan en lille mængde filler gøre en
+      tydelig forskel"), lip filler (mobilteksten), skinbooster, Profhilo, microneedling, PRF hud, PRF
+      hår, Signatur ("Mange oplever en synlig forskel efter første behandling."), korttekster på
+      `/behandlinger` og hos Alberte og Profhilo-afsnittet i bloggen. Profhilo er "en type
+      hyaluronsyre" (uden "ny"), og sammenligningen med traditionelle fillers er taget ud.
+      Faktatabellerne og "Resultatet ses med det samme" for filler er beholdt (filleren giver volumen
+      med det samme). Til copy review (ikke ændret, men påstande, der skal kunne dokumenteres, VEJ
+      9319/2013 pkt. 12):
+  - [ ] Kindben "Med hyaluronsyre genskaber vi volumen …", Signatur "gel-maske, der genopbygger
+        hudbarrieren", Ejal 40 "stimulerer dannelsen af nyt kollagen og elastin" (og "40 mg").
+  - [ ] Laser hårfjerning: introen "Effektiv og langvarig hårfjerning med diodelaser. Indbygget køling
+        gør behandlingen behagelig …" og "den indbyggede køling beskytter huden og gør behandlingen
+        behagelig". Forslag: "… Indbygget køling kan gøre behandlingen mere behagelig …".
+  - [ ] Albertes priskort, skinbooster: "Dybdegående fugt med Profhilo, Sunekos eller Ejal 40 for
+        frisk, strammere hud." Forslag: "… der kan give en friskere, strammere hud."
 - [ ] **Aldersgrænsen 18 år** står ingen steder på sitet (BEK 834/2014 § 3: kosmetisk behandling må
       ikke foretages på personer under 18 år; BEK 828/2013 § 5 og VEJ 9319/2013 pkt. 6.1 om
       markedsføring over for børn og unge). Forslag, med dit ja: en FAQ på `/ny-hos-fillox` og en
@@ -429,14 +493,18 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   - [ ] Gecko kan ikke forvælge en behandling, så alle "Book tid"-knapper åbner den samme
         kalender (to klik til kalenderen, ikke til behandlingen, som forfatterens anbefaling 1
         forestiller sig).
-  - [ ] Siden lover **behandlinger, Fillox Danmark ikke har**: "Peeling, microneedling eller lys- og
-        laserbehandling kan være relevante alternativer" mod pigmentpletter, rødme, porer og ar, og
-        kortet "Lys- og laserbehandlinger … hårreduktion, pigmentering, rødme eller forbedring af
-        hudkvaliteten" (linket går til laser hårfjerning). Fillox Danmark har kun diodelaser til
-        hårfjerning (og LED i Signatur-ansigtsbehandlingen). Forslag: "Peeling, microneedling eller
-        PRF kan være relevante alternativer." og kortet "Laser: Vi bruger diodelaser til
-        hårfjerning." (VEJ 9319/2013 pkt. 5.2: markedsføringen må ikke give en forkert opfattelse af
-        ydelserne.) Bureauet eller I retter; vi ændrer ikke teksten selv.
+  - [x] **Behandlinger, Fillox Danmark ikke har** (du, 26/11-2026: "ret det hele som du har skrevet
+        til mig"): kortet om pigmentpletter, rødme, porer og ar siger nu "Peeling, microneedling eller
+        PRF kan være relevante alternativer.", og kortet "Lys- og laserbehandlinger" er blevet "Laser
+        hårfjerning: Vi bruger diodelaser til hårfjerning. Laseren virker på hårsækkene, og
+        indstillingerne tilpasses din hudtype og hårstruktur." (VEJ 9319/2013 pkt. 5.2.1). Sig det til
+        bureauet. Til copy review: kortets første sætning gentager overskriften (de andre kort starter
+        med "Bruges …" eller "En behandling …").
+  - [ ] **Samme problem på Om os** (bureauets tekst, ikke ændret): båndet "Den rigtige behandling
+        kræver mere end ét værktøj" siger om hudkvalitet "Måske vil en laserbehandling, microneedling
+        eller en injektionsbehandling være mere relevant", men Fillox Danmark har ingen hudlaser, kun
+        diodelaser til hårfjerning. Forslag: "Måske vil microneedling eller en injektionsbehandling
+        være mere relevant." Retter vi, eller spørger I bureauet?
   - Siden linkes fra "Om os"-menuen (desktop og mobil) og fra footeren.
 - [ ] **Tekster, bureauet ikke har leveret endnu** (intet lagt ud): polynukleotider
       ("laksesæd": kun en indledning, og forfatteren vil have produktdokumentationen tjekket før en
@@ -480,22 +548,21 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       er skrevet i tredje person ud fra Om os. Nye sætninger at godkende (25/11-2026): booking-båndet
       nederst på Albertes, Annikas og Mikes profiler ("Du møder Annika i Fillox Østerbro og Fillox
       City2. Første konsultation er altid gratis.") og Simones og Frederikkes kort (se nedenfor).
-  - [ ] **"Uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom"** (Annika, ordret fra fillox.dk/om-os:
-        `/om-os`, `/behandlere`, hendes profil og lip filler-siden; faktakortet "Uddannet af: Dr. Tom i
-        Fillox"; og på Toms profil vores egen sætning "Har blandt andet uddannet Annika som kosmetisk
-        sygeplejerske"). Sygeplejerske er en beskyttet titel, man får gennem sygeplejerskeuddannelsen;
-        Fillox kan oplære i kosmetiske behandlinger (VEJ 9319/2013 pkt. 6.4: pas på de beskyttede
-        titler, når I skriver, hvor og af hvem man er uddannet; pkt. 12: det skal kunne dokumenteres).
-        Forslag: "Annika er sygeplejerske og er oplært i kosmetiske behandlinger i Fillox af Dr. Tom
-        …", faktakortet "Oplært af: Dr. Tom i Fillox" og hos Tom "Har blandt andet oplært Annika i
-        kosmetiske behandlinger." (også `bioShort` og `authorBio`). Godkender I det? Slå desuden op i
-        Styrelsen for Patientsikkerheds **Autorisationsregister**, at Alberte, Annika, Mike, Simone og
-        Frederikke er autoriserede sygeplejersker, og at Tom har dansk lægeautorisation.
-  - [ ] **Lægetillægget og Næsekorrektion**: Dr. Toms priskort (Næsekorrektion, Hagekorrektion,
-        Ansigtskonturering, alle "fra") siger nu på alle bredder "Behandling hos læge har et
-        specialist-tillæg efter aftale." (25/11-2026; før kun i booking-båndet, som ikke vises under
-        768 px). Gælder tillægget også Næsekorrektion, hvor prislisten allerede siger "op til 1 ml,
-        v. Dr. Tom" til 3.999 kr? Ellers skal sætningen undtage den.
+  - [x] **"Uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom"** (Annika) og
+        **Autorisationsregisteret** (du, 26/11-2026: "ja annika er sygepljesker osv så det ikke noget
+        problem.. alle er udddannet korrekt mm."): Annika er sygeplejerske, og alle behandlere har den
+        rette uddannelse og autorisation. Teksterne om Annika (`/om-os`, `/behandlere`, hendes profil,
+        lip filler-siden, faktakortet "Uddannet af: Dr. Tom i Fillox" og sætningen på Toms profil)
+        er uændrede.
+  - [x] **Lægetillægget og Næsekorrektion** (du, 26/11-2026: "lad 9 bliv som det er medmindre det
+        står i priserne"): prislisten siger "Næsekorrektion · op til 1 ml, v. Dr. Tom · 3.999 kr" (live
+        /priser: "Udføres af Dr. Tom"), så prisen er allerede prisen hos ham. Under hans priskort (alle
+        bredder) og i hans booking-bånd står derfor nu "Prisen på næsekorrektion gælder behandling
+        hos læge. Ved de andre behandlinger har behandling hos læge et specialist-tillæg efter aftale."
+        (før "Behandling hos læge har et specialist-tillæg efter aftale."). `/priser` (rækken
+        "Specialist-tillæg (behandling v. læge) · valgfrit · efter aftale") og næsekorrektionssiden er
+        uændrede. Mente du, at sætningen skulle stå helt som før, er det kun `DOCTOR_SURCHARGE` i
+        `content/team.ts`, der skal tilbage.
 - [x] **Titler** (du, 25/11-2026: "tom er self læge mm men de andre skriver vi bare kosmetiske
       sygeplejerske"): Alberte, Annika, Mike, Simone og Frederikke er "Kosmetisk sygeplejerske"
       ("Sygeplejerske" på forsidens kort) på kortene, profilerne, "Din behandler" på
@@ -724,7 +791,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       "Priser på behandlinger · Fillox" (aldrig et receptpligtigt produkt). Skal vi skrive dem, eller
       gør bureauet? (Bloggen hedder "Blog om behandlinger og efterpleje · Fillox" fra 25/11-2026, og
       Dr. Toms profil bruger hans korte titel, "Dr. Tom Haugland – Æstetisk læge & grundlægger".)
-- [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til.
+- [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til
+      (se "Privatlivspolitikken og kontaktformularen": slet besvarede beskeder, og mailudbyderen som
+      databehandler).
 - [ ] **Blog** (du, 25/11-2026: "lave bloggen. skriv et par artikler", signeret "Fillox-holdet"):
       syv artikler, dateret 25/11-2026 — "Lip filler for første gang", "0,5 eller 1 ml?",
       "Hævelse og blå mærker", "Skinbooster eller Profhilo" og de tre rynkeartikler
@@ -854,17 +923,61 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       af bookingen (også ved afbud senere end 6 timer før). Reglen på /priser om, at kun hverdage
       tæller (en mandagstid skal aflyses fredagen før), står ikke på det nye site
       (`content/pages/legal.ts`, kommentaren i `content/prices.ts`). Hvad gælder?
-- [ ] **Handelsbetingelserne** (`content/pages/legal.ts`, ordret fra fillox.dk) har ud over
-      afbudsreglerne og abonnementet: en klausul, der modsiger sig selv ("Der er ikke fortrydelsesret
-      på køb af Gavekort, abonnement, dog kan man inden for 14 dage fortryde købet."), en
-      skabelonrest fra et fitnesscenter ("Kortet kan bruges til de hold som er beskrevet …"),
-      overskriften "Gavekort og abonnement." to gange og stave- og sætningsfejl ("til en
-      behandlingen", "hvor købet af foretaget", "er personligst", "indtil 14 efter købet",
-      "Gavekortes gyldighed", "12 måneder fra enten købsdato.", "Det altid er kundens ansvar",
-      "Måske kan der forekomme kortere gyldighedsperioder"). Juristen eller I skal skrive afsnittene
-      om fortrydelsesret ved onlinekøb, gavekort og abonnement om (abonnementet udgår, hvis
-      medlemskabet er nedlagt, se "Premium medlemskab"). Må vi i mellemtiden rette stavefejlene og
-      "hold" → "behandlinger"? Teksten er ikke ændret.
+- [x] **Handelsbetingelserne** (du, 26/11-2026: "ret det hele som du har skrevet til mig. alt fra
+      punkt 1-9"): `/handelsbetingelser` er rettet (`content/pages/legal.ts`, ikke længere ordret fra
+      fillox.dk). Fortrydelsesretten følger forbrugeraftaleloven (LBK nr. 1184 af 28/09/2025, §§ 18–20,
+      22 og 25, gennemlæst igen 26/11-2026; § 20 a fra lov nr. 723 af 20/06/2025 står ikke i
+      lovbekendtgørelsen, se "Onlinesalg via Gecko"): køber man et gavekort eller abonnement online,
+      over telefonen eller på anden måde uden for klinikkerne, kan man fortryde inden for 14 dage uden
+      at give en grund; en brugt del betales, og resten refunderes inden 14 dage til det kort, man
+      betalte med. Ved køb i klinikken giver loven ingen fortrydelsesret, men live-løftet om 14 dage
+      ("medmindre du har taget gavekortet i brug") står der stadig, som jeres eget vilkår. "hold" →
+      "behandlinger", den dobbelte overskrift og de tre gentagne gyldighedsregler er slået sammen,
+      alle stave- og sætningsfejl er rettet, og teksten siger "du". Forretningsvilkårene er
+      uændrede (korttyper, gebyrerne 500 kr / 100 % / 250 kr, gyldighed 6 og 12 måneder, betaling,
+      refundering, abonnement, kvitteringer, opsigelse). Opfølgning:
+  - [ ] **Juridisk gennemlæsning før lanceringen**: de omskrevne handelsbetingelser og det nye
+        afsnit "14. Kontaktformular" (og overførselssætningen i afsnit 12) i privatlivspolitikken bør
+        læses af en jurist (alle markeret `// TODO: copy review` i `content/pages/legal.ts`).
+  - [ ] **Køb i klinikken**: loven giver ingen fortrydelsesret dér, men betingelserne lover stadig 14
+        dage, "medmindre du har taget gavekortet i brug" (som live). Skal det løfte blive stående? Og
+        undtagelsen nævner kun gavekortet (som live): kan et abonnement købt i klinikken fortrydes,
+        selv om det er taget i brug, eller skal der stå "gavekortet eller abonnementet"?
+  - [ ] **Gavekort**: betingelserne siger stadig (som live), at gavekort er personlige og ikke kan
+        overdrages, og at de gælder i 6 måneder. Forbrug.dk kalder gavekort ihændehaverbeviser, og en
+        gyldighed kortere end 3 år skal være rimelig og tydelig ved købet. Skal de to vilkår blive?
+        Forbrug.dk siger også, at værdien af et elektronisk gavekort (et, der fx kan bruges online)
+        som udgangspunkt kan udbetales i gyldighedsperioden (med henvisning til betalingsloven § 96),
+        mens betingelserne siger, at resterende klip ikke refunderes. Gælder det jeres gavekort, når
+        de kun kan bruges hos Fillox (juristen)?
+  - [ ] **Abonnement**: der står nu "12 måneder fra købsdatoen" (live sagde også "12 måneder fra
+        enten købsdato"): skal der stå "fra købsdato eller startdato"? Og hvad betyder "ved ophør i
+        klinikken" (står uændret): når kunden stopper, eller hvis klinikken lukker? Findes
+        abonnementet stadig, skal betingelserne også sige, med hvilket varsel det kan opsiges
+        (forbrugeraftaleloven § 28, stk. 3; kunden kan altid opsige med 1 måneds varsel, når der er
+        gået 5 måneder, § 28, stk. 1). (Se også "Premium medlemskab".)
+  - [ ] **Onlinesalg via Gecko**: sælges gavekort og abonnementer online, skal kunden have
+        oplysning om fortrydelsesretten og standardfortrydelsesformularen på et varigt medium
+        (forbrugeraftaleloven § 8, stk. 1, nr. 11, og § 19, stk. 3–4); ellers forlænges fristen med op
+        til 12 måneder. Tjek Geckos kvittering. Sendes fysiske gavekort med posten, løber fristen fra
+        modtagelsen (§ 19, stk. 2, nr. 2), ikke fra købsdagen, som betingelserne siger. Siden
+        19/6-2026 skal et køb, der er lavet via en onlinegrænseflade, også kunne fortrydes med en
+        fortrydelsesfunktion mærket "Fortryd aftale", som er synlig i hele fristen (forbrugeraftaleloven
+        § 20 a, indsat ved lov nr. 723 af 20/06/2025), og oplysningerne skal sige, hvor den er (§ 8,
+        stk. 1, nr. 11). Har Geckos køb og bookinger en sådan funktion? Så skriver vi i
+        betingelserne, hvor den er; ellers skal den laves, før der sælges online.
+  - [ ] **Bookinger online og over telefonen** (juristen): en betalt behandling, der bookes online
+        (Gecko) eller over telefonen, er også fjernsalg med 14 dages fortrydelsesret (§§ 3, nr. 4, og
+        18), og inden for fristen må kunden ikke pålægges andre omkostninger end efter §§ 22, 24 og 25
+        (§ 19, stk. 1). Betingelserne nævner kun gavekort og abonnementer. Må afbudsgebyrerne (500 kr /
+        100 % / 250 kr) kræves for en online booking, der aflyses inden for 14 dage efter, den blev
+        lavet, og skal betingelserne nævne fortrydelsesretten for bookinger? (Selve gebyrerne: se
+        "Afbud og udeblivelse".)
+  - [ ] **Fejlbehandling og lukkedage** (juristen): betingelserne siger stadig (som live), at
+        refundering ved fejlbehandling kun kan ske ved fysisk fremmøde i den klinik, hvor købet er
+        foretaget (ved onlinekøb er der ingen sådan klinik), og at der ikke ydes kompensation ved
+        lukkedage, ud over at behandlingen flyttes. Holder de to vilkår over for aftaleloven § 38 c og
+        forbrugeraftaleloven § 27 og § 33?
 - [ ] **Kontrol efter behandling**: det nye site siger "Konsultation og kontrol er altid gratis".
       Live-politikken (fillox.dk/om-os/kontrol-eftertjek, som nu sender videre til
       `/priser#konsultation`) siger også: én kontrol pr. behandling, du booker den selv ca. 14 dage
@@ -888,16 +1001,30 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 - [ ] **Premium medlemskab**: live /medlem (500 kr/md., 6.000 kr til behandlinger om året, 20 %
       rabat) findes ikke på det nye site, og /medlem sender videre til `/priser`. Tilbydes
       medlemskabet stadig? (Handelsbetingelserne nævner stadig abonnement.)
-- [ ] **Laserpriser for mænd og kvinder** (`content/prices.ts`, som live /priser): "Laserpakker for
-      mænd" er billigere for de samme områder end "Laserpakker" (Mave/bryst 1.500 mod 1.700 kr,
-      Ryg/skuldre 2.000 mod 2.750 kr, Ryg/skuldre/mave/bryst 3.500 mod 3.900 kr), og på det nye site
-      står kortene lige under hinanden. Forskellige priser efter køn for samme tjenesteydelse kræver
-      en saglig grund (ligestillingsloven; EU-direktiv 2004/113). Dækker mændenes pakker andre eller
-      mindre områder? Så skal det stå i rækkernes note; ellers bør priserne være ens, eller pakkerne
-      sælges uden kønsmærkat. Samtidig koster de almindelige pakker mere end enkeltområderne lagt
-      sammen: Ryg (inkl. lænd) 1.200 + Skuldre 850 = 2.050 kr mod "Ryg + skuldre" 2.750 kr, og 1.200 +
-      850 + Mave 800 + Bryst 900 = 3.750 kr mod "Ryg + skuldre + mave + bryst" 3.900 kr. Er det en
-      fejl, eller dækker pakkerne mere?
+- [x] **Laserpriser for mænd og kvinder** (du, 26/11-2026: "ret det med priser osv osv.. det ikke
+      mening"): én pris pr. kombination for alle, den laveste, og ingen pris efter køn
+      (ligestillingsloven, LBK nr. 5 af 06/01/2025, § 2; EU-direktiv 2004/113). "Laserpakker for mænd"
+      hedder nu "Laserpakker, overkrop" (chip "Laser overkrop", `/priser#laser-overkrop`, før
+      `#laser-maend`), med samme otte rækker og beløb, og rækkerne linker til laser hårfjerning.
+      "Mave + bryst" 1.700, "Ryg + skuldre" 2.750 og "Ryg + skuldre + mave + bryst" 3.900 kr er taget ud
+      af "Laserpakker", fordi de samme områder står til 1.500 / 2.000 / 3.500 kr. Intet beløb er ændret
+      eller nyt. Laser for mænd viser pakkerne under kortets navn (før "Priser for mænd") med "Faste
+      priser på kombinerede områder, de samme for alle.", laser hårfjernings FAQ siger "… og priserne
+      er de samme for alle", og `/behandlinger/for-maend` siger "Der er også faste pakkepriser …" (før
+      "Til mænd er der også …"). "Fra"-priserne er uændrede overalt (laser fra 500 kr, "Laserpakker,
+      overkrop" fra 1.000 kr og "Laserpakker" fra 1.300 kr i Priser-menuen). Opfølgning:
+  - [ ] **Gecko og fillox.dk**: bookingen i Gecko (og live /priser) har stadig de gamle laserpakker:
+        listen "Mænd" og "Mave + bryst" 1.700, "Ryg + skuldre" 2.750 og "Ryg + skuldre + mave + bryst"
+        3.900 kr. Ret dem i Gecko før lanceringen (pakkerne uden "mænd", de tre dyre pakker fjernet),
+        så bookingen viser de samme navne og priser som sitet.
+  - [ ] **Laserpakker dyrere end enkeltområderne**: tre rækker på "Laserpakker, overkrop" koster mere
+        end områderne hver for sig: Ryg / skuldre / arme 3.400 kr (Ryg inkl. lænd 1.200 + Skuldre 850 +
+        Hele arme 1.200 = 3.250), Ryg / skulder / nakke 2.700 kr (1.200 + 850 + Nakke 600 = 2.650) og
+        Ryg / skuldre / bryst 3.100 kr (1.200 + 850 + Bryst 900 = 2.950). Er det en fejl, eller dækker
+        pakkerne mere (fx ryg uden lænd)? Beløbene er ikke ændret.
+  - [ ] Copy review: "Laserpakker, overkrop" har også ryg, skuldre, arme, nakke og skæglinje, mens
+        "Overkrop" på live /priser kun er overskriften for maven og brystet. Et bredere navn kunne være
+        "Laserpakker, ryg og overkrop".
 - [ ] **"Kun læger & sygeplejersker"** (trust-chippen på `/priser`) og "udført af læger og
       sygeplejersker" (sitets titel og beskrivelse, `content/layout.ts`, forsiden): gælder det også
       laser hårfjerning? Ellers skal formuleringen ændres (af jer eller bureauet). (Alberte er
@@ -1055,7 +1182,9 @@ TIMMA-id'erne fra den nuværende fillox.no: `filloxdrammen`, `filloxlillestrom`,
 - **Juridiske sider**: firmakortene (navn, org.nr., telefon) hentes fra `config/site.ts`, men
   brødteksten i `content/pages/legal.ts` er skrevet til Danmark (Fillox Danmark ApS, dansk
   sundhedslovgivning, Datatilsynet, journalføring i Gecko Booking) og skal skrives om til
-  norske forhold.
+  norske forhold. Handelsbetingelsernes fortrydelsesret følger siden 26/11-2026 den danske
+  forbrugeraftalelov, og afsnit 12 og 14 i privatlivspolitikken (nyhedsbrevet, kontaktformularen)
+  nævner Netlify og EU-U.S. Data Privacy Framework.
 - **Formularnavne** vises i Netlify og i notifikationsmails — skift dem i `content/forms.ts` og
   `public/__forms.html` samtidig.
 - **Priser**: skrives som tal i `content/**`; formatet (`1 499 kr`, `kr 1 499,-`) styres af

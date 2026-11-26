@@ -72,13 +72,14 @@ const AREAS_4ML = "kindben, hage, kæbelinjer m.fl.";
 
 /**
  * The price list of the live fillox.dk/priser (fetched 2026-10-01; every amount re-checked
- * against the live list on 2026-11-24, after it changed on 2026-11-17: Hyalase 899 → 999,
+ * against the live list on 2026-11-24, after it changed on 2026-11-17: Opløsning af filler 899 → 999,
  * Microneedling 999 / 2.499 → 1.200 / 3.000): every priced row, in the live order, in the
  * design's card structure. The live sub-headings ("Andre fillerpriser (op til
  * 1 ml)", "Øvrige Botox behandlinger", "Ansigt", "Arme" …) have no place in a card, so their
  * rows follow each other in the same order, with the sub-heading's condition as a note where it
  * changes the price ("op til 1 ml", the area packages). The live "Mænd" and "Pakkepriser" laser
- * lists are cards of their own (a single laser card would be ~50 rows).
+ * lists are cards of their own (a single laser card would be ~50 rows); since 2026-11-26 the "Mænd"
+ * list is "Laserpakker, overkrop", for everyone, and "Laserpakker" has three rows less (see there).
  *
  * Counts and their unit are joined by a no-break space ("1 behandling") so a long label
  * never ends a line on the bare number.
@@ -107,7 +108,12 @@ export const priceCards: PriceCard[] = [
       { label: "Lip filler · Revanesse 0,7 ml", ...kr(1399, "lip-filler") },
       { label: "Lip filler · Revanesse 1,0 ml", ...kr(1599, "lip-filler") },
       { label: "Ansigtskonturering · 4 ml", note: AREAS_4ML, ...kr(3999) },
-      { label: "Opløsning af filler (Hyalase)", note: "pr. område", ...kr(999) },
+      // Without the product name (live: "Opløsning af filler (Hyalase)"): Hyalase is a prescription
+      // medicine (hyaluronidase), and the owner's rule for Botox applies (owner 2026-11-26: "ret det
+      // hele som du har skrevet til mig. alt fra punkt 1-9"; lægemiddelloven § 66,
+      // https://www.retsinformation.dk/eli/lta/2023/339). Looked up by this label in
+      // content/treatments.ts, content/blog.ts and content/pages/treatments.ts. TODO: copy review
+      { label: "Opløsning af filler", note: "pr. område", ...kr(999) },
       { label: "Marionettelinjer", note: "op til 1 ml", ...kr(1699) },
       { label: "Nasolabiale linjer", note: "op til 1 ml", ...kr(1699) },
       { label: "Hage", note: "op til 1 ml", ...kr(1699, "hage") },
@@ -234,27 +240,46 @@ export const priceCards: PriceCard[] = [
     ],
   },
   {
-    // Live: the "Mænd" list under laser hårfjerning. No categorySlug: the Priser dropdown then shows
-    // this card's own lowest row ("fra 1.000 kr"), not the lowest laser price. Titled as the
-    // combined-areas list it is, so it does not read as "Laser for mænd fra 1.000 kr" next to the
-    // laser-for-maend page's "fra 500 kr" (single areas). The rows are that page's price list.
-    id: "laser-maend",
-    title: "Laserpakker for mænd",
+    // Live: the "Mænd" list under laser hårfjerning (same rows and amounts). Since 2026-11-26 a
+    // package card for everyone: the live "Mænd" packages were cheaper than the general packages for
+    // the same areas (Mave / bryst 1.500 vs 1.700 kr, Ryg / skuldre 2.000 vs 2.750, Ryg / skuldre /
+    // mave / bryst 3.500 vs 3.900), and the general ones cost more than their single areas added
+    // up (Ryg inkl. lænd 1.200 + Skuldre 850 = 2.050 kr). The owner (2026-11-26, on that point: "ret
+    // det med priser osv osv.. det ikke mening"). Done as: one price per combination for everyone
+    // (the lower one, which is also below its single areas added up), no amount changed or invented,
+    // no price tied to gender. Open for Fillox (README): three rows here still cost more than their
+    // single areas added up, if "Ryg" is "Ryg (inkl. lænd)" and "arme" "Hele arme": Ryg / skuldre /
+    // arme 3.400 (1.200 + 850 + 1.200 = 3.250), Ryg / skulder / nakke 2.700 (1.200 + 850 + 600 =
+    // 2.650), Ryg / skuldre / bryst 3.100 (1.200 + 850 + 900 = 2.950). Ligestillingsloven (LBK nr. 5 af
+    // 06/01/2025, https://www.retsinformation.dk/eli/lta/2025/5) § 1 a, nr. 2 (anyone who provides
+    // services available to the public) and § 2 (no direct or indirect discrimination on grounds
+    // of sex); it implements Council Directive 2004/113/EC (https://eur-lex.europa.eu/eli/dir/2004/113/oj).
+    // So: no "mænd" in the title, chip or id (was "Laserpakker for mænd", "Laser mænd",
+    // "laser-maend"), and the rows link to laser hårfjerning (was laser-for-maend), as the
+    // "Laserpakker" rows do. The laser-for-maend page and /behandlinger/for-maend show this card's
+    // rows (content/treatments.ts, content/pages/men.ts), never as prices for men.
+    // No categorySlug: the Priser dropdown then shows this card's own lowest row ("fra 1.000 kr"),
+    // not the lowest laser price. TODO: copy review (title and chip)
+    id: "laser-overkrop",
+    title: "Laserpakker, overkrop",
     eyebrow: "KOMBINEREDE OMRÅDER",
-    chipLabel: "Laser mænd",
+    chipLabel: "Laser overkrop",
     rows: [
-      { label: "Ryg / skuldre / arme", ...kr(3400, "laser-for-maend") },
-      { label: "Mave / bryst", ...kr(1500, "laser-for-maend") },
-      { label: "Ryg / skuldre", ...kr(2000, "laser-for-maend") },
-      { label: "Nakke / skæglinje", ...kr(1000, "laser-for-maend") },
-      { label: "Ryg / nakke", ...kr(1800, "laser-for-maend") },
-      { label: "Ryg / skulder / nakke", ...kr(2700, "laser-for-maend") },
-      { label: "Ryg / skuldre / bryst", ...kr(3100, "laser-for-maend") },
-      { label: "Ryg / skuldre / mave / bryst", ...kr(3500, "laser-for-maend") },
+      { label: "Ryg / skuldre / arme", ...kr(3400, "laser-harfjerning") },
+      { label: "Mave / bryst", ...kr(1500, "laser-harfjerning") },
+      { label: "Ryg / skuldre", ...kr(2000, "laser-harfjerning") },
+      { label: "Nakke / skæglinje", ...kr(1000, "laser-harfjerning") },
+      { label: "Ryg / nakke", ...kr(1800, "laser-harfjerning") },
+      { label: "Ryg / skulder / nakke", ...kr(2700, "laser-harfjerning") },
+      { label: "Ryg / skuldre / bryst", ...kr(3100, "laser-harfjerning") },
+      { label: "Ryg / skuldre / mave / bryst", ...kr(3500, "laser-harfjerning") },
     ],
   },
   {
-    // Live: "Pakkepriser på permanent hårfjerning". No categorySlug, as "laser-maend" ("fra 1.300 kr" in the dropdown).
+    // Live: "Pakkepriser på permanent hårfjerning". No categorySlug, as "laser-overkrop" ("fra 1.300 kr" in the dropdown).
+    // Without the live "Mave + bryst" 1.700, "Ryg + skuldre" 2.750 and "Ryg + skuldre + mave + bryst"
+    // 3.900 kr (2026-11-26): the same combinations are on "Laserpakker, overkrop" at 1.500, 2.000
+    // and 3.500 kr, one price for everyone (see that card).
     id: "laser-pakker",
     title: "Laserpakker",
     eyebrow: "FLERE OMRÅDER",
@@ -271,9 +296,6 @@ export const priceCards: PriceCard[] = [
       { label: "Hele ben + Brazilian", ...kr(4100, "laser-harfjerning") },
       { label: "Hele ben + armhuler + Brazilian", ...kr(4700, "laser-harfjerning") },
       { label: "Hele ben + bikinilinje + armhuler", ...kr(4100, "laser-harfjerning") },
-      { label: "Mave + bryst", ...kr(1700, "laser-harfjerning") },
-      { label: "Ryg + skuldre", ...kr(2750, "laser-harfjerning") },
-      { label: "Ryg + skuldre + mave + bryst", ...kr(3900, "laser-harfjerning") },
       { label: "Hel krop", ...kr(6000, "laser-harfjerning") },
     ],
   },
@@ -303,7 +325,10 @@ export const priceCards: PriceCard[] = [
         note: "valgfrit",
         price: { kind: "on-request", label: "efter aftale" },
       },
-      { label: "Lægekonsultation før første botox", note: "lovpligtig, 15 min", price: FREE },
+      // Live: "Lægekonsultation før første botox". "rynkebehandling" in place of the product name, as on
+      // the rest of the site (owner 2026-11-26: "ret det hele … alt fra punkt 1-9"; lægemiddelloven
+      // § 66, https://www.retsinformation.dk/eli/lta/2023/339). TODO: copy review
+      { label: "Lægekonsultation før første rynkebehandling", note: "lovpligtig, 15 min", price: FREE },
       { label: "Kontrol efter behandling", note: "valgfri, ca. 14 dage efter", price: FREE },
     ],
   },

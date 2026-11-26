@@ -66,7 +66,8 @@ function listPrice(cardId: string, label: string): string {
 /** Lip filler amounts as sold (content/prices.ts → fillers), in ml with the market's decimal comma. */
 const LIP_AMOUNTS = ["0,3", "0,5", "0,7", "1,0"] as const;
 const lipFillerPrice = (ml: (typeof LIP_AMOUNTS)[number]) => listPrice("fillers", `Lip filler · Revanesse ${ml} ml`);
-const hyalasePrice = listPrice("fillers", "Opløsning af filler (Hyalase)");
+/** "Opløsning af filler": the price-list label without the product name (owner 2026-11-26). */
+const dissolvePrice = listPrice("fillers", "Opløsning af filler");
 const ejalPrice = listPrice("hudforbedring", "Ejal 40 · 1 behandling");
 const sunekosPrice = listPrice("hudforbedring", "Sunekos Performa · 1 behandling");
 const profhiloPrice = listPrice("hudforbedring", "Profhilo · 1 behandling");
@@ -153,11 +154,14 @@ export const allPosts: BlogPost[] = [
         type: "paragraph",
         text: "Behandlingen tager cirka 20 minutter. Læberne bliver renset, og derefter sprøjter din behandler filleren ind med en meget tynd nål. Filleren er lavet af hyaluronsyre, et stof, der findes naturligt i huden.",
       },
-      // source: content/treatments.ts → lip-filler FAQ "Gør behandlingen ondt?", fillerFaq.pain (lidocain
-      // virker under behandlingen og i den første tid bagefter; bedøvende creme)
+      // source: content/treatments.ts → lip-filler FAQ "Gør behandlingen ondt?", fillerFaq.pain (the
+      // local anaesthetic works during the treatment and for a while after; bedøvende creme). Without
+      // the active substance (before: "tilsat lidocain, et bedøvelsesmiddel"): owner 2026-11-26, "ret
+      // det hele som du har skrevet til mig. alt fra punkt 1-9"; lægemiddelloven § 66,
+      // https://www.retsinformation.dk/eli/lta/2023/339. TODO: copy review
       {
         type: "paragraph",
-        text: "Læberne er følsomme, så de fleste mærker noget ubehag, men tåler det godt. Filleren er tilsat lidocain, et bedøvelsesmiddel, der virker under behandlingen og i den første tid bagefter. Vil du have bedøvende creme først, kan du også få det.",
+        text: "Læberne er følsomme, så de fleste mærker noget ubehag, men tåler det godt. Filleren er tilsat et lokalbedøvende middel, der virker under behandlingen og i den første tid bagefter. Vil du have bedøvende creme først, kan du også få det.",
       },
       // source: content/treatments.ts → lip-filler lead ("Vi doserer konservativt, du kan altid bygge på senere")
       { type: "paragraph", text: "Vi doserer konservativt, så du altid kan bygge på senere." },
@@ -226,10 +230,12 @@ export const allPosts: BlogPost[] = [
       { type: "h2", id: "holdbarhed", text: "Hvor længe holder det?" },
       // source: content/treatments.ts → lip-filler FAQ "Hvor længe holder resultatet?" (typisk 6–9
       // måneder, varierer, nedbrydes gradvist, du kan vælge at bygge på igen) and "Kan filler opløses
-      // igen?" (Hyalase)
+      // igen?". Without the product name (before: "… kan også opløses med Hyalase, …"): owner
+      // 2026-11-26, "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; lægemiddelloven § 66,
+      // https://www.retsinformation.dk/eli/lta/2023/339. TODO: copy review
       {
         type: "paragraph",
-        text: "Typisk 6–9 måneder, men det varierer fra person til person. Kroppen nedbryder hyaluronsyren gradvist, så resultatet aftager langsomt, og du bestemmer selv, om du vil bygge på igen. Filler af hyaluronsyre kan også opløses med Hyalase, hvis der bliver brug for det.",
+        text: "Typisk 6–9 måneder, men det varierer fra person til person. Kroppen nedbryder hyaluronsyren gradvist, så resultatet aftager langsomt, og du bestemmer selv, om du vil bygge på igen. Filler af hyaluronsyre kan også opløses igen, hvis der bliver brug for det.",
       },
       { type: "h2", id: "kontrol", text: "Kontrol og spørgsmål bagefter" },
       // source: content/prices.ts → konsultation ("Kontrol efter behandling", "valgfri, ca. 14 dage efter",
@@ -319,11 +325,12 @@ export const allPosts: BlogPost[] = [
       },
       { type: "h2", id: "behandlingen", text: "Sådan foregår behandlingen" },
       // source: content/treatments.ts → lip-filler facts ("ca. 20 min"), FAQ "Gør behandlingen ondt?"
-      // (lidocain, bedøvende creme); fillox.dk/fillers/lip-filler FAQ ("Læberne vil derefter blive
-      // renset, inden filleren injiceres med en meget tynd nål")
+      // (local anaesthetic, bedøvende creme); fillox.dk/fillers/lip-filler FAQ ("Læberne vil derefter
+      // blive renset, inden filleren injiceres med en meget tynd nål"). Without the active substance
+      // (before: "tilsat lidocain, et bedøvelsesmiddel"): owner 2026-11-26, as above. TODO: copy review
       {
         type: "paragraph",
-        text: "Selve behandlingen tager cirka 20 minutter. Læberne bliver renset, og filleren sprøjtes ind med en meget tynd nål. Filleren er tilsat lidocain, et bedøvelsesmiddel, og vil du have bedøvende creme før behandlingen, kan du også få det.",
+        text: "Selve behandlingen tager cirka 20 minutter. Læberne bliver renset, og filleren sprøjtes ind med en meget tynd nål. Filleren er tilsat et lokalbedøvende middel, og vil du have bedøvende creme før behandlingen, kan du også få det.",
       },
       { type: "h2", id: "hvis-du-oensker-mere", text: "Hvis du ønsker mere" },
       // source: content/prices.ts → fillers (0,7 and 1,0 ml); content/treatments.ts → lip-filler pricesIntro
@@ -347,10 +354,13 @@ export const allPosts: BlogPost[] = [
         text: "Cirka 14 dage efter behandlingen kan du komme til en gratis kontrol, som er valgfri, og som du selv booker. Her vurderer I resultatet sammen, og eventuelle justeringer bygger altid på en faglig vurdering og på dine ønsker. Bliver I enige om, at mere filler giver mening, er det en ny behandling med sin egen pris. Kontrollen tilbydes én gang pr. behandling og skal ligge inden for 21 dage efter behandlingen.",
       },
       // source: content/treatments.ts → lip-filler FAQ "Kan filler opløses igen?"; content/prices.ts →
-      // fillers ("Opløsning af filler (Hyalase)", "pr. område")
+      // fillers ("Opløsning af filler", "pr. område"). Without the product name (before: "… opløses med
+      // Hyalase. Det koster …"): owner 2026-11-26, "ret det hele som du har skrevet til mig. alt fra
+      // punkt 1-9"; lægemiddelloven § 66, https://www.retsinformation.dk/eli/lta/2023/339.
+      // TODO: copy review
       {
         type: "paragraph",
-        text: `Skulle du fortryde, kan filler af hyaluronsyre opløses med Hyalase. Det koster ${hyalasePrice} pr. område pr. gang.`,
+        text: `Skulle du fortryde, kan filler af hyaluronsyre opløses igen. Opløsning af filler koster ${dissolvePrice} pr. område pr. gang.`,
       },
       { type: "h2", id: "priser", text: "Hvad koster det?" },
       { type: "paragraph", text: "Prisen afhænger af mængden:" },
@@ -607,9 +617,12 @@ export const allPosts: BlogPost[] = [
       },
       // source: content/treatments.ts → profhilo facts (ca. 20 min, ca. 12 mdr), about[1] (5 punkter, 1 ml
       // på hver side), FAQ "Hvor mange behandlinger skal jeg have?", "Hvornår kan jeg se resultatet?"
+      // ("Mange ser en effekt med det samme"; before: "Resultatet ses med det samme": owner 2026-11-26,
+      // "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2,
+      // https://www.retsinformation.dk/eli/retsinfo/2013/9319). TODO: copy review
       {
         type: "paragraph",
-        text: "Behandlingen tager cirka 20 minutter. Produktet sprøjtes ind i 5 punkter på hver side af ansigtet, 1 ml på hver side. Resultatet ses med det samme og holder cirka 12 måneder. Behandlingen gentages 4–6 uger efter den første, og derefter er det en fordel at vedligeholde 1–2 gange om året.",
+        text: "Behandlingen tager cirka 20 minutter. Produktet sprøjtes ind i 5 punkter på hver side af ansigtet, 1 ml på hver side. Mange ser en effekt med det samme, og resultatet holder cirka 12 måneder. Behandlingen gentages 4–6 uger efter den første, og derefter er det en fordel at vedligeholde 1–2 gange om året.",
       },
       { type: "h2", id: "efter-behandlingen", text: "Under og efter behandlingen" },
       // source: content/treatments.ts → skinbooster and profhilo FAQ "Gør det ondt?"

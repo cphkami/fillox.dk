@@ -1,7 +1,13 @@
 import { site } from "@/config/site";
 import type { FormName } from "@/lib/forms";
 import { forms } from "../forms";
+import { routes } from "../routes";
+import type { Link } from "../types";
 import { ui } from "../ui";
+import { privacyContactFormAnchor } from "./legal";
+
+/** The privacy policy's contact-form section ("14. Kontaktformular", content/pages/legal.ts). */
+const privacyContactFormHref = `${routes.privacy}#${privacyContactFormAnchor}`;
 
 /**
  * Copy for /kontakt (design 6ko desktop, mc mobile). Phone number and e-mail come
@@ -53,12 +59,20 @@ export type ContactFormCopy = {
     message: { label: string; placeholder: string };
   };
   consent: {
+    /** The box's label: "{label}{link}{end}"; the link opens the privacy policy's contact-form section. */
     label: string;
+    link: Link;
+    end: string;
     /** Value submitted when the box is ticked. */
     value: string;
     /** The consent box is only in the mobile design (mc); 6ko has five fields and no checkbox. */
     showOnDesktop: boolean;
   };
+  /**
+   * Fine-print line above the button where the consent box is hidden (from 768px while
+   * `consent.showOnDesktop` is false): "{text} {link}{end}", the same privacy-policy section.
+   */
+  privacy: { text: string; link: Link; end: string };
   submit: string;
   sending: string;
   errors: {
@@ -141,11 +155,27 @@ export const contactPage = {
       message: { label: "Besked", placeholder: "Hvad kan vi hjælpe med?" },
     },
     consent: {
-      label: `Jeg accepterer, at ${site.name} gemmer mine oplysninger for at besvare min henvendelse.`,
+      // Design mc: "Jeg accepterer, at Fillox gemmer mine oplysninger for at besvare min henvendelse."
+      // The words "som beskrevet i privatlivspolitikken" and the link to "14. Kontaktformular" are new:
+      // owner 2026-11-26 ("ret det hele som du har skrevet til mig", point 3 of the pre-launch audit;
+      // GDPR art. 13: the information is given where the data is collected).
+      // TODO: copy review (2026-11-26)
+      label: `Jeg accepterer, at ${site.name} gemmer mine oplysninger for at besvare min henvendelse, som beskrevet i `,
+      link: { label: "privatlivspolitikken", href: privacyContactFormHref },
+      end: ".",
       // TODO: copy review (submitted value; not visible)
       value: "Ja",
       // TODO: copy review — decide whether desktop should also ask for consent (6ko has no checkbox).
       showOnDesktop: false,
+    },
+    // Not in the design (6ko has no consent box): the desktop form's link to the same section, worded
+    // like the newsletter's line ("Vi bruger kun din e-mail til nyhedsbrevet, … Læs vores
+    // privatlivspolitik."). Owner 2026-11-26, point 3 of the pre-launch audit.
+    // TODO: copy review (2026-11-26)
+    privacy: {
+      text: "Vi bruger dine oplysninger til at besvare din henvendelse.",
+      link: { label: "Læs mere i vores privatlivspolitik", href: privacyContactFormHref },
+      end: ".",
     },
     submit: "Send besked",
     // TODO: copy review (states below are not in the design)

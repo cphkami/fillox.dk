@@ -101,9 +101,18 @@ export const blogPage = {
 
   newsletter: {
     formName: NEWSLETTER_FORM,
-    title: "Få tips og tilbud i din indbakke",
-    titleShort: "Få tips og tilbud",
-    text: "Én mail om måneden med nye artikler og månedens tilbud. Ingen spam.",
+    // Design 6blog/mbl: "Få tips og tilbud i din indbakke" / "Få tips og tilbud" and "Én mail om måneden
+    // med nye artikler og månedens tilbud. Ingen spam." Without offers: owner 2026-11-26, point 4 of the
+    // pre-launch audit ("ret det med priser osv"); "månedens tilbud" is the "her og nu" offer that
+    // VEJ nr. 9319 af 26/06/2013, pkt. 5.1, calls usaglig for health services
+    // (https://www.retsinformation.dk/eli/retsinfo/2013/9319). The text is what the visitor consents
+    // to (markedsføringsloven § 10), so it matches the footer (content/layout.ts → footer.newsletter)
+    // and the privacy policy ("12. Nyhedsbrev"). The short versions stay the long ones minus one
+    // passage (components/blog/Responsive renders the shared words once).
+    // TODO: copy review (2026-11-26)
+    title: "Få tips og nyheder i din indbakke",
+    titleShort: "Få tips og nyheder",
+    text: "Én mail om måneden med nye artikler og gode råd om vores behandlinger. Ingen spam.",
     textShort: "Én mail om måneden. Ingen spam.",
     placeholder: "Din e-mail",
     submit: "Tilmeld",

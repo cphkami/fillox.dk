@@ -24,10 +24,11 @@ import { photos } from "../photos";
  *    the same booking page everywhere.
  * 2. Two or three relevant treatments per need, all real pages (`treatments`, by slug; resolved
  *    and checked by components/new-here/view.ts); more behind the "Læs mere" link (`more`). The
- *    draft names "lys- og laserbehandling" for pigment, redness, pores and scars; Fillox has no
- *    such page (only laser hair removal), so that sentence is translated but nothing is linked
- *    for it. PRF hud stands in as the third treatment there (its page: pores, acne scars,
- *    pigmentation).
+ *    draft named "lys- og laserbehandling" for pigment, redness, pores and scars and a card on
+ *    light and laser for pigment and redness; Fillox Danmark has only a diode laser for hair
+ *    removal (content/treatments.ts, content/prices.ts), so both now name what it offers
+ *    (owner 2026-11-26, see the "hudtone" need and `differences`). PRF hud is the third treatment
+ *    for pigment etc. (its page: pores, acne scars, pigmentation).
  * 3. "Book konsultation" as a safety net in every section (hero, the lines-and-wrinkles and
  *    "not sure" cards, the differences, the first visit, the consultation steps, the FAQ, the
  *    closing band).
@@ -167,7 +168,7 @@ export const newHerePage = {
           "Med tiden kan huden miste noget af sin spændstighed og fasthed. Måske mærker du det i ansigtet, på halsen eller på kroppen.",
           "Hvad der passer, afhænger blandt andet af hudens kvalitet, det område, du ønsker at behandle, og hvor stor en forandring du ønsker. Vi vurderer, hvilke muligheder der findes, og er tydelige om, hvad du kan forvente.",
         ],
-        // Profhilo: løs hud i ansigtet og på halsen; Skinbooster (Ejal 40): strammer slap hud op;
+        // Profhilo: løs hud i ansigtet og på halsen; Skinbooster (Ejal 40): slap hud;
         // Microneedling: tynd og løs hud, also on the body (arms, legs, belly).
         treatments: ["profhilo", "skinbooster", "microneedling"],
         more: categoryLink("Udforsk behandlinger for spændstighed og fasthed", "hudforbedring"),
@@ -177,9 +178,15 @@ export const newHerePage = {
         title: "Jeg ønsker hjælp til pigmentpletter, rødme, porer eller ar",
         text: [
           "Ujævn hudtone og hudstruktur kan skyldes forskellige ting, og den samme behandling passer ikke til alle.",
-          "Peeling, microneedling eller lys- og laserbehandling kan være relevante alternativer. Vi vurderer din hud, før vi anbefaler en behandling.",
+          // Before (the draft): "Peeling, microneedling eller lys- og laserbehandling kan være relevante
+          // alternativer." Fillox Danmark has no light or laser treatment of the skin, only a diode
+          // laser for hair removal, so the third option is PRF, which the card lists (owner
+          // 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; lov om
+          // markedsføring af sundhedsydelser § 2, stk. 1, VEJ 9319/2013 pkt. 5.2.1,
+          // https://www.retsinformation.dk/eli/retsinfo/2013/9319). TODO: copy review
+          "Peeling, microneedling eller PRF kan være relevante alternativer. Vi vurderer din hud, før vi anbefaler en behandling.",
         ],
-        // No light / laser skin page exists (see the header); PRF hud: pores, acne scars, pigmentation.
+        // Peeling is part of Signatur ansigtsbehandling; PRF hud: pores, acne scars, pigmentation.
         treatments: ["signatur-ansigtsbehandling", "microneedling", "prf-hud"],
         more: categoryLink("Udforsk behandlinger for jævnere hudtone og struktur", "hudforbedring"),
       },
@@ -229,7 +236,7 @@ export const newHerePage = {
     title: "Hvad er forskellen på behandlingerne?",
     intro: "Mange behandlinger kan bruges til at forbedre huden, men de virker på forskellige måder.",
     // TODO: copy review (the link labels; the draft has none here). Each links the page that
-    // exists for it; "Lys- og laserbehandlinger" links laser hair removal, the only one we offer.
+    // exists for it.
     items: [
       {
         title: "Hudplejebehandlinger og peelinger",
@@ -242,8 +249,15 @@ export const newHerePage = {
         link: treatmentLink("Læs om microneedling", "microneedling"),
       },
       {
-        title: "Lys- og laserbehandlinger",
-        text: "Forskellige teknologier bruges til forskellige formål, som hårreduktion, pigmentering, rødme eller forbedring af hudkvaliteten. Vi forklarer, hvilken teknologi der eventuelt passer til dig.",
+        // Before (the draft): "Lys- og laserbehandlinger: Forskellige teknologier bruges til
+        // forskellige formål, som hårreduktion, pigmentering, rødme eller forbedring af hudkvaliteten.
+        // Vi forklarer, hvilken teknologi der eventuelt passer til dig." Fillox Danmark's only laser is
+        // a diode laser for hair removal (content/treatments.ts → laser-harfjerning: "Vores diodelaser
+        // behandler hårsækkene målrettet … tilpasse indstillingerne til din hudtype og hårstruktur").
+        // Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013
+        // pkt. 5.2.1, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+        title: "Laser hårfjerning",
+        text: "Vi bruger diodelaser til hårfjerning. Laseren virker på hårsækkene, og indstillingerne tilpasses din hudtype og hårstruktur.",
         link: treatmentLink("Læs om laser hårfjerning", "laser-harfjerning"),
       },
       {
