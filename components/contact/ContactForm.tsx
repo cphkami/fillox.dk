@@ -218,7 +218,10 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
     }
   }
 
-  const describedBy = (field: Field) => (errors[field] ? id(`${field}-error`) : undefined);
+  /** The field's hint (if it has one) and its error, in reading order. */
+  const describedBy = (field: Field, hasHint = false) =>
+    [hasHint ? id(`${field}-hint`) : null, errors[field] ? id(`${field}-error`) : null].filter(Boolean).join(" ") ||
+    undefined;
   const invalid = (field: Field) => (errors[field] ? true : undefined);
 
   return (
@@ -339,7 +342,13 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           </div>
         </FieldRow>
 
-        <FieldRow id={id("message")} label={fields.message.label} error={errors.message} className="md:col-span-2">
+        <FieldRow
+          id={id("message")}
+          label={fields.message.label}
+          hint={fields.message.hint}
+          error={errors.message}
+          className="md:col-span-2"
+        >
           <textarea
             id={id("message")}
             name="message"
@@ -347,7 +356,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
             rows={4}
             placeholder={fields.message.placeholder}
             aria-invalid={invalid("message")}
-            aria-describedby={describedBy("message")}
+            aria-describedby={describedBy("message", !!fields.message.hint)}
             onChange={clearError("message")}
             className={cn(
               fieldBase,
@@ -472,12 +481,15 @@ function FormCard({
 function FieldRow({
   id,
   label,
+  hint,
   error,
   className,
   children,
 }: {
   id: string;
   label: string;
+  /** Short help text between the label and the field (read before typing), id `${id}-hint`. */
+  hint?: string;
   error?: string;
   className?: string;
   children: ReactNode;
@@ -487,6 +499,11 @@ function FieldRow({
       <label htmlFor={id} className="text-ui-sm font-semibold text-ink">
         {label}
       </label>
+      {hint ? (
+        <p id={`${id}-hint`} className="-mt-0.5 text-fine leading-[1.5] text-pretty text-muted">
+          {hint}
+        </p>
+      ) : null}
       {children}
       {error ? <ErrorText id={`${id}-error`}>{error}</ErrorText> : null}
     </div>

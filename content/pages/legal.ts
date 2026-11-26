@@ -440,31 +440,52 @@ export const privacyPage: TextPageContent = {
      * NOT on the live page: "14. Kontaktformular", added 2026-11-26 (owner: "ret det hele som du har
      * skrevet til mig. alt fra punkt 1-9", point 3 of the pre-launch audit). Linked from the contact
      * form on /kontakt (content/pages/contact.ts → form.privacy). GDPR art. 13, stk. 1, litra c (purpose
-     * and legal basis), litra e (recipients), litra f (transfer to a third country), stk. 2, litra a
-     * (retention: the criteria, no period given by the owner), litra c (withdrawing consent).
+     * and legal basis), litra d (the legitimate interest), litra e (recipients), litra f (transfer to a
+     * third country), stk. 2, litra a (retention: the criteria, no period given by the owner); art. 21,
+     * stk. 4 (the right to object, in its own list item).
      * - Fields: components/contact/ContactForm.tsx and public/__forms.html ("kontakt": name, email,
-     *   phone, clinic, message, consent; phone and clinic are optional, the consent box is only shown
+     *   phone, clinic, message, consent; phone and clinic are optional, the checkbox is only shown
      *   below 768px, content/pages/contact.ts → form.consent.showOnDesktop).
-     * - Legal basis: the policy's own bases (section 5: "GDPR artikel 6 og artikel 9"; section 12: art. 6,
-     *   stk. 1, litra a), as proposed to the owner (README "Privatlivspolitikken og
-     *   kontaktformularen"): art. 6, stk. 1, litra a (the consent box) and f (answering an inquiry),
-     *   art. 9, stk. 2, litra a for health information written in the message.
-     *   LAUNCH BLOCKER (legal review 2026-11-26): as built, art. 9, stk. 2, litra a is NOT met. It needs
-     *   the data subject's explicit consent to the processing of health data for a specific purpose
-     *   (GDPR art. 9, stk. 2, litra a; Datatilsynet, "Samtykke", maj 2021, 2.7: no doubt that consent
-     *   was given, and the controller must be able to prove it). From 768px the form has no consent box
-     *   at all, and the mobile box ("… gemmer mine oplysninger for at besvare min henvendelse") does not
-     *   name health information. Also, the mobile box is required to send, so it is not a freely given
-     *   consent to answering (GDPR art. 7, stk. 4), and one purpose rests on two bases (f and a).
-     *   And Netlify's DPA, Exhibit I, point 4 ("Sensitive Data Transferred: None intended. Customer …
-     *   shall not submit special categories of Personal Data … unless the Agreement expressly permits
-     *   it"), excludes health data from Netlify Forms. Owner/jurist to choose (README): a box at every
-     *   width that names health information plus a processor whose agreement covers it, or asking
-     *   visitors not to write health information in the form, with another basis for what arrives
-     *   anyway (e.g. art. 9, stk. 2, litra h / databeskyttelsesloven § 7, stk. 3, if authorised health
-     *   staff under a duty of confidentiality answer). The text below is unchanged until then.
-     * - Netlify Forms stores submissions (Netlify DPA, "Last Updated: November 13, 2026", § 1: "Forms
-     *   submissions" are Customer Data; https://www.netlify.com/pdf/netlify-dpa.pdf).
+     * - Legal basis, rewritten 2026-11-26 after the owner rejected a ban on health information in the
+     *   form ("virker dumt.. ingen sender hvis der ikke er mulighed for at sende?") and asked for a short
+     *   reassurance instead (content/pages/contact.ts → form.fields.message.hint). The first version
+     *   claimed explicit consent (art. 9, stk. 2, litra a) that the form never collects, and rested
+     *   answering on two bases (art. 6, stk. 1, litra f and a). Workflow wf_bb2d5a45-700 (draft + a
+     *   legal and a facts review, sources read at retsinformation.dk, eur-lex and datatilsynet.dk):
+     *   - Answering: art. 6, stk. 1, litra f only. The mobile checkbox is not a consent and not the
+     *     basis: the data are needed to answer, and Datatilsynet ("Samtykke", maj 2021, 2.3) says to use
+     *     another, more fitting basis than consent for what is necessary; a box that must be ticked to
+     *     send is no free choice (art. 4, nr. 11, "frivillig"). Asking for consent and relying on
+     *     legitimate interest is what Datatilsynet criticised in j.nr. 2019-32-0709 (Rejsekort), so the
+     *     text says plainly that the box is not the basis. (Art. 7, stk. 4 is not the reason: it covers
+     *     consent to processing that is not necessary.)
+     *   - Health information written in the message anyway: art. 9, stk. 2, litra h, jf.
+     *     databeskyttelsesloven § 7, stk. 3 (LBK nr. 289 af 08/03/2024: "nødvendig med henblik på
+     *     forebyggende sygdomsbekæmpelse, medicinsk diagnose, sygepleje eller patientbehandling eller
+     *     forvaltning af læge- og sundhedstjenester", carried out "af en person inden for
+     *     sundhedssektoren, der efter lovgivningen er undergivet tavshedspligt"; applied by
+     *     Datatilsynet 10/02/2021, j.nr. 2019-32-0988). Cosmetic treatment is treatment of a patient
+     *     (BEK nr. 1361 af 24/11/2025 om patientjournaler § 1, stk. 2; autorisationsloven § 71, stk. 4).
+     *     CONDITION: only the practitioners (sundhedspersoner, sundhedsloven LBK nr. 896 af 05/10/2026
+     *     § 6, stk. 1; tavshedspligt § 40) may read the submissions, in Netlify Forms and in any
+     *     notification mailbox. A receptionist who only books is hardly a sundhedsperson (VEJ nr. 10248
+     *     af 15/12/2025), and a confidentiality clause in a contract is not "efter lovgivningen". The
+     *     owner has not yet said who reads them (README "Hvem læser beskederne?"), so the text does not
+     *     promise it yet; if it is not only practitioners, access must be limited before launch.
+     *     Dropping the art. 9 sentence would not help: without § 7, stk. 3 nothing in art. 9, stk. 2
+     *     covers health details that arrive, and leaving it out would only hide that.
+     *   - Rejected: art. 9, stk. 2, litra a (no explicit consent is collected) and litra e (a message
+     *     to the clinic is not "tydeligvis offentliggjort af den registrerede").
+     *   - Journal: answers with concrete advice are journalised (BEK nr. 1361 af 24/11/2025 § 15, nr. 1
+     *     og 10, § 35: at least 10 years), so "Helbredsoplysninger" and "Opbevaring" point to sections 3
+     *     and 6.
+     *   - Residual risk: Netlify's DPA (Last Updated: November 13, 2026), Exhibit I, point 4 ("Sensitive
+     *     Data Transferred (If Applicable)"): the customer must not submit special categories of personal
+     *     data unless the agreement expressly permits it; § 2.3 makes the customer solely responsible for
+     *     the legality of Customer Data. The hint lowers how much health information reaches Netlify, it
+     *     does not stop it (README).
+     * - Netlify Forms stores submissions (Netlify DPA, "Last Updated: November 13, 2026", § 1.6: Forms
+     *   submissions are Customer Content; https://www.netlify.com/pdf/netlify-dpa.pdf).
      * - Transfer: Netlify, Inc. is certified under the EU-U.S. DPF. The official list
      *   (https://www.dataprivacyframework.gov/list, checked 2026-11-26) shows "Netlify, Inc", San
      *   Francisco, CA: "EU-U.S. Data Privacy Framework", "Active", "Non-HR Data". Also the Netlify
@@ -488,10 +509,11 @@ export const privacyPage: TextPageContent = {
     { type: "h2", id: privacyContactFormAnchor, text: "14. Kontaktformular" },
     // Language review 2026-11-26: split into three sentences (was "… og din besked og, hvis du udfylder
     // dem, dit telefonnummer og den klinik, du vælger. På mobil får vi også …"); same fields.
+    // 2026-11-26: "i samtykkefeltet" → "i feltet under beskeden" (the box is not a consent, see "Retsgrundlag").
     // TODO: copy review
     {
       type: "paragraph",
-      text: "Når du skriver til os via kontaktformularen, får vi dit navn, din e-mailadresse og din besked. Skriver du dit telefonnummer eller vælger du en klinik, får vi dem også. På mobil får vi desuden at vide, at du har sat kryds i samtykkefeltet.",
+      text: "Når du skriver til os via kontaktformularen, får vi dit navn, din e-mailadresse og din besked. Skriver du dit telefonnummer eller vælger du en klinik, får vi dem også. På mobil får vi desuden at vide, at du har sat kryds i feltet under beskeden.",
     },
     {
       type: "list",
@@ -502,28 +524,33 @@ export const privacyPage: TextPageContent = {
         ],
         [
           { text: "Retsgrundlag: ", strong: true },
-          "vores legitime interesse i at besvare de henvendelser, vi får, og dit samtykke, når du sætter kryds i samtykkefeltet, jf. GDPR artikel 6, stk. 1, litra f og a. Skriver du oplysninger om dit helbred i beskeden, behandler vi dem på grundlag af dit udtrykkelige samtykke, jf. GDPR artikel 9, stk. 2, litra a.",
+          "vores legitime interesse i at besvare de henvendelser, vi får, jf. GDPR artikel 6, stk. 1, litra f. Skriver du om dit helbred i beskeden, bruger vi oplysningerne på grundlag af GDPR artikel 9, stk. 2, litra h, jf. databeskyttelseslovens § 7, stk. 3. Krydset på mobil er ikke et samtykke, og vi bruger det ikke som retsgrundlag.",
         ],
+        // Same message as the hint at the message field (content/pages/contact.ts → form.fields.message.hint).
+        // Who reads the messages is not promised here until the owner confirms it (see the comment above).
         [
           { text: "Helbredsoplysninger: ", strong: true },
-          "skriv kun det om dit helbred, som er nødvendigt for dit spørgsmål. Vil du hellere fortælle det mundtligt, kan du ringe til os på ",
+          "du behøver ikke at skrive detaljer om dit helbred i beskeden. Skriv dit telefonnummer i formularen, så ringer vi dig op og tager en snak om det. Du kan også selv ringe til os på ",
           // Non-breaking spaces: the number never wraps inside the sentence.
           { text: site.contact.phone.replace(/ /g, "\u00a0"), href: site.contact.phoneHref },
-          ".",
+          ". Skriver du om dit helbred i beskeden, bruger vi kun oplysningerne til at svare dig og følge op på din henvendelse. Er det vigtigt for en behandling hos os, skriver behandleren det i din journal (se afsnit 3).",
         ],
         [
           { text: "Opbevaring: ", strong: true },
-          "vi gemmer din henvendelse, så længe det er nødvendigt for at besvare og følge op på den. Derefter sletter vi den.",
+          "vi gemmer din henvendelse, så længe det er nødvendigt for at besvare og følge op på den. Derefter sletter vi den. Det, der er skrevet i din journal, opbevarer vi som beskrevet i afsnit 6.",
         ],
         [
           { text: "Databehandler: ", strong: true },
           "det, du sender via formularen, modtages og opbevares hos vores hostingudbyder, Netlify, Inc. (Netlify Forms), som kun behandler oplysningerne efter vores instruks. Netlify, Inc. ligger i USA. Overførslen dertil sker på grundlag af EU-U.S. Data Privacy Framework, som Netlify, Inc. er certificeret under, og EU-Kommissionens afgørelse af 10. juli 2023 om, at rammen sikrer et tilstrækkeligt beskyttelsesniveau.",
         ],
+        // 2026-11-26: was "Tilbagetrækning" (withdrawing consent). With no consent there is nothing to
+        // withdraw (art. 13, stk. 2, litra c); art. 6, stk. 1, litra f gives the right to object, which
+        // must be shown clearly and separately (art. 21, stk. 4).
         [
-          { text: "Tilbagetrækning: ", strong: true },
-          "du kan til enhver tid trække dit samtykke tilbage ved at skrive til os på ",
+          { text: "Indsigelse: ", strong: true },
+          "du kan til enhver tid gøre indsigelse mod, at vi bruger dine oplysninger til at besvare din henvendelse. Skriv til os på ",
           { text: site.contact.email, href: `mailto:${site.contact.email}` },
-          ". Det påvirker ikke lovligheden af den behandling, der er sket, før du trak det tilbage. Dine øvrige rettigheder står i afsnit 8.",
+          ". Dine øvrige rettigheder står i afsnit 8.",
         ],
       ],
     },

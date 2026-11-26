@@ -158,7 +158,8 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 - Kontaktformularen: afsnittet "14. Kontaktformular" i privatlivspolitikken, som formularen linker
   til (se "Privatlivspolitikken og kontaktformularen").
 - Spam: honeypot-feltet `bot-field`.
-- Notifikationer (e-mail ved ny besked) sættes op i Netlify under **Forms → Form notifications**.
+- Notifikationer (e-mail ved ny besked) sættes op i Netlify under **Forms → Form notifications**,
+  kun til en mailboks, som kun behandlerne læser (se "Hvem læser beskederne?").
 
 ## Cookiebanner og måling
 
@@ -230,9 +231,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         `content/pages/men.ts`
   - [ ] `content/pages/treatments.ts`: fallback-tekster, FAQ'er, oversigtssiden `/behandlinger`
   - [ ] `content/pages/practitioner.ts`: behandlersider (tekst i booking-båndet pr. behandler)
-  - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande — og **beslut, om desktop
-        også skal have samtykke-feltet** (kun i mobildesignet; juristen, se "Privatlivspolitikken og
-        kontaktformularen": helbredsoplysninger kræver udtrykkeligt samtykke). E-mail-kortet siger nu "Svar inden
+  - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande og linjen ved beskedfeltet
+        (26/11-2026, se "Helbredsoplysninger i formularen"). Intet samtykke-felt på desktop: afsnit 14
+        bygger ikke længere på samtykke (26/11-2026), og feltet på mobil er ikke et samtykke. E-mail-kortet siger nu "Svar inden
         for én hverdag" (designet 6ko: "Svar inden for 24 timer") ligesom mobilintroen og
         takkesiden, så sitet kun giver ét løfte (25/11-2026): **det er jeres løfte om svartid.**
         Foretrækker I 24 timer, ændres det alle tre steder.
@@ -310,37 +311,61 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       privatlivssiden, `kontakt@` i `config/site.ts` og i afsnit 12 og 14) — `content/pages/legal.ts`.
 - [x] **Privatlivspolitikken og kontaktformularen** (du, 26/11-2026: "ret det hele som du har
       skrevet til mig. alt fra punkt 1-9"): nyt afsnit "14. Kontaktformular" (`#kontaktformular`) med
-      felterne, formålet, retsgrundlaget (art. 6, stk. 1, litra f og a, og art. 9, stk. 2, litra a for
-      helbredsoplysninger i beskeden; det sidste holder ikke endnu, se "Helbredsoplysninger i
-      formularen" nedenfor), opbevaring, Netlify, Inc. som databehandler og overførslen til
+      felterne, formålet, retsgrundlaget (art. 6, stk. 1, litra f, og for helbredsoplysninger i
+      beskeden art. 9, stk. 2, litra h, jf. databeskyttelseslovens § 7, stk. 3; se "Helbredsoplysninger
+      i formularen" nedenfor), opbevaring, Netlify, Inc. som databehandler, overførslen til
       USA via EU-U.S. Data Privacy Framework (Netlify, Inc står som "Active" på
-      dataprivacyframework.gov, tjekket 26/11-2026); afsnit 12 har fået samme overførselsgrundlag.
-      Formularen linker dertil: samtykke-feltet på mobil ("… som beskrevet i privatlivspolitikken")
+      dataprivacyframework.gov, tjekket 26/11-2026) og retten til indsigelse; afsnit 12 har fået samme
+      overførselsgrundlag. Formularen linker dertil: afkrydsningsfeltet på mobil ("… som beskrevet i privatlivspolitikken")
       og en linje over knappen fra 768 px ("Vi bruger dine oplysninger til at besvare din
       henvendelse. Læs mere i vores privatlivspolitik."). Opfølgning:
   - [ ] **Slet besvarede beskeder i Netlify** (Forms → "kontakt"): afsnit 14 lover, at en henvendelse
         slettes, når den er besvaret og fulgt op, og Netlify gemmer dem, til de slettes. Aftal en fast
         rytme, fx hver måned.
-  - [ ] **Helbredsoplysninger i formularen (jer og juristen, skal løses før lanceringen)**: afsnit 14
-        siger, at helbredsoplysninger i beskeden behandles på grundlag af udtrykkeligt samtykke (art.
-        9, stk. 2, litra a), men det holder ikke, som formularen er bygget (juridisk gennemgang
-        26/11-2026): fra 768 px er der intet samtykke-felt (designet 6ko), og mobilens felt ("… gemmer
-        mine oplysninger for at besvare min henvendelse") nævner ikke helbredsoplysninger. Desuden siger
-        Netlifys databehandleraftale (Exhibit I, punkt 4), at der ikke må sendes følsomme oplysninger
-        til Netlify, medmindre aftalen udtrykkeligt tillader det. Og mobilens felt skal udfyldes for
-        at sende, så det er ikke et frivilligt samtykke til selve besvarelsen (art. 7, stk. 4); samme
-        formål hviler nu på to grundlag (art. 6, stk. 1, litra f og a). Vælg én vej: (1) et
-        samtykke-felt på alle bredder (`showOnDesktop` i `content/pages/contact.ts`, se "Copy review"
-        → `content/pages/contact.ts`), der nævner helbredsoplysninger, og en formularudbyder, hvis
-        aftale dækker dem; eller (2) bed i formularen om ikke at skrive helbredsoplysninger (ring i
-        stedet), og lad juristen vælge grundlaget for dem, der kommer alligevel (fx art. 9, stk. 2,
-        litra h, og databeskyttelsesloven § 7, stk. 3, hvis det er autoriserede sundhedspersoner med
-        tavshedspligt, der svarer). Afsnit 14 rettes efter valget (`content/pages/legal.ts`).
+  - [x] **Helbredsoplysninger i formularen** (du, 26/11-2026: "nej du skal ikke skeive det i
+        kontaktformularen. virker dumt.. ingen sender hvis der ikke er mulighed for at sende?" og
+        "måske skriv kort sætning med du behøves ikke at skrive personlig oplysnigner, vi ringer til
+        dig og tager en snak om det"): formularen forbyder ikke noget. Mellem "Besked" og feltet står
+        nu "Du behøver ikke at skrive detaljer om dit helbred – giv os dit nummer, så ringer vi og
+        tager en snak om det." (`content/pages/contact.ts` → `form.fields.message.hint`; "detaljer om
+        dit helbred", ikke "personlige oplysninger", fordi navn og e-mail også er personlige
+        oplysninger og skal udfyldes). Afsnit 14 (`content/pages/legal.ts`) lover ikke længere et
+        samtykke, som formularen aldrig indhenter, og siger det samme som linjen. Besvarelsen hviler på
+        ét retsgrundlag (art. 6, stk. 1, litra f). Krydset på mobil er ikke et samtykke: vi skal bruge
+        oplysningerne for at kunne svare, og feltet skal udfyldes for at sende, så det er ikke et frit
+        valg (art. 4, nr. 11; Datatilsynet, "Samtykke", 2021, afsnit 2.3). Fejlteksten ved feltet er nu
+        "Sæt kryds i feltet for at sende din besked." Helbredsoplysninger, der kommer alligevel:
+        art. 9, stk. 2, litra h, jf. databeskyttelseslovens § 7, stk. 3; det, der er vigtigt for en
+        behandling, skrives i journalen (afsnit 3 og 6). "Tilbagetrækning" (af samtykke) er erstattet
+        af "Indsigelse" (art. 21). Ingen jurist har vurderet afsnit 14. Kilderne står i kommentaren
+        over afsnittet. Åbent:
+    - [ ] **Hvem læser beskederne? (svar før lanceringen)**: § 7, stk. 3 gælder kun, når
+          oplysningerne behandles af sundhedspersoner med tavshedspligt efter loven. Hvem kan åbne
+          beskederne i Netlify (Forms) og i den mailboks, der får besked om nye beskeder? Er det kun
+          Dr. Tom og sygeplejerskerne, tilføjer vi i afsnit 14: "Hos os er det kun vores behandlere,
+          der læser og besvarer beskederne. De er sundhedspersoner og har tavshedspligt." Læser andet
+          sundhedsfagligt personale med på en behandlers ansvar: "Hos os læses beskederne kun af vores
+          behandlere og af sundhedsfagligt personale, der arbejder på deres ansvar. De har alle
+          tavshedspligt." En receptionist, der kun booker, er næppe sundhedsperson (sundhedsloven § 6;
+          vejledning nr. 10248 af 15/12/2025), og tavshedspligt i en ansættelseskontrakt er ikke
+          tavshedspligt efter loven. Læser receptionen med, så begræns adgangen, før sitet går live:
+          kun behandlerne må kunne se beskederne i Netlify og i notifikations-mailboksen. Det hjælper
+          ikke at fjerne sætningen om art. 9 fra afsnit 14, for så har helbredsoplysninger i beskederne
+          slet intet grundlag.
+    - [ ] **Netlifys databehandleraftale** (Exhibit I, punkt 4: ingen følsomme oplysninger,
+          medmindre aftalen tillader det) er stadig en restrisiko. Linjen ved beskedfeltet får færre
+          til at skrive om deres helbred, men nogle gør det alligevel. Slet besvarede beskeder hurtigt
+          (se "Slet besvarede beskeder i Netlify"), og overvej på sigt en formularudbyder, hvis aftale
+          dækker helbredsoplysninger.
+    - [ ] **Krydset på mobil** siger stadig "Jeg accepterer …" og ligner et samtykke, selv om afsnit
+          14 nu siger, at det ikke er det. Det kan erstattes af samme linje som fra 768 px ("Vi bruger
+          dine oplysninger til at besvare din henvendelse. Læs mere i vores privatlivspolitik."), så
+          formularen også bliver kortere på mobil. Designet (mc) har feltet, så det er jeres valg.
   - [ ] **IP-adresse i Netlify Forms**: Netlify har oplyst (supportforum 2020–2021, ikke i deres
         dokumentation), at IP-adressen gemmes med hver indsendelse. Åbn en indsendelse eller
         CSV-eksporten under Forms, og se, hvad der gemmes ud over felterne. Står der mere (IP-adresse,
         browser, henvisende side), skal afsnit 12 og 14 nævne det.
-  - [ ] **Juristen**: slår I e-mail-notifikationer til i Netlify Forms (se "Netlify Forms"), ligger
+  - [ ] **Mailudbyderen**: slår I e-mail-notifikationer til i Netlify Forms (se "Netlify Forms"), ligger
         beskederne også i jeres mailboks. Skal mailudbyderen nævnes som databehandler i afsnit 14 (og
         overførslen, hvis den er uden for EU)?
   - [ ] **EU-U.S. Data Privacy Framework** blev opretholdt af EU-Retten 3/9-2025 (T-553/23), men
@@ -791,9 +816,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       "Priser på behandlinger · Fillox" (aldrig et receptpligtigt produkt). Skal vi skrive dem, eller
       gør bureauet? (Bloggen hedder "Blog om behandlinger og efterpleje · Fillox" fra 25/11-2026, og
       Dr. Toms profil bruger hans korte titel, "Dr. Tom Haugland – Æstetisk læge & grundlægger".)
-- [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til
-      (se "Privatlivspolitikken og kontaktformularen": slet besvarede beskeder, og mailudbyderen som
-      databehandler).
+- [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til,
+      kun til en mailboks, som kun behandlerne læser (se "Privatlivspolitikken og kontaktformularen":
+      "Hvem læser beskederne?", slet besvarede beskeder, og mailudbyderen som databehandler).
 - [ ] **Blog** (du, 25/11-2026: "lave bloggen. skriv et par artikler", signeret "Fillox-holdet"):
       syv artikler, dateret 25/11-2026 — "Lip filler for første gang", "0,5 eller 1 ml?",
       "Hævelse og blå mærker", "Skinbooster eller Profhilo" og de tre rynkeartikler

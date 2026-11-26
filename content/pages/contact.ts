@@ -56,7 +56,11 @@ export type ContactFormCopy = {
     phone: { label: string; placeholder: string };
     email: { label: string; placeholder: string };
     clinic: { label: string; placeholder: string };
-    message: { label: string; placeholder: string };
+    /**
+     * `hint`: a short line with the message field (not in the design), linked to the textarea with
+     * aria-describedby.
+     */
+    message: { label: string; placeholder: string; hint?: string };
   };
   consent: {
     /** The box's label: "{label}{link}{end}"; the link opens the privacy policy's contact-form section. */
@@ -152,7 +156,18 @@ export const contactPage = {
       phone: { label: "Telefon", placeholder: "+45" },
       email: { label: "E-mail", placeholder: "din@email.dk" },
       clinic: { label: "Klinik", placeholder: "Vælg klinik" },
-      message: { label: "Besked", placeholder: "Hvad kan vi hjælpe med?" },
+      message: {
+        label: "Besked",
+        placeholder: "Hvad kan vi hjælpe med?",
+        // Owner 2026-11-26: no ban on health information in the form ("virker dumt.. ingen sender hvis
+        // der ikke er mulighed for at sende?"), a short reassurance instead ("du behøves ikke at skrive
+        // personlig oplysnigner, vi ringer til dig og tager en snak om det"). "Detaljer om dit helbred",
+        // not "personlige oplysninger": name and e-mail are personal data too, and required. The call
+        // depends on the optional phone field. Privacy policy section 14 ("Helbredsoplysninger") says
+        // the same. No-break space before the dash, as in content/pages/about.ts.
+        // TODO: copy review (2026-11-26)
+        hint: "Du behøver ikke at skrive detaljer om dit helbred\u00a0– giv os dit nummer, så ringer vi og tager en snak om det.",
+      },
     },
     consent: {
       // Design mc: "Jeg accepterer, at Fillox gemmer mine oplysninger for at besvare min henvendelse."
@@ -165,7 +180,9 @@ export const contactPage = {
       end: ".",
       // TODO: copy review (submitted value; not visible)
       value: "Ja",
-      // TODO: copy review — decide whether desktop should also ask for consent (6ko has no checkbox).
+      // 2026-11-26: no box on desktop (6ko has none). Privacy policy section 14 no longer rests on consent
+      // (answering: GDPR art. 6, stk. 1, litra f), so a box would add nothing; the mobile box stays as
+      // designed (mc) and is not a consent (section 14 says so).
       showOnDesktop: false,
     },
     // Not in the design (6ko has no consent box): the desktop form's link to the same section, worded
@@ -186,7 +203,9 @@ export const contactPage = {
       emailInvalid: "Tjek, at e-mailen er skrevet rigtigt.",
       phoneInvalid: "Tjek, at telefonnummeret er skrevet rigtigt.",
       messageRequired: "Skriv, hvad vi kan hjælpe med.",
-      consentRequired: "Sæt kryds, så vi må gemme dine oplysninger og svare dig.",
+      // 2026-11-26: was "Sæt kryds, så vi må gemme dine oplysninger og svare dig.", which presented the
+      // box as permission (consent); section 14 says it is not one.
+      consentRequired: "Sæt kryds i feltet for at sende din besked.",
       submit: `Vi kunne ikke sende din besked. Prøv igen, eller ring til os på ${phoneNoBreak}.`,
     },
     /** Shown in place of the form after sending, and as the /kontakt/tak page (no-JS fallback). */
