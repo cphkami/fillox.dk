@@ -52,6 +52,7 @@ export default function BookingPage() {
             <p className="mt-4 max-w-[50ch] text-[16px] leading-[1.7] text-muted md:mt-5 md:text-lead md:leading-[1.75]">
               {copy.intro}
             </p>
+            <p className="mt-3 max-w-[50ch] text-small leading-[1.6] text-muted md:mt-4">{copy.ageNote}</p>
           </div>
           <div className="mt-7 border-t border-line pt-6 md:mt-9 xl:mt-0 xl:max-w-[clamp(440px,calc(280px+12.5vw),480px)] xl:border-t-0 xl:border-l xl:pt-0 xl:pb-1 xl:pl-[clamp(40px,calc(8px+2.5vw),48px)]">
             <p className="text-body-sm font-semibold xl:text-[length:clamp(15px,calc(3px+0.9375vw),18px)]">

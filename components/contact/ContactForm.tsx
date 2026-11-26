@@ -19,13 +19,13 @@ import { honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
 import { useHydrated } from "@/lib/useHydrated";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
-type Field = "name" | "email" | "phone" | "message" | "consent";
+type Field = "name" | "email" | "phone" | "message";
 type Errors = Partial<Record<Field, string>>;
 type Status = "idle" | "sending" | "success";
 
 /** Order in which invalid fields receive focus: the visual order on each layout. */
-const FIELD_ORDER: Field[] = ["name", "phone", "email", "message", "consent"];
-const FIELD_ORDER_MOBILE: Field[] = ["name", "email", "phone", "message", "consent"];
+const FIELD_ORDER: Field[] = ["name", "phone", "email", "message"];
+const FIELD_ORDER_MOBILE: Field[] = ["name", "email", "phone", "message"];
 
 /** Digits, spaces, "+", "-", "(" and ")", with at least 6 digits. */
 const PHONE_PATTERN = /^\+?[\d\s()-]+$/;
@@ -34,9 +34,10 @@ const PHONE_PATTERN = /^\+?[\d\s()-]+$/;
 const MOBILE_QUERY = "(max-width: 47.99rem)";
 
 /**
- * The privacy-policy links in the fine print: the text pages' link style (components/text-page/RichText),
+ * The privacy-policy link in the fine print: the text pages' link style (components/text-page/RichText),
  * one unbroken line, and an invisible hit area 15px above and below the link's own box (15–16px high at
- * text-fine, so the target is 45–46px; 12px gave 39–41px). It stays clear of the submit button.
+ * text-fine, so the target is 45–46px; 12px gave 39–41px). It stays clear of the submit button, which
+ * sits 20px below the line on mobile (14px gap + mt-1.5) and 24px from 768px (18px + mt-1.5).
  */
 const inlineLinkClasses =
   "relative font-medium whitespace-nowrap text-accent underline decoration-rule-strong underline-offset-[3px] transition-colors after:absolute after:-inset-x-1 after:-inset-y-[15px] hover:decoration-accent";
@@ -73,9 +74,9 @@ type ContactFormProps = {
 };
 
 /**
- * "Send en besked" (6ko / mc): name, phone, e-mail, clinic and message, plus a consent
- * box on mobile. Both widths link to the privacy policy's contact-form section: the consent
- * label on mobile, a fine-print line above the button from 768px. Validates on submit, posts
+ * "Send en besked" (6ko / mc): name, phone, e-mail, clinic and message, and a fine-print line
+ * above the button that links to the privacy policy's contact-form section (mc's consent box was
+ * removed on 2026-11-26, content/pages/contact.ts → form.privacy). Validates on submit, posts
  * to Netlify Forms via lib/forms.ts, and shows inline errors, a submit error and a success
  * message. Without JavaScript the form posts straight to Netlify (method="post" to
  * `copy.noJsAction`, a static file that forwards to the /kontakt/tak thank-you page).
@@ -104,7 +105,6 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
   const showOverlay = clinic !== null;
 
   const successRef = useRef<HTMLDivElement>(null);
-  const consentRef = useRef<HTMLInputElement>(null);
   /** Where focus goes after the next render (set by handlers, consumed by the effect). */
   const focusNext = useRef<Field | "success" | null>(null);
 
@@ -158,9 +158,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
 
   function clearError(field: Field) {
     return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const target = event.target;
-      const filled = target instanceof HTMLInputElement && target.type === "checkbox" ? target.checked : target.value.trim();
-      if (errors[field] && filled) setErrors((prev) => ({ ...prev, [field]: undefined }));
+      if (errors[field] && event.target.value.trim()) setErrors((prev) => ({ ...prev, [field]: undefined }));
     };
   }
 
@@ -174,10 +172,6 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
     const email = value("email");
     const phone = value("phone");
     const message = value("message");
-    // The consent box is hidden on desktop (6ko has none); only require it where it is shown.
-    const consentEl = consentRef.current;
-    const consentShown = !!consentEl && consentEl.getClientRects().length > 0;
-    const consented = consentShown && consentEl.checked;
 
     const next: Errors = {};
     if (!name) next.name = copy.errors.nameRequired;
@@ -187,7 +181,6 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
       next.phone = copy.errors.phoneInvalid;
     }
     if (!message) next.message = copy.errors.messageRequired;
-    if (consentShown && !consented) next.consent = copy.errors.consentRequired;
 
     setSubmitFailed(false);
     const firstInvalid = (isMobile ? FIELD_ORDER_MOBILE : FIELD_ORDER).find((f) => next[f]);
@@ -207,7 +200,6 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
         phone,
         clinic: value("clinic"),
         message,
-        consent: consented ? copy.consent.value : "",
         ...honeypotValue(data),
       });
       focusNext.current = "success";
@@ -366,63 +358,13 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           />
         </FieldRow>
 
-        <div className={cn("md:col-span-2", !copy.consent.showOnDesktop && "md:hidden")}>
-          {/* min-h-11: the whole row (checkbox + text) is a 44px touch target. */}
-          <label
-            htmlFor={id("consent")}
-            className="flex min-h-11 cursor-pointer items-start gap-2.5 text-fine leading-[1.5] text-muted"
-          >
-            <span className="relative flex size-[22px] shrink-0">
-              <input
-                ref={consentRef}
-                id={id("consent")}
-                name="consent"
-                type="checkbox"
-                value={copy.consent.value}
-                aria-invalid={invalid("consent")}
-                aria-describedby={describedBy("consent")}
-                onChange={clearError("consent")}
-                className="peer size-[22px] cursor-pointer appearance-none rounded-[6px] border border-accent bg-transparent transition-colors checked:bg-accent"
-              />
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="pointer-events-none absolute inset-0 m-auto size-3.5 text-on-accent opacity-0 peer-checked:opacity-100"
-              >
-                <path d="M3.5 8.5l3 3 6-7" />
-              </svg>
-            </span>
-            <span>
-              {copy.consent.label}
-              {/* A link inside the label: clicking it follows the link and leaves the box as it is. */}
-              <Link href={copy.consent.link.href} className={inlineLinkClasses}>
-                {copy.consent.link.label}
-              </Link>
-              {copy.consent.end}
-            </span>
-          </label>
-          {errors.consent ? (
-            <ErrorText id={id("consent-error")} className="mt-2">
-              {errors.consent}
-            </ErrorText>
-          ) : null}
-        </div>
-
-        {/* Where the consent box is hidden (6ko has none), the link to the privacy policy stands alone. */}
-        {copy.consent.showOnDesktop ? null : (
-          <p className="text-fine leading-[1.5] text-pretty text-muted max-md:hidden md:col-span-2">
-            {copy.privacy.text}{" "}
-            <Link href={copy.privacy.link.href} className={inlineLinkClasses}>
-              {copy.privacy.link.label}
-            </Link>
-            {copy.privacy.end}
-          </p>
-        )}
+        <p className="text-fine leading-[1.5] text-pretty text-muted md:col-span-2">
+          {copy.privacy.text}{" "}
+          <Link href={copy.privacy.link.href} className={inlineLinkClasses}>
+            {copy.privacy.link.label}
+          </Link>
+          {copy.privacy.end}
+        </p>
 
         {submitFailed ? (
           <p role="alert" className="text-small leading-[1.6] font-semibold text-accent md:col-span-2">
@@ -435,7 +377,7 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
           aria-disabled={sending || undefined}
           className={cn(
             buttonClasses({ variant: "primary", size: "md", mobileSize: "lg", fullWidth: true }),
-            "md:col-span-2 md:mt-1.5",
+            "mt-1.5 md:col-span-2",
             // 80%, not 70%: "Sender…" (the only progress feedback) stays ≥ 5:1 on every surface.
             sending && "cursor-progress opacity-80",
           )}

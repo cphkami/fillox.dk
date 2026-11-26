@@ -1,6 +1,7 @@
 // Translated from the agency's Norwegian draft (Drive, 2026-10-08) — TODO: copy review by Fillox
 import type { FaqItem, ImageRef, Link } from "../types";
 import { site } from "@/config/site";
+import { layoutCopy } from "../layout";
 import { treatmentCategories, treatmentCategoryHref } from "../navigation";
 import { routes } from "../routes";
 import { getTreatment, treatmentHref } from "../treatments";
@@ -360,6 +361,13 @@ export const newHerePage = {
         question: "Skal jeg afsætte tid hjemme efter behandlingen?",
         answer:
           "Det kommer an på behandlingen. Nogle giver kun svagt synlige reaktioner, mens andre blandt andet kan give rødme, hævelse eller blå mærker. Fortæl os, hvis du har en vigtig begivenhed eller bestemte planer, så kan vi rådgive dig om tidspunktet.",
+      },
+      // Not in the agency's draft: owner 2026-11-26 ("tilføj 18 år"). BEK nr. 834 af 27/06/2014 § 3; the
+      // same line as under the /booking intro (content/layout.ts → booking.ageNote).
+      // TODO: copy review (2026-11-26)
+      {
+        question: "Er der en aldersgrænse?",
+        answer: `Ja. ${layoutCopy.booking.ageNote}`,
       },
     ] satisfies FaqItem[],
     /** The price list the third answer refers to. */

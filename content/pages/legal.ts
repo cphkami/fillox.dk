@@ -444,21 +444,22 @@ export const privacyPage: TextPageContent = {
      * third country), stk. 2, litra a (retention: the criteria, no period given by the owner); art. 21,
      * stk. 4 (the right to object, in its own list item).
      * - Fields: components/contact/ContactForm.tsx and public/__forms.html ("kontakt": name, email,
-     *   phone, clinic, message, consent; phone and clinic are optional, the checkbox is only shown
-     *   below 768px, content/pages/contact.ts → form.consent.showOnDesktop).
+     *   phone, clinic, message; phone and clinic are optional). The mobile consent checkbox (design mc)
+     *   was removed on 2026-11-26 (owner: "ja fjern krydset"), so the form collects no tick.
      * - Legal basis, rewritten 2026-11-26 after the owner rejected a ban on health information in the
      *   form ("virker dumt.. ingen sender hvis der ikke er mulighed for at sende?") and asked for a short
      *   reassurance instead (content/pages/contact.ts → form.fields.message.hint). The first version
      *   claimed explicit consent (art. 9, stk. 2, litra a) that the form never collects, and rested
      *   answering on two bases (art. 6, stk. 1, litra f and a). Workflow wf_bb2d5a45-700 (draft + a
      *   legal and a facts review, sources read at retsinformation.dk, eur-lex and datatilsynet.dk):
-     *   - Answering: art. 6, stk. 1, litra f only. The mobile checkbox is not a consent and not the
-     *     basis: the data are needed to answer, and Datatilsynet ("Samtykke", maj 2021, 2.3) says to use
-     *     another, more fitting basis than consent for what is necessary; a box that must be ticked to
-     *     send is no free choice (art. 4, nr. 11, "frivillig"). Asking for consent and relying on
-     *     legitimate interest is what Datatilsynet criticised in j.nr. 2019-32-0709 (Rejsekort), so the
-     *     text says plainly that the box is not the basis. (Art. 7, stk. 4 is not the reason: it covers
-     *     consent to processing that is not necessary.)
+     *   - Answering: art. 6, stk. 1, litra f only, not consent: the data are needed to answer, and
+     *     Datatilsynet ("Samtykke", maj 2021, 2.3) says to use another, more fitting basis than consent
+     *     for what is necessary; a box that must be ticked to send is no free choice (art. 4, nr. 11,
+     *     "frivillig"). Asking for consent and relying on legitimate interest is what Datatilsynet
+     *     criticised in j.nr. 2019-32-0709 (Rejsekort). The mobile checkbox, which read like a consent
+     *     ("Jeg accepterer …"), was therefore removed on 2026-11-26 (owner: "ja fjern krydset"); until
+     *     then the text said plainly that the box was not the basis. (Art. 7, stk. 4 is not the reason:
+     *     it covers consent to processing that is not necessary.)
      *   - Health information written in the message anyway: art. 9, stk. 2, litra h, jf.
      *     databeskyttelsesloven § 7, stk. 3 (LBK nr. 289 af 08/03/2024: "nødvendig med henblik på
      *     forebyggende sygdomsbekæmpelse, medicinsk diagnose, sygepleje eller patientbehandling eller
@@ -509,11 +510,12 @@ export const privacyPage: TextPageContent = {
     { type: "h2", id: privacyContactFormAnchor, text: "14. Kontaktformular" },
     // Language review 2026-11-26: split into three sentences (was "… og din besked og, hvis du udfylder
     // dem, dit telefonnummer og den klinik, du vælger. På mobil får vi også …"); same fields.
-    // 2026-11-26: "i samtykkefeltet" → "i feltet under beskeden" (the box is not a consent, see "Retsgrundlag").
+    // 2026-11-26: the last sentence ("På mobil får vi desuden at vide, at du har sat kryds i feltet under
+    // beskeden.") is gone with the mobile checkbox.
     // TODO: copy review
     {
       type: "paragraph",
-      text: "Når du skriver til os via kontaktformularen, får vi dit navn, din e-mailadresse og din besked. Skriver du dit telefonnummer eller vælger du en klinik, får vi dem også. På mobil får vi desuden at vide, at du har sat kryds i feltet under beskeden.",
+      text: "Når du skriver til os via kontaktformularen, får vi dit navn, din e-mailadresse og din besked. Skriver du dit telefonnummer eller vælger du en klinik, får vi dem også.",
     },
     {
       type: "list",
@@ -524,7 +526,7 @@ export const privacyPage: TextPageContent = {
         ],
         [
           { text: "Retsgrundlag: ", strong: true },
-          "vores legitime interesse i at besvare de henvendelser, vi får, jf. GDPR artikel 6, stk. 1, litra f. Skriver du om dit helbred i beskeden, bruger vi oplysningerne på grundlag af GDPR artikel 9, stk. 2, litra h, jf. databeskyttelseslovens § 7, stk. 3. Krydset på mobil er ikke et samtykke, og vi bruger det ikke som retsgrundlag.",
+          "vores legitime interesse i at besvare de henvendelser, vi får, jf. GDPR artikel 6, stk. 1, litra f. Skriver du om dit helbred i beskeden, bruger vi oplysningerne på grundlag af GDPR artikel 9, stk. 2, litra h, jf. databeskyttelseslovens § 7, stk. 3.",
         ],
         // Same message as the hint at the message field (content/pages/contact.ts → form.fields.message.hint).
         // Who reads the messages is not promised here until the owner confirms it (see the comment above).

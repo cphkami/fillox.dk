@@ -232,8 +232,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   - [ ] `content/pages/treatments.ts`: fallback-tekster, FAQ'er, oversigtssiden `/behandlinger`
   - [ ] `content/pages/practitioner.ts`: behandlersider (tekst i booking-båndet pr. behandler)
   - [ ] `content/pages/contact.ts`: meta, kort, formularens tilstande og linjen ved beskedfeltet
-        (26/11-2026, se "Helbredsoplysninger i formularen"). Intet samtykke-felt på desktop: afsnit 14
-        bygger ikke længere på samtykke (26/11-2026), og feltet på mobil er ikke et samtykke. E-mail-kortet siger nu "Svar inden
+        (26/11-2026, se "Helbredsoplysninger i formularen"). Intet afkrydsningsfelt længere (du,
+        26/11-2026: "ja fjern krydset"): linjen over knappen ("Vi bruger dine oplysninger …") står nu
+        på alle skærme. E-mail-kortet siger nu "Svar inden
         for én hverdag" (designet 6ko: "Svar inden for 24 timer") ligesom mobilintroen og
         takkesiden, så sitet kun giver ét løfte (25/11-2026): **det er jeres løfte om svartid.**
         Foretrækker I 24 timer, ændres det alle tre steder.
@@ -316,9 +317,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       i formularen" nedenfor), opbevaring, Netlify, Inc. som databehandler, overførslen til
       USA via EU-U.S. Data Privacy Framework (Netlify, Inc står som "Active" på
       dataprivacyframework.gov, tjekket 26/11-2026) og retten til indsigelse; afsnit 12 har fået samme
-      overførselsgrundlag. Formularen linker dertil: afkrydsningsfeltet på mobil ("… som beskrevet i privatlivspolitikken")
-      og en linje over knappen fra 768 px ("Vi bruger dine oplysninger til at besvare din
-      henvendelse. Læs mere i vores privatlivspolitik."). Opfølgning:
+      overførselsgrundlag. Formularen linker dertil med en linje over knappen ("Vi bruger dine
+      oplysninger til at besvare din henvendelse. Læs mere i vores privatlivspolitik."), på mobil
+      i stedet for det tidligere afkrydsningsfelt (se "Krydset på mobil" nedenfor). Opfølgning:
   - [ ] **Slet besvarede beskeder i Netlify** (Forms → "kontakt"): afsnit 14 lover, at en henvendelse
         slettes, når den er besvaret og fulgt op, og Netlify gemmer dem, til de slettes. Aftal en fast
         rytme, fx hver måned.
@@ -331,10 +332,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         dit helbred", ikke "personlige oplysninger", fordi navn og e-mail også er personlige
         oplysninger og skal udfyldes). Afsnit 14 (`content/pages/legal.ts`) lover ikke længere et
         samtykke, som formularen aldrig indhenter, og siger det samme som linjen. Besvarelsen hviler på
-        ét retsgrundlag (art. 6, stk. 1, litra f). Krydset på mobil er ikke et samtykke: vi skal bruge
-        oplysningerne for at kunne svare, og feltet skal udfyldes for at sende, så det er ikke et frit
-        valg (art. 4, nr. 11; Datatilsynet, "Samtykke", 2021, afsnit 2.3). Fejlteksten ved feltet er nu
-        "Sæt kryds i feltet for at sende din besked." Helbredsoplysninger, der kommer alligevel:
+        ét retsgrundlag (art. 6, stk. 1, litra f), ikke samtykke: vi skal bruge oplysningerne for at
+        kunne svare, og et felt, der skal udfyldes for at sende, er ikke et frit valg (art. 4, nr. 11;
+        Datatilsynet, "Samtykke", 2021, afsnit 2.3). Helbredsoplysninger, der kommer alligevel:
         art. 9, stk. 2, litra h, jf. databeskyttelseslovens § 7, stk. 3; det, der er vigtigt for en
         behandling, skrives i journalen (afsnit 3 og 6). "Tilbagetrækning" (af samtykke) er erstattet
         af "Indsigelse" (art. 21). Ingen jurist har vurderet afsnit 14. Kilderne står i kommentaren
@@ -357,10 +357,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
           til at skrive om deres helbred, men nogle gør det alligevel. Slet besvarede beskeder hurtigt
           (se "Slet besvarede beskeder i Netlify"), og overvej på sigt en formularudbyder, hvis aftale
           dækker helbredsoplysninger.
-    - [ ] **Krydset på mobil** siger stadig "Jeg accepterer …" og ligner et samtykke, selv om afsnit
-          14 nu siger, at det ikke er det. Det kan erstattes af samme linje som fra 768 px ("Vi bruger
-          dine oplysninger til at besvare din henvendelse. Læs mere i vores privatlivspolitik."), så
-          formularen også bliver kortere på mobil. Designet (mc) har feltet, så det er jeres valg.
+    - [x] **Krydset på mobil** (du, 26/11-2026: "ja fjern krydset"): "Jeg accepterer …" lignede et
+          samtykke, som afsnit 14 ikke bygger på. Feltet er fjernet (også fra `public/__forms.html`),
+          og mobil viser samme linje som fra 768 px. Afsnit 14 nævner ikke længere krydset.
   - [ ] **IP-adresse i Netlify Forms**: Netlify har oplyst (supportforum 2020–2021, ikke i deres
         dokumentation), at IP-adressen gemmes med hver indsendelse. Åbn en indsendelse eller
         CSV-eksporten under Forms, og se, hvad der gemmes ud over felterne. Står der mere (IP-adresse,
@@ -501,12 +500,15 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         behagelig". Forslag: "… Indbygget køling kan gøre behandlingen mere behagelig …".
   - [ ] Albertes priskort, skinbooster: "Dybdegående fugt med Profhilo, Sunekos eller Ejal 40 for
         frisk, strammere hud." Forslag: "… der kan give en friskere, strammere hud."
-- [ ] **Aldersgrænsen 18 år** står ingen steder på sitet (BEK 834/2014 § 3: kosmetisk behandling må
-      ikke foretages på personer under 18 år; BEK 828/2013 § 5 og VEJ 9319/2013 pkt. 6.1 om
-      markedsføring over for børn og unge). Forslag, med dit ja: en FAQ på `/ny-hos-fillox` og en
-      linje i `/booking`-introen, "Vi udfører kun kosmetiske behandlinger på personer over 18 år.",
-      og på `/content-creator`: "Du skal være fyldt 18, og dit indhold må ikke henvende sig til børn
-      og unge. Vi samarbejder ikke om rynkebehandling."
+- [x] **Aldersgrænsen 18 år** (du, 26/11-2026: "tilføj 18 år"; BEK 834/2014 § 3: kosmetisk
+      behandling må ikke foretages på personer under 18 år): "Vi udfører kun kosmetiske behandlinger
+      på personer, der er fyldt 18 år." står under introen på `/booking` (`content/layout.ts` →
+      `booking.ageNote`) og som svar på en ny FAQ, "Er der en aldersgrænse?", på `/ny-hos-fillox`.
+      "Fyldt 18 år" i stedet for "over 18 år", fordi en 18-årig gerne må behandles. Åbent:
+  - [ ] `/content-creator` (BEK 828/2013 § 5 og VEJ 9319/2013 pkt. 6.1 om markedsføring over for
+        børn og unge): skal der stå "Du skal være fyldt 18, og dit indhold må ikke henvende sig til
+        børn og unge."? Siden siger i dag, at der ingen krav er (jeres svar 1/10-2026), så det er
+        jeres valg.
 - [ ] **Ny hos Fillox?** (`/ny-hos-fillox`, `content/pages/new-here.ts`): bureauets udkast er på
       norsk, og siden er en tro dansk oversættelse (samme indhold, intet tilføjet). **Bureauet
       skal læse den igennem** før lancering. Desuden:

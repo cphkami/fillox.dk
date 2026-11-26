@@ -62,19 +62,10 @@ export type ContactFormCopy = {
      */
     message: { label: string; placeholder: string; hint?: string };
   };
-  consent: {
-    /** The box's label: "{label}{link}{end}"; the link opens the privacy policy's contact-form section. */
-    label: string;
-    link: Link;
-    end: string;
-    /** Value submitted when the box is ticked. */
-    value: string;
-    /** The consent box is only in the mobile design (mc); 6ko has five fields and no checkbox. */
-    showOnDesktop: boolean;
-  };
   /**
-   * Fine-print line above the button where the consent box is hidden (from 768px while
-   * `consent.showOnDesktop` is false): "{text} {link}{end}", the same privacy-policy section.
+   * Fine-print line above the button at every width: "{text} {link}{end}", linking to the privacy
+   * policy's contact-form section. The mobile design (mc) had a consent checkbox here; it was removed
+   * on 2026-11-26 (see `privacy` in the copy below).
    */
   privacy: { text: string; link: Link; end: string };
   submit: string;
@@ -85,7 +76,6 @@ export type ContactFormCopy = {
     emailInvalid: string;
     phoneInvalid: string;
     messageRequired: string;
-    consentRequired: string;
     submit: string;
   };
   success: { title: string; text: string; again: string };
@@ -169,25 +159,14 @@ export const contactPage = {
         hint: "Du behøver ikke at skrive detaljer om dit helbred\u00a0– giv os dit nummer, så ringer vi og tager en snak om det.",
       },
     },
-    consent: {
-      // Design mc: "Jeg accepterer, at Fillox gemmer mine oplysninger for at besvare min henvendelse."
-      // The words "som beskrevet i privatlivspolitikken" and the link to "14. Kontaktformular" are new:
-      // owner 2026-11-26 ("ret det hele som du har skrevet til mig", point 3 of the pre-launch audit;
-      // GDPR art. 13: the information is given where the data is collected).
-      // TODO: copy review (2026-11-26)
-      label: `Jeg accepterer, at ${site.name} gemmer mine oplysninger for at besvare min henvendelse, som beskrevet i `,
-      link: { label: "privatlivspolitikken", href: privacyContactFormHref },
-      end: ".",
-      // TODO: copy review (submitted value; not visible)
-      value: "Ja",
-      // 2026-11-26: no box on desktop (6ko has none). Privacy policy section 14 no longer rests on consent
-      // (answering: GDPR art. 6, stk. 1, litra f), so a box would add nothing; the mobile box stays as
-      // designed (mc) and is not a consent (section 14 says so).
-      showOnDesktop: false,
-    },
-    // Not in the design (6ko has no consent box): the desktop form's link to the same section, worded
-    // like the newsletter's line ("Vi bruger kun din e-mail til nyhedsbrevet, … Læs vores
-    // privatlivspolitik."). Owner 2026-11-26, point 3 of the pre-launch audit.
+    // Not in the design: the form's link to privacy policy section 14, worded like the newsletter's line
+    // ("Vi bruger kun din e-mail til nyhedsbrevet, … Læs vores privatlivspolitik."). Owner 2026-11-26,
+    // point 3 of the pre-launch audit (GDPR art. 13: the information is given where the data is
+    // collected). First desktop only; since the mobile consent box was removed it shows at every width.
+    // The removed box (design mc): "Jeg accepterer, at Fillox gemmer mine oplysninger for at besvare min
+    // henvendelse." Owner 2026-11-26: "ja fjern krydset", after section 14 stopped resting on consent
+    // (answering: GDPR art. 6, stk. 1, litra f), so the box was not a consent and added nothing but a
+    // step before sending.
     // TODO: copy review (2026-11-26)
     privacy: {
       text: "Vi bruger dine oplysninger til at besvare din henvendelse.",
@@ -203,9 +182,6 @@ export const contactPage = {
       emailInvalid: "Tjek, at e-mailen er skrevet rigtigt.",
       phoneInvalid: "Tjek, at telefonnummeret er skrevet rigtigt.",
       messageRequired: "Skriv, hvad vi kan hjælpe med.",
-      // 2026-11-26: was "Sæt kryds, så vi må gemme dine oplysninger og svare dig.", which presented the
-      // box as permission (consent); section 14 says it is not one.
-      consentRequired: "Sæt kryds i feltet for at sende din besked.",
       submit: `Vi kunne ikke sende din besked. Prøv igen, eller ring til os på ${phoneNoBreak}.`,
     },
     /** Shown in place of the form after sending, and as the /kontakt/tak page (no-JS fallback). */

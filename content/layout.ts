@@ -187,6 +187,14 @@ export const layoutCopy = {
     title: "Book tid",
     intro:
       "Vælg klinik, behandling og tidspunkt i kalenderen herunder. Du starter altid med en konsultation, hvor din behandler gennemgår dine ønsker og lægger en plan sammen med dig.",
+    /**
+     * Under the intro. BEK nr. 834 af 27/06/2014 om kosmetisk behandling § 3: no cosmetic treatment of
+     * persons under 18. Owner 2026-11-26 ("tilføj 18 år", to the proposed "Vi udfører kun kosmetiske
+     * behandlinger på personer over 18 år"); "fyldt 18 år", since an 18-year-old may be treated. The
+     * same line answers the FAQ on /ny-hos-fillox (content/pages/new-here.ts).
+     */
+    // TODO: copy review (2026-11-26)
+    ageNote: "Vi udfører kun kosmetiske behandlinger på personer, der er fyldt 18 år.",
     helpTitle: "Brug for hjælp til at booke?",
     helpText: "Ring eller skriv til os, så finder vi den rigtige tid sammen.",
     /**
