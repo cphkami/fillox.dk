@@ -33,6 +33,12 @@ const eyebrowClasses = "text-micro leading-[1.25] font-bold tracking-[.2em] uppe
  * `text-small`. Everything but the heading is Figtree. Links sit on a
  * pitch of 2.35 × their size (33 → 38px; the line height, so each row is a full-width target
  * with no gaps). Paddings and gaps are the design's at ≤ 1280 and grow ×1.2 to 1600.
+ *
+ * Columns share the width equally, but never get narrower than their longest unbroken line
+ * (`minmax(min-content, 1fr)`: the links and "Alle …" are set on one line): since 2026-11-27 the
+ * rynkebehandling column's "Alle botoxbehandlinger →" (≈ 165px at 1024; its eyebrow is "BOTOX") is
+ * wider than an equal quarter at 1024px (≈ 132px) and up to 1600 (≈ 183px), so that column takes
+ * its width and the other three share the rest (≈ 121px each at 1024; their widest line is 105px).
  */
 export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
   const prefetch = open ? null : false;
@@ -42,7 +48,7 @@ export function MegaMenu({ menu, open = true, onNavigate }: MegaMenuProps) {
   return (
     <div className="flex overflow-hidden rounded-[20px] bg-white shadow-menu">
       <div className="flex min-w-0 flex-1 flex-col px-10 py-9 xl:px-fluid-40/48 xl:py-fluid-36/42">
-        <div className="grid grid-cols-4 gap-8 xl:gap-fluid-32/38">
+        <div className="grid grid-cols-[repeat(4,minmax(min-content,1fr))] gap-8 xl:gap-fluid-32/38">
           {columns.map((col, i) => (
             <div key={col.eyebrow}>
               <p id={`${id}-${i}`} className={`${eyebrowClasses} mb-[11px] text-accent xl:mb-fluid-11/13`}>

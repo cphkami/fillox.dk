@@ -1,7 +1,7 @@
 import { site } from "@/config/site";
 import { practitionerPage } from "@/content/pages/practitioner";
 import { reviewsFor, type ReviewSelection } from "@/content/reviews";
-import { framedPortrait, type FaceSlot } from "@/content/team";
+import { contactLinks, framedPortrait, type ContactLink, type FaceSlot } from "@/content/team";
 import type { ImageRef, Link, TeamMember, TeamProfile } from "@/content/types";
 
 /**
@@ -29,6 +29,8 @@ export type ResolvedProfile = {
   desktopImage: ImageRef;
   primaryCta: Link;
   secondaryCta?: Link;
+  /** Work e-mail and Instagram (content/team.ts → contactLinks), under the hero's buttons; empty for Dr. Tom. */
+  contact: ContactLink[];
   facts: TeamProfile["facts"];
   approach?: TeamProfile["approach"];
   offers?: TeamProfile["offers"];
@@ -148,6 +150,7 @@ export function resolveProfile(member: TeamMember): ResolvedProfile {
     desktopImage: p.heroImage ?? desktopCrop(member),
     primaryCta,
     secondaryCta,
+    contact: contactLinks(member),
     facts: p.facts,
     approach: p.approach && p.approach.items.length > 0 ? p.approach : undefined,
     offers,

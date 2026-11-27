@@ -33,9 +33,12 @@ export type MegaMenuData = {
 
 export type MenuCategory = {
   slug: string;
-  /** Category title (level-2 heading), e.g. "For mænd". */
+  /** Category name, e.g. "For mænd" (the /behandlinger section heading). */
   name: string;
-  /** Row label in the mobile menu (mobileName || name). */
+  /**
+   * Row label and level-2 heading in the mobile menu (mobileName || name): "Botox" for the
+   * rynkebehandling category (content/navigation.ts), whose pages keep the name "Rynkebehandling".
+   */
   label: string;
   /** "Se alle …" link at the bottom of level 2. */
   allLabel: string;
@@ -47,7 +50,7 @@ export type MenuClinic = {
   slug: string;
   name: string;
   address: string[];
-  /** Pre-formatted opening hours, e.g. ["Man–fre 10–19", "Lør–søn 10–17"]. */
+  /** Pre-formatted opening hours, e.g. ["Man–fre 10–19", "Lør 10–17", "Søn lukket"]. */
   hours: string[];
   /** Anchor on the clinics page. */
   href: string;

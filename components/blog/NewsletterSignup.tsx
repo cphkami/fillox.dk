@@ -9,8 +9,9 @@ const copy = blogPage.newsletter;
 const ids = { title: "blog-newsletter-title", text: "blog-newsletter-text" } as const;
 
 /**
- * "Få tips og nyheder i din indbakke" band at the bottom of /blog (6blog: text left,
- * e-mail + "Tilmeld" right; mbl: stacked, full-width field and button). The form, its
+ * Newsletter band at the bottom of /blog, "Få nyt fra Fillox" (copy: content/pages/blog.ts →
+ * newsletter; 6blog: text left, e-mail + "Tilmeld" right; mbl: stacked, full-width field and
+ * button). The form, its
  * validation and the Netlify Forms post are the shared `NewsletterForm` (components/ui), the
  * same one as in the footer.
  *

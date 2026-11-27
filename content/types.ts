@@ -54,7 +54,12 @@ export type PriceValue =
 
 /* ------------------------------------------------------------------ Clinics */
 
-export type OpeningHours = { days: string; hours: string };
+/**
+ * One line of a clinic's opening hours: `days` is a label of content/seo.ts → openingDays, `hours`
+ * a range ("10–19", "9.30–18"), or the closed text with `closed: true` ({ days: "Søn", hours:
+ * "lukket", closed: true }): shown like the other lines, left out of the structured data.
+ */
+export type OpeningHours = { days: string; hours: string; closed?: true };
 
 /**
  * A clinic's ids at the booking provider (config/site.ts → booking.provider). Set the one
@@ -155,6 +160,17 @@ export type TreatmentDetailMobile = {
   pricesIntro?: string;
 };
 
+/** A titled block of a treatment page's "Om behandlingen" band (`detail.aboutBlocks`). */
+export type AboutBlock = {
+  /** Anchor id (ASCII, stable), e.g. "polynukleotider": /behandlinger/skinbooster#polynukleotider. */
+  id?: string;
+  title: string;
+  /** May be empty for a group (`blocks`) whose title only introduces its blocks. */
+  paragraphs: string[];
+  /** Arrow link under the paragraphs, e.g. Profhilo's "Læs om polynukleotider" → the skinbooster page. */
+  link?: Link;
+};
+
 /**
  * A titled sub-item of a long-form section (TreatmentSection.items): an h3 with its paragraphs,
  * set as a card. `id` makes it linkable (/behandlinger/andre-behandlingsmuligheder#lip-flip):
@@ -212,6 +228,11 @@ export type Treatment = {
    */
   metaTitle?: string;
   /**
+   * `metaTitle` names the brand ("Fillox Signatur – ansigtskonturering"), so it is the whole
+   * <title>, without " · Fillox" after it (lib/metadata.ts → pageMetadata `absoluteTitle`).
+   */
+  metaTitleAbsolute?: true;
+  /**
    * Detail-page content. Optional: treatments without it render the generic template with `short`.
    *
    * Long-form pages: a `detail` with `sections` shows ONLY what its content gives (hero, the
@@ -239,7 +260,12 @@ export type Treatment = {
      * "<heading> – <headingAccent>", e.g. "Rynkebehandling" + "find den rette behandling hos Fillox".
      */
     headingAccent?: string;
-    lead: string;
+    /**
+     * Hero lead (also the meta description unless `metaDescription`). Omitted: the treatment's
+     * `short`, and the shared meta description with the price (a `detail` that only adds, e.g.,
+     * before/after results keeps the page as it was).
+     */
+    lead?: string;
     /** More hero paragraphs after `lead` (long-form pages). */
     intro?: string[];
     /** Hero photo; defaults to the category's (content/pages/treatments.ts → categoryImages). */
@@ -267,7 +293,16 @@ export type Treatment = {
     /** Meta description when it should not be `lead`. */
     metaDescription?: string;
     about?: string[]; // paragraphs
+    /**
+     * More of "Om behandlingen" as titled blocks (an h3 and its paragraphs each), after `about`'s
+     * paragraphs, e.g. lip filler's "Hvad er filler?", "Vi bruger Revanesse®", "Vi starter med at lytte".
+     * A block with `blocks` is a group: its title is the h3 and its blocks are h4s under it, e.g. the
+     * skinbooster page's "Vores skinboostere" over its three products (one level only).
+     */
+    aboutBlocks?: (AboutBlock & { blocks?: AboutBlock[] })[];
     goodFor?: string[];
+    /** Label of the `goodFor` list when it is not "Godt til", e.g. "Godt til dig, der ønsker". */
+    goodForLabel?: string;
     practitionerSlug?: string; // team member featured on the page
     /** Practitioner section heading, e.g. "Annika, kosmetisk sygeplejerske". */
     practitionerHeading?: string;
@@ -282,6 +317,11 @@ export type Treatment = {
     prices?: PriceRow[];
     pricesIntro?: string;
     faq?: FaqItem[];
+    /**
+     * `faq` is shared with other pages (content/treatments.ts → sharedFillerFaq): shown, but not
+     * marked up as FAQPage, which would be the same on each of them.
+     */
+    faqShared?: true;
     /** "Fra bloggen" section heading + intro + "Alle artikler om …" link. */
     relatedPostsTitle?: string;
     relatedPostsIntro?: string;
@@ -385,13 +425,18 @@ export type TeamProfile = {
 export type TeamMember = {
   slug: string; // route: /behandlere/[slug]
   name: string; // "Dr. Tom"
-  role: string; // short role on cards, e.g. "Sygeplejerske"
+  role: string; // short role on the home cards, e.g. "Kosmetisk sygeplejerske"
   /** Portrait used on cards (home, mobile Om os, avatars). */
   image: ImageRef;
   /** Full name when it differs, e.g. "Dr. Tom Haugland" (Om os, profile). */
   fullName?: string;
   /** Longer title on Om os / profile, e.g. "Æstetisk læge · Grundlægger & daglig leder". */
   title?: string;
+  /**
+   * A responsibility in Fillox, e.g. "Klinikansvarlig": the part of `title` after the role
+   * (content/team.ts → nurseWith), shown as a second line under `role` on the home cards.
+   */
+  responsibility?: string;
   /** Title on mobile when the design differs (mo, mb), e.g. "Sygeplejerske · Fillers & botox". */
   titleShort?: string;
   /** Bio paragraph on Om os (desktop). */
@@ -419,6 +464,16 @@ export type TeamMember = {
    * in content/team.ts → clinicsUnknown.
    */
   clinicSlugs?: string[];
+  /**
+   * Work e-mail, lower case, e.g. "alberte@fillox.dk": a mailto: link in the profile hero, and on
+   * the card of a member without a profile page (content/team.ts → contactLinks).
+   */
+  email?: string;
+  /**
+   * Work Instagram profile URL, e.g. "https://www.instagram.com/fillox.alberte/"; shown as its
+   * handle ("@fillox.alberte") next to `email`. Leave it out until the account is live.
+   */
+  instagram?: string;
   /** Page-specific crops from the design (fall back to `image`). */
   crops?: {
     /** Om os card (6om). Dr. Tom uses the wide photo here. */
@@ -447,7 +502,19 @@ export type TeamMember = {
  */
 export type TeamCardOnlyMember = Pick<
   TeamMember,
-  "slug" | "name" | "role" | "fullName" | "title" | "titleShort" | "bio" | "bioShort" | "quote" | "clinicSlugs"
+  | "slug"
+  | "name"
+  | "role"
+  | "fullName"
+  | "title"
+  | "responsibility"
+  | "titleShort"
+  | "bio"
+  | "bioShort"
+  | "quote"
+  | "clinicSlugs"
+  | "email"
+  | "instagram"
 > & {
   /** Portrait; omitted until the photo arrives (the grids draw the placeholder). */
   image?: ImageRef;

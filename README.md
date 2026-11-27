@@ -59,10 +59,19 @@ npm run build            # kører check:market først (prebuild)
 - booking-udbyderen mangler id'er (TIMMA: `timmaId` på hver åben klinik);
 - en åben kliniks adresse eller åbningstider ikke kan læses ind i de strukturerede data
   (sidste adresselinje skal være `<postnr> <by>`, tider som `10–20`, dag-labels i
-  `content/seo.ts` → `openingDays`);
+  `content/seo.ts` → `openingDays`; en lukket dag, `{ days: "Søn", hours: "lukket", closed: true }`,
+  skal have et kendt dag-label og ingen åbningstid samme dag);
 - et udgivet blogindlæg eller en filterknap på `/blog` nævner Botox, det aktive stof eller et
   andet mærke af det (adresse, titel, uddrag, kategori, tags, billede, overskrifter, bookingkort,
   links), eller et indlæg viser et bookingkort (med "fra"-pris) til rynkesiderne;
+- Botox eller et andet mærke af stoffet står i en menu, en kategori, et priskort, en behandlings
+  navn, titel, overskrift, intro, korttekst, metatekst eller alt-tekst eller på fillersiden (regel
+  19), eller hyaluronidase/Hyalase eller lidocain står i prislisten, behandlingsteksterne,
+  behandlerteksterne, sidernes tekster eller et udgivet indlæg (regel 18). Undtaget er præcis de
+  steder, du har accepteret (se "Kendt § 66-risiko, som du har accepteret");
+- en tekst i `content/` (undtagen de gamle adresser i `content/redirects.ts`) eller
+  `config/site.ts` nævner FDA (du, 27/11-2026: "det dropper vi") eller fillermærkerne Juvéderm og
+  Belotero (Alberte: Revanesse® er det eneste fillermærke) (regel 20);
 - sikkerheds-headerne i `netlify.toml` ikke er præcis dem i `config/securityHeaders.ts` (navne og
   værdier), en anden `[[headers]]`-blok også sætter en af dem, `next.config.ts` → `headers()`
   (som scriptet kører) ikke sender præcis den liste på `/:path*` (eller sætter en af dem på en
@@ -153,8 +162,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   Nyhedsbrev"), som begge tilmeldinger linker til. Skal godkendes af Fillox inden lancering (se
   TODO'en dér: mailværktøjet og databehandleraftalen med det, og hvor længe beviset for samtykket
   gemmes; overførslen til USA via Netlify står i afsnittet siden 26/11-2026). Nyhedsbrevet sender
-  kun nyheder, artikler og gode råd, ingen tilbud, og aldrig reklame for rynkebehandling eller
-  andre receptpligtige lægemidler (se "'Tilbud' i nyhedsbrevet").
+  det, tilmeldingen lover (Albertes tekst, 26/11-2026): "det seneste nyt om vores behandlinger,
+  produktnyheder og særlige invitationer". Ingen tilbud, og aldrig reklame for rynkebehandling
+  eller andre receptpligtige lægemidler (se "'Tilbud' i nyhedsbrevet").
 - Kontaktformularen: afsnittet "14. Kontaktformular" i privatlivspolitikken, som formularen linker
   til (se "Privatlivspolitikken og kontaktformularen").
 - Spam: honeypot-feltet `bot-field`.
@@ -206,6 +216,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   i Gecko igen.
 
 ## Før lancering
+
+Albertes rettelser fra 26.–27/11-2026 (det, der er gjort, og hendes åbne spørgsmål) står samlet
+sidst i listen under "Albertes rettelser 26.–27/11-2026".
 
 - [ ] **Gecko-kalender-id'er** på City2, Amager Centret og Frederiksberg i `content/clinics.ts`
       (`booking.geckoCalendarId`), så klinik-links vælger klinikken i kalenderen.
@@ -259,6 +272,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         Toms tillægssætning), `content/layout.ts` og `content/pages/blog.ts` (nyhedsbrevet),
         `content/pages/contact.ts` (linkene til privatlivspolitikken) og `content/pages/legal.ts`. Se
         de enkelte punkter nedenfor.
+  - [ ] **Albertes rettelser 26.–27/11-2026** (markeret `// TODO: copy review (2026-11-26,
+        Alberte)` eller `(2026-11-27, Alberte)`): hendes tekster står ordret; det, vi selv har skrevet
+        ud fra dem, skal godkendes (se "Albertes rettelser 26.–27/11-2026" → "Åbent").
   - [ ] **Rettet efter gennemgangen 25/11-2026** (alle markeret `// TODO: copy review`):
     - Tear trough lover ikke længere: FAQ'en siger "… placere filleren rigtigt, så risikoen for det
       bliver så lille som muligt" (før "så du undgår det"), og "En af de bedste ikke-kirurgiske
@@ -282,9 +298,11 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       og bloggen hedder "Blog om behandlinger og efterpleje" i søgeresultater.
     - Skærmlæsere kalder hver anmeldelse "dias" (før det engelske "slide"), og de to links "Hage" på
       `/priser` hedder for skærmlæsere "Hage (fillers)" og "Hage (laser hårfjerning)".
-    - Syv gamle adresser for nasolabiale linjer, marionetlinjer og ansigtskonturering sender nu
-      videre til `/priser#fillers`, hvor behandlingerne står med navn og pris (før `/behandlinger`,
-      som ikke nævner dem).
+    - Syv gamle adresser for nasolabiale linjer, marionetlinjer og ansigtskonturering sender siden
+      26/11-2026 videre til de nye sider `/behandlinger/linjer-og-folder` og
+      `/behandlinger/ansigtskonturering` (før `/priser#fillers`), og `/fillers`, `/fillers/haender`,
+      `/fillers/faq-om-fillers-behandling` og `/filler-oslo/hender` til fillersiden
+      `/behandlinger/fillers` (før `/behandlinger#fillers`).
 - [x] **Pris**: Skinbooster står "fra 999 kr" på forsiden i designet, men 1.499 kr alle andre
       steder — vi bruger 1.499 kr (`content/treatments.ts`, bestsellers). Afklaret: live /priser
       (ændret 17/11-2026) starter skinboosters ved Ejal 40 til 1.499 kr (Microneedling, nu 1.200 kr,
@@ -308,8 +326,11 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       forsidens hero, footer-strimlen og profilernes fakta. Aflæs score og antal på
       https://dk.trustpilot.com/review/fillox.dk, og opdatér `score`, `reviewCount` og `checked` i
       `config/site.ts` samtidig (Trustpilot afviser automatiske opslag, så det skal gøres i en browser).
-- [ ] **Juridisk**: registreret adresse og mailadresse til databeskyttelse (`info@` i afsnit 1 på
-      privatlivssiden, `kontakt@` i `config/site.ts` og i afsnit 12 og 14) — `content/pages/legal.ts`.
+- [ ] **Juridisk**: registreret adresse i afsnit 1 på privatlivssiden (`content/pages/legal.ts`).
+      Mailadressen er afklaret (Alberte 26/11-2026: "Under content creator og kontakt oplysninger skal
+      henvendelse sendes til kontakt@fillox.dk"): afsnit 1 giver nu `kontakt@fillox.dk`
+      (`site.contact.email`, før `info@fillox.dk`) som resten af sitet. Sitet nævner ikke længere
+      `info@` nogen steder; tjek, at `kontakt@` også modtager henvendelser om persondata.
 - [x] **Privatlivspolitikken og kontaktformularen** (du, 26/11-2026: "ret det hele som du har
       skrevet til mig. alt fra punkt 1-9"): nyt afsnit "14. Kontaktformular" (`#kontaktformular`) med
       felterne, formålet, retsgrundlaget (art. 6, stk. 1, litra f, og for helbredsoplysninger i
@@ -374,37 +395,82 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         Netlifys databehandleraftale EU's standardkontraktbestemmelser (DPA § 14.3), og afsnit 12 og 14
         skal rettes.
 - [x] **"Tilbud" i nyhedsbrevet** (du, 26/11-2026: "ret det med priser osv osv.. det ikke
-      mening"): nyhedsbrevet lover kun nyheder, artikler og gode råd. Footeren siger "Få nyheder og
-      gode råd om vores behandlinger på e-mail.", kvitteringen "Du hører fra os, så snart vi har
-      nyheder.", `/blog` "Få tips og nyheder i din indbakke" og "Én mail om måneden med nye artikler
-      og gode råd om vores behandlinger. Ingen spam.", og afsnit 12 i privatlivspolitikken det
-      samme (VEJ 9319/2013 pkt. 5.1; markedsføringsloven § 10).
-  - **Regel for nyhedsbrevet**: kun nyheder, artikler og gode råd om behandlingerne. Ingen
-    tidsbegrænsede rabatter, "månedens tilbud", gaver eller konkurrencer på behandlinger, og aldrig
-    rynkebehandling eller andre receptpligtige lægemidler (lægemiddelloven § 66). Vil I senere sende
-    tilbud, skal tilmeldingsteksterne (footeren, `/blog`) og afsnit 12 rettes først.
+      mening"): nyhedsbrevet lover ingen tilbud. Siden 26/11-2026 står Albertes tekst i footeren og
+      på `/blog` (på alle skærme): "Få nyt fra Fillox" og "Tilmeld dig vores nyhedsbrev, og få det
+      seneste nyt om vores behandlinger, produktnyheder og særlige invitationer." Afsnit 12 i
+      privatlivspolitikken siger det samme som formål, og kvitteringen er "Du hører fra os, så snart
+      vi har nyheder." (VEJ 9319/2013 pkt. 5.1; markedsføringsloven § 10). Bloggens "Én mail om
+      måneden" og "Ingen spam" er væk, fordi de ikke står i hendes tekst.
+  - **Regel for nyhedsbrevet**: kun det, tilmeldingen lover. Ingen tidsbegrænsede rabatter,
+    "månedens tilbud", gaver eller konkurrencer på behandlinger (heller ikke ved "særlige
+    invitationer"), og aldrig rynkebehandling eller andre receptpligtige lægemidler, heller ikke som
+    "produktnyheder" (lægemiddelloven § 66). Vil I senere sende tilbud, skal tilmeldingsteksterne
+    (footeren, `/blog`) og afsnit 12 rettes først. Åbent: se "Nyhedsbrevets indhold" under "Albertes
+    rettelser 26.–27/11-2026".
 - [ ] **Botox og markedsføring** (juridisk vurdering). Botox er receptpligtig medicin og må ikke
       reklameres for over for offentligheden. Bureauets nye tekster (oktober 2026) løser
       hovedparten: Botox-siden er erstattet af `/behandlinger/rynkebehandling` og
       `/behandlinger/andre-behandlingsmuligheder` (bureauets tekster, ordret), som handler om
       behandlingen og ikke om produktet. De gamle adresser (`/rynkebehandling`,
       `/ovrige-botox-behandlinger`, `/behandlinger/botox`, `/behandlinger/lip-flip` …) sender
-      videre dertil (`content/redirects.ts`). Resten af sitet følger samme linje: menuer, kort,
+      videre dertil (`content/redirects.ts`). Resten af sitet følger samme linje: kort,
       priskortets etiket og mobil-chip ("MIMISKE RYNKER M.M." og "Rynkebehandling" i stedet for
       "BOTOX" / "Botox"), metabeskrivelsen på `/priser`, sitets standardbeskrivelse og
       strukturerede data (`content/layout.ts`) siger nu "rynkebehandling" (alle markeret
-      `// TODO: copy review`).
+      `// TODO: copy review`). Menuerne sagde det også indtil 27/11-2026 (se "Kendt § 66-risiko"
+      nedenfor).
       Produktnavnet eller det aktive stof står kun, hvor bureauet selv har skrevet det: fire steder
       på rynkesiden — FAQ-spørgsmålet "Hvad er forskellen på Botox og filler?" (en synlig
       overskrift og spørgsmålets navn i de strukturerede data, FAQPage) og svaret på det, FAQ-svaret
       "Ved kosmetisk behandling med botulinumtoksin …" og afsnittet "Hvis der er tale om en
       behandling med botulinumtoksin …" under konsultationen (se "Juridisk gennemlæsning"
+      nedenfor) — og siden 27/11-2026 de steder, Albertes tekster nævner det (se "Kendt § 66-risiko"
       nedenfor). Fillox Academy-afsnittet på Om os siger siden 26/11-2026 "rynkebehandling" (se "Om
       os" nedenfor), og det samme gælder for de andre receptpligtige lægemidler (se "Hyalase").
       Rynkesiderne viser ingen anmeldelser,
       resultater eller "fra"-pris (`treatmentsWithoutReviews` i `content/reviews.ts`). Rynkesiden
       har igen "Læs mere om rynkebehandling" med de tre rynkeartikler (nedenfor); siden om andre
       behandlingsmuligheder har ingen blogsektion. Stadig åbent:
+  - [ ] **Kendt § 66-risiko, som du har accepteret** (27/11-2026). Alberte bad 26/11-2026 om
+        "Botox" som menupunkt, skrev afsnittet "Hvad er Botox" og nævner hyaluronidase i en
+        filler-FAQ. Du fik at vide, at lægemiddellovens § 66 også gælder klinikkens egen
+        hjemmeside, og svarede "gør hvad hun skriver og det samme gælder botox". Produktnavnet
+        (Botox), det aktive stof (botulinumtoksin) og hyaluronidase står nu disse steder på sitet, og
+        kun dem (de fire første er Albertes, markeret `// TODO: copy review (2026-11-27, Alberte)`):
+    - **Menuerne**: mega-menuens kolonne for de to rynkesider hedder "Botox" med linket "Alle
+      botoxbehandlinger" (før "Rynkebehandling"); mobilmenuens kategori og dens overskrift hedder
+      "Botox" med "Se alle botoxbehandlinger" (`content/navigation.ts`, `content/layout.ts`).
+      Siderne, deres titler, adresser, brødkrummer, kort og `/behandlinger`-afsnittet hedder stadig
+      "Rynkebehandling".
+    - **"Hvad er Botox?"** på rynkesiden (`#hvad-er-botox`): "Botulinumtoksin type A er det aktive
+      stof i en række lægemidler …".
+    - **"Vi forbedrer, vi forandrer ikke"** lige efter (`#vi-forbedrer`, hendes tekst). Det nævner
+      ikke produktet, men står under "Hvad er Botox?" og beskriver den behandling ("tilpasses
+      placering og dosis til din mimik"), og det slutter med et gratis tilbud: "Cirka 14 dage efter
+      behandlingen tilbyder vi en gratis opfølgning, hvor vi sammen vurderer resultatet og tager
+      stilling til, om der er behov for en justering." Lægemiddelstyrelsen kan læse et gratis
+      tilbud knyttet til en navngiven receptpligtig behandling som reklame for den, og "justering"
+      kan læses som en gratis efterbehandling (se "Gratis justering?" under "Albertes rettelser
+      26.–27/11-2026"). Hun skrev sætningen til, "hvis Fillox tilbyder gratis opfølgning efter 14
+      dage"; prislisten siger allerede "Kontrol efter behandling – valgfri, ca. 14 dage efter –
+      gratis", og artiklerne "cirka 14 dage … inden for 21 dage" (ingen modstrid). Vil du mindske
+      risikoen og beholde hendes afsnit: lad "gratis" ud her (prislisten siger det), eller lad
+      14-dages-sætningen ud på rynkesiden. Afsnittet siger også "Ved konsultationen vurderer vi …",
+      mens bureauets tekst siger, at en læge vurderer: skal der stå "en læge"?
+    - **Lip filler-FAQ'en** "Hvorfor vælger nogle at få opløst læbefiller?" slutter med hendes
+      sætning "Efter en faglig vurdering kan hyaluronidase bruges til at nedbryde filleren
+      hurtigere ved ønske om opløsning." (også i de strukturerede data, FAQPage).
+    - **Bureauets tekst på rynkesiden** (fra før 27/11-2026, et åbent juridisk spørgsmål, se
+      "Juridisk gennemlæsning" nedenfor): FAQ-spørgsmålet "Hvad er forskellen på Botox og filler?"
+      (synlig overskrift og i FAQPage) og svaret "Botox er et handelsnavn for et lægemiddel med
+      botulinumtoksin …", FAQ-svaret "Ved kosmetisk behandling med botulinumtoksin …" og afsnittet
+      "Hvis der er tale om en behandling med botulinumtoksin …" under konsultationen.
+    - `npm run check:market` tillader præcis Albertes steder (regel 19: de fire menutekster; regel
+      18: den ene sætning, kun i lip filler-svaret) og afviser fortsat navnene i alt andet, reglerne tjekker (se listen under
+      "Lokal udvikling"). Behandlingssidernes brødtekst og FAQ'er tjekkes kun for hyaluronidase og
+      lidocain, ikke for Botox, så bureauets steder ovenfor fanges ikke. Ellers står navnene kun i
+      gamle adresser, der viderestilles (fx `/ovrige-botox-behandlinger`), og i kommentarer i
+      koden. Vil en jurist have dem ud igen, er det de samme steder, der skal rettes.
   - [ ] **Blogartikler om rynkebehandling** (du, 25/11-2026): de tre Botox-indlæg er skrevet om
         til artikler om selve behandlingen og udgivet: `/blog/rynkebehandling-for-foerste-gang`,
         `/blog/hvornaar-giver-rynkebehandling-mening` og
@@ -472,9 +538,10 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         hudforbedrende behandlinger." (før "botox"); resten af afsnittet er ordret. Rettet efter din
         Botox-regel som en del af punkt 1, så sig det til bureauet.
 - [x] **Hyalase** (du, 26/11-2026: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"):
-      handelsnavnet står ingen steder. Prisrækken hedder "Opløsning af filler" (`/priser` og lip
-      filler-sidens priskort; prisen 999 kr pr. område er uændret), FAQ-svaret på lip filler-siden
-      (også i FAQPage) siger "Ja. Filler af hyaluronsyre kan opløses igen. Opløsning af filler koster
+      handelsnavnet står ingen steder. Undtagelse siden 27/11-2026: stoffet hyaluronidase står i
+      Albertes sætning i lip filler-FAQ'en om opløsning (se "Kendt § 66-risiko" ovenfor).
+      Prisrækken hedder "Opløsning af filler" (`/priser` og lip filler-sidens priskort; prisen 999 kr
+      pr. område er uændret), FAQ-svaret på lip filler-siden (også i FAQPage) siger "Ja. Filler af hyaluronsyre kan opløses igen. Opløsning af filler koster
       999 kr pr. område pr. gang.", og de to blogartikler siger det samme uden navnet. Efter samme
       regel er "tilsat lidocain, et bedøvelsesmiddel" overalt blevet "tilsat et lokalbedøvende
       middel" (FAQ'en om smerter på fillersiderne, lip filler, næsekorrektion, hage og to
@@ -493,13 +560,15 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       Faktatabellerne og "Resultatet ses med det samme" for filler er beholdt (filleren giver volumen
       med det samme). Til copy review (ikke ændret, men påstande, der skal kunne dokumenteres, VEJ
       9319/2013 pkt. 12):
-  - [ ] Kindben "Med hyaluronsyre genskaber vi volumen …", Signatur "gel-maske, der genopbygger
-        hudbarrieren", Ejal 40 "stimulerer dannelsen af nyt kollagen og elastin" (og "40 mg").
+  - [ ] Signatur "gel-maske, der genopbygger hudbarrieren". (Kindben "Med hyaluronsyre genskaber vi
+        volumen …" og Ejal 40 "stimulerer dannelsen af nyt kollagen og elastin" er væk fra siderne
+        siden 26/11-2026, erstattet af Albertes tekster, og "40 mg" har nu en kilde: hendes "40 mg
+        hyaluronsyre pr. 2 ml". Kollagenpåstanden står stadig i artiklen "Skinbooster eller
+        Profhilo", se "Albertes rettelser 26.–27/11-2026".)
   - [ ] Laser hårfjerning: introen "Effektiv og langvarig hårfjerning med diodelaser. Indbygget køling
         gør behandlingen behagelig …" og "den indbyggede køling beskytter huden og gør behandlingen
         behagelig". Forslag: "… Indbygget køling kan gøre behandlingen mere behagelig …".
-  - [ ] Albertes priskort, skinbooster: "Dybdegående fugt med Profhilo, Sunekos eller Ejal 40 for
-        frisk, strammere hud." Forslag: "… der kan give en friskere, strammere hud."
+  - Albertes priskort, skinbooster: flyttet til "Albertes rettelser 26.–27/11-2026" → "Åbent".
 - [x] **Aldersgrænsen 18 år** (du, 26/11-2026: "tilføj 18 år"; BEK 834/2014 § 3: kosmetisk
       behandling må ikke foretages på personer under 18 år): "Vi udfører kun kosmetiske behandlinger
       på personer, der er fyldt 18 år." står under introen på `/booking` (`content/layout.ts` →
@@ -535,9 +604,10 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
   - Siden linkes fra "Om os"-menuen (desktop og mobil) og fra footeren.
 - [ ] **Tekster, bureauet ikke har leveret endnu** (intet lagt ud): polynukleotider
       ("laksesæd": kun en indledning, og forfatteren vil have produktdokumentationen tjekket før en
-      kategorisk forklaring — indtil da nævnes polynukleotider kun på priskortet "Hårtab &
-      hovedbund" og PolyPhil Hair-siden, som før); egne sider for de fire klinikker (kun billeder
-      i Drive; `/klinikker` er uændret); hårtab & hårvækst; skinboosters, microneedling og
+      kategorisk forklaring; bureauets tekst er ikke brugt, men siden 26/11-2026 beskriver Albertes
+      tekst polynukleotider på `/behandlinger/skinbooster#polynukleotider`, se "Produkter, vi
+      nævner" under "Albertes rettelser 26.–27/11-2026"); egne sider for de fire klinikker (kun
+      billeder i Drive; `/klinikker` er uændret); hårtab & hårvækst; skinboosters, microneedling og
       laser-undersiderne (kun overskrifter).
 - [ ] **Rynkesiderne** (`content/treatments.ts`): (1) Linket "Andre behandlingsmuligheder →" på
       rynkesiden er vores (ikke i bureauets tekst) — ønskes det? (2) Mega-menuen kalder den anden
@@ -551,11 +621,13 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       kun adresse, åbningstider, booking og rutevejledning. Enten viser klinikkortene "Behandlere
       her: …" (det står allerede i `clinicSlugs`, `content/team.ts`), eller bureauet ændrer
       sætningen, fx "Se adresser, åbningstider og book en konsultation." Hvad vælger I?
-- [ ] **Mega-menuen** (`content/navigation.ts`, ejerens design v2): kolonnernes links hedder "Alle
-      rynker →" og "Alle hud →" ("Alle hud" er ikke korrekt dansk), mens mobilmenuen siger "Se alle
-      rynkebehandlinger" og "Se alle hudbehandlinger". Forslag: "Alle rynkebehandlinger →" og "Alle
-      hudbehandlinger →", hvis de kan være i kolonnen ved 1024 px, ellers "Se alle →" i alle fire
-      kolonner. Hvad foretrækker du?
+- [ ] **Mega-menuen** (`content/navigation.ts`, ejerens design v2): hud-kolonnens link hedder
+      "Alle hud →" ("Alle hud" er ikke korrekt dansk), mens mobilmenuen siger "Se alle
+      hudbehandlinger". Forslag: "Alle hudbehandlinger →" (en kolonne bliver nu mindst så bred som
+      sin længste linje; om de fire kolonner så stadig er der ved 1024 px, skal måles).
+      Rynke-kolonnen hedder siden 27/11-2026 "Botox" med "Alle botoxbehandlinger →" (Alberte, se
+      "Kendt § 66-risiko"), og "Alle fillers →" åbner fillersiden `/behandlinger/fillers`. Hvad
+      foretrækker du for hud?
 - [ ] **Om os** (`content/pages/about.ts`, bureauets nye tekst): (1) "Og du behøver ikke føle dig
       hjemme i en eksklusiv luksusklinik for at føle dig hjemme hos os." står ordret, men lyder
       oversat — bed bureauet se på den. (2) ~~Dr. Toms titel~~: løst 25/11-2026 ("lidt mere end
@@ -574,7 +646,8 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 - [ ] **Behandlere** (`content/team.ts`, `// TODO: copy review`): Dr. Toms "Sådan arbejder …"-kort
       er skrevet i tredje person ud fra Om os. Nye sætninger at godkende (25/11-2026): booking-båndet
       nederst på Albertes, Annikas og Mikes profiler ("Du møder Annika i Fillox Østerbro og Fillox
-      City2. Første konsultation er altid gratis.") og Simones og Frederikkes kort (se nedenfor).
+      City2. Første konsultation er altid gratis."). Simones og Frederikkes kort har ingen sætning
+      længere (26/11-2026: klinikkerne står på alle kort, se "Hvem arbejder hvor").
   - [x] **"Uddannet kosmetisk sygeplejerske i Fillox af Dr. Tom"** (Annika) og
         **Autorisationsregisteret** (du, 26/11-2026: "ja annika er sygepljesker osv så det ikke noget
         problem.. alle er udddannet korrekt mm."): Annika er sygeplejerske, og alle behandlere har den
@@ -592,16 +665,23 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
         `content/team.ts`, der skal tilbage.
 - [x] **Titler** (du, 25/11-2026: "tom er self læge mm men de andre skriver vi bare kosmetiske
       sygeplejerske"): Alberte, Annika, Mike, Simone og Frederikke er "Kosmetisk sygeplejerske"
-      ("Sygeplejerske" på forsidens kort) på kortene, profilerne, "Din behandler" på
-      behandlingssiderne, i alt-teksterne og i de strukturerede data. Dr. Tom er uændret. Det
-      afklarer også Albertes titel (før stod hun som "Behandler").
+      på kortene, profilerne, "Din behandler" på behandlingssiderne, i alt-teksterne og i de
+      strukturerede data, og siden 26/11-2026 også på forsidens kort (før "Sygeplejerske"; Alberte:
+      "Skift titlen Sygeplejerske til Kosmetisk sygeplejerske"). Alberte er desuden
+      "Klinikansvarlig" og Annika "Fagligt ansvarlig" (Alberte 26/11-2026): på forsidens kort på en
+      linje for sig, ellers efter titlen ("Kosmetisk sygeplejerske · Klinikansvarlig"); i
+      søgeresultater "Annika – Kosmetisk sygeplejerske, fagligt ansvarlig · Fillox". Dr. Tom er
+      uændret. Det afklarer også Albertes titel (før stod hun som "Behandler").
 - [x] **Hvem arbejder hvor** (du, 25/11-2026: "Frederikke = Østerbro / Simone = city2 og Amager /
-      Mike = frb og Amager / Annika = Østerbro og city2 / Alberte = FRB"): det står ét sted,
+      Mike = frb og Amager / Annika = Østerbro og city2 / Alberte = FRB"; Albertes tabel 26/11-2026
+      siger det samme, men giver Frederikke også Frederiksberg): det står ét sted,
       `clinicSlugs` i `content/team.ts`, og alle tekster om, hvor en behandler arbejder, bygges
       derfra: kortet "Arbejder i" øverst på Albertes, Annikas og Mikes profiler (med klinikkernes
-      korte navne som i designet, fx "Frederiksberg & Amager Centret"), booking-båndet nederst på dem
-      og Simones og Frederikkes kort (med de fulde navne, "Fillox Frederiksberg og Fillox Amager
-      Centret"). `npm run check:market` fejler, hvis en tekst om en behandler i `content/team.ts`
+      korte navne som i designet, fx "Frederiksberg & Amager Centret"), linjen med klinikkerne under
+      titlen på alle behandlerkort (forsiden, Om os og `/behandlere`, siden 26/11-2026: "Vis også,
+      hvilke afdelinger hver behandler er tilknyttet") og booking-båndet nederst på profilerne (med
+      de fulde navne, "Fillox Frederiksberg og Fillox Amager Centret"). `npm run check:market`
+      fejler, hvis en tekst om en behandler i `content/team.ts`
       eller i "Din behandler" på behandlingssiderne nævner en anden klinik (anmeldelser og andre
       sider tjekkes ikke). Designet har tre faktakort, så "Arbejder i" tog en plads:
       Alberte mistede "Fillox på Trustpilot" (det eneste kort, der ikke handlede om hende), Annika
@@ -625,9 +705,10 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 - [ ] **Nye behandlere: Simone og Frederikke** (du, 25/11-2026: "vi har fået nye profiler, Simone &
       Frederikke … afventer deres billeder. men så ved du at der skal være placeholders"; "Tommy" er
       Dr. Tom). De står på forsiden, på Om os og på `/behandlere` som kort nr. 5 og 6, så der igen er
-      to hele rækker af tre, med navn, "Kosmetisk sygeplejerske" og én sætning ud fra det, du har
-      skrevet: "Du møder Simone i Fillox City2 og Fillox Amager Centret." / "Du møder Frederikke i
-      Fillox Østerbro." (`// TODO: copy review`). I stedet for et foto står en rosa flade med
+      to hele rækker af tre, med navn, "Kosmetisk sygeplejerske" og klinikkerne, og på Om os og
+      `/behandlere` deres arbejdsmail (simone@fillox.dk, frederikke@fillox.dk; Alberte 26/11-2026).
+      Sætningen "Du møder Simone i …" er fjernet, da klinikkerne nu står på kortet. I stedet for et
+      foto står en rosa flade med
       forbogstavet og "Billede på vej" i samme størrelse som fotoene, så intet flytter sig, når
       billedet kommer. Intet andet er skrevet om dem (intet efternavn, ingen uddannelse,
       behandlinger eller citater), og de har ingen profilside endnu: `/behandlere/simone` og
@@ -687,8 +768,10 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 - [x] **Footer og logo** (du, 25/11-2026: "footer har den samme farve som header, lidt lysere
       beige" og logoet "ikke helt mørk … #222222 agtig"): footeren har nu headerens farve
       (offwhite) med en tynd streg øverst, og dens kort (telefon, e-mail, booking, Trustpilot) er
-      lys beige. Logoet er espresso `#3B2A28`, samme farve som overskrifterne (du valgte den ud
-      fra en sammenligning; før `#242724`). Filen er `public/brand/fillox-logo-espresso.png`.
+      lys beige. Logoet var espresso `#3B2A28` (25/11-2026) og er siden 26/11-2026 bordeaux
+      `#6A242F`, den rødlige farve, I bruger på sociale medier (Alberte: "Skift det sorte
+      Fillox-logo til den rødlige farve fra referencebilledet"; farven er den hyppigste i hendes
+      referencebillede). Filen er `public/brand/fillox-logo-bordeaux.png`; espresso-filen er slettet.
 - [ ] **Båndet lige over footeren**: designets lyse bånd var i ét med den beige footer (footeren er
       offwhite siden 25/11-2026, så det er ikke længere et problem). Om os slutter nu med det rosa bånd "Velkommen til Fillox" (den nye tekst),
       ligesom behandlersiderne ("Book tid hos …"). Kun `/behandlere` slutter stadig med det sand-
@@ -735,7 +818,8 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
     og baggrund), så det står ikke længere øverst på lip filler-siden over "Din behandler: Annika":
     toppen dér viser nu spejlbilledet (25/11-2026). Næsekorrektion viser behandlingsrummet i
     stedet for billedet af en behandler, der gør en sprøjte klar, over "Din behandler: Dr. Tom".
-    Sprøjtebillederne står stadig uden navn øverst på kindben, kæbelinje, hage og tear trough
+    Sprøjtebillederne står stadig uden navn øverst på kindben, kæbelinje, hage og tear trough,
+    og siden 26/11-2026 også på fillersiden, tindinger, linjer og folder og Fillox Signatur
     (ingen navngiven behandler dér), på forsidens lip filler-kort og i to artikler. Billedet,
     hvor hun gør sprøjten klar, er Alberte (du, 25/11-2026: "den billede af alberte lip filler").
     Er det også Alberte på billedet med armene over kors? (Hun er kosmetisk sygeplejerske og giver injektioner:
@@ -754,7 +838,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       artikelkortet under "Læs mere om skinbooster". Må en genkendelig behandler stå øverst på
       artiklen (juristen)? Har I ellers et foto uden en genkendelig person, fx en
       skinbooster-behandling uden synligt produkt? Alle otte stemningsbilleder er i brug.
-  - **Før/efter på Kæbelinje** (`/behandlinger/kaebelinje`, "Før og efter"): ét profilpar af hage og
+  - **Før/efter på Hage** (`/behandlinger/hage`, "Før og efter"; til 26/11-2026 på Kæbelinje, men
+    Alberte skrev "før/efter billede af hage", så parret er flyttet, og Kæbelinje har intet
+    før/efter, til der kommer et kæbelinje-par): ét profilpar af hage og
     læber (`public/images/resultater/hage-1-*`, fra "Billede28-kopi"), skåret ud af jeres egen
     komposit med samme udsnit på begge halvdele og ingen anden redigering; teksten siger, at det er
     samme person, vist med samtykke, og at resultater varierer. Ingen ml, tid eller "uden filter".
@@ -764,8 +850,8 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
     mindst 18 år; at der er skriftligt samtykke, som dækker hjemmesiden (sundhedsloven § 43, GDPR
     art. 9) — billederne lå i "FØR/EFTER - Nord Magasin": bekræft, at samtykket dækker
     hjemmesiden og ikke kun magasinet; og hvilken behandling det var (vi skriver "filler" og "Hage
-    og læber", fordi det er det, billederne viser — skal det stå på hage-siden i stedet?). Fjern
-    billedet, hvis samtykket trækkes tilbage.
+    og læber", fordi det er det, billederne viser; hage-siden er afklaret, billedteksten er åben,
+    se "Albertes rettelser 26.–27/11-2026"). Fjern billedet, hvis samtykket trækkes tilbage.
   - **Holdt tilbage** (filerne er klar, men opfylder ikke betingelserne endnu): læbeparrene fra
     "Billede 28" og "Lip Enhancement Comparison" (efter-billedet har et blankt lag på læberne, som
     før-billedet ikke har: en forskel i det behandlede område, og et tegn på, at det er taget lige
@@ -797,8 +883,9 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       "før/efter"-par, hvor begge halvdele var det samme stockfoto, med teksterne "Lip filler · 0,5 ml ·
       2026" osv. under introen "Rigtige kunder … delt med samtykke og uden filtre". Afsnittet er
       fjernet (24/11-2026); lip filler-siden har stadig intet før/efter-afsnit (se "Fotos fra Drive").
-- [x] **Forsidens resultatbilleder** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` →
-      `results`): stockfotos med "lip filler, 2026" osv. er erstattet (24/11-2026) af jeres egne
+- [x] **Forsidens resultatbilleder** ("Vi forbedrer, vi forandrer ikke", før "Vi fremkalder, vi
+      forandrer ikke", `content/pages/home.ts` → `results`): stockfotos med "lip filler, 2026" osv.
+      er erstattet (24/11-2026) af jeres egne
       stemningsbilleder med behandlingens navn som eneste tekst (Lip filler, Kæbelinje, Skinbooster;
       intet rynkekort). Ingen kunder og ingen resultater; før/efter står på behandlingssiderne.
       Kæbelinje-kortet viser nu folderbilledet (25/11-2026; Mikes foto er blevet hans portræt).
@@ -936,16 +1023,25 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 - [ ] **Østerbro** er åben (du, 25/11-2026) på **Nordre Frihavnsgade 13A, 2100 København Ø**
       (postnummer og kortplacering tjekket mod OpenStreetMap). Den står nu som åben klinik på
       /klinikker, i menuerne, i footeren, på /kontakt, på forsiden og i de strukturerede data, og
-      "Få besked"-formularen er fjernet helt. Åbningstider fra dig 25/11-2026: man–fre 9–18, lør
-      10–17, søndag lukket. **Mangler**: linket til klinikkens Google Maps-sted ("Rutevejledning"
-      søger i dag på adressen) og Østerbros Gecko-kalender-id (Gecko kender behandlingsstedet "Fillox - Østerbro",
-      id 14667). Alt sættes i `content/clinics.ts`.
-- [ ] **City2: adresse og weekendtider** (`content/clinics.ts`): fillox.dk/kontakt siger både
-      "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop, centrets egen adresse); weekend
-      10–17 (desktop) eller 10–19 (mobil). Centrets egen side (city2.dk, uge 48) siger man–tor 10–19,
-      fre 10–21, lør–søn 10–19. Hvad er klinikkens adresse og tider (som i Google-profilen)?
-- [ ] **Amager Centret: åbningstider**: sitet viser lør–søn 10–17 (samme tider som City2). Centrets
-      egen side (amagercentret.dk, uge 48) siger lør 10–18 og søndag lukket. Hvilke tider gælder?
+      "Få besked"-formularen er fjernet helt. Åbningstider siden 26/11-2026 (Alberte: "Østerbro og
+      Frederiksberg skal vise samme åbningstider"; du: "de tider frb har er de rigtige tider"):
+      Frederiksbergs, man–tir 8–20, ons–fre 8–16, lør 9–17, søn lukket (før dine tider fra
+      25/11-2026: man–fre 9–18, lør 10–17). Ret dem også i Google-profilen og i Gecko (se "Gecko og
+      Google Business-profilen" under "Albertes rettelser 26.–27/11-2026"). **Mangler**: linket til
+      klinikkens Google Maps-sted ("Rutevejledning" søger i dag på adressen) og Østerbros
+      Gecko-kalender-id (Gecko kender behandlingsstedet "Fillox - Østerbro", id 14667). Alt sættes i
+      `content/clinics.ts`.
+- [ ] **City2 og Amager Centret: lørdagstider, City2's adresse** (`content/clinics.ts`):
+      fillox.dk/kontakt siger både "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop,
+      centrets egen adresse); weekend 10–17 (desktop) eller 10–19 (mobil). Centrets egen side
+      (city2.dk, uge 48) siger man–tor 10–19, fre 10–21, lør–søn 10–19. Sitet viser lør 10–17 for
+      begge klinikker; Amager Centrets egen side (amagercentret.dk, uge 48) siger lør 10–18. Hvad er
+      City2's adresse og de to klinikkers lørdagstider (som i Google-profilen)?
+- [x] **Søndag lukket** (Alberte 26/11-2026: "City2 og Amager skal begge stå som lukket om
+      søndagen"): City2 og Amager Centret viser man–fre 10–19, lør 10–17 og **søn lukket**. Alle fire
+      klinikker skriver nu søndag som lukket ("Søn lukket" i menuerne, footeren og på forsiden,
+      "Søn/Søndag – Lukket" på `/klinikker`); de strukturerede data udelader stadig lukkede dage.
+      Lørdagstiderne: se "City2 og Amager Centret: lørdagstider, City2's adresse".
 - [ ] **Afbud og udeblivelse**: live /priser siger 500 kr ved udeblivelse, handelsbetingelserne 100 %
       af bookingen (også ved afbud senere end 6 timer før). Reglen på /priser om, at kun hverdage
       tæller (en mandagstid skal aflyses fredagen før), står ikke på det nye site
@@ -1010,8 +1106,10 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       `/priser#konsultation`) siger også: én kontrol pr. behandling, du booker den selv ca. 14 dage
       efter, og retten bortfalder efter 21 dage. Blogartiklerne siger det nu (25/11-2026), men
       prislisten (`/priser`: introen og rækken "Kontrol efter behandling"), bookingkortet i "Lip
-      filler for første gang" og kortet "Gratis kontrol" hos behandlerne gør ikke. Skal
-      betingelserne også stå dér (og på `/handelsbetingelser`)?
+      filler for første gang", kortet "Gratis kontrol" hos behandlerne og siden 27/11-2026 Albertes
+      sætning på rynkesiden ("Cirka 14 dage efter behandlingen tilbyder vi en gratis opfølgning …")
+      gør ikke. Skal betingelserne også stå dér (og på `/handelsbetingelser`)? (Om en "justering"
+      ved opfølgningen er gratis: se "Albertes rettelser 26.–27/11-2026".)
 - [ ] **"Første konsultation er altid gratis"** står på alle behandlingssider, også laser, hud og
       hår, og `/priser` siger "Konsultation og kontrol er altid gratis". Live /priser nævner kun
       "Fillers konsultation" og "Lægekonsultation" som gratis og har "Sen aflysning - Konsultation kr
@@ -1057,7 +1155,8 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       laser hårfjerning? Ellers skal formuleringen ændres (af jer eller bureauet). (Alberte er
       kosmetisk sygeplejerske, du 25/11-2026, så for hende passer det.)
 - [ ] **Alberte** (`content/team.ts`): titel og klinik er afklaret 25/11-2026 (kosmetisk
-      sygeplejerske, Fillox Frederiksberg).
+      sygeplejerske, Fillox Frederiksberg), og hun er klinikansvarlig (hendes egen besked
+      26/11-2026). Hendes arbejdsmail og Instagram står på profilen.
   - [x] **Hvad hun udfører** (du, 25/11-2026, om behandlingerne på hendes profil: "ved ikke tjek
         hvad vi har skrevet tidligere, nok det hele"): laser hårfjerning, microneedling,
         skinbooster, signatur-ansigtsbehandling og PRF hud bliver på hendes profil ud fra det svar.
@@ -1092,6 +1191,151 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
       giver 404 med store bogstaver (fx `/Priser`, og `/Priser/` → 308 → `/Priser` → 404), hvor
       WordPress svarede 200. Skal det rettes, kan en lille `proxy.ts` sende enhver adresse med store
       bogstaver videre (308) til samme adresse med små.
+
+### Albertes rettelser 26.–27/11-2026
+
+Alberte (kosmetisk sygeplejerske, klinikansvarlig) sendte 26/11-2026 rettelser til forsiden og
+behandlingssiderne, som du sendte videre. Dine svar: "gør hvad hun skriver og det samme gælder
+botox" (også Botox-teksterne, se "Kendt § 66-risiko, som du har accepteret"), "de tider frb har er
+de rigtige tider" og ingen FDA-sætning ("det dropper vi"). Hendes tekster står ordret (kun stave-,
+komma- og grammatikfejl er rettet, se "Godkend vores tekster"); det, vi selv har skrevet ud fra dem, er markeret `// TODO: copy review
+(2026-11-26, Alberte)` eller `(2026-11-27, Alberte)`. Ingen pris er ændret.
+
+**Gjort**
+
+- [x] **Logo**: bordeaux `#6A242F` (farven fra hendes referencebillede) i header, mobilmenu, footer
+      og de strukturerede data (`public/brand/fillox-logo-bordeaux.png`; espresso-filen er slettet).
+- [x] **Forsiden**: "I trygge hænder fra første møde" (før "Vores bestsellers") og "Vi forbedrer, vi
+      forandrer ikke" (før "Vi fremkalder, vi forandrer ikke") med hendes tekster i fuld længde på
+      alle skærme. Behandlingsrækkerne og de tre billedkort står der stadig.
+- [x] **Behandlere**: "Kosmetisk sygeplejerske" overalt, også på forsidens kort; Alberte er
+      "Klinikansvarlig" og Annika "Fagligt ansvarlig" (se "Titler"). Alle behandlerkort viser
+      klinikkerne (Frederikke: Østerbro og Frederiksberg). Arbejdsmail og Instagram står på
+      Albertes, Annikas og Mikes profiler; Simones og Frederikkes kort viser mailen.
+- [x] **Klinikker**: Østerbro har Frederiksbergs tider (se "Østerbro"), og søndag står som lukket på
+      alle fire (se "Søndag lukket").
+- [x] **Nyhedsbrevet**: "Få nyt fra Fillox" og hendes tekst i footeren, på `/blog` og som formålet i
+      afsnit 12 (se "'Tilbud' i nyhedsbrevet").
+- [x] **kontakt@fillox.dk** på `/content-creator` (før Annikas mail) og i afsnit 1 af
+      privatlivspolitikken (før `info@`).
+- [x] **Fillersiden** `/behandlinger/fillers` ("Filler hos Fillox – vi forbedrer, vi forandrer
+      ikke"): hendes intro, "Hvad er filler?", de ni kort med "fra"-pris og "Læs mere", og "Book en
+      konsultation". "Alle fillers" i menuerne, brødkrummen på fillersiderne og forsidens
+      "Filler"-række går dertil; `/behandlinger` beholder fillerafsnittet med linket "Læs om fillers".
+- [x] **Tre nye sider**: Tindinger, Linjer og folder (marionetlinjer og nasolabiale folder) og
+      Fillox Signatur (ansigtskonturering), med hendes korttekst og sidens fælles fillertekst;
+      priserne kommer fra prislisten (fra 2.499, 1.699 og 3.999 kr). Mobilmenuen viser alle ni
+      fillers, og de gamle adresser for marionet- og nasolabiale linjer og ansigtskonturering går
+      dertil (se "Syv gamle adresser").
+- [x] **Filler-FAQ'en på alle ti fillersider** (de ni og Kæbelinje for mænd): Infini, Belotero og
+      Juvéderm er væk, og "Hvad er Revanesse®, og hvilken filler bruger I?" står med hendes svar.
+      "Hvor længe holder filler?": læber 6–9 måneder, kindben og kæbelinje 9–12 (faktaboksen siger
+      nu det samme; før 6–12 og 12–18), tear trough og næsekorrektion sidens egne ca. 6–12.
+- [x] **Lip filler**: hendes intro, "Hvad er filler?", "Vi bruger Revanesse®" (uden FDA-sætningen)
+      og "Vi starter med at lytte", 30 min, "Kosmetisk sygeplejerske", og FAQ'en "Hvorfor vælger
+      nogle at få opløst læbefiller?" ordret (med hyaluronidase, se "Kendt § 66-risiko").
+- [x] **Kindben**: hendes intro, 35 min, "Om behandlingen" og "Godt til dig, der ønsker".
+- [x] **Kæbelinje** (og Kæbelinje for mænd): hendes "Om behandlingen" (for mænd uden den feminine
+      sætning). Intro, "Godt til" og korttekster er skrevet om ud fra hendes tekst, så "slankere",
+      "hoved og hals" og "slap hud" er væk. Før/efter-parret står nu på Hage (se "Før/efter på Hage").
+- [x] **Skinbooster**: "Skinbooster hos Fillox" med hendes intro og tekster, også "Vores
+      skinboostere" (Ejal40, Sunekos, polynukleotider). PolyPhil-rækkerne står nu på siden.
+      "Ejal40" staves nu som hos hende og producenten (Medixa) overalt på sitet, også i prislisten
+      og artiklerne (før "Ejal 40").
+- [x] **Profhilo**: "Vi tilbyder også Profhilo Structura fra IBSA Derma, firmaet bag Profhilo. Det
+      er et produkt med hyaluronsyre, som er beregnet til at blive injiceret i fedtvævet i siden af
+      ansigtet." (fra IBSA's egne kilder, ingen påstand om virkning) og et link til polynukleotider.
+- [x] **Rynkebehandling**: menuen "Botox", "Hvad er Botox?" og "Vi forbedrer, vi forandrer ikke" med
+      14-dages-opfølgningen (se "Kendt § 66-risiko").
+- [x] **Prislisten**: "Marionetlinjer" (før "Marionettelinjer"), "Nasolabiale folder" (før
+      "Nasolabiale linjer"), "Lip filler · Revanesse® …" og "Ejal40 · …" (før "Ejal 40"). Kun
+      navnene er ændret.
+
+**Åbent** (til Alberte, medmindre der står "du")
+
+- [ ] **Godkend vores tekster**: Structura-sætningen på Profhilo-siden; kæbelinjens nye intro (også
+      metatekst), "Godt til" og korttekster (også for mænd og rækken på `/behandlinger/for-maend`);
+      metateksterne på lip filler-, skinbooster- og fillersiden. Og vores rettelser i hendes tekster:
+      "et bredt udvalg af skinboostere" (hun: "bred valg af skinbooster"), "Fagligt ansvarlig" (hun:
+      "Faglig ansvarlig", se "Annikas titel"), nyhedsbrevets "og få det seneste nyt" (hun: "og få
+      seneste nyt") og polynukleotidernes sidste sætning "Vi tilbyder behandlingen i ansigtet, under
+      øjnene og i hårbunden." (hun: "Tilbyder til ansigt, urner øjnen og hår"; vi har læst "hår" som
+      hårbunden, prislistens PolyPhil Hair). Skal Structura og polynukleotider have egne menupunkter
+      eller sider?
+- [ ] **Revanesse®-svaret stopper midt i**: hendes svar på "Hvad er Revanesse®, og hvilken filler
+      bruger I?" slutter med "… har forskellige anvendelser. Revanesse® …", og resten mangler. Hvordan
+      fortsætter det? Sitet viser kun de to første sætninger, så svaret siger ikke, at I bruger
+      Revanesse® (på fillersiderne ud over lip filler er FAQ'en det eneste sted, mærket står).
+- [ ] **Lip filler-FAQ'en** har to spørgsmål om opløsning lige efter hinanden: "Kan filler opløses
+      igen?" (ja, og prisen pr. område) og hendes "Hvorfor vælger nogle at få opløst læbefiller?".
+      Skal prisen ind i hendes svar, så der kun er ét spørgsmål?
+- [ ] **Holdbarhed** for hage, tindinger, linjer og folder og Fillox Signatur (de har intet "Hvor
+      længe holder filler?" i dag). Tear trough og næsekorrektion: er ca. 6–12 måneder rigtigt? Deres
+      FAQ-svar er vores ("Under øjnene holder resultatet cirka 6–12 måneder.", "Ved næsekorrektion
+      holder resultatet cirka 6–12 måneder.", fra sidernes fakta).
+- [ ] **De tre nye sider** har kun hendes korttekst og sidens fælles fillertekst og -FAQ:
+      behandlingstid, hvem der udfører behandlingen, og egne spørgsmål mangler.
+- [ ] **To "Signatur"-behandlinger**: "Fillox Signatur" (ansigtskonturering) og "Signatur
+      ansigtsbehandling" (Dr. Dennis Gross; på `/priser` "Signatur · Dr. Dennis Gross"). Siden hedder
+      derfor "Fillox Signatur – ansigtskonturering". Skal en af dem omdøbes?
+- [ ] **Billedteksten "Hage og læber"** på før/efter-parret (fra jeres komposit): blev læberne også
+      behandlet? Ellers "Hage".
+- [ ] **Gratis justering?** Rynkesiden siger nu "… tager stilling til, om der er behov for en
+      justering". Er justeringen gratis? Artiklen "0,5 eller 1 ml?" og fillox.dk siger, at mere
+      filler er en ny behandling med egen pris.
+- [ ] **Annikas titel**: "Fagligt ansvarlig" minder om Dr. Toms "Fagligt ansvarlig læge" (profil og
+      `/behandlere`). Skal der stå fx "Fagligt ansvarlig sygeplejerske"?
+- [ ] **Forsiden**: "I trygge hænder fra første møde" står lige under USP-båndets "Du er altid i
+      trygge hænder", og begge nye tekster begynder med "Når vi møder dig første gang …". Skal en af
+      dem omformuleres?
+- [ ] **Lip filler**: hendes overskrift "Læbefiller hos Fillox" er ikke brugt (H1: "Lip filler – vi
+      forbedrer, vi forandrer ikke"), og 30 min står under sitets "Varighed" ("Behandlingstid" er for
+      bredt til faktaboksen på en smal mobil). OK?
+- [ ] **Produkter, vi nævner** (hun skrev: "andre steder står der produkter, vi ikke bruger hos
+      Fillox"). Bruger I dem, og må teksten stå? Vi retter intet uden svar:
+  - Microneedling: "Infini" (introen og "Om behandlingen") og "NCTF 135 HA" (teksten og fire
+    prisrækker).
+  - Signatur ansigtsbehandling: "Dr. Dennis Gross" (kort, intro, fakta, tekst, FAQ, prisrække) og
+    LED-masken "DRx SpectraLite FaceWare Pro"; FAQ'en siger, at I forhandler hele serien.
+  - Profhilo: "fremstillet i Schweiz med en patenteret teknologi … termisk tværbinding" og
+    "stimulerer produktionen af flere typer kollagen og elastin". IBSA er et schweizisk firma, men vi
+    har ikke kunnet bekræfte, at Profhilo fremstilles i Schweiz (det kan være i Italien): tjek det
+    mod IBSA's produktinformation, eller lad "i Schweiz" ud.
+  - Sunekos: prislisten siger "Sunekos Performa"; Sunekos 1200, Body og Cell fra fillox.dk er ikke med.
+  - Polynukleotider: er PolyPhil eye, classic og med HA dem, hun mener (de står nu med pris på
+    skinboostersiden)? Er teksten tjekket mod produktets dokumentation (bureauets forbehold)?
+    Behandlingstid og holdbarhed for dem mangler i faktaboksen og FAQ'en.
+  - Mesoterapi (PRF hår, Hårtab for mænd): hvilke produkter?
+  - Laser hårfjerning: passer "diodelaser" med "AI-genkendelse" og "indbygget køling" på jeres
+    laser? (Påstanden om køling: se "Løfter om resultater".)
+  - Traptox: se "Priser" under "Botox og markedsføring".
+- [ ] **Artiklen "Skinbooster eller Profhilo"** siger stadig "Hos Fillox bruger vi Ejal40 og
+      Sunekos som skinboosters" (polynukleotider mangler) og "Ejal40 … stimulerer dannelsen af nyt
+      kollagen og elastin" (står ikke længere på skinboostersiden). Retter vi den efter hendes tekst?
+- [ ] **Albertes priskort "Skinbooster"** (hendes profil): "Dybdegående fugt med Profhilo, Sunekos
+      eller Ejal40 for frisk, strammere hud." Profhilo har sin egen side, polynukleotider mangler, og
+      "strammere hud" er en påstand. Skal kortet følge hendes skinbooster-tekst?
+- [ ] **"Alle botoxbehandlinger"** (mega-menuen) og "Se alle botoxbehandlinger" (mobilmenuen): er
+      linkteksten OK? Siderne hedder "Rynkebehandling" og "Andre behandlingsmuligheder".
+- [ ] **Instagram for Simone og Frederikke** ("kommer snart"): sig til, når fillox.simone og
+      fillox.frederikke er oprettet, så kommer de på kortene (`content/team.ts` → `instagram`).
+- [ ] **Favicon og app-ikon** (du): de er stadig et sandfarvet "OX" på plum. Skal de også have
+      logoets bordeaux?
+- [ ] **Nyhedsbrevets indhold** (du): tilmeldingen lover nu "det seneste nyt om vores behandlinger,
+      produktnyheder og særlige invitationer", og samtykket dækker kun det. Nyhedsbrevet må stadig
+      ikke have tilbud, rabatter, gaver eller konkurrencer, og produktnyheder aldrig om receptpligtig
+      medicin. Hvad bliver "særlige invitationer"? En jurist bør læse afsnit 12 sammen med teksten.
+- [ ] **Gecko og Google Business-profilen** (du): ret Østerbros tider, "søndag lukket" på alle fire
+      klinikker og behandlingsnavnene "Marionetlinjer", "Nasolabiale folder" og "Ejal40", så booking
+      og Google siger det samme som sitet.
+- [ ] **Billeder fra hendes drev** (kommer): før/efter af læber og hage (Kæbelinje har intet
+      før/efter, til der kommer et kæbelinje-par; samme krav som parret på Hage); billeder til
+      rynkebehandling (kun uden produkt, sprøjte og før/efter), skinbooster (hvilken) og
+      microneedling; et billede pr. klinik (se "Billeder"); portrætter af Simone og Frederikke; og
+      signaturbehandlinger under "Vi forbedrer, vi forandrer ikke" på forsiden.
+- Står som egne punkter ovenfor: City2's og Amager Centrets lørdagstider ("City2 og Amager Centret:
+  lørdagstider, City2's adresse"), Østerbros Gecko-id og kortlink ("Østerbro"), og om Alberte også
+  laver fillers i kindben, kæbelinje og hage ("Alberte").
 
 ## Efter lancering
 
@@ -1160,7 +1404,9 @@ og sitemap bygges af. Ændr begge — `check:market` fejler, hvis de ikke passer
 
 Resten (`behandlinger`, `behandlere`, `klinikker`, `kontakt`, `priser`, `blog`,
 `ledige-stillinger`, `content-creator`) er de samme ord på norsk. Sidetitler, H1'er og
-sektion-id'er kommer fra `content/`.
+sektion-id'er kommer fra `content/`. `app/behandlinger/for-maend` og `app/behandlinger/fillers`
+(`routes.men`, `routes.fillers`) er faste mapper inde i behandlingerne: omdøb `for-maend` (fx
+`for-menn`), og oversæt fillersidens tekst i `content/pages/fillers.ts` (Albertes danske tekster).
 
 ### 3. Booking: TIMMA i stedet for Gecko
 
@@ -1218,7 +1464,7 @@ TIMMA-id'erne fra den nuværende fillox.no: `filloxdrammen`, `filloxlillestrom`,
   `locale` og `pricePattern` i `config/site.ts`.
 - **Før/efter-billeder** er forbudt i markedsføring af kosmetiske indgreb i Norge: slet
   `public/images/resultater/` og `results` / `resultsTitle` / `resultsIntro` i `content/treatments.ts`
-  (Kæbelinje), og brug kun billeder, I har lov til at bruge dér (`content/photos.ts`, med
+  (`chinResults` på Hage), og brug kun billeder, I har lov til at bruge dér (`content/photos.ts`, med
   `share`-udsnittene til delingsbilleder). Lægens foto på Om os (`content/pages/about.ts` →
   `doctor.image`) er i dag Dr. Toms portræt i et bredt udsnit. Uden nøglen viser afsnittet hans
   udsnit fra behandlerkortet, som så står to gange på siden.

@@ -20,22 +20,31 @@ import { formatList } from "@/lib/format";
  *   named Maria are left out (content/reviews.ts; no review named Kubra).
  * - Simone and Frederikke are new ("vi har fået nye profiler, Simone & Frederikke & Tommy-
  *   afventer deres billeder. men så ved du at der skal være placeholders"; "Tommy = Tom", who is
- *   already here). All that is known about them is the first name, the title and the clinics, and
- *   that is all their entries say: no surname, bio, quote, education, treatments or reviews — do
- *   NOT invent any. They are card-only members (content/types.ts → TeamCardOnlyMember): a card in
- *   the three team grids with the placeholder in the photo's slot, no profile page, no link. See
+ *   already here). All that is known about them is the first name, the title, the clinics and
+ *   (Alberte, 2026-11-26) the work e-mail, and that is all their entries say: no surname, bio,
+ *   quote, education, treatments or reviews — do NOT invent any. They are card-only members
+ *   (content/types.ts → TeamCardOnlyMember): a card in the three team grids with the placeholder
+ *   in the photo's slot, no profile page, no link to one. See
  *   "A new member" at the end of this comment for what to add when photos and texts arrive.
  * - Titles ("tom er self læge mm men de andre skriver vi bare kosmetiske sygeplejerske"): Dr. Tom
  *   is the doctor, and more than that ("tror også hans titel er lidt mere end bare læge": æstetisk
- *   læge, grundlægger, daglig leder, fagligt ansvarlig; sources at his entry); everyone else is `nurse` below (title "Kosmetisk sygeplejerske", role
- *   "Sygeplejerske"). That also answered Alberte's profession, which the live site never gave.
- * - Clinics ("Frederikke = Østerbro / Simone = city2 og Amager / Mike = frb og Amager / Annika =
- *   Østerbro og city2 / Alberte = FRB"): `worksAt` below → `clinicSlugs`, in the owner's order.
- *   It is the ONLY source of where someone works: every text that names a practitioner's clinic
- *   is built from it, never written by hand (clinicNames, full names: the booking band and the new
- *   members' card sentence; clinicShortList, short names as in the design: the "Arbejder i"
- *   fact). Dr. Tom works in every clinic ("Tom er på alle klinikker"): the texts say "alle vores
- *   klinikker" / "Alle klinikker" for him.
+ *   læge, grundlægger, daglig leder, fagligt ansvarlig; sources at his entry); everyone else is
+ *   `nurse` below: "Kosmetisk sygeplejerske" as `title` AND as the cards' `role` (Alberte
+ *   2026-11-26, forwarded by the owner: "Skift titlen Sygeplejerske til Kosmetisk sygeplejerske";
+ *   the role was "Sygeplejerske"). That also answered Alberte's profession, which the live site
+ *   never gave. Alberte and Annika have a responsibility after it (`nurseWith`; Alberte
+ *   2026-11-26: "Tilføj Klinikansvarlig på min profil og Faglig ansvarlig på Annikas profil").
+ * - Clinics (the owner, 2026-11-25: "Frederikke = Østerbro / Simone = city2 og Amager / Mike = frb
+ *   og Amager / Annika = Østerbro og city2 / Alberte = FRB"; Alberte's table of 2026-11-26 adds
+ *   Frederiksberg for Frederikke): `worksAt` below → `clinicSlugs`. It is the ONLY source of where
+ *   someone works: every text that names a practitioner's clinic is built from it, never written
+ *   by hand (clinicNames, full names: the booking band; clinicShortList, short names as in the
+ *   design: the "Arbejder i" fact and the clinics line on every team card, `cardClinics`). Dr. Tom
+ *   works in every clinic ("Tom er på alle klinikker"): the texts say "alle vores klinikker" /
+ *   "Alle klinikker" for him.
+ * - Work contact (Alberte 2026-11-26: "Under vores proffer (behandlere) skriv gerne vores arbs.
+ *   Mail samt arbs. Instgram"): `email` and `instagram` below, on the profile page (the hero) and,
+ *   for a card-only member, on the card (`contactLinks`). Dr. Tom has none (none was given).
  *
  * Only Alberte has a full profile design (6alb / ma); the other profiles follow her template
  * (intro, facts, "Sådan arbejder jeg", offers, reviews, booking band) with their own facts.
@@ -119,11 +128,15 @@ const profileHref = (slug: string) => `${routes.practitioners}/${slug}`;
 const bookWith = practitionerBookingHref;
 
 /**
- * Where each practitioner works: content/clinics.ts slugs in the owner's order (2026-11-25:
- * "Frederikke = Østerbro / Simone = city2 og Amager / Mike = frb og Amager / Annika = Østerbro og
- * city2 / Alberte = FRB"). Each member's `clinicSlugs` is its row, and every text that names a
- * practitioner's clinic is built from `clinicSlugs` (clinicNames, clinicShortList), so a change
- * here changes them all.
+ * Where each practitioner works: content/clinics.ts slugs (the owner, 2026-11-25: "Frederikke =
+ * Østerbro / Simone = city2 og Amager / Mike = frb og Amager / Annika = Østerbro og city2 /
+ * Alberte = FRB"). Alberte's table of 2026-11-26 (forwarded by the owner; "Behandler /
+ * Afdelinger": "Mike: Frederiksberg og Amager", "Simone: Amager og City2", "Frederikke: Østerbro og
+ * Frederiksberg", "Annika: Østerbro og City2", "Alberte: Frederiksberg") agrees, except that it
+ * adds Frederiksberg for Frederikke. Order: the owner's where the two agree (Simone: City2
+ * first), Alberte's for Frederikke. Each member's `clinicSlugs` is its row, and every text that
+ * names a practitioner's clinic is built from `clinicSlugs` (clinicNames, clinicShortList), so a
+ * change here changes them all.
  */
 const worksAt = {
   // The owner, 2026-11-25: "Tom er på alle klinikker" — every open clinic, so a new clinic includes
@@ -133,7 +146,8 @@ const worksAt = {
   annika: ["osterbro", "city2"],
   mike: ["frederiksberg", "amager-centret"],
   simone: ["city2", "amager-centret"],
-  frederikke: ["osterbro"],
+  // Frederiksberg: Alberte 2026-11-26 ("Frederikke: Østerbro og Frederiksberg").
+  frederikke: ["osterbro", "frederiksberg"],
 } satisfies Record<string, string[]>;
 
 /**
@@ -162,8 +176,8 @@ const everyClinic = { sentence: "alle vores klinikker", fact: "Alle klinikker" }
  * Where a practitioner works, as a sentence's text, from `clinicSlugs`: "Fillox Østerbro og Fillox
  * City2" (the clinics' full names in the given order, joined the Danish way; "alle vores klinikker"
  * for someone in every open clinic). Every sentence that
- * states a practitioner's clinic goes through it (the booking band, the new members' card
- * sentence); the "Arbejder i" fact uses clinicShortList. Throws on an empty list or an unknown clinic.
+ * states a practitioner's clinic goes through it (the booking band); the "Arbejder i" fact and the
+ * cards' clinics line use clinicShortList. Throws on an empty list or an unknown clinic.
  */
 export function clinicNames(clinicSlugs: readonly string[]): string {
   if (!clinicSlugs.length) throw new Error("team: clinicNames() needs at least one clinic");
@@ -186,13 +200,44 @@ export function clinicShortList(clinicSlugs: readonly string[]): string {
   return names.length === 1 ? names[0] : `${names.slice(0, -1).join(", ")} & ${names[names.length - 1]}`;
 }
 
+/** Label of where a practitioner works: the profile's fact card, and the cards' clinics line (visually hidden there). */
+const worksInLabel = "Arbejder i";
+
 /** The profile's "Arbejder i" fact card (6alb's first fact), e.g. "Frederiksberg & Amager Centret". */
-const worksInFact = (clinicSlugs: readonly string[]) => ({ label: "Arbejder i", value: clinicShortList(clinicSlugs) });
+const worksInFact = (clinicSlugs: readonly string[]) => ({ label: worksInLabel, value: clinicShortList(clinicSlugs) });
+
+/**
+ * The clinics line of a team card (home, /om-os, /behandlere), from `clinicSlugs`: `label` "Arbejder
+ * i" (read by screen readers only: the line sits under the title) and `value`, the "Arbejder i"
+ * fact's text ("Frederiksberg & Amager Centret", "Alle klinikker"). Undefined for a member whose
+ * clinics are not known (clinicsUnknown). Alberte 2026-11-26 (forwarded by the owner): "Vis også,
+ * hvilke afdelinger hver behandler er tilknyttet."
+ */
+export function cardClinics(member: Pick<TeamRosterMember, "clinicSlugs">): { label: string; value: string } | undefined {
+  return member.clinicSlugs?.length ? { label: worksInLabel, value: clinicShortList(member.clinicSlugs) } : undefined;
+}
+
+/** "@fillox.alberte" from "https://www.instagram.com/fillox.alberte/". */
+export const instagramHandle = (url: string) => `@${new URL(url).pathname.replaceAll("/", "")}`;
+
+/** One work contact of a practitioner: `kind` picks the label ("E-mail" / "Instagram"), `text` is shown. */
+export type ContactLink = { kind: "email" | "instagram"; text: string; href: string };
+
+/**
+ * A practitioner's work contact (`email`, `instagram`) as links: the address (mailto:) and the
+ * Instagram handle ("@fillox.mike", linking to the profile). Empty for a member without any
+ * (Dr. Tom). Shown in the profile hero and on a card-only member's card.
+ */
+export function contactLinks(member: Pick<TeamRosterMember, "email" | "instagram">): ContactLink[] {
+  return [
+    ...(member.email ? [{ kind: "email" as const, text: member.email, href: `mailto:${member.email}` }] : []),
+    ...(member.instagram ? [{ kind: "instagram" as const, text: instagramHandle(member.instagram), href: member.instagram }] : []),
+  ];
+}
 
 /**
  * "Du møder Annika i Fillox Østerbro og Fillox City2.": the one sentence that says where to find
- * a practitioner. It opens the booking band of a profile and is the whole card text of a new
- * member (nothing but the name and the clinics, both from the owner).
+ * a practitioner. It opens the booking band of a profile.
  */
 // TODO: copy review (the wording; the clinics are the owner's)
 const meetAt = (name: string, clinicSlugs: readonly string[]) => `Du møder ${name} i ${clinicNames(clinicSlugs)}.`;
@@ -205,9 +250,27 @@ const bookingText = (name: string, clinicSlugs: readonly string[]) =>
 /**
  * Title of everyone but Dr. Tom (the owner, 2026-11-25: "de andre skriver vi bare kosmetiske
  * sygeplejerske"): `title` on /om-os, /behandlere and the profile (also the structured data's
- * jobTitle), `role` on the home cards.
+ * jobTitle), `role` on the home cards. The role was "Sygeplejerske" until Alberte 2026-11-26
+ * (forwarded by the owner): "Skift titlen Sygeplejerske til Kosmetisk sygeplejerske".
  */
-const nurse = { role: "Sygeplejerske", title: "Kosmetisk sygeplejerske" } as const;
+// TODO: copy review (2026-11-26, Alberte)
+const nurse = { role: "Kosmetisk sygeplejerske", title: "Kosmetisk sygeplejerske" } as const;
+
+/**
+ * A nurse with a responsibility in Fillox, after the title: "Kosmetisk sygeplejerske ·
+ * Klinikansvarlig" (`title`: /om-os, /behandlere, the profile and its jobTitle, the men's page). The
+ * home cards show the short `role` ("Kosmetisk sygeplejerske") with `responsibility` as a second
+ * line under it (Alberte put "Tilføj Klinikansvarlig på min profil og Faglig ansvarlig på Annikas
+ * profil" under "Forsiden › Mød dine behandlere"; until 2026-11-27 the home cards showed the role
+ * only). Treatment pages' "Din behandler" heading takes the part before " · "
+ * (components/treatment/treatmentView.ts).
+ */
+// TODO: copy review (2026-11-27, Alberte)
+const nurseWith = (responsibility: string) => ({
+  ...nurse,
+  title: `${nurse.title} · ${responsibility}`,
+  responsibility,
+});
 
 /** Amounts of the price-list rows (content/prices.ts) tagged with any of `slugs`. */
 function listAmounts(slugs: string[]): number[] {
@@ -540,8 +603,13 @@ const members: TeamRosterMember[] = [
     slug: "alberte",
     name: "Alberte",
     // The owner (2026-11-25): Alberte is a kosmetisk sygeplejerske and works at Frederiksberg
-    // (the live site gave her no title and no clinic).
-    ...nurse,
+    // (the live site gave her no title and no clinic). Klinikansvarlig: Alberte 2026-11-26
+    // (forwarded by the owner), "Tilføj Klinikansvarlig på min profil".
+    // TODO: copy review (2026-11-26, Alberte)
+    ...nurseWith("Klinikansvarlig"),
+    // Work contact: Alberte 2026-11-26 ("Alberte: Mail: alberte@fillox.dk & instagram: Fillox.alberte").
+    email: "alberte@fillox.dk",
+    instagram: "https://www.instagram.com/fillox.alberte/",
     // In black, arms crossed (the owner, 2026-11-25: "alberte har også i hvid man brug den i sort
     // det bedre"; the white one by the window is a mood photo, content/photos.ts → behandlerVindue).
     image: {
@@ -618,7 +686,7 @@ const members: TeamRosterMember[] = [
         ...offersCopy("Alberte"),
         // Prices from the price list (https://fillox.dk/priser/): laser from 500 (Overlæbe, Hage …),
         // Microneedling 1 behandling 1.200 (999 until the live list changed, 2026-11-17),
-        // skinboosters from 1.499 (Ejal 40), Signatur behandling 999, PRF Hud 1 behandling 2.499;
+        // skinboosters from 1.499 (Ejal40), Signatur behandling 999, PRF Hud 1 behandling 2.499;
         // lip filler, "Fillers i ansigtet" and rynkebehandling as on Annika's and Mike's profiles
         // (the same helpers and `wrinkleOffer`, never the product name); the fillers consultation
         // (v. kosmetisk sygeplejerske) is free.
@@ -631,9 +699,9 @@ const members: TeamRosterMember[] = [
             description: "Diodelaser tilpasset din hudtype og hårstruktur, fra overlæbe til hel krop.",
           }),
           treatmentOffer("microneedling"),
-          // "fra 1.499" is Ejal 40 (Profhilo from 2.499, Sunekos Performa from 1.599).
+          // "fra 1.499" is Ejal40 (Profhilo from 2.499, Sunekos Performa from 1.599).
           treatmentOffer("skinbooster", {
-            description: "Dybdegående fugt med Profhilo, Sunekos eller Ejal 40 for frisk, strammere hud.",
+            description: "Dybdegående fugt med Profhilo, Sunekos eller Ejal40 for frisk, strammere hud.",
           }),
           treatmentOffer("signatur-ansigtsbehandling", { description: "Peeling, maske og LED med Dr. Dennis\u00a0Gross." }),
           treatmentOffer("prf-hud"),
@@ -661,7 +729,14 @@ const members: TeamRosterMember[] = [
   {
     slug: "annika",
     name: "Annika",
-    ...nurse,
+    // Fagligt ansvarlig: Alberte 2026-11-26 (forwarded by the owner), "Faglig ansvarlig på Annikas
+    // profil" (Danish: "fagligt ansvarlig", as Dr. Tom's "Fagligt ansvarlig læge").
+    // TODO: copy review (2026-11-26, Alberte; owner: Dr. Tom is "Fagligt ansvarlig læge" on his
+    // profile and on /behandlere, so two people now carry the same words)
+    ...nurseWith("Fagligt ansvarlig"),
+    // Work contact: Alberte 2026-11-26 ("Annika: Mail: annika@fillox.dk & instagram: Fillox.annika").
+    email: "annika@fillox.dk",
+    instagram: "https://www.instagram.com/fillox.annika/",
     // Straight blonde hair, black Fillox uniform (the owner, 2026-11-25). The design's s6bx-annika
     // crop was for her old photo; "Din behandler" frames this one from the face table.
     image: {
@@ -745,6 +820,9 @@ const members: TeamRosterMember[] = [
     slug: "mike",
     name: "Mike",
     ...nurse,
+    // Work contact: Alberte 2026-11-26 ("Mike: Mail: mike@fillox.dk & instagram: Fillox.mike").
+    email: "mike@fillox.dk",
+    instagram: "https://www.instagram.com/fillox.mike/",
     // Black uniform, arms crossed (the owner, 2026-11-25).
     image: {
       src: "/images/team/mike-2026.jpg",
@@ -811,11 +889,13 @@ const members: TeamRosterMember[] = [
     },
   },
   // New practitioners (the owner, 2026-11-25). Card-only members (content/types.ts →
-  // TeamCardOnlyMember): only the first name, the title and the clinics are known, and their
-  // photos have not arrived, so the team grids draw the placeholder (chosen by the missing
-  // `image`). NOTHING else may be written about them until the owner supplies it: no surname,
-  // bio, quote, education, treatments, experience or reviews. `bio` is the one sentence the cards
-  // show under the title, built from the name and the clinics.
+  // TeamCardOnlyMember): only the first name, the title, the clinics and the work e-mail are known,
+  // and their photos have not arrived, so the team grids draw the placeholder (chosen by the
+  // missing `image`). NOTHING else may be written about them until the owner supplies it: no
+  // surname, bio, quote, education, treatments, experience or reviews. Their cards show the name,
+  // the title, the clinics line every card has (cardClinics) and the e-mail (contactLinks). The
+  // card sentence "Du møder Simone i Fillox City2 og Fillox Amager Centret." (`bio`) went when
+  // every card got the clinics line (Alberte, 2026-11-26): it only repeated it.
   // TODO (owner): photos, a few lines about each and their treatments ("A new member" in the
   // header has the three steps).
   {
@@ -823,16 +903,19 @@ const members: TeamRosterMember[] = [
     name: "Simone",
     ...nurse,
     clinicSlugs: worksAt.simone,
-    // TODO: copy review ("Du møder Simone i Fillox City2 og Fillox Amager Centret.")
-    bio: meetAt("Simone", worksAt.simone),
+    // Alberte 2026-11-26: "Simone: mail: simone@fillox.dk & instagram: Fillox.simone (kommer snart)".
+    email: "simone@fillox.dk",
+    // TODO: Instagram "https://www.instagram.com/fillox.simone/" once the account is live ("kommer snart").
   } satisfies TeamCardOnlyMember,
   {
     slug: "frederikke",
     name: "Frederikke",
     ...nurse,
     clinicSlugs: worksAt.frederikke,
-    // TODO: copy review ("Du møder Frederikke i Fillox Østerbro.")
-    bio: meetAt("Frederikke", worksAt.frederikke),
+    // Alberte 2026-11-26: "Frederikke: mail: Frederikke@fillox.dk & instagram: Fillox.Frederikke
+    // (kommer snart)" (the address in lower case, as the others).
+    email: "frederikke@fillox.dk",
+    // TODO: Instagram "https://www.instagram.com/fillox.frederikke/" once the account is live ("kommer snart").
   } satisfies TeamCardOnlyMember,
 ];
 

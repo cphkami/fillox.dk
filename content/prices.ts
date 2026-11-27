@@ -103,25 +103,36 @@ export const priceCards: PriceCard[] = [
     chipLabel: "Fillers",
     categorySlug: "fillers",
     rows: [
-      { label: "Lip filler · Revanesse 0,3 ml", ...kr(999, "lip-filler") },
-      { label: "Lip filler · Revanesse 0,5 ml", ...kr(1199, "lip-filler") },
-      { label: "Lip filler · Revanesse 0,7 ml", ...kr(1399, "lip-filler") },
-      { label: "Lip filler · Revanesse 1,0 ml", ...kr(1599, "lip-filler") },
-      { label: "Ansigtskonturering · 4 ml", note: AREAS_4ML, ...kr(3999) },
+      // "Revanesse®" with the mark, as in Alberte's texts (2026-11-27; live "Revanesse"). Looked up by
+      // these labels in content/treatments.ts (lip filler's price list) and content/blog.ts
+      // (lipFillerPrice). TODO: copy review (2026-11-27, Alberte)
+      { label: "Lip filler · Revanesse® 0,3 ml", ...kr(999, "lip-filler") },
+      { label: "Lip filler · Revanesse® 0,5 ml", ...kr(1199, "lip-filler") },
+      { label: "Lip filler · Revanesse® 0,7 ml", ...kr(1399, "lip-filler") },
+      { label: "Lip filler · Revanesse® 1,0 ml", ...kr(1599, "lip-filler") },
+      // Tagged 2026-11-26 with the new filler pages (Alberte, forwarded by the owner: tindinger,
+      // "Linjer og folder" for marionet- and nasolabiale linjer, "Fillox Signatur" for
+      // ansigtskonturering), which take their "fra" price and price list from these rows. No amount
+      // changed. Kindben, kæbelinje and hage still list the 4 ml row by its label
+      // (content/pages/treatments.ts → priceRowLabels).
+      { label: "Ansigtskonturering · 4 ml", note: AREAS_4ML, ...kr(3999, "ansigtskonturering") },
       // Without the product name (live: "Opløsning af filler (Hyalase)"): Hyalase is a prescription
       // medicine (hyaluronidase), and the owner's rule for Botox applies (owner 2026-11-26: "ret det
       // hele som du har skrevet til mig. alt fra punkt 1-9"; lægemiddelloven § 66,
       // https://www.retsinformation.dk/eli/lta/2023/339). Looked up by this label in
       // content/treatments.ts, content/blog.ts and content/pages/treatments.ts. TODO: copy review
       { label: "Opløsning af filler", note: "pr. område", ...kr(999) },
-      { label: "Marionettelinjer", note: "op til 1 ml", ...kr(1699) },
-      { label: "Nasolabiale linjer", note: "op til 1 ml", ...kr(1699) },
+      // Alberte's spelling (2026-11-26: "marionetlinjer og nasolabiale folder"; live "Marionettelinjer",
+      // "Nasolabiale linjer"; Retskrivningsordbogen: marionet). Labels only, the amounts are unchanged;
+      // Gecko's treatment names may need the same change. TODO: copy review (2026-11-27, Alberte)
+      { label: "Marionetlinjer", note: "op til 1 ml", ...kr(1699, "linjer-og-folder") },
+      { label: "Nasolabiale folder", note: "op til 1 ml", ...kr(1699, "linjer-og-folder") },
       { label: "Hage", note: "op til 1 ml", ...kr(1699, "hage") },
       { label: "Pre-jowls", note: "op til 1 ml", ...kr(1699) },
       { label: "Kæbelinjer", note: "op til 1 ml", ...kr(1699, "kaebelinje") },
       { label: "Kindben", note: "op til 1 ml", ...kr(1699, "kindben") },
       { label: "Tear Trough", note: "op til 1 ml", ...kr(1999, "tear-trough") },
-      { label: "Tindinger", note: "op til 1 ml", ...kr(2499) },
+      { label: "Tindinger", note: "op til 1 ml", ...kr(2499, "tindinger") },
       { label: "Næsekorrektion", note: "op til 1 ml, v. Dr. Tom", ...kr(3999, "naesekorrektion") },
     ],
   },
@@ -174,8 +185,8 @@ export const priceCards: PriceCard[] = [
       { label: "Profhilo · 2\u00a0behandlinger", note: "pakkepris", ...kr(4499, "profhilo") },
       { label: "Profhilo Structura 2\u00a0ml · 1\u00a0behandling", ...kr(3250, "profhilo") },
       { label: "Profhilo Structura 2\u00a0ml · 2\u00a0behandlinger", ...kr(5250, "profhilo") },
-      { label: "Ejal 40 · 1\u00a0behandling", ...kr(1499, "skinbooster") },
-      { label: "Ejal 40 · 3\u00a0behandlinger", ...kr(3199, "skinbooster") },
+      { label: "Ejal40 · 1\u00a0behandling", ...kr(1499, "skinbooster") },
+      { label: "Ejal40 · 3\u00a0behandlinger", ...kr(3199, "skinbooster") },
       { label: "Sunekos Performa · 1\u00a0behandling", ...kr(1599, "skinbooster") },
       { label: "Sunekos Performa · 3\u00a0behandlinger", ...kr(3999, "skinbooster") },
       {
@@ -183,12 +194,18 @@ export const priceCards: PriceCard[] = [
         note: "peeling, maske & LED",
         ...kr(999, "signatur-ansigtsbehandling"),
       },
-      { label: "PolyPhil eye · 1\u00a0behandling", ...kr(1800) },
-      { label: "PolyPhil eye · 3\u00a0behandlinger", ...kr(4500) },
-      { label: "PolyPhil classic · 1\u00a0behandling", ...kr(1800) },
-      { label: "PolyPhil classic · 3\u00a0behandlinger", ...kr(4500) },
-      { label: "PolyPhil med HA · 1\u00a0behandling", ...kr(1800) },
-      { label: "PolyPhil med HA · 3\u00a0behandlinger", ...kr(4500) },
+      // The polynukleotider of the skinbooster page (Alberte 2026-11-26, forwarded by the owner:
+      // "Ejal40, Sunekos og polynukleotider" … "Tilbyder til ansigt, urner øjnen og hår"; the scalp
+      // is PolyPhil Hair, on the "Hårtab & hovedbund" card): tagged 2026-11-26, so the page lists
+      // their prices and /priser links them there. The skinbooster "fra" price stays Ejal40's
+      // (1.499 kr < 1.800 kr). No amount changed. TODO: copy review (2026-11-26, Alberte): confirm
+      // that these rows are the polynukleotider she means.
+      { label: "PolyPhil eye · 1\u00a0behandling", ...kr(1800, "skinbooster") },
+      { label: "PolyPhil eye · 3\u00a0behandlinger", ...kr(4500, "skinbooster") },
+      { label: "PolyPhil classic · 1\u00a0behandling", ...kr(1800, "skinbooster") },
+      { label: "PolyPhil classic · 3\u00a0behandlinger", ...kr(4500, "skinbooster") },
+      { label: "PolyPhil med HA · 1\u00a0behandling", ...kr(1800, "skinbooster") },
+      { label: "PolyPhil med HA · 3\u00a0behandlinger", ...kr(4500, "skinbooster") },
       { label: "Microneedling · 1\u00a0behandling", ...kr(1200, "microneedling") },
       { label: "Microneedling · 3\u00a0behandlinger", ...kr(3000, "microneedling") },
       { label: "Microneedling med NCTF 135 HA · 1\u00a0behandling", ...kr(1699, "microneedling") },

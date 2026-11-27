@@ -169,7 +169,7 @@ export const newHerePage = {
           "Med tiden kan huden miste noget af sin spændstighed og fasthed. Måske mærker du det i ansigtet, på halsen eller på kroppen.",
           "Hvad der passer, afhænger blandt andet af hudens kvalitet, det område, du ønsker at behandle, og hvor stor en forandring du ønsker. Vi vurderer, hvilke muligheder der findes, og er tydelige om, hvad du kan forvente.",
         ],
-        // Profhilo: løs hud i ansigtet og på halsen; Skinbooster (Ejal 40): slap hud;
+        // Profhilo: løs hud i ansigtet og på halsen; Skinbooster (Ejal40): slap hud;
         // Microneedling: tynd og løs hud, also on the body (arms, legs, belly).
         treatments: ["profhilo", "skinbooster", "microneedling"],
         more: categoryLink("Udforsk behandlinger for spændstighed og fasthed", "hudforbedring"),

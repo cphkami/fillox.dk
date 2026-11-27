@@ -7,10 +7,12 @@ import type { TreatmentView } from "./treatmentView";
  * The Service is provided by the site-wide organisation node (root layout), whose clinics
  * carry the addresses; its Offer is the "fra" price the page shows (a minimum, not a fixed price;
  * none on a long-form page, which shows no price). The category crumb is only included when it
- * is a page of its own (For mænd → /behandlinger/for-maend, a long-form page's parent
- * → /behandlinger/rynkebehandling); otherwise it is an anchor on the overview
- * (/behandlinger#fillers), which search engines treat as the overview URL itself. The shared fallback FAQ is not
- * marked up (it would be the same FAQPage on every page without its own FAQ).
+ * is a page of its own (For mænd → /behandlinger/for-maend, Fillers → /behandlinger/fillers, a
+ * long-form page's parent → /behandlinger/rynkebehandling); otherwise it is an anchor on the overview
+ * (/behandlinger#hudforbedring), which search engines treat as the overview URL itself. The shared fallback FAQ is not
+ * marked up (it would be the same FAQPage on every page without its own FAQ), nor an FAQ shared by
+ * several pages (`detail.faqShared`, the filler pages hage, tindinger, linjer og folder and Fillox
+ * Signatur).
  */
 export function TreatmentJsonLd({ view }: { view: TreatmentView }) {
   const url = absoluteUrl(view.path);

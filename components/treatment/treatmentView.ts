@@ -85,10 +85,15 @@ export type TreatmentView = {
   };
   /** Long-form body (detail.sections). */
   sections?: TreatmentSection[];
-  /** "Om behandlingen" band; always on template pages, on a long-form page only with `detail.about`. */
+  /**
+   * "Om behandlingen" band; always on template pages, on a long-form page only with `detail.about`
+   * or `detail.aboutBlocks`.
+   */
   about?: {
     paragraphs: string[];
     mobileParagraphs?: string[];
+    /** Titled blocks after the paragraphs (an h3 each, optional anchor id and arrow link; detail.aboutBlocks). */
+    blocks?: NonNullable<Treatment["detail"]>["aboutBlocks"];
     listLabel: string;
     items: string[];
   };
@@ -135,7 +140,10 @@ export type TreatmentView = {
   };
   posts?: { eyebrow: string; title: string; intro?: string; link?: Link; items: BlogPost[] };
   faq?: FaqItem[];
-  /** False when `faq` is the shared fallback (no FAQPage structured data for it). */
+  /**
+   * False when `faq` is the template's shared fallback or shared with other pages
+   * (`detail.faqShared`): no FAQPage structured data for it.
+   */
   faqIsOwn: boolean;
   /** Closing band: "Klar til at booke?" or a long-form page's own (detail.closing). */
   booking: { title: string; text: string | string[]; cta: Link };
@@ -147,6 +155,8 @@ export type TreatmentView = {
   description: string;
   /** <title> / og:title text (the treatment's `metaTitle`, else `title`). */
   metaTitle: string;
+  /** `metaTitle` names the brand: no " · Fillox" after it (the treatment's `metaTitleAbsolute`). */
+  metaTitleAbsolute: boolean;
 };
 
 const overviewHref = routes.treatments;
@@ -390,7 +400,7 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
       }
     : undefined;
 
-  const faqIsOwn = Boolean(d?.faq?.length);
+  const faqIsOwn = Boolean(d?.faq?.length) && !d?.faqShared;
   const faq = d?.faq?.length ? d.faq : longform ? undefined : copy.faq.fallback;
 
   /* Fallback "Om behandlingen": one-liner + a sentence about its category (or its alias's). */
@@ -434,23 +444,25 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
       jump: d?.jumpLabel && jumpLinks.length ? { label: d.jumpLabel, links: jumpLinks } : undefined,
     },
     sections: longform ? d?.sections : undefined,
-    about: d?.about?.length
-      ? {
-          paragraphs: d.about,
-          mobileParagraphs: d.mobile?.about,
-          listLabel: copy.about.goodForLabel,
-          items: d.goodFor ?? [],
-        }
-      : longform
-        ? undefined
-        : {
-            paragraphs: [
-              categoryText ? `${treatment.short} ${categoryText}` : treatment.short,
-              ...copy.fallbackAbout.paragraphs,
-            ],
-            listLabel: copy.fallbackAbout.listLabel,
-            items: copy.fallbackAbout.items,
-          },
+    about:
+      d?.about?.length || d?.aboutBlocks?.length
+        ? {
+            paragraphs: d.about ?? [],
+            mobileParagraphs: d.mobile?.about,
+            blocks: d.aboutBlocks,
+            listLabel: d.goodForLabel ?? copy.about.goodForLabel,
+            items: d.goodFor ?? [],
+          }
+        : longform
+          ? undefined
+          : {
+              paragraphs: [
+                categoryText ? `${treatment.short} ${categoryText}` : treatment.short,
+                ...copy.fallbackAbout.paragraphs,
+              ],
+              listLabel: copy.fallbackAbout.listLabel,
+              items: copy.fallbackAbout.items,
+            },
     practitioner,
     results: d?.results?.length
       ? { title: d.resultsTitle ?? copy.results.title(title), intro: d.resultsIntro, items: d.results }
@@ -471,5 +483,6 @@ export function buildTreatmentView(treatment: Treatment): TreatmentView {
     path: treatmentHref(treatment.slug),
     description: d?.metaDescription ?? d?.lead ?? copy.metaDescription(treatment.short, priceFromText),
     metaTitle: treatment.metaTitle ?? title,
+    metaTitleAbsolute: Boolean(treatment.metaTitle && treatment.metaTitleAbsolute),
   };
 }

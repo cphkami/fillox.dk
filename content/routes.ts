@@ -31,6 +31,12 @@ export const routes = {
    * (npm run check:market fails when a static page shadows a collection slug).
    */
   men: "/behandlinger/for-maend",
+  /**
+   * "Filler hos Fillox", the fillers category's own page (content/pages/fillers.ts; Alberte
+   * 2026-11-26: "Opret Filler som underside under Behandlinger"). A static folder like `men`, so no
+   * treatment may take the slug "fillers".
+   */
+  fillers: "/behandlinger/fillers",
   /** "Ny hos Fillox?": the guide for first-time visitors (content/pages/new-here.ts). */
   newHere: "/ny-hos-fillox",
   practitioners: "/behandlere",

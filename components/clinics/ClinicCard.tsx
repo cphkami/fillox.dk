@@ -113,7 +113,9 @@ export function ClinicCard({ clinic, copy, comingSoon, priorityPhoto }: ClinicCa
                         <dt>
                           <ResponsiveText mobile={copy.daysLong[h.days]} desktop={h.days} />
                         </dt>
-                        <dd className="font-semibold md:text-ink">{h.hours}</dd>
+                        {/* first-letter: the closed day's "lukket" reads "Lukket" in the table
+                            (the one-line summaries keep "Søn lukket"); hours start with a digit. */}
+                        <dd className="font-semibold first-letter:uppercase md:text-ink">{h.hours}</dd>
                       </div>
                     ))}
                   </dl>

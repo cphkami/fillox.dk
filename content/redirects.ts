@@ -27,21 +27,23 @@ export type LegacyRedirect = {
 
 export const legacyRedirects: LegacyRedirect[] = [
   /* ------------------------------------------------------------- Fillers */
-  { source: "/fillers", destination: "/behandlinger#fillers", note: "Fillers (oversigt)" },
+  // The overview and the areas that were only on /priser go to the fillers page and the three filler
+  // pages created on 2026-11-26 (Alberte, forwarded by the owner: "Opret Filler som underside under
+  // Behandlinger", "marionetlinjer og nasolabiale folder under Linjer og folder", "ansigtskonturering
+  // under Fillox Signatur"). Was: /behandlinger#fillers and /priser#fillers.
+  { source: "/fillers", destination: "/behandlinger/fillers", note: "Fillers (oversigt)" },
   { source: "/fillers/lip-filler", destination: "/behandlinger/lip-filler", note: "Lip Filler" },
   { source: "/fillers/kindben", destination: "/behandlinger/kindben", note: "Kindben" },
   { source: "/fillers/kaebelinje", destination: "/behandlinger/kaebelinje", note: "Kæbelinje" },
   { source: "/fillers/tear-trough", destination: "/behandlinger/tear-trough", note: "Tear Trough" },
   { source: "/fillers/naesekorrektion", destination: "/behandlinger/naesekorrektion", note: "Næsekorrektion" },
-  // No page of their own: the fillers card on /priser names them with their price (/behandlinger
-  // does not mention them, so a redirect there would read as a soft 404).
-  { source: "/fillers/ansigtskonturering", destination: "/priser#fillers", note: "Ansigtskonturering (ingen egen side)" },
-  { source: "/fillers/ansiktskulpturering", destination: "/priser#fillers", note: "Gammel slug for ansigtskonturering" },
-  { source: "/fillers/nasolabiale-linjer", destination: "/priser#fillers", note: "Nasolabiale linjer (ingen egen side)" },
-  { source: "/fillers/marionettelinjer", destination: "/priser#fillers", note: "Marionettelinjer (ingen egen side)" },
-  { source: "/fillers/marionette-linjer", destination: "/priser#fillers", note: "Gammel slug for marionettelinjer" },
-  { source: "/fillers/haender", destination: "/behandlinger#fillers", note: "Hænder (ikke i nyt udbud)" },
-  { source: "/fillers/faq-om-fillers-behandling", destination: "/behandlinger#fillers", note: "FAQ om fillers" },
+  { source: "/fillers/ansigtskonturering", destination: "/behandlinger/ansigtskonturering", note: "Ansigtskonturering (Fillox Signatur)" },
+  { source: "/fillers/ansiktskulpturering", destination: "/behandlinger/ansigtskonturering", note: "Gammel slug for ansigtskonturering" },
+  { source: "/fillers/nasolabiale-linjer", destination: "/behandlinger/linjer-og-folder", note: "Nasolabiale folder (Linjer og folder)" },
+  { source: "/fillers/marionettelinjer", destination: "/behandlinger/linjer-og-folder", note: "Marionetlinjer (Linjer og folder)" },
+  { source: "/fillers/marionette-linjer", destination: "/behandlinger/linjer-og-folder", note: "Gammel slug for marionettelinjer" },
+  { source: "/fillers/haender", destination: "/behandlinger/fillers", note: "Hænder (ikke i nyt udbud)" },
+  { source: "/fillers/faq-om-fillers-behandling", destination: "/behandlinger/fillers", note: "FAQ om fillers" },
 
   /* ----------------------------------------------------- Rynkebehandling */
   { source: "/rynkebehandling", destination: "/behandlinger/rynkebehandling", note: "Rynkebehandling med Botox" },
@@ -106,9 +108,9 @@ export const legacyRedirects: LegacyRedirect[] = [
   { source: "/filler/kjevelinje", destination: "/behandlinger/kaebelinje" },
   { source: "/filler/tear-trough", destination: "/behandlinger/tear-trough" },
   { source: "/filler/nesekorreksjon", destination: "/behandlinger/naesekorrektion" },
-  { source: "/filler/nasolabiale-linjer", destination: "/priser#fillers" },
-  { source: "/filler/ansiktskulpturering", destination: "/priser#fillers" },
-  { source: "/filler-oslo/hender", destination: "/behandlinger#fillers" },
+  { source: "/filler/nasolabiale-linjer", destination: "/behandlinger/linjer-og-folder" },
+  { source: "/filler/ansiktskulpturering", destination: "/behandlinger/ansigtskonturering" },
+  { source: "/filler-oslo/hender", destination: "/behandlinger/fillers" },
 
   /* ------------- Pages of this site that were shown in previews and later merged (2026-10) */
   // Replaced by the owner's two pages (content/treatments.ts); the anchors are sections of

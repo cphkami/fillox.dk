@@ -36,14 +36,36 @@ export const treatmentCategories: TreatmentCategory[] = [
   {
     slug: "fillers",
     name: "Fillers",
-    treatments: ["lip-filler", "kindben", "kaebelinje", "hage", "tear-trough", "naesekorrektion"],
+    // The nine areas of the fillers page, in its order (content/pages/fillers.ts → areas). Alberte
+    // 2026-11-26 (forwarded by the owner): "Gør de manglende områder synlige i oversigten … så
+    // oversigten fortsat har ni kort": tindinger, linjer og folder (marionet + nasolabial) and Fillox
+    // Signatur (ansigtskonturering) are new pages. Was: lip filler, kindben, kæbelinje, hage, tear
+    // trough, næsekorrektion.
+    treatments: [
+      "lip-filler",
+      "kindben",
+      "tear-trough",
+      "hage",
+      "kaebelinje",
+      "naesekorrektion",
+      "tindinger",
+      "linjer-og-folder",
+      "ansigtskonturering",
+    ],
   },
   {
     // The hub and the page for the other areas (lip flip, gummy smile, mundvige, tyggemuskler,
-    // platysma, svedtendens, tænderskæren), the owner's two pages. No product name in the menus:
-    // Botox is a prescription medicine (content/treatments.ts header).
+    // platysma, svedtendens, tænderskæren), the owner's two pages. `name` ("Rynkebehandling") is the
+    // /behandlinger section heading, its chip and the treatment pages' breadcrumb; `mobileName` is
+    // the mobile menu's label and level-2 heading, "Botox", as the mega menu's column (megaMenu
+    // below). Alberte 2026-11-26 (forwarded by the owner): "Brug botox som menupunkt i stedet for
+    // Rynker"; the owner, told first that lægemiddelloven § 66 forbids advertising a prescription
+    // medicine to the public, also on the clinic's own site: "gør hvad hun skriver og det samme
+    // gælder botox". An accepted § 66 risk (README "Før lancering" → "Botox og markedsføring");
+    // check:market rule 19 allows exactly these menu labels. TODO: copy review (2026-11-27, Alberte)
     slug: "rynkebehandling",
     name: "Rynkebehandling",
+    mobileName: "Botox",
     treatments: ["rynkebehandling", "andre-behandlingsmuligheder"],
   },
   {
@@ -70,12 +92,19 @@ export const treatmentCategories: TreatmentCategory[] = [
 ];
 
 /**
- * Categories with a landing page of their own instead of a section on /behandlinger. Every link
- * to such a category (the mega menu's "For mænd" tag, the mobile menu's "Se alle …", the
- * overview's jump chip) goes to the page, which opens at the top; the overview keeps a teaser
- * with id="<slug>" so old /behandlinger#<slug> links still land somewhere sensible.
+ * Categories with a landing page of their own. Every link to such a category (the mega menu's
+ * "For mænd" tag and "Alle fillers", the mobile menu's "Se alle …", a treatment page's breadcrumb)
+ * goes to the page, which opens at the top. On /behandlinger a category listed in
+ * content/pages/treatments.ts → treatmentsOverview.categoryPageLinks (fillers) keeps its section and
+ * jump chip, with a link to its page; the others (For mænd) get a teaser with id="<slug>" instead,
+ * so old /behandlinger#<slug> links still land somewhere sensible, and their chip opens the page.
  */
 export const categoryPages: Partial<Record<TreatmentCategory["slug"], string>> = {
+  // "Filler hos Fillox" (Alberte 2026-11-26): the mega menu's "Alle fillers", the mobile menu's "Se
+  // alle fillers", the treatment pages' breadcrumb and the home bestseller row go there. The overview
+  // keeps its fillers section (with a link to the page): content/pages/treatments.ts →
+  // treatmentsOverview.categoryPageLinks.
+  fillers: routes.fillers,
   "for-maend": routes.men,
 };
 
@@ -105,9 +134,16 @@ export const megaMenu: MegaMenuContent = {
     {
       // The category's two pages. Links to the other page's sections (…#lip-flip) would need the
       // menu to take hrefs as well as treatment slugs (components/layout/menuData.ts).
-      eyebrow: "Rynker",
+      // "Botox" (was "Rynker", then "Rynkebehandling"). Alberte 2026-11-26 (forwarded by the owner):
+      // "Brug botox som menupunkt i stedet for Rynker"; the owner: "gør hvad hun skriver og det
+      // samme gælder botox", after being told that lægemiddelloven § 66 forbids advertising a
+      // prescription medicine to the public, also on the clinic's own site. An accepted § 66 risk
+      // (README "Før lancering"); check:market rule 19 allows this eyebrow and "Alle …" label and
+      // the mobile menu's (treatmentCategories, content/layout.ts), and nothing else. The pages keep
+      // their names ("Rynkebehandling", "Andre behandlinger"). TODO: copy review (2026-11-27, Alberte)
+      eyebrow: "Botox",
       treatmentSlugs: ["rynkebehandling", "andre-behandlingsmuligheder"],
-      allLink: { label: "Alle rynker", href: categoryHref("rynkebehandling") },
+      allLink: { label: "Alle botoxbehandlinger", href: categoryHref("rynkebehandling") },
     },
     {
       eyebrow: "Hud",

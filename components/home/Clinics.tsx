@@ -61,7 +61,7 @@ export function Clinics({
                   </p>
                   {clinic.hoursSummary ? (
                     <HoursSummary
-                      // "Hverdage 10–19 · Weekend 10–17"
+                      // "Man–fre 10–19 · Lør 10–17"
                       parts={splitHours(clinic.hoursSummary)}
                       className="lg:mt-2 lg:leading-[1.5] lg:font-medium lg:text-accent"
                     />

@@ -67,7 +67,9 @@ export const layoutCopy = {
     categoryAllLabels: {
       // TODO: copy review — only "for-maend" is in the design (mm3); the other five are invented.
       fillers: "Se alle fillers",
-      rynkebehandling: "Se alle rynkebehandlinger",
+      // "Botox", as the category's mobile label (content/navigation.ts → treatmentCategories;
+      // Alberte 2026-11-26 and the owner, an accepted § 66 risk). TODO: copy review (2026-11-27, Alberte)
+      rynkebehandling: "Se alle botoxbehandlinger",
       hudforbedring: "Se alle hudbehandlinger",
       "laser-harfjerning": "Se alt om laser hårfjerning",
       hartab: "Se alle hårbehandlinger",
@@ -110,11 +112,18 @@ export const layoutCopy = {
     // and never rynkebehandling or other prescription medicines (lægemiddelloven § 66). Should it
     // ever carry offers, change this text, /blog (content/pages/blog.ts → newsletter) and the
     // privacy policy (content/pages/legal.ts, "12. Nyhedsbrev") first.
+    // Title and text: Alberte 2026-11-26 (forwarded by the owner), "Få nyt fra Fillox" / "Tilmeld
+    // dig vores nyhedsbrev, og få seneste nyt om vores behandlinger, produktnyheder og særlige
+    // invitationer." ("det seneste nyt": grammar). Was "Tilmeld dig vores nyhedsbrev" / "Få nyheder
+    // og gode råd om vores behandlinger på e-mail." The same words on /blog and in "12. Nyhedsbrev".
+    // What the consent now covers, and so what the mails may carry: "produktnyheder" never about a
+    // prescription medicine (§ 66 above), and "særlige invitationer" (events) without offers,
+    // discounts, gifts or competitions on treatments (VEJ 9319/2013 pkt. 5.1 above).
+    // TODO: copy review (2026-11-26, Alberte; owner: what "særlige invitationer" will be)
     newsletter: {
       eyebrow: "Nyhedsbrev",
-      title: "Tilmeld dig vores nyhedsbrev",
-      // TODO: copy review (2026-11-26, without "tilbud")
-      text: "Få nyheder og gode råd om vores behandlinger på e-mail.",
+      title: "Få nyt fra Fillox",
+      text: "Tilmeld dig vores nyhedsbrev, og få det seneste nyt om vores behandlinger, produktnyheder og særlige invitationer.",
       formName: forms.newsletter,
       placeholder: "Din e-mail",
       submit: "Tilmeld",

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Container, Photo, ResponsiveText, ScrollRow, SectionHeading } from "@/components/ui";
+import { Container, Photo, ScrollRow, SectionHeading } from "@/components/ui";
 import type { HomePage } from "@/content/pages/home";
 import type { ImageRef } from "@/content/types";
 
@@ -31,7 +31,8 @@ function photoSizes(image: ImageRef): string {
 }
 
 /**
- * "Vi fremkalder, vi forandrer ikke". Desktop (6a): three centred photos with italic
+ * "Vi forbedrer, vi forandrer ikke" (the design's "Vi fremkalder, vi forandrer ikke"; Alberte's
+ * heading and intro, 2026-11-26). Desktop (6a): three centred photos with italic
  * captions on the page background. The photos are the clinic's own mood photos, each captioned
  * with and linking to a treatment (content/pages/home.ts → `results`); they are not results.
  * 1024–1279: as the design, a centred row of three photos ≤ 300px wide (3 × 300 + 2 × 32 = 964px
@@ -57,7 +58,7 @@ export function Results({ copy }: { copy: HomePage["results"] }) {
         <SectionHeading
           id="home-results-title"
           title={copy.title}
-          intro={<ResponsiveText mobile={copy.introShort} desktop={copy.intro} />}
+          intro={copy.intro}
           align="left"
           leading="normal"
           className="mb-4 lg:mb-fluid-50 lg:text-center"

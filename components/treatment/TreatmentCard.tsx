@@ -5,11 +5,13 @@ import { ui } from "@/content/ui";
 import { formatPriceFrom } from "@/lib/content";
 
 /**
- * Treatment card on /behandlinger: price eyebrow, name, one-liner and "Læs mere →"
- * (mobile: an accent arrow on the right instead). The name is the heading face (card title).
+ * Treatment card on /behandlinger and /behandlinger/fillers: price eyebrow, name, one-liner and
+ * "Læs mere →" (mobile: an accent arrow on the right instead). The name is the heading face (card
+ * title). A page with card copy of its own passes `title` / `text` (the fillers page: Alberte's
+ * "Læber", "Kindben og kinder" …); price and link are always the treatment's.
  */
-export function TreatmentCard({ treatment }: { treatment: Treatment }) {
-  const name = treatment.detail?.title ?? treatment.name;
+export function TreatmentCard({ treatment, title, text }: { treatment: Treatment; title?: string; text?: string }) {
+  const name = title ?? treatment.detail?.title ?? treatment.name;
   return (
     <article className="relative flex h-full flex-col rounded-[18px] bg-white py-4 pr-12 pl-[18px] shadow-card transition-shadow hover:shadow-menu md:rounded-[24px] md:px-7 md:pt-[26px] md:pb-[30px] xl:px-fluid-28 xl:pt-fluid-26 xl:pb-fluid-30">
       {treatment.priceFrom !== undefined ? (
@@ -33,7 +35,7 @@ export function TreatmentCard({ treatment }: { treatment: Treatment }) {
         </Link>
       </h3>
       <p className="mt-1 text-[14px] leading-[1.6] text-muted md:mt-2 md:mb-[18px] md:text-body md:leading-[1.7]">
-        {treatment.short}
+        {text ?? treatment.short}
       </p>
       <span aria-hidden="true" className="mt-auto self-start border-b border-rule-strong pb-[3px] text-ui-sm max-md:hidden">
         {ui.readMore} →

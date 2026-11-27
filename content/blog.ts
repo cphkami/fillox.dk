@@ -65,10 +65,10 @@ function listPrice(cardId: string, label: string): string {
 
 /** Lip filler amounts as sold (content/prices.ts → fillers), in ml with the market's decimal comma. */
 const LIP_AMOUNTS = ["0,3", "0,5", "0,7", "1,0"] as const;
-const lipFillerPrice = (ml: (typeof LIP_AMOUNTS)[number]) => listPrice("fillers", `Lip filler · Revanesse ${ml} ml`);
+const lipFillerPrice = (ml: (typeof LIP_AMOUNTS)[number]) => listPrice("fillers", `Lip filler · Revanesse® ${ml} ml`);
 /** "Opløsning af filler": the price-list label without the product name (owner 2026-11-26). */
 const dissolvePrice = listPrice("fillers", "Opløsning af filler");
-const ejalPrice = listPrice("hudforbedring", "Ejal 40 · 1 behandling");
+const ejalPrice = listPrice("hudforbedring", "Ejal40 · 1 behandling");
 const sunekosPrice = listPrice("hudforbedring", "Sunekos Performa · 1 behandling");
 const profhiloPrice = listPrice("hudforbedring", "Profhilo · 1 behandling");
 
@@ -283,7 +283,7 @@ export const allPosts: BlogPost[] = [
     relatedPostSlugs: ["lip-filler-for-foerste-gang", "haevelse-og-blaa-maerker", "skinbooster-eller-profhilo"],
     // TODO: fagligt tjek (læge) + copy review
     body: [
-      // source: content/prices.ts → fillers ("Lip filler · Revanesse 0,3 / 0,5 / 0,7 / 1,0 ml")
+      // source: content/prices.ts → fillers ("Lip filler · Revanesse® 0,3 / 0,5 / 0,7 / 1,0 ml")
       {
         type: "lead",
         text: "Når du får lip filler, skal der vælges en mængde: 0,3, 0,5, 0,7 eller 1 ml. Men hvordan ved du, hvad der passer til dig? Her er, hvad der afgør valget, og hvorfor du ikke skal beslutte det alene.",
@@ -403,7 +403,20 @@ export const allPosts: BlogPost[] = [
     // the warning signs and the on-call line after a filler (the treatment pages' FAQ only says "kontakt
     // en læge" after a week). Not the skin pages (skinbooster, Profhilo): they name Alberte as "Din
     // behandler", and the woman in the white coat on this post's photo is not identified (README).
-    treatmentSlugs: ["lip-filler", "kindben", "kaebelinje", "hage", "tear-trough", "naesekorrektion", "kaebelinje-for-maend"],
+    // The three filler pages of 2026-11-26 (Alberte: tindinger, linjer-og-folder, ansigtskonturering)
+    // added; they name no practitioner.
+    treatmentSlugs: [
+      "lip-filler",
+      "kindben",
+      "kaebelinje",
+      "hage",
+      "tear-trough",
+      "naesekorrektion",
+      "tindinger",
+      "linjer-og-folder",
+      "ansigtskonturering",
+      "kaebelinje-for-maend",
+    ],
     relatedPostSlugs: ["lip-filler-for-foerste-gang", "lip-filler-0-5-eller-1-ml", "skinbooster-eller-profhilo"],
     // No booking card in the text: an article about warning signs sells nothing (the closing links
     // point to the treatment page, contact and booking).
@@ -463,7 +476,7 @@ export const allPosts: BlogPost[] = [
       // 12–24 timer, blå mærker; Sunekos omkring øjnene 24–72 timer), profhilo FAQ (samme)
       {
         type: "paragraph",
-        text: "Efter Ejal 40 og Profhilo kan stikkene ligne myggestik. De forsvinder normalt inden for 12–24 timer, og der kan komme et par blå mærker. Efter Sunekos omkring øjnene kan der være hævelse i 24–72 timer.",
+        text: "Efter Ejal40 og Profhilo kan stikkene ligne myggestik. De forsvinder normalt inden for 12–24 timer, og der kan komme et par blå mærker. Efter Sunekos omkring øjnene kan der være hævelse i 24–72 timer.",
       },
       { type: "h2", id: "pas-paa-omraadet", text: "Sådan passer du på området" },
       { type: "paragraph", text: "Et par råd til tiden omkring en behandling med filler:" },
@@ -583,14 +596,14 @@ export const allPosts: BlogPost[] = [
       // source: content/treatments.ts → skinbooster lead ("Vi bruger Ejal 40 og Sunekos"), profhilo
       {
         type: "paragraph",
-        text: "Hos Fillox bruger vi Ejal 40 og Sunekos som skinboosters, mens Profhilo er en behandling for sig.",
+        text: "Hos Fillox bruger vi Ejal40 og Sunekos som skinboosters, mens Profhilo er en behandling for sig.",
       },
-      { type: "h2", id: "skinbooster", text: "Skinbooster: Ejal 40 og Sunekos" },
+      { type: "h2", id: "skinbooster", text: "Skinbooster: Ejal40 og Sunekos" },
       // source: content/treatments.ts → skinbooster about[0]; fillox.dk/skinbooster/ejal-40 (the "40 mg" on
       // the treatment page has no source on fillox.dk, so the article leaves it out)
       {
         type: "paragraph",
-        text: "Ejal 40 er en biorevitaliserende gel med hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den bruges til slap hud og rynker og til at forbedre hudtone og elasticitet.",
+        text: "Ejal40 er en biorevitaliserende gel med hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den bruges til slap hud og rynker og til at forbedre hudtone og elasticitet.",
       },
       // source: content/treatments.ts → skinbooster about[1]; fillox.dk/skinbooster/sunekos
       {
@@ -604,7 +617,7 @@ export const allPosts: BlogPost[] = [
         type: "list",
         style: "bullet",
         items: [
-          "Ejal 40 tager cirka 20 minutter. Behandlingen gentages 2–3 uger efter den første og vedligeholdes derefter 1–2 gange om året. Resultatet viser sig efter cirka 1–2 uger og holder omtrent 12 måneder.",
+          "Ejal40 tager cirka 20 minutter. Behandlingen gentages 2–3 uger efter den første og vedligeholdes derefter 1–2 gange om året. Resultatet viser sig efter cirka 1–2 uger og holder omtrent 12 måneder.",
           "Sunekos tager cirka 30 minutter og gives som et forløb på 3–4 behandlinger med 1–2 ugers mellemrum, derefter en opfølgning cirka hver 6. måned. Resultatet holder cirka 6 måneder.",
         ],
       },
@@ -628,7 +641,7 @@ export const allPosts: BlogPost[] = [
       // source: content/treatments.ts → skinbooster and profhilo FAQ "Gør det ondt?"
       {
         type: "paragraph",
-        text: "Ejal 40 og Profhilo ligger på cirka 2 ud af 10 på smerteskalaen, så bedøvelse er ikke nødvendig. Vil du have bedøvende creme, så sig det til klinikken, da cremen skal virke i cirka 30 minutter.",
+        text: "Ejal40 og Profhilo ligger på cirka 2 ud af 10 på smerteskalaen, så bedøvelse er ikke nødvendig. Vil du have bedøvende creme, så sig det til klinikken, da cremen skal virke i cirka 30 minutter.",
       },
       // source: content/treatments.ts → skinbooster and profhilo FAQ "Kan jeg gå på arbejde dagen efter?";
       // fillox.dk/skinbooster/ejal-40 and /profhilo ("De første 12 timer efter behandlingen bør man ikke
@@ -661,12 +674,12 @@ export const allPosts: BlogPost[] = [
         type: "paragraph",
         text: "Det afhænger af, hvad du gerne vil have hjælp til, og af din hud. Ved konsultationen vurderer din behandler, om en behandling er egnet til dig, og hvad du kan forvente. Mange får det bedste resultat med et forløb over flere behandlinger, men hvor mange der skal til, kan ikke siges præcist på forhånd.",
       },
-      // source: content/prices.ts → hudforbedring ("Ejal 40 · 1 behandling", "Sunekos Performa · 1
+      // source: content/prices.ts → hudforbedring ("Ejal40 · 1 behandling", "Sunekos Performa · 1
       // behandling", "Profhilo · 1 behandling"; packages of 2–3 treatments) and pricesPage.intro
       // ("Konsultation og kontrol er altid gratis")
       {
         type: "paragraph",
-        text: `Én behandling koster fra ${ejalPrice} med Ejal 40, fra ${sunekosPrice} med Sunekos og fra ${profhiloPrice} med Profhilo, og der er pakkepriser, når du køber flere behandlinger. Konsultationen er altid gratis.`,
+        text: `Én behandling koster fra ${ejalPrice} med Ejal40, fra ${sunekosPrice} med Sunekos og fra ${profhiloPrice} med Profhilo, og der er pakkepriser, når du køber flere behandlinger. Konsultationen er altid gratis.`,
       },
       { type: "h2", id: "vil-du-vide-mere", text: "Vil du vide mere?" },
       {

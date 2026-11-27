@@ -105,10 +105,19 @@ export const site: SiteConfig = {
   },
 
   brand: {
-    // Espresso #3B2A28, the headings' colour (the owner, 2026-11-25: "ikke er helt mørk … #222222
-    // agtig", then, from a comparison, "synes den der espresso ser meget lækkert ud"; it was ink
-    // #242724): 13.0:1 on the offwhite header and footer.
-    logoDark: "/brand/fillox-logo-espresso.png",
+    // Bordeaux #6A242F, the logo colour the clinic uses on social media. Alberte 2026-11-26
+    // (forwarded by the owner): "Skift det sorte Fillox-logo til den rødlige farve fra
+    // referencebilledet"; #6A242F is the colour sampled from her reference image. The file is the
+    // former espresso logo (#3B2A28, the headings' colour, 2026-11-25) with every pixel's colour set
+    // to #6A242F and its alpha kept, so the anti-aliasing is unchanged. 10.5:1 on the offwhite
+    // header, mobile menu and footer (#FAFAF8); 11.0:1 on white (the Organization JSON-LD logo).
+    // Why #6A242F and not a sampled ≈ #622930 (an earlier note): #6A242F is the mode, the most
+    // frequent colour among the reference screenshot's dark reddish pixels (2,378 pixels; the next
+    // are #6A2431 and #69262F, one step away). An average or a single sample is pulled off by the
+    // anti-aliased edges and the JPEG-like noise around the letters (the mean of the same pixels is
+    // #682932), so the mode is the logo's flat fill colour. Checked again 2026-11-27. If the brand
+    // files give another hex, re-colour the file the same way (colour set, alpha kept).
+    logoDark: "/brand/fillox-logo-bordeaux.png",
     logoLight: "/brand/fillox-logo-sand.png",
     /** Intrinsic size of the logo PNGs (both variants share it). */
     logoWidth: 603,

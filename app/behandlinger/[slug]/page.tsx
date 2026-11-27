@@ -30,7 +30,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const treatment = getTreatment(slug);
   if (!treatment) return {};
   const view = buildTreatmentView(treatment);
-  return pageMetadata({ title: view.metaTitle, description: view.description }, view.path, view.hero.image);
+  return pageMetadata(
+    { title: view.metaTitle, description: view.description, absoluteTitle: view.metaTitleAbsolute },
+    view.path,
+    view.hero.image,
+  );
 }
 
 const BOOKING_BAND_ID = "book";

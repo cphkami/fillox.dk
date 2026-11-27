@@ -1,5 +1,6 @@
 import type { Link } from "../types";
 import { routes } from "../routes";
+import { site } from "@/config/site";
 
 /**
  * Page copy for the practitioner profile /behandlere/[slug] (design 6alb desktop,
@@ -16,9 +17,18 @@ import { routes } from "../routes";
  */
 export const practitionerPage = {
   meta: {
-    /** <title> of a profile page (the layout appends " · Fillox"). */
-    // TODO: copy review (not in the design)
-    title: (name: string, title: string) => `${name} – ${title}`,
+    /**
+     * <title> of a profile page (the layout appends " · Fillox"). A two-part title's " · " becomes
+     * ", " with the second part in lower case ("Annika – Kosmetisk sygeplejerske, fagligt ansvarlig
+     * · Fillox"): one "·" per title, the brand's, and Annika's title fits the ≤ 60 characters (61
+     * with " · "). The page and its structured data keep the full title.
+     */
+    // TODO: copy review (not in the design; the ", " form since 2026-11-27)
+    title: (name: string, title: string) =>
+      `${name} – ${title
+        .split(" · ")
+        .map((part, i) => (i === 0 ? part : part.charAt(0).toLocaleLowerCase(site.locale) + part.slice(1)))
+        .join(", ")}`,
   },
 
   /** "Om os → Behandlere → Alberte" (mobile shows the first two only). */
@@ -39,6 +49,19 @@ export const practitionerPage = {
    * makes each button's accessible name unique: "Book hos Alberte: Microneedling".
    */
   offerLabelSeparator: ": ",
+
+  /**
+   * A practitioner's work contact (content/team.ts → contactLinks: `email`, `instagram`), in the
+   * profile hero under the buttons and on the card of a member without a profile page. Each link
+   * has its label above it ("E-mail" / "Instagram", as the fact cards' labels); `label` names the
+   * list for screen readers. Alberte 2026-11-26 (forwarded by the owner): "Under vores proffer
+   * (behandlere) skriv gerne vores arbs. Mail samt arbs. Instgram".
+   */
+  // TODO: copy review (2026-11-26, Alberte)
+  contact: {
+    label: (name: string) => `Kontakt ${name}`,
+    kinds: { email: "E-mail", instagram: "Instagram" },
+  },
 
   /**
    * Customer reviews section (rotating; the reviews are content/reviews.ts). The heading names

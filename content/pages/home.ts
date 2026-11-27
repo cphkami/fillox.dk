@@ -67,20 +67,37 @@ export const homePage = {
     { title: "4 klinikker", text: "København og omegn" },
   ] satisfies Usp[],
 
+  /**
+   * The treatment rows (content/treatments.ts → `bestsellers`) under a heading about the first
+   * consultation. Alberte 2026-11-26 (forwarded by the owner): "Erstat overskriften Bestseller med I
+   * trygge hænder fra første møde, og indsæt denne tekst (forslag)". Heading and `intro` are her
+   * words, in full at every width: "indsæt denne tekst" (until 2026-11-27 the mobile intro was her
+   * first and last sentence only). Was "Vores bestsellers" / "Du starter altid med en konsultation.
+   * Din behandler vurderer din anatomi og lægger en plan sammen med dig, og vi behandler kun, når det
+   * giver mening."
+   */
+  // TODO: copy review (2026-11-27, Alberte)
   bestsellers: {
-    title: "Vores bestsellers",
+    title: "I trygge hænder fra første møde",
     intro:
-      "Du starter altid med en konsultation. Din behandler vurderer din anatomi og lægger en plan sammen med dig, og vi behandler kun, når det giver mening.",
-    introShort: "Du starter altid med en konsultation, og vi behandler kun, når det giver mening.",
+      "Når vi møder dig første gang, starter vi med en konsultation. Vi tager os tid til at lytte til dine ønsker, svare på dine spørgsmål og vurdere, hvilke behandlinger der kan passe til dig. Hvis din behandler vurderer, at en behandling er egnet, lægger I sammen en plan, når du føler dig klar. Vi følger dig fra start til slut.",
     cta: { label: ui.seeAllTreatments, href: routes.treatments } satisfies Link,
   },
 
+  /**
+   * Alberte 2026-11-26 (forwarded by the owner): "Skift overskriften Vi fremkalder og ikke forandrer
+   * til Vi forbedrer, vi forandrer ikke, og indsæt denne tekst (forslag)". Heading and `intro` are
+   * her words (her approach on her profile is "Forbedre, ikke forandre" too), in full at every width
+   * ("indsæt denne tekst"; until 2026-11-27 the mobile intro was her first and last sentence). Was
+   * "Vi fremkalder, vi forandrer ikke" / "Det bedste resultat er det, ingen bemærker, …". Her "Vis eventuelt billeder af Fillox’
+   * signaturbehandlinger lige under afsnittet" waits for the new photos: the three cards below stay
+   * until then.
+   */
+  // TODO: copy review (2026-11-27, Alberte)
   results: {
-    title: "Vi fremkalder, vi forandrer ikke",
+    title: "Vi forbedrer, vi forandrer ikke",
     intro:
-      "Det bedste resultat er det, ingen bemærker, kun at du ser veludhvilet ud, som på de gamle billeder. Derfor starter enhver behandling med en ærlig konsultation, hvor vi lige så gerne fraråder som anbefaler.",
-    introShort:
-      "Det bedste resultat er det, ingen bemærker, kun at du ser veludhvilet ud. Derfor starter enhver behandling med en ærlig konsultation, hvor vi lige så gerne fraråder som anbefaler.",
+      "Vi arbejder med diskrete forbedringer, der fremhæver dine naturlige træk. Når vi møder dig første gang, tager vi os tid til at lytte til dine ønsker og tale om, hvilke små justeringer der kan passe til dig. Vi giver dig vores ærlige vurdering og anbefaler kun en behandling, når den giver mening for dig.",
     /**
      * Mood photos of the clinic, each linking to a treatment; the caption is the treatment's name.
      * Not results: no client's result and no before/after here, no year or amount in the caption.

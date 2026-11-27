@@ -32,9 +32,13 @@ function postalAddress(lines: string[]) {
 /** "10" / "9.30" / "9:30" → "10:00" / "09:30". */
 const toTime = (hours: string, minutes?: string) => `${hours.padStart(2, "0")}:${minutes ?? "00"}`;
 
-/** [{ days: "Man–fre", hours: "10–19" }] → schema.org OpeningHoursSpecification[]. */
+/**
+ * [{ days: "Man–fre", hours: "10–19" }] → schema.org OpeningHoursSpecification[]. A closed day
+ * ({ days: "Søn", …, closed: true }) is left out: schema.org reads a day without hours as closed.
+ */
 function openingHours(hours: OpeningHours[]) {
-  return hours.flatMap(({ days, hours: range }) => {
+  return hours.flatMap(({ days, hours: range, closed }) => {
+    if (closed) return [];
     const dayOfWeek = seoContent.openingDays[days];
     const match = range.match(/^(\d{1,2})(?:[.:](\d{2}))?\s*[–-]\s*(\d{1,2})(?:[.:](\d{2}))?$/);
     if (!dayOfWeek || !match) return [];

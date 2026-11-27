@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { ResponsiveText } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
-import { drawnWidthScale, framedPortrait, hasProfilePage, teamMemberHref, teamSlots } from "@/content/team";
+import { contactLinks, drawnWidthScale, framedPortrait, hasProfilePage, teamMemberHref, teamSlots } from "@/content/team";
 import type { ImageRef, TeamRosterMember } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { CardClinics } from "./CardClinics";
+import { ContactLinks } from "./ContactLinks";
 import { CropPhoto } from "./CropPhoto";
 import { PortraitPlaceholder } from "./PortraitPlaceholder";
+import { TitleParts } from "./TitleParts";
 
 type PractitionerCardProps = {
   member: TeamRosterMember;
@@ -60,12 +63,16 @@ function Portrait({
  *   same slot (PortraitPlaceholder), chosen by the missing `image`.
  * - Mobile (mo): a white card with the portrait, name, short title, short bio and a 44px arrow
  *   link. From 768px the cards are borderless on the page.
+ * - Under the title, the member's clinics (CardClinics: accent, medium, the title's size; Alberte,
+ *   2026-11-26), as on /om-os and the home cards.
  * - Type follows the fluid scale ("Wide layout" in ARCHITECTURE.md): the design sizes up to
  *   1280px, then name 24 → 28, title 14 → 15, bio 16 → 18, link 14 → 16 at 1600px.
  *
  * A member with a profile page: the whole card is clickable (stretched link to /behandlere/<slug>).
  * A card-only member (content/types.ts: no profile page yet): the same card as plain content, with
- * name, title and text in the same type and places, and no link at all (nothing to hover or focus).
+ * name, title and clinics in the same type and places, and no link to a profile (nothing to hover);
+ * its only links are the work contact at the bottom (ContactLinks: the e-mail, Instagram once live),
+ * which has no profile page to sit on.
  */
 export function PractitionerCard({ member, headingLevel: Heading = "h2", priority }: PractitionerCardProps) {
   const href = hasProfilePage(member) ? teamMemberHref(member.slug) : undefined;
@@ -85,9 +92,15 @@ export function PractitionerCard({ member, headingLevel: Heading = "h2", priorit
         <Heading className="font-heading text-[22px] tracking-display text-accent md:mt-[22px] md:mb-1 md:text-[24px] xl:text-h3-md">
           {name}
         </Heading>
-        <p className="text-[13px] text-muted md:mb-3.5 md:text-small">
-          <ResponsiveText mobile={member.titleShort} desktop={member.title ?? member.role} />
-        </p>
+        <div className="flex flex-col gap-0.5 md:mb-3.5">
+          <p className="text-[13px] text-muted md:text-small">
+            <ResponsiveText
+              mobile={member.titleShort && <TitleParts text={member.titleShort} />}
+              desktop={<TitleParts text={member.title ?? member.role} />}
+            />
+          </p>
+          <CardClinics member={member} className="text-[13px] font-medium text-accent md:text-small" />
+        </div>
         {member.bio ? (
           <p className="text-[15px] leading-[1.65] text-pretty text-muted md:text-body md:leading-[1.75]">
             <ResponsiveText mobile={member.bioShort} desktop={member.bio} />
@@ -108,7 +121,10 @@ export function PractitionerCard({ member, headingLevel: Heading = "h2", priorit
               <span aria-hidden="true">&nbsp;→</span>
             </Link>
           </div>
-        ) : null}
+        ) : (
+          // No profile page to carry the work contact, so the card shows it, right under the clinics.
+          <ContactLinks name={member.name} links={contactLinks(member)} className="pt-2 md:pt-1" />
+        )}
       </div>
     </article>
   );

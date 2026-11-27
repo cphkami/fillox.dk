@@ -71,7 +71,7 @@ content/
   prices.ts                    price list (Priser page)
   ui.ts                        shared UI strings ("Book tid", "Se priser", "Læs mere" …)
   pages/<page>.ts              page-specific copy (home, about, prices, clinics, contact, blog, men,
-                               new-here …)
+                               new-here, fillers …)
   redirects.ts                 legacy fillox.dk URLs → new routes
   routes.ts                    every route path; code, canonicals and the sitemap link through it
 lib/                           helpers (formatPrice, cn, …); metadata.ts builds every route's
@@ -79,9 +79,13 @@ lib/                           helpers (formatPrice, cn, …); metadata.ts build
                                analytics.ts: Consent Mode, stored choice, GTM loader, cookie deletion
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
                                redirect targets (and the price list's treatment links: the treatment
-                               exists, an #anchor is a section / item id of its long-form page),
+                               exists, an #anchor is a section / item id of its long-form page; a
+                               static page inside /behandlinger, e.g. /behandlinger/fillers, is a
+                               route, not a treatment: rule 4),
                                no-JS form targets (contact, newsletter), Netlify form names,
-                               booking provider ids, clinic address/hours parse for JSON-LD,
+                               booking provider ids, clinic address/hours parse for JSON-LD
+                               (a closed day, `closed: true` "Søn lukket", is shown everywhere
+                               the hours are and left out of the JSON-LD),
                                no æ/ø/å strings in app/, components/ (except components/dev/), lib/, review excerpts
                                verbatim + review sets consistent (content/reviews.ts), components/dev/
                                imported only by app/layout.tsx behind the NODE_ENV guard; note when
@@ -91,7 +95,14 @@ scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes
                                prescription-medicine name, no price card on wrinkle posts); no
                                hyaluronidase / lidocaine name anywhere a visitor reads (price list,
                                treatments, team, every content/pages module, post bodies; rule 18,
-                               see "Prescription medicine"); security
+                               except `HYALURONIDASE_SENTENCE` in lip filler's FAQ answer, see
+                               "Prescription medicine"); no
+                               Botox / botulinum brand in menus, categories, price cards, a
+                               treatment's slug, name, titles, headings, lead, one-liner, meta or
+                               alt texts, or on the fillers page (rule 19, except the four menu
+                               labels in `BOTOX_MENU_LABELS`); no "FDA", Juvéderm or Belotero in
+                               any text of content/ (but redirects.ts) or config/site.ts (rule 20:
+                               Revanesse® is the only filler brand, no FDA sentence); security
                                headers (netlify.toml = config/securityHeaders.ts, the CSP allows the
                                booking provider + GTM); the team (no photo → no profile page; a
                                profile page → photo, share image, face row) and where practitioners
@@ -110,6 +121,9 @@ components/
                                see "Design tokens" → "Colour tuner")
   practitioner/teamGrid.ts     centres a team grid's short last row (home, /om-os, /behandlere;
                                see "Team" → "Grids")
+  practitioner/CardClinics, ContactLinks, TitleParts
+                               the team cards' clinics line, a practitioner's work e-mail and
+                               Instagram, two-part titles that wrap between their parts (see "Team")
   <page>/                      page-local components (owned by that page)
 app/                           routes (see below)
 design-reference/              the source design: screens/*.png, sections/*.html, uploads/
@@ -127,17 +141,18 @@ public/images/                 fillox/ (the clinic's mood photos), resultater/ (
 | `/om-os` | `6om` / `mo` for the hero and the team grid; the rest follows the owner's new "Om Fillox" text (agency, 2026-10, verbatim in `content/pages/about.ts`, except "rynkebehandling" for "botox" in the Academy paragraph, 2026-11-26): hero (sand panel; "Mød vores team" jumps to `#behandlere`) · Fillox Academy (`SplitSection`) · the doctor (`DoctorSection`, sand panel with his portrait) · "Samme kompetence" (`CenteredSection`) · "mere end ét værktøj" (`MethodsBand`, rose band) · quality and price (`SplitSection`) · the team (`TeamSection`, anchor `behandlere`) · "Velkommen til Fillox" (`WelcomeBand`, rose band with "Find din klinik" + "Book en konsultation"). The hero photo is the clinic's group photo (four practitioners, unnamed), with a desktop crop in content (`hero.imagePositionDesktop`, 50% 30% from 1024px); the doctor section shows `doctor.image` (`DoctorSection` → `OwnPhoto`): Dr. Tom's team photo uncropped at full height (head to hands, the plant, the panelled wall), where his team card further down is a head-and-shoulders close-up (it is the only photo of him, 2026-11-25). The sand "Fagligt ansvarlig" band (`ResponsibleBand`) now closes `/behandlere` only |
 | `/behandlere/[slug]` | `6alb` / `ma` (Alberte is the example). Anette's palette: the name (H1) takes `text-emphasis` (plum); the closing "Book tid hos …" band (the design's powder) is the Lys Rosa `band`, because a beige panel reads as one block with the Sandbeige footer right under it |
 | `/priser` | `6b` / `mp` (mobile unfolded at the owner's request: open cards with the label under the title, no chip current at rest; the mobile menu is unchanged). Laser has three cards: single areas, "Laserpakker, overkrop" (`laser-overkrop`, chip "Laser overkrop": the live "Mænd" list, for everyone since 2026-11-26) and "Laserpakker"; each area combination has one price, and no card or row ties a price to gender (owner 2026-11-26; ligestillingsloven § 2). The package rows link to laser hårfjerning |
-| `/behandlinger` | overview built from existing components (no dedicated design) |
-| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row). The design's before/after section (`ResultsSection`, "Før og efter") shows the clinic's own pairs on Kæbelinje only (see "Photos" → "Before/after"); the design's lip filler pairs were one stock photo with invented captions and are gone |
+| `/behandlinger` | overview built from existing components (no dedicated design). A category with a page of its own either keeps its section, with a link to the page beside "Se priser" (`content/pages/treatments.ts` → `treatmentsOverview.categoryPageLinks`: Fillers, "Læs om fillers"; its jump chip stays an in-page jump), or gets a teaser and a chip that opens the page (For mænd, below) |
+| `/behandlinger/fillers` | no design: "Filler hos Fillox" (Alberte, 2026-11-26: "Opret Filler som underside under Behandlinger"; see "Alberte's corrections"). Static route (`routes.fillers`, wins over `[slug]`, rule 12); page `app/behandlinger/fillers/page.tsx`, copy `content/pages/fillers.ts`. The treatment hero (`TreatmentHero` takes a `TreatmentHeroView`, the hero's part of a TreatmentView: breadcrumb Behandlinger → Fillers, H1 "Filler hos Fillox – vi forbedrer, vi forandrer ikke", her lead, "Book en konsultation", a jump to the cards, the fillers category photo) → "Hvad er filler?" (a long-form plain section, `LongformSections`) → "Behandlingsområder" (`components/treatment/TreatmentCardsSection`: the /behandlinger `TreatmentCard` with the page's own `title` / `text`, her nine cards in her order, each with its treatment's "fra" price and "Læs mere"; 1 / 2 / 3 columns from 0 / 768 / 1024px, an odd last card spans both at 768–1023; "Se alle priser →" to the /priser fillers card) → the closing `BookingBand` ("Book en konsultation"). Structured data: `TreatmentCollectionJsonLd` (CollectionPage + ItemList of the nine pages + BreadcrumbList; no FAQ, no reviews). The module throws when a fillers-category treatment has no card or two cards, or a card's treatment has no `priceFrom`, so the category and this page list the same nine. `content/navigation.ts` → `categoryPages.fillers`: the mega menu's "Alle fillers", the mobile menu's "Se alle fillers", every filler page's breadcrumb (and BreadcrumbList), the home "Filler" bestseller row and /ny-hos-fillox's fillers links go here |
+| `/behandlinger/[slug]` | template `6c` / Lip filler `mb`. The Botox design (`6bx`) is retired: that page became the rynkebehandling hub (next row). The design's before/after section (`ResultsSection`, "Før og efter") shows the clinic's own pairs on Hage only (moved from Kæbelinje 2026-11-26; see "Photos" → "Before/after"); the design's lip filler pairs were one stock photo with invented captions and are gone. The fillers category has nine pages since 2026-11-26: three of them (`tindinger`, `linjer-og-folder`, `ansigtskonturering`) have only Alberte's card text and the template's fallbacks (see "Alberte's corrections") |
 | `/behandlinger/rynkebehandling` | no design: a long-form page (`detail.sections`, see "Long-form treatment pages") with the owner's agency text, verbatim. Replaces the Botox page: `/behandlinger/botox`, `/behandlinger/botox-for-maend` and the live `/rynkebehandling` redirect here |
 | `/behandlinger/andre-behandlingsmuligheder` | no design: long-form page under the hub (breadcrumb via `detail.parentSlug`, compact H1). Replaces the live `/ovrige-botox-behandlinger` and the lip flip, gummy smile, hyperhidrose and Traptox pages, which redirect here (the first three to their sections `#lip-flip`, `#gummy-smile`, `#svedtendens`; Traptox has no section) |
 | `/behandlinger/for-maend` | no design (owner, round 3: fewer treatments, cleaner, more masculine). Static route (`routes.men`, wins over `[slug]`); copy `content/pages/men.ts`, components `components/men/`. Darker neutrals only: espresso (`bg-heading`) hero + closing band with offwhite text, Sandbeige accents, offwhite pills (sand on hover) and an offwhite focus ring (`components/men/surface.ts`); cream sections on straight hairlines; one sand panel; no rose bands, no reviews (its wrinkle row is "Rynkebehandling", linking to the hub). Prices sit on the treatment rows; the laser packages fold out under the list (`MenPrices`, a native `<details>`: the "Laserpakker, overkrop" card from `content/prices.ts`, the same prices for everyone, never called prices for men). Every "For mænd" link goes here (`content/navigation.ts` → `categoryPages` / `treatmentCategoryHref`); /behandlinger shows a teaser with `id="for-maend"` instead of the category section |
 | `/ny-hos-fillox` | no design: "Ny hos Fillox?", the guide for first-time visitors (`routes.newHere`; see "Ny hos Fillox?") |
-| `/klinikker` | `6kl` / `mk` |
+| `/klinikker` | `6kl` / `mk`. Opening hours (`content/clinics.ts`): Frederiksberg and Østerbro share `streetHours` (Man–tir 8–20, Ons–fre 8–16, Lør 9–17: Frederiksberg's, given to Østerbro on Alberte's note and the owner's answer, 2026-11-26), City2 and Amager Centret `centreHours` (Man–fre 10–19, Lør 10–17); every clinic ends with `closedSunday`, `{ days: "Søn", hours: "lukket", closed: true }` (`content/types.ts` → `OpeningHours.closed`; Alberte: "City2 og Amager skal begge stå som lukket om søndagen"). A closed day is shown wherever the hours are (the one-line summaries and menus "… · Søn lukket"; the /klinikker table "Søn" / mobile "Søndag" with "Lukket", capitalised by `first-letter:uppercase` in `ClinicCard`) and left out of the Organization JSON-LD (schema.org reads a day without hours as closed; check:market rule 8 checks its day label and that it has no hours) |
 | `/kontakt` | `6ko` / `mc`. The form links to the privacy policy's "14. Kontaktformular" (`/privatlivspolitik#kontaktformular`, `content/pages/legal.ts` → `privacyContactFormAnchor`) with a `text-fine` line above the button at every width (copy `content/pages/contact.ts` → `form.privacy`; link in the text pages' style, one unbroken line, an invisible 15px hit area above and below). mc's consent checkbox was removed (owner 2026-11-26: "ja fjern krydset"; the policy does not rest on consent) |
 | `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` (see "Blog"). A post without its written article (`content/blog.ts` → `hasArticleBody`) gets an excerpt page (noindex, not in the sitemap) and shows no reading time anywhere: article header, blog cards, "Læs også" and the treatment pages' article cards (`components/blog/postView.ts` → `readingTime`, `shortReadingTime`) |
 | `/booking` | no design: intro band (with the 18-year line under the intro, `content/layout.ts` → `booking.ageNote`, BEK 834/2014 § 3; also an FAQ on `/ny-hos-fillox`) + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
-| `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style. The legal texts (`content/pages/legal.ts`) come from the live fillox.dk but are no longer verbatim (owner 2026-11-26): the terms are corrected (language; business terms unchanged). Withdrawal: gift cards and subscriptions bought online, by phone or otherwise outside the clinics get the statutory 14 days (forbrugeraftaleloven §§ 18–20, 22, 25: no reason needed, the used part is paid for, the rest refunded within 14 days); clinic purchases keep the live 14-day promise as Fillox's own term ("medmindre du har taget gavekortet i brug"). The privacy policy has the new sections 12 (newsletter), 13 (cookies, `content/consent.ts`) and 14 (contact form: answering on art. 6(1)(f); health information in the message on art. 9(2)(h) / databeskyttelsesloven § 7, stk. 3, which holds only while practitioners alone read the submissions, README → "Hvem læser beskederne?"; the form has no consent checkbox). The message field has a hint, "Du behøver ikke at skrive detaljer om dit helbred – giv os dit nummer, så ringer vi …" (`form.fields.message.hint`, owner 2026-11-26: a reassurance, never a ban) |
+| `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style. The legal texts (`content/pages/legal.ts`) come from the live fillox.dk but are no longer verbatim (owner 2026-11-26): the terms are corrected (language; business terms unchanged). Withdrawal: gift cards and subscriptions bought online, by phone or otherwise outside the clinics get the statutory 14 days (forbrugeraftaleloven §§ 18–20, 22, 25: no reason needed, the used part is paid for, the rest refunded within 14 days); clinic purchases keep the live 14-day promise as Fillox's own term ("medmindre du har taget gavekortet i brug"). The privacy policy's section 1 gives `site.contact.email` (kontakt@fillox.dk, was info@fillox.dk) and /content-creator sends other collaborations there too (was Annika's address), so the site gives one address (Alberte, 2026-11-26: "Under content creator og kontakt oplysninger skal henvendelse sendes til kontakt@fillox.dk"). The privacy policy has the new sections 12 (newsletter; its purpose is the signup text, see "Footer newsletter"), 13 (cookies, `content/consent.ts`) and 14 (contact form: answering on art. 6(1)(f); health information in the message on art. 9(2)(h) / databeskyttelsesloven § 7, stk. 3, which holds only while practitioners alone read the submissions, README → "Hvem læser beskederne?"; the form has no consent checkbox). The message field has a hint, "Du behøver ikke at skrive detaljer om dit helbred – giv os dit nummer, så ringer vi …" (`form.fields.message.hint`, owner 2026-11-26: a reassurance, never a ban) |
 
 ## The owner's agency texts (2026-10)
 
@@ -159,8 +174,12 @@ hair removal).
 | `/om-os` | "Om Fillox" | `content/pages/about.ts` |
 | `/ny-hos-fillox` | "Om Fillox og klinikker", tab "Ny hos Fillox" (**Norwegian**) | `content/pages/new-here.ts`: a faithful Danish translation, pending the agency's review |
 
+The hub is the agency's text except two sections of Alberte's (2026-11-26/27): "Hvad er Botox?" and
+"Vi forbedrer, vi forandrer ikke" (see "Prescription medicine" and "Alberte's corrections").
+
 Not published yet (not ready in the Drive): polynukleotider (the author asks for the product
-documentation to be checked first), the four clinic pages, hårtab & hårvækst, and the headings-only
+documentation to be checked first; the skinbooster page describes them in Alberte's words instead,
+`#polynukleotider`), the four clinic pages, hårtab & hårvækst, and the headings-only
 skinbooster / microneedling / laser sub-pages.
 
 ### Prescription medicine (Botox)
@@ -168,19 +187,39 @@ skinbooster / microneedling / laser sub-pages.
 Botox (botulinumtoksin) is a prescription medicine and must not be advertised to the public
 (lægemiddellovens § 66). The site follows the agency's approach:
 
-- **The treatment, not the product.** Titles, menus, cards, CTAs, meta descriptions, alt texts and
+- **The treatment, not the product.** Titles, cards, CTAs, meta descriptions, alt texts and
   structured data say "Rynkebehandling" / "rynkebehandling" (the hub's name), never "Botox". The
-  product or its active substance is named only where an agency text names it: four places on the
-  hub — the FAQ question "Hvad er forskellen på Botox og filler?" (a visible h3 and the FAQPage
-  JSON-LD question name) and its answer, the FAQ answer "Ved kosmetisk behandling med
-  botulinumtoksin …" and the "konsultation" section's paragraph "Hvis der er tale om en
-  behandling med botulinumtoksin …". The Om os Academy paragraph says "rynkebehandling" since
+  product or its active substance is named only where an agency text names it, and in Alberte's
+  places (next bullet): four places on the hub — the FAQ question "Hvad er forskellen på Botox og
+  filler?" (a visible h3 and the FAQPage JSON-LD question name) and its answer, the FAQ answer
+  "Ved kosmetisk behandling med botulinumtoksin …" and the "konsultation" section's paragraph
+  "Hvis der er tale om en behandling med botulinumtoksin …". The Om os Academy paragraph says "rynkebehandling" since
   2026-11-26 (owner's approval). The FAQ heading and its JSON-LD are an open owner / legal question
   (README → "Juridisk gennemlæsning").
+- **Alberte's texts, an accepted § 66 risk** (2026-11-27). Alberte (2026-11-26, forwarded by the
+  owner) asked for "Botox" as the menu item and wrote a "Hvad er Botox" section and a filler FAQ
+  that names hyaluronidase. The owner, told first that § 66 also covers the clinic's own site:
+  "gør hvad hun skriver og det samme gælder botox". So, and nowhere else: the mega menu column of
+  the two wrinkle pages is "Botox" with "Alle botoxbehandlinger" (`content/navigation.ts` →
+  `megaMenu`); the mobile menu's category label and level-2 heading are "Botox"
+  (`treatmentCategories` → `mobileName`; `name` stays "Rynkebehandling" for the /behandlinger
+  section, its chip and the breadcrumb) with "Se alle botoxbehandlinger" (`content/layout.ts`);
+  the hub's section "Hvad er Botox?" (`id="hvad-er-botox"`, before "Vi forbedrer, vi forandrer
+  ikke", which ends with her 14-day follow-up sentence); and the last sentence of lip filler's FAQ
+  "Hvorfor vælger nogle at få opløst læbefiller?" ("… kan hyaluronidase bruges til at nedbryde
+  filleren …", also in the FAQPage JSON-LD). check:market allows exactly these: rule 19's
+  `BOTOX_MENU_LABELS` (the four menu fields, found by the category slug) and rule 18's
+  `HYALURONIDASE_SENTENCE` (that answer of the lip filler treatment only, her sentence verbatim).
+  Rules 18 and 19 check a treatment that another module embeds (the fillers page's cards) once,
+  as the treatment. Rule 19 does not read the
+  hub's sections or FAQ, so neither her "Hvad er Botox?" nor the agency's four places are checked
+  by it. Each place, hers and the agency's, is listed in README "Før lancering" → "Botox og
+  markedsføring" → "Kendt § 66-risiko, som du har accepteret".
 - **Other prescription medicines** (owner 2026-11-26, the same rule): hyaluronidase, which
-  dissolves filler (brand Hyalase), and the local anaesthetic in fillers (lidocaine) are never
-  named. The price row is "Opløsning af filler" (looked up by that label in `content/treatments.ts`,
-  `content/blog.ts` and `content/pages/treatments.ts` → `prices.groups`), the texts say "kan
+  dissolves filler (brand Hyalase), and the local anaesthetic in fillers (lidocaine) are not
+  named, except Alberte's lip filler FAQ sentence above. The price row is "Opløsning af filler"
+  (looked up by that label in `content/treatments.ts`, `content/blog.ts` and
+  `content/pages/treatments.ts` → `prices.groups`), the texts say "kan
   opløses igen" and "tilsat et lokalbedøvende middel". check:market rule 14 rejects these names in
   what a published post shows, and rule 18 in every price row, every treatment text (FAQs
   included), the team's texts, every export of `content/pages/*.ts` and every published post's
@@ -246,12 +285,92 @@ list or reviews (`components/treatment/treatmentView.ts` → `longform`). Today:
   `/behandlinger/andre-behandlingsmuligheder#lip-flip` on /priser) point to them, and
   `npm run check:market` fails when an anchor is not a section or item id of that page.
 - **Menus and cards**: the "Rynkebehandling" category (`content/navigation.ts`) lists the two pages;
-  the mega menu's "Rynker" column shows two links. The second page's `name` is "Andre
-  behandlinger" (the mega menu: its columns are ≈ 132px wide at 1024px and set on one line); the
+  the mega menu's "Botox" column shows two links (the mobile menu's category is "Botox" too; see
+  "Prescription medicine"). The second page's `name` is "Andre
+  behandlinger" (the mega menu sets its lines on one line; at 1024px the other columns are ≈ 121px
+  wide since the "Botox" column takes ≈ 165px, "Site chrome" → "Mega menu"); the
   mobile menu (`mobileMenuName`), cards, breadcrumb and book bar say "Andre behandlingsmuligheder"
   (`detail.title`), and the H1 is the source's full title. On
   /behandlinger a card without a price keeps an empty eyebrow line from 768px, so titles in a row
   line up.
+
+### Alberte's corrections (2026-11-26/27)
+
+Alberte (kosmetisk sygeplejerske, klinikansvarlig) sent corrections to the home page and the
+treatment pages on 2026-11-26, forwarded by the owner. The owner's decisions (2026-11-26/27): her
+texts as written, the Botox ones included (an accepted § 66 risk, see "Prescription medicine");
+Frederiksberg's hours for Østerbro too; no FDA sentence anywhere. Her texts are verbatim (typos and
+grammar fixed, each listed in the content file's comment); what the site wrote from them is marked
+`TODO: copy review (2026-11-26, Alberte)` or `(2026-11-27, Alberte)`. No price changed. README →
+"Albertes rettelser 26.–27/11-2026" lists what is done and her open questions. Team, clinic hours,
+newsletter, logo and contact address: see "Team", "Routes", "Footer newsletter" and "Logo".
+
+- **Fillers** — the fillers page (Routes) and three new treatment pages for its nine cards:
+  `tindinger`, `linjer-og-folder` (marionetlinjer and nasolabiale folder) and `ansigtskonturering`
+  (name "Fillox Signatur"; `metaTitle` "Fillox Signatur – ansigtskonturering", the same as H1 with
+  `headingAccent`, with `metaTitleAbsolute`, so the <title> names the brand once, without " · Fillox";
+  and `mobileMenuName` "Fillox Signatur (ansigtskonturering)", because the facial
+  "Signatur ansigtsbehandling" exists too; `treatmentPage.brandNames` keeps the capital in "Læs mere
+  om Fillox Signatur"). Their `short` is her card text; everything else is the template's fallback
+  with `sharedFillerFaq` as their FAQ (`fillerFaqFallback`: the shared FAQ and the Revanesse®
+  question). It is shown, but `detail.faqShared` keeps it out of the FAQPage JSON-LD, which would be
+  the same on all four pages. `detail.lead` is optional: without it the hero shows `short`, and
+  `treatmentPage.metaDescription` drops "Konsultation og kontrol er altid gratis." when the text
+  would pass 160 characters. Prices come from the price-list rows tagged with their slugs
+  (Tindinger 2.499; Marionetlinjer and Nasolabiale folder 1.699; Ansigtskonturering · 4 ml 3.999
+  kr). The category lists all nine in her order (`content/navigation.ts` → `treatmentCategories`,
+  the mobile menu); the mega menu column keeps four (Lip filler, Kindben, Kæbelinje, Tear trough).
+  Legacy URLs for fillers, marionet- / nasolabiale linjer and ansigtskonturering land on these pages
+  (`content/redirects.ts`); "Hævelse og blå mærker" is tagged with the three new pages.
+- **Filler FAQ** (`content/treatments.ts` → `fillerFaq`): `products` is her "Hvad er Revanesse®, og
+  hvilken filler bruger I?" with her answer, verbatim, on all ten filler pages (the nine and
+  Kæbelinje for mænd); Infini, Belotero and Juvéderm are gone. `longevity(interval)` is "Hvor
+  længe holder filler?": lips 6–9 months, kindben and kæbelinje 9–12 (their Holdbarhed facts
+  follow: kindben was 6–12, kæbelinje 12–18), tear trough and næsekorrektion their facts' ca.
+  6–12; none on hage and the three new pages (she gave no interval). Her "Den amerikanske
+  lægemiddelmyndighed FDA har godkendt." is left out everywhere (owner 2026-11-27).
+- **"Om behandlingen" blocks** — `detail.aboutBlocks` (`content/types.ts` → `AboutBlock`), rendered
+  by `components/treatment/AboutBand` after the `about` paragraphs: an h3 per block at the
+  card-title size, with an optional `id` (a stable anchor; the global scroll-padding-top keeps it
+  clear of the header) and `link` (an arrow link under its text). A block with `blocks` is a group:
+  its blocks are h4s one size down, set off by a hairline on the left (one level only; the group's
+  `paragraphs` may be empty), so the outline stays h2 → h3 → h4. `detail.goodForLabel` replaces
+  "Godt til" (kindben: "Godt til dig, der ønsker"). check:market does not check these anchors: keep
+  `ejal-40`, `sunekos` and `polynukleotider` stable (Profhilo links `#polynukleotider`).
+- **Lip filler** — H1 "Lip filler – vi forbedrer, vi forandrer ikke" (`headingAccent`; her heading
+  "Læbefiller hos Fillox" is not used), her paragraph as the lead (with its own `metaDescription`,
+  ≤ 160), blocks "Hvad er filler?", "Vi bruger Revanesse®" and "Vi starter med at lytte"; facts
+  Varighed "30 min" and Udføres af "Kosmetisk sygeplejerske" (the site's labels: "Behandlingstid"
+  does not fit a fact tile at 320px). The same texts at every width (`detail.mobile.lead` / `about`
+  are gone). FAQ "Hvorfor vælger nogle at få opløst læbefiller?" verbatim, hyaluronidase included.
+- **Kindben** — her lead, "35 min", two paragraphs and "Godt til dig, der ønsker" (her three items
+  without full stops, as every list on the site).
+- **Kæbelinje** (+ Kæbelinje for mænd and its row on the men's page) — her three "Om behandlingen"
+  paragraphs (`kaebelinjeAboutMen` leaves out the feminine sentence); the lead (also the meta
+  description), `goodFor` and the one-liners were rebuilt from her text, so no "slankere", "hoved og
+  hals" or slack-skin claim is left. No before/after: the chin pair moved to Hage.
+- **Hage** — a `detail` with only `chinResults` and `sharedFillerFaq`; hero, facts, text and
+  prices stay the template's fallbacks.
+- **Skinbooster** — H1 "Skinbooster hos Fillox" (`heading`), her intro as the lead (own meta
+  description), blocks "Hvad er forskellen på skinbooster og filler?", the group "Vores
+  skinboostere" (Ejal40, Sunekos, Polynukleotider) and "Hvilken behandling passer til din hud?";
+  `goodFor` in her words. The PolyPhil eye / classic / med HA rows are tagged `skinbooster` (the
+  "fra" price stays Ejal40's 1.499 kr). The facts and FAQ still cover Ejal40 and Sunekos only.
+  "Ejal40" is her spelling and the maker's (Medixa), on the whole site and the price list since
+  2026-11-27 (was "Ejal 40", as on the live price list).
+- **Profhilo** — one block, "Profhilo Structura og polynukleotider": two neutral facts on Structura
+  from IBSA's own sources (no effect claim; sources in the comment) and "Læs om polynukleotider"
+  → `/behandlinger/skinbooster#polynukleotider`. The Structura price rows were already on the page.
+- **Rynkebehandling hub** — her "Hvad er Botox?" (`#hvad-er-botox`) and "Vi forbedrer, vi forandrer
+  ikke" (`#vi-forbedrer`, ending with her 14-day follow-up sentence) as plain sections after the
+  "vaelg-behandling" band.
+- **Price list** — labels only: "Marionetlinjer", "Nasolabiale folder" (live: "Marionettelinjer",
+  "Nasolabiale linjer") and "Lip filler · Revanesse® 0,3 / 0,5 / 0,7 / 1,0 ml", looked up by these
+  labels in `content/treatments.ts` (lip filler's prices) and `content/blog.ts` (`lipFillerPrice`).
+- **Home** — "I trygge hænder fra første møde" (the design's "Vores bestsellers") over the
+  treatment rows and "Vi forbedrer, vi forandrer ikke" (the design's "Vi fremkalder, vi forandrer
+  ikke") over the three photo cards: her headings and texts, in full at every width (`introShort`
+  is gone). Her signature-treatment photos under the second wait for her Drive.
 
 ### Ny hos Fillox?
 
@@ -280,7 +399,8 @@ left in `public/images/`.
   placement spreads an entry and overrides `position` (or `alt: ""` where the photo is decorative):
   `{ ...photos.sproejte, position: "55% 12%" }`. Placements: home hero, home treatment cards,
   home testimonial (`behandlingsrum`, decorative), /behandlinger hero, `categoryImages` /
-  `defaultImage` and the lip filler (`spejl`), næsekorrektion (`behandlingsrum`), "andre
+  `defaultImage` (the fillers category's `sproejte` is also the /behandlinger/fillers hero and share
+  image) and the lip filler (`spejl`), næsekorrektion (`behandlingsrum`), "andre
   behandlingsmuligheder" and laser for mænd heroes
   (`content/pages/treatments.ts`, `content/treatments.ts`), the /om-os hero (the group photo; the
   doctor section shows Dr. Tom's team photo, see "People"), /ny-hos-fillox hero (`behandlerVindue`)
@@ -321,7 +441,8 @@ left in `public/images/`.
   professional's endorsement) and the single "after" shots of clients (they read as results; one
   shows a filler brand). README → "Før lancering" → "Fotos fra Drive" has the reasons and the
   owner's checks.
-- **Home treatment cards** ("Vi fremkalder, vi forandrer ikke", `content/pages/home.ts` → `results`):
+- **Home treatment cards** ("Vi forbedrer, vi forandrer ikke", Alberte 2026-11-26; the design's "Vi
+  fremkalder, vi forandrer ikke"; `content/pages/home.ts` → `results`):
   mood photos captioned with the treatment's name (from `content/treatments.ts`) and linking to it —
   Lip filler (`sproejte`), Kæbelinje (`behandlerFolder`, 75% 40%), Skinbooster (`behandlerVindue`). Not results:
   no client, no year, no amount, no rynkebehandling. `alt: ""` on all three, as on the team and blog
@@ -343,11 +464,13 @@ left in `public/images/`.
 
 `content/treatments.ts` → "Before/after results" (the rules) and `chinResults`; files in
 `public/images/resultater/<pair>-foer.jpg` / `-efter.jpg`. Today one chin-and-lips profile pair on
-`/behandlinger/kaebelinje` (a second, IMG_5189, is held back: different head pose, light and
-sharpness on the two halves), heading "Før og efter", an intro that says it is the same person,
-shown with consent, and "Resultater varierer fra person til person" (shown at every width: the design
-hid the intro below 768px), captions with the treated area only. Each half has its own alt ("… før
-behandling med filler" / "Samme klients … efter …"). Both halves of a pair share one crop
+`/behandlinger/hage` (on Kæbelinje until Alberte's note of 2026-11-26, "før/efter billede af hage";
+Kæbelinje shows none until a pair of its own arrives; a second chin pair, IMG_5189, is held back:
+different head pose, light and sharpness on the two halves), heading "Før og efter", an intro that
+says it is the same person, shown with consent, and "Resultater varierer fra person til person"
+(shown at every width: the design hid the intro below 768px), captions with the treated area only
+("Hage og læber", from the clinic's composite, until Fillox confirms whether the lips were treated
+too; README). Each half has its own alt ("… før behandling med filler" / "Samme klients … efter …"). Both halves of a pair share one crop
 (`position`), and both need `width` / `height` (`BeforeAfter` requires them: the layout below is
 computed from them). Never: Botox pairs, amounts, time since treatment, "uden filter", "samme lys".
 
@@ -357,7 +480,7 @@ computed from them). Never: Botox pairs, amounts, time since treatment, "uden fi
 |---|---|---|
 | `side` | any half is portrait | the design: before and after side by side in a 300 → 400 → 520px tall box |
 | `stacked` | all halves landscape, 2–3 pairs | before over after, each half in a slot of the section's common aspect (the geometric mean of all halves' aspects), so every card has the same shape |
-| `wide` | all halves landscape, 1 pair (Kæbelinje today) | before and after side by side across the row from 768px, in the same common-aspect slots |
+| `wide` | all halves landscape, 1 pair (Hage today) | before and after side by side across the row from 768px, in the same common-aspect slots |
 
 Columns from 768px = the number of pairs, up to 3, so one or two pairs fill the row. Below 768px the
 design's white 300px cards in a scroll row (stacked halves 280px wide). `sizes`: `sideSizes` (box
@@ -560,8 +683,19 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   first): Dr. Tom, Alberte, Annika, Mike, Simone, Frederikke. Profiles (/behandlere/<slug>) follow
   Alberte's design (6alb / ma) with each practitioner's own documented facts; the file's header
   lists the sources and what is left out. Titles (owner, 2026-11-25): Dr. Tom keeps his doctor
-  titles; everyone else is "Kosmetisk sygeplejerske" (`nurse` in team.ts: `title`, and `role`
-  "Sygeplejerske" for the home cards), which is also the profile's JSON-LD `jobTitle`. Maria and
+  titles; everyone else is "Kosmetisk sygeplejerske" (`nurse` in team.ts: `title`, and since
+  Alberte's note of 2026-11-26 also `role`, the home cards' short title, which was
+  "Sygeplejerske"), which is also the profile's JSON-LD `jobTitle`. Alberte and Annika carry a
+  responsibility after it (Alberte 2026-11-26: "Tilføj Klinikansvarlig på min profil og Faglig
+  ansvarlig på Annikas profil"): `nurseWith(responsibility)` sets `title` "Kosmetisk sygeplejerske ·
+  Klinikansvarlig" / "· Fagligt ansvarlig" (/om-os, /behandlere, the profile and its `jobTitle`,
+  the men's page) and `responsibility`, which the home cards show as a line of its own under
+  `role`; a treatment page's "Din behandler" heading takes the part before " · ". Two-part titles
+  render through `components/practitioner/TitleParts` (HoursSummary's wrapping: a part never breaks
+  inside, and a part that wraps drops its "·"): the profile hero, the /om-os, /behandlere and men's
+  page cards. A profile's `<title>` turns " · " into ", " with the second part lower-cased
+  (`content/pages/practitioner.ts` → `meta.title`: "Annika – Kosmetisk sygeplejerske, fagligt
+  ansvarlig · Fillox", 60 characters); the page and its structured data keep the full title. Maria and
   Kubra left Fillox (owner, 2026-11-25): their entries, photos and profiles are gone,
   `/behandlere/maria` and `/behandlere/kubra` redirect (308) to `/om-os#behandlere`
   (`content/redirects.ts`), the reviews that named Maria are left out (`content/reviews.ts`; none
@@ -588,21 +722,27 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   over; næsekorrektion names Dr. Tom; the skin pages (and laser for mænd) show Alberte; the
   rynkebehandling hub is a long-form page (no practitioner), so the wrinkle cards pick nobody;
   "Fillers i ansigtet" and Dr. Tom's chin and contouring cards are unlinked, so kindben,
-  kæbelinje and hage show no practitioner. A new linked offer can change "Din behandler" on a
-  page: compare every treatment page's practitioner before and after.
+  kæbelinje, hage and the three filler pages of 2026-11-26 (tindinger, linjer-og-folder,
+  ansigtskonturering) show no practitioner; linking Dr. Tom's contouring card to
+  `ansigtskonturering` would make him "Din behandler" there. A new linked offer can change "Din
+  behandler" on a page: compare every treatment page's practitioner before and after.
 - **Members without a profile page** — `content/types.ts` models two kinds: `TeamMember` (has
   `profile` and a portrait `image`: a page at /behandlere/<slug>) and `TeamCardOnlyMember` (no
   `profile`, `link`, `bookingHref`, `authorBio` or share image; `image` optional): a new
   practitioner whose photo and texts have not arrived (Simone and Frederikke, owner 2026-11-25:
-  only their first names, title and clinics are known, and their entries say nothing else).
+  only their first names, title and clinics are known, and since Alberte's note of 2026-11-26 their
+  work e-mail; their entries say nothing else).
   `content/team.ts` exports `teamRoster` (everyone, `TeamRosterMember[]`: only the three team
   grids take it) and `team` (`TeamMember[]`, the members with a profile page: generateStaticParams,
   the sitemap, `getTeamMember`, the profile's "Mød resten af teamet" row, "Din behandler" on
   treatment pages, the men's page, blog authors, structured data). So nothing outside the grids
   can be handed a member without a photo or link to a page that does not exist; a card-only slug
   is a 404 (`dynamicParams = false`). In the grids `hasProfilePage(member)` decides the link: a
-  card-only member's card is the same card (name, title, one sentence in the same type and
-  places) without a link, hover effect or tab stop. In the home scroll row (< 768px) they come
+  card-only member's card is the same card (name, title and the clinics line in the same type and
+  places) without a profile link or hover effect; on /om-os and /behandlere its only links are its
+  work contact under the clinics (`ContactLinks`, "Work contact" below), and on the home cards it has
+  none. Its former sentence, "Du møder Simone i Fillox City2 og Fillox Amager Centret." (`bio`), went
+  when every card got the clinics line (2026-11-26). In the home scroll row (< 768px) they come
   last: `components/ui/ScrollRow.tsx` → `revealFocusedItem` always aligns the row's last tab stop
   (Mike's card) to the row's start, even when it is already in view, so they show as far as they
   fit while the focused card stays fully visible (at 390px Simone whole, Frederikke in part; the
@@ -621,10 +761,14 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   slots at 1600px. `aria-hidden` (the card's text carries the name).
 - **Where practitioners work** — `clinicSlugs` (content/clinics.ts slugs, the owner's order) is the
   only source: Alberte Frederiksberg; Annika Østerbro, City2; Mike Frederiksberg, Amager Centret;
-  Simone City2, Amager Centret; Frederikke Østerbro. Every text that states a practitioner's clinic
-  is built from it: sentences with `clinicNames()` (full names joined the locale's way with
-  `lib/format.ts` → `formatList`: "Fillox Østerbro og Fillox City2": the booking band's sentence
-  and the card-only members' sentence), the profile's "Arbejder i" fact (first of the three, as in
+  Simone City2, Amager Centret; Frederikke Østerbro, Frederiksberg (Alberte's table of 2026-11-26
+  agrees with the owner's list and adds Frederiksberg for her). Every text that states a
+  practitioner's clinic is built from it: sentences with `clinicNames()` (full names joined the
+  locale's way with `lib/format.ts` → `formatList`: "Fillox Østerbro og Fillox City2": the booking
+  band's sentence), the clinics line under the title on every team card (`cardClinics` →
+  `components/practitioner/CardClinics`: muted on the home cards, accent medium on /om-os and
+  /behandlere; its label "Arbejder i" is read by screen readers only; Alberte: "Vis også, hvilke
+  afdelinger hver behandler er tilknyttet"), the profile's "Arbejder i" fact (first of the three, as in
   6alb; it took the place of one fact on each profile) with `clinicShortList()` (short names with
   "&", as in 6alb / ma "City2 & Amager" and the other fact values: "Frederiksberg & Amager
   Centret"; no-break spaces inside a name, so a two-line value breaks between clinics). In the
@@ -636,6 +780,16 @@ Every customer quote on the site is a real Trustpilot review, quoted verbatim, a
   `clinicSlugs` goes into the review sets only when the owner confirms they worked there at the
   time (`content/reviews.ts` header): Jessica's (Alberte "i Amager Centret") is on Alberte's
   profile and the lip filler page again since the owner's "ok det fint" (2026-11-25).
+- **Work contact** (Alberte, 2026-11-26: "skriv gerne vores arbs. Mail samt arbs. Instgram") —
+  `email` (lower case) and `instagram` (the profile URL) on `TeamMember` / `TeamCardOnlyMember`:
+  Alberte, Annika and Mike have both, Simone and Frederikke the e-mail (their Instagram is "kommer
+  snart": a TODO; set `instagram` once the account is live), Dr. Tom none. `content/team.ts` →
+  `contactLinks` makes the links (mailto:, and the handle from the URL, `instagramHandle`);
+  `components/practitioner/ContactLinks` renders them, each under a label in the fact cards' style
+  ("E-mail" / "Instagram", `content/pages/practitioner.ts` → `contact`) as a text link with an
+  invisible hit area to ≈ 44px, the list named "Kontakt <name>" for screen readers. Shown in the
+  profile hero under the buttons (`ResolvedProfile.contact`) and at the bottom of a card-only
+  member's card on /om-os and /behandlere.
 - **check:market** — rule 16: a member without a portrait has no profile page, offers, crops, link,
   booking link, author bio or share image; a member with a profile page has a portrait file with
   its pixel size, a share image file and a face-table row; `team` is exactly the members with a
@@ -767,11 +921,17 @@ beige lives in its cards.
 Text selection in the footer is the default Lys Rosa (the band's white highlight would vanish on
 offwhite).
 
-**Logo.** `public/brand/fillox-logo-espresso.png` (`site.brand.logoDark`: header, mobile menu,
-footer, Organization JSON-LD) is espresso `#3B2A28`, the `heading` colour (the owner, 2026-11-25:
-"ikke er helt mørk … #222222 agtig", then, from a comparison of five colours, "synes den der
-espresso ser meget lækkert ud"; the former file was ink `#242724`): 13.0:1 on offwhite.
-`fillox-logo-sand.png` is unchanged.
+**Logo.** `public/brand/fillox-logo-bordeaux.png` (`site.brand.logoDark`: header, mobile menu,
+footer, Organization JSON-LD) is bordeaux `#6A242F`, the logo colour the clinic uses on social
+media (Alberte, 2026-11-26, forwarded by the owner: "Skift det sorte Fillox-logo til den rødlige
+farve fra referencebilledet"). `#6A242F` is the mode of her reference image's dark red pixels (the
+logo's flat fill; their mean, pulled off by anti-aliasing and compression noise, is `#682932`, and
+a single sample gave ≈ `#622930`). The file is the former espresso logo (`#3B2A28`, the owner's
+choice of 2026-11-25) with every pixel's colour set to `#6A242F` and its alpha kept, so size (603 ×
+155) and anti-aliasing are unchanged; the espresso file is deleted. Contrast: 10.5:1 on offwhite,
+11.0 on white, 9.0 on sand, 8.1 on secondary, 7.7 on the band. If the brand files give another hex,
+re-colour the file the same way. `fillox-logo-sand.png` and the icons (`app/favicon.ico`,
+`app/icon.png`, `app/apple-icon.png`: a sand "OX" on plum) are unchanged (README: favicon colour).
 
 **Not changed by the palette (yet).** The stock photos with salmon backdrops are gone (November
 2026: the clinic's own photos, see "Photos"; their rose-beige walls sit well with Lys Rosa). The
@@ -779,7 +939,7 @@ Gecko booking theme follows the palette in `integrations/gecko/` (its own light 
 because Gecko sits on the white card, not on the offwhite page); the live booking keeps the old
 theme until the new CSS is pasted into Gecko.
 
-The footer shows the black logo (`site.brand.logoDark`, as the header). Its only button is the
+The footer shows the bordeaux logo (`site.brand.logoDark`, as the header). Its only button is the
 newsletter's "Tilmeld" (owner, round 4: two CTAs in the footer made no sense); booking is the
 third contact card ("Book online / Find en tid →", `content/layout.ts` → `footer.bookingCard`,
 links to `/booking`) next to phone and e-mail. The sticky header keeps "Book tid".
@@ -802,17 +962,22 @@ one link to the profile in a new tab, a `footer-card` pill ≥ 44px, a full-widt
   `content/layout.ts` → `newsletterThanks`; `check:market` rule 5 checks the forward), so the address
   never lands in the URL.
 - Consent: no checkbox (nothing pre-ticked); the visitor's own signup after the text that says what
-  they get ("Få nyheder og gode råd om vores behandlinger på e-mail."; /blog: "nye artikler og gode
-  råd om vores behandlinger"), and the line under the field (same wording on /blog) linking to the
-  privacy policy's newsletter section (`routes.privacyNewsletter`, `content/pages/legal.ts` → "12.
-  Nyhedsbrev": purpose, legal basis, retention, processors and the transfer basis for Netlify,
-  unsubscribing; pending the owner's legal review).
-- **What the newsletter sends** (owner 2026-11-26): news, articles and advice only. No offers, no
-  time-limited discounts, gifts or competitions on treatments (VEJ 9319/2013 pkt. 5.1), and never
-  rynkebehandling or another prescription medicine (lægemiddelloven § 66). The consent covers what
-  the signup text describes (markedsføringsloven § 10): before a newsletter ever carries offers,
-  change the footer text (`content/layout.ts` → `footer.newsletter`, also the confirmation), the
-  /blog band (`content/pages/blog.ts` → `newsletter`) and section 12 together.
+  they get, and the line under the field (same wording on /blog) linking to the privacy policy's
+  newsletter section (`routes.privacyNewsletter`, `content/pages/legal.ts` → "12. Nyhedsbrev":
+  purpose, legal basis, retention, processors and the transfer basis for Netlify, unsubscribing;
+  pending the owner's legal review). Heading and text since 2026-11-26 are Alberte's: "Få nyt fra
+  Fillox" / "Tilmeld dig vores nyhedsbrev, og få det seneste nyt om vores behandlinger,
+  produktnyheder og særlige invitationer." (was "Tilmeld dig vores nyhedsbrev" / "Få nyheder og gode
+  råd om vores behandlinger på e-mail."). The /blog band says the same words at every width (its
+  "Én mail om måneden … Ingen spam." went: not in her text), and section 12's purpose uses them too.
+- **What the newsletter sends**: what the signup text describes, no more (markedsføringsloven
+  § 10). No offers (owner 2026-11-26): no time-limited discounts, gifts or competitions on
+  treatments (VEJ 9319/2013 pkt. 5.1), also not as "særlige invitationer" (events); never
+  rynkebehandling or another prescription medicine (lægemiddelloven § 66), also not as
+  "produktnyheder". What "særlige invitationer" will be is an open owner question (README). Before a
+  newsletter ever carries offers, change the footer text (`content/layout.ts` → `footer.newsletter`,
+  also the confirmation), the /blog band (`content/pages/blog.ts` → `newsletter`) and section 12
+  together.
 - The white field has a 1px border ≥ 3:1 against its surface (footer-accent 90% → 3.8:1, band-accent
   85% → 4.2:1).
 - /blog: its band sits right above the footer, so it carries `data-newsletter-band` and the footer
@@ -1034,13 +1199,18 @@ tracking stay as they are. All tokens follow one formula, a → b:
   sits 2px under the header (dropdowns: `pt-[34px] xl:pt-fluid-35/36`).
 - Mega menu (the owner's design v2, `design-reference/mega-menu-v2.webp`, drawn on the 1180px
   canvas; copy in `content/navigation.ts` → `megaMenu`): four columns (uppercase eyebrow,
-  up to 4 treatments — "Rynker" has the two wrinkle pages — "Alle … →"), a hairline, the "For mænd" pill tag + note, and a rose band panel
+  up to 4 treatments — "Botox" has the two wrinkle pages — "Alle … →"), a hairline, the "For mænd" pill tag + note, and a rose band panel
   (`bg-band`, the design's plum panel; 26.5% of the width, ≥ 272px; eyebrow, heading, text,
   accent button pinned to the bottom)
   flush right. It follows the type scale like the page text: links + "Alle" `text-ui-sm`
   (always smaller than the nav), eyebrows `text-micro` +.2em, heading `text-h3` (Poppins,
   `font-heading`), band text `text-body-sm`, note `text-small`; links on a 2.35em pitch (the line height). Paddings
-  40 / 32px, 36px top and bottom, columns 32px apart (×1.2 at 1600, `*-fluid-*`). Width: the
+  40 / 32px, 36px top and bottom, columns 32px apart (×1.2 at 1600, `*-fluid-*`). Columns share the
+  width (`repeat(4, minmax(min-content, 1fr))`) but never get narrower than their longest line:
+  since 2026-11-26 the "Botox" column ("Alle botoxbehandlinger →") is ≈ 165px at 1024 and the
+  other three ≈ 121px (their widest line is 105px); a longer label anywhere needs measuring at 1024.
+  "Alle fillers →" opens `/behandlinger/fillers`; the Fillers column lists four of the nine pages
+  (the mobile menu lists all nine). Width: the
   surface band (as in the design) up to 1280px, centred on the canvas (a full 1536px band at
   1600 left the columns half empty). Panel height: 343px at 1024–1280, 368 at 1440, 393 at 1600.
 - Dropdowns: Priser 760px, Find klinik 360px, Om os ≥ 240px (Om Fillox, Ny hos Fillox?, Vores
@@ -1116,6 +1286,10 @@ at rest keeps the brown hover (hover / focus classes outrank a breakpoint class)
   fetch the tiniest variant (an eager / high-priority photo is still fetched and preloaded while
   hidden). Its `vw` values then go in `calc()` (`calc(44vw)`): a bare `44vw` makes next/image drop
   every width below 44 % of 640px from the srcset, and the 1px slot gets the 384px file.
+- A visually hidden element (`sr-only`, which is `position: absolute`) inside a horizontal scroll
+  row needs a positioned ancestor inside the scroller: without one it is not clipped and widens the
+  whole page (the home team row's "Arbejder i" labels pushed `/` to 830px at 390px and opened the
+  mobile menu off-screen; `CardClinics` puts `relative` on its `<p>`).
 - Breakpoints are Tailwind's defaults: `md` 768, `lg` 1024, `xl` 1280, `2xl` 1536.
 
 ## Verifying against the design

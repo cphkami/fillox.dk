@@ -1,4 +1,5 @@
 import type { Bestseller, FaqItem, ImageRef, PriceRow, Treatment } from "./types";
+import { treatmentCategoryHref } from "./navigation";
 import { routes } from "./routes";
 import { blogPage } from "./pages/blog";
 import { treatmentPage } from "./pages/treatments";
@@ -36,9 +37,28 @@ import { site } from "@/config/site";
  * the heading and the structured data name a prescription medicine; there are no
  * prices, results or reviews on these pages; the hub's blog section lists only the rynkebehandling
  * articles, written the same way (content/blog.ts, owner 2026-11-25); the CTAs are the author's
- * ("Book en konsultation", "Kontakt os"). Keep it that way when editing them.
+ * ("Book en konsultation", "Kontakt os"). Keep it that way when editing them. Two sections on the
+ * hub are not the agency's: Alberte's "Hvad er Botox?" (it names the product and botulinumtoksin
+ * type A) and "Vi forbedrer, vi forandrer ikke" (2026-11-26, below). The owner, told about § 66,
+ * answered "gør hvad hun skriver og det samme gælder botox": an accepted risk (README "Før
+ * lancering"), like the "Botox" menu labels (content/navigation.ts) and "hyaluronidase" in lip
+ * filler's FAQ.
  *
- * Without a live page (minimal content, generic fallbacks): hage, polyphil-hair. Copy marked
+ * Alberte's corrections of 2026-11-26 (kosmetisk sygeplejerske at Fillox, forwarded by the owner;
+ * each marked `TODO: copy review (2026-11-26, Alberte)`): the filler FAQ (Revanesse® as the only
+ * filler brand, "Hvor længe holder filler?"), lip filler's intro and "Om behandlingen", kindben,
+ * kæbelinje's "Om behandlingen", the chin before/after moved from Kæbelinje to Hage, and three new
+ * filler pages (tindinger, linjer-og-folder, ansigtskonturering "Fillox Signatur") for the fillers
+ * page's nine cards (content/pages/fillers.ts); the skinbooster page (her intro, Ejal40, Sunekos
+ * and polynukleotider), Profhilo's line on Profhilo Structura and polynukleotider, and the
+ * rynkebehandling hub's sections "Hvad er Botox?" and "Vi forbedrer, vi forandrer ikke". Round two
+ * (2026-11-27, the owner: "gør hvad hun skriver og det samme gælder botox"; marked `TODO: copy
+ * review (2026-11-27, Alberte)`): "Hvad er Botox?", her 14-day follow-up sentence, "hyaluronidase"
+ * in the dissolving FAQ, the Revanesse® FAQ in her words on every filler page, "Vores skinboostere",
+ * the Structura text, kæbelinje's lead and "Godt til".
+ *
+ * Without a live page (minimal content, generic fallbacks): hage, polyphil-hair, and the three new
+ * filler pages (their one-liner is Alberte's card text). Copy marked
  * `// TODO: copy review` is not from the design, the live site or the owner's documents and needs
  * a review by Fillox before launch.
  */
@@ -104,11 +124,15 @@ const categoryImage = (categorySlug: string): ImageRef =>
  *   read);
  * - the caption is the treated area only; "Resultater varierer fra person til person" in the intro;
  * - NO Botox before/after anywhere (a prescription medicine: lægemiddellovens § 66).
- * Shown today: one chin-and-lips profile on Kæbelinje. Held back (reasons in the README): the lip
- * pairs, the men's lip pair, three more chin profiles (IMG_5189: different head pose, light and
- * sharpness) and the Sunekos eye pair.
+ * Shown today: one chin-and-lips profile on Hage. It was on Kæbelinje until Alberte's note of
+ * 2026-11-26 (forwarded by the owner): "Skift det nuværende billede til et, da det[e]r før/efter
+ * billede af hage", so it moved to the chin page; Kæbelinje shows no pair until the new photos
+ * arrive (Drive: "Filler —> læber (før/efter) eller hage (før/efter)"). Held back (reasons in the
+ * README): the lip pairs, the men's lip pair, three more chin profiles (IMG_5189: different head
+ * pose, light and sharpness) and the Sunekos eye pair.
  */
-// TODO: copy review (alt texts, captions and the intro)
+// TODO: copy review (alt texts, captions and the intro). Caption "Hage og læber" kept from the
+// clinic's composite: Fillox to confirm whether the lips were treated too (else "Hage").
 const chinResults: Pick<Detail, "resultsTitle" | "resultsIntro" | "results"> = {
   resultsTitle: "Før og efter",
   resultsIntro:
@@ -170,13 +194,54 @@ const fillerFaq = {
     answer:
       "Rør ikke ved området de første 6 timer, derefter kan du vaske det forsigtigt med vand og sæbe. Undgå sol og solarium, indtil hævelse og rødme er forsvundet, begræns alkohol 24 timer før og efter, og undgå Aspirin, Ibux og Voltaren, som kan give mere blødning og blå mærker.",
   },
-  // TODO: copy review — the live site names these brands on every filler page except lip filler
-  // (Revanesse, as on the price list). Fillox to confirm the brands still in use.
+  /**
+   * On every filler page: lip filler, kindben, tear trough, hage, kæbelinje (and kæbelinje for mænd),
+   * næsekorrektion, tindinger, linjer og folder, ansigtskonturering. Alberte 2026-11-26 (forwarded by
+   * the owner): "Fjern henvisninger til Infini, Juvéderm og Belotero i FAQ'erne på alle fillersider.
+   * Brug Revanesse® som det eneste fillermærke." Her question and her answer, verbatim (2026-11-27,
+   * the owner: "gør hvad hun skriver"; 26–27 November it began "Vi bruger Revanesse®, en serie …").
+   * Her draft breaks off after the second sentence ("Revanesse® …"), so nothing more is added; no
+   * FDA sentence (the owner 2026-11-27: "ja ikke fda godkendt det dropper vi.. skal du ikke skrive.
+   * det noget usa noget"). Was "Hvilke fillers bruger I?" / "Vi bruger de velrenommerede
+   * filler-mærker Infini, Belotero og Juvéderm." (lip filler: "Til læber bruger vi Revanesse."). A
+   * medical device's brand may be named (not a prescription medicine).
+   */
+  // TODO: copy review (2026-11-27, Alberte)
   products: {
-    question: "Hvilke fillers bruger I?",
-    answer: "Vi bruger de velrenommerede filler-mærker Infini, Belotero og Juvéderm.",
+    question: "Hvad er Revanesse®, og hvilken filler bruger I?",
+    answer:
+      "Revanesse® er en serie ikke-permanente fillers fra den canadiske producent Prollenium Medical Technologies. Produkterne i serien er baseret på hyaluronsyre og har forskellige anvendelser.",
   },
+  /**
+   * "Hvor længe holder filler?" with the page's interval. Alberte 2026-11-26 (forwarded by the
+   * owner): "I læberne holder resultatet typisk 6–9 måneder. I områder som kindben og kæbelinje
+   * holder det ofte 9–12 måneder. Holdbarheden varierer fra person til person. Brug de vejledende
+   * intervaller, du har angivet, på de relevante behandlingssider." Her sentence for the area, then
+   * her last sentence; tear trough and næsekorrektion (no interval from her) use their facts'
+   * "ca. 6–12 mdr".
+   */
+  // TODO: copy review (2026-11-26, Alberte)
+  longevity: (interval: string): FaqItem => ({
+    question: "Hvor længe holder filler?",
+    answer: `${interval} Holdbarheden varierer fra person til person.`,
+  }),
 } satisfies Record<string, FaqItem | ((text: string) => FaqItem)>;
+
+/** Alberte's intervals (see `fillerFaq.longevity`). */
+const LIPS_LAST = "I læberne holder resultatet typisk 6–9 måneder.";
+const CHEEKS_JAW_LAST = "I områder som kindben og kæbelinje holder det ofte 9–12 måneder.";
+
+/**
+ * FAQ of the filler pages without one of their own (hage, tindinger, linjer-og-folder,
+ * ansigtskonturering): the template's shared FAQ (content/pages/treatments.ts → faq.fallback) and
+ * the Revanesse® question, which Alberte wants on every filler page ("i FAQ'erne på alle
+ * fillersider"). No "Hvor længe holder filler?": she gave no interval for these areas. The four
+ * pages would have the same FAQPage structured data, so it is shown but not marked up
+ * (`faqShared`; Google: mark up an FAQ that repeats across a site once). Use `sharedFillerFaq`.
+ * TODO: copy review (2026-11-27, Alberte)
+ */
+const fillerFaqFallback: FaqItem[] = [...treatmentPage.faq.fallback, fillerFaq.products];
+const sharedFillerFaq = { faq: fillerFaqFallback, faqShared: true } as const;
 
 /** PRF (skin and hair): fillox.dk/prf-hudbehandling and /prf-mod-hartab. */
 const prfFaq = {
@@ -204,24 +269,44 @@ const prfFaq = {
 
 /* ---------------------------------------------------- template pages (6c) */
 
-// fillox.dk/fillers/kaebelinje. "Kæbelinje for mænd" shows the same facts, list and FAQ with the
-// text without its lines about women (`kaebelinjeAboutMen` below).
+/** Alberte's "Om behandlingen" for kæbelinje (see `kaebelinjeAbout`): first and last paragraph. */
+const KAEBELINJE_INTRO =
+  "Med ikke-permanent filler baseret på hyaluronsyre kan vi tilføre volumen på udvalgte steder langs kæben. Det kan fremhæve kæbelinjens kontur og give en tydeligere overgang mellem kæbe og hals.";
+const KAEBELINJE_CONSULTATION =
+  "Ved konsultationen vurderer din behandler kæbelinjen i forhold til hagen og resten af ansigtet, både forfra og i profil. Hvis filler er egnet til dig, tilpasser vi teknik, placering og mængde til din anatomi og det udtryk, du ønsker. Målet er at fremhæve kæbelinjen på en måde, der harmonerer med dine naturlige træk.";
+
+// fillox.dk/fillers/kaebelinje (facts, list, FAQ) and Alberte's text (2026-11-26). "Kæbelinje for
+// mænd" shows the same facts, list and FAQ with the text without her sentence about a feminine
+// expression (`kaebelinjeAboutMen` below).
 const kaebelinjeAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
   facts: [
     { label: "Pris", value: from(lowestListPrice("kaebelinje")) },
     { label: "Varighed", value: "ca. 30 min" },
-    { label: "Holdbarhed", value: "ca. 12–18 mdr" },
+    // Alberte 2026-11-26 (forwarded by the owner): "I områder som kindben og kæbelinje holder det
+    // ofte 9–12 måneder" (the FAQ below). Was "ca. 12–18 mdr" (the live page). TODO: copy review
+    // (2026-11-26, Alberte)
+    { label: "Holdbarhed", value: "ca. 9–12 mdr" },
     { label: "Restitution", value: "Ingen reel" },
   ],
-  // No result promised (before: "… så ansigtstrækkene bliver skarpere … og huden i den nederste del af
-  // ansigtet strammes op med det samme"). Owner 2026-11-26: "ret det hele som du har skrevet til mig.
-  // alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2 ("Det vil normalt være sjældent, at man kan garantere
-  // samme resultat"), https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
+  // Alberte 2026-11-26 (forwarded by the owner), "Kæbelinje › Om behandlingen", her three paragraphs
+  // verbatim. Was: "Kæbelinjen definerer maskulinitet hos mænd og giver mere karakter hos kvinder. Med
+  // hyaluronsyre konturerer vi kæben, …" and "Vi tilpasser behandlingen efter dine ønsker, …". No
+  // result promised ("kan"; VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319).
+  // TODO: copy review (2026-11-26, Alberte)
   about: [
-    "Kæbelinjen definerer maskulinitet hos mænd og giver mere karakter hos kvinder. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene kan blive skarpere, både forfra og i profil, og huden i den nederste del af ansigtet kan se strammere ud.",
-    "Vi tilpasser behandlingen efter dine ønsker, hvad enten du ønsker mere maskuline eller feminine træk. Behandlingen kan også give en mere lige kæbelinje, hvis huden er blevet ujævn eller slap med alderen.",
+    KAEBELINJE_INTRO,
+    "Ønsker du et mere feminint udtryk, kan vi lægge vægt på en let defineret kæbelinje med bløde overgange. Ønsker du et mere maskulint udtryk, kan vi lægge vægt på en tydeligere kæbevinkel og en mere markeret kontur.",
+    KAEBELINJE_CONSULTATION,
   ],
-  goodFor: ["En mere markant kæbelinje", "En skarpere profil", "En mere lige kæbelinje", "Slap hud langs kæben"],
+  // From her "Om behandlingen" above (2026-11-27): the transition between kæbe and hals, and her
+  // feminine and masculine expression. Was "En mere markant kæbelinje", "En skarpere profil", "En mere
+  // lige kæbelinje", "Slap hud langs kæben" (the live page's paragraph about uneven or slack skin,
+  // which her text replaced). TODO: copy review (2026-11-27, Alberte)
+  goodFor: [
+    "En tydeligere overgang mellem kæbe og hals",
+    "En let defineret kæbelinje med bløde overgange",
+    "En tydeligere kæbevinkel og en mere markeret kontur",
+  ],
   faq: [
     {
       question: "Hvor meget filler skal der til?",
@@ -229,19 +314,27 @@ const kaebelinjeAbout: Pick<Detail, "facts" | "about" | "goodFor" | "faq"> = {
         "Kæbelinjen kræver ofte mere filler end andre områder, og 3–8 ml kan være nødvendigt. Én behandling er normalt nok, men nogle gange er der brug for to, og nogle gange giver det mening også at behandle kinder og hage. Prisen pr. område gælder op til 1 ml, så skal du bruge mere, er ansigtskonturering med 4 ml ofte det bedste valg.",
     },
     fillerFaq.results("Det endelige resultat ses efter cirka en uge, når hævelsen har lagt sig."),
+    fillerFaq.longevity(CHEEKS_JAW_LAST),
     fillerFaq.pain,
     fillerFaq.sideEffects,
     fillerFaq.products,
   ],
 };
 
-/** The page for men: the text above without "… hos kvinder" and "… eller feminine træk". TODO: copy review */
+/**
+ * The page for men: Alberte's text above without her sentence about a feminine expression (as the
+ * earlier text left out "… hos kvinder" and "… eller feminine træk"). TODO: copy review (2026-11-26,
+ * Alberte)
+ */
 const kaebelinjeAboutMen: typeof kaebelinjeAbout = {
   ...kaebelinjeAbout,
+  // Her masculine sentence ("en tydeligere kæbevinkel og en mere markeret kontur") in place of the
+  // feminine item. TODO: copy review (2026-11-27, Alberte)
+  goodFor: ["En tydeligere overgang mellem kæbe og hals", "En tydeligere kæbevinkel", "En mere markeret kontur"],
   about: [
-    // No result promised, as in `kaebelinjeAbout` above (owner 2026-11-26). TODO: copy review
-    "Kæbelinjen definerer maskulinitet. Med hyaluronsyre konturerer vi kæben, så ansigtstrækkene kan blive skarpere, både forfra og i profil, og huden i den nederste del af ansigtet kan se strammere ud.",
-    "Vi tilpasser behandlingen efter dine ønsker. Behandlingen kan også give en mere lige kæbelinje, hvis huden er blevet ujævn eller slap med alderen.",
+    KAEBELINJE_INTRO,
+    "Ønsker du et mere maskulint udtryk, kan vi lægge vægt på en tydeligere kæbevinkel og en mere markeret kontur.",
+    KAEBELINJE_CONSULTATION,
   ],
 };
 
@@ -352,7 +445,26 @@ export const treatments: Treatment[] = [
       // No `title`: the page, its breadcrumb, book bar, booking card and blog cards use the name
       // ("Lip filler", as in the menus, on /priser and in the posts); the design's "Lip Filler" was
       // the only capital F on the site.
-      lead: "Naturlig volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, så du altid kan bygge på senere.",
+      //
+      // Intro and "Om behandlingen": Alberte 2026-11-26 (forwarded by the owner), "Læbefiller hos
+      // Fillox": "Erstat den nuværende intro med teksten nedenfor. Vis 30 minutter som behandlingstid
+      // og kosmetisk sygeplejerske under Behandlingen udføres af." Her four texts, verbatim: the
+      // heading "Vi forbedrer, vi forandrer ikke" is the H1's second line (lower-case after the
+      // dash, as the rynkebehandling H1) and its paragraph the lead; "Hvad er filler?", "Vi bruger
+      // Revanesse®" and "Vi starter med at lytte" are the blocks of the "Om behandlingen" band
+      // (`aboutBlocks`). Left out: her second sentence under "Vi bruger Revanesse®", "Den amerikanske
+      // lægemiddelmyndighed FDA har godkendt." (the owner 2026-11-27: "ja ikke fda godkendt det dropper
+      // vi.. skal du ikke skrive. det noget usa noget"). Was: lead "Naturlig
+      // volumen og symmetri, formet efter din læbeform og anatomi. Vi doserer konservativt, så du
+      // altid kan bygge på senere.", two "Om behandlingen" paragraphs and shorter mobile texts.
+      // TODO: copy review (2026-11-26, Alberte)
+      headingAccent: "vi forbedrer, vi forandrer ikke",
+      lead: "Hos Fillox arbejder vi med diskrete forbedringer, der fremhæver dine naturlige træk. Måske ønsker du lidt mere fylde, en tydeligere læbekontur eller bedre balance mellem over- og underlæben. Vi tager udgangspunkt i din egen læbeform og ser på, hvordan læberne passer til resten af dit ansigt.",
+      // ≤ 160 characters (the lead is ≈ 290): her first two sentences, shortened (136 characters),
+      // with her "mellem over- og underlæben" after "bedre balance". TODO: copy review (2026-11-26,
+      // Alberte)
+      metaDescription:
+        "Lip filler hos Fillox: diskrete forbedringer – lidt mere fylde, en tydeligere læbekontur eller bedre balance mellem over- og underlæben.",
       // The clinic's own photo (content/photos.ts) with no team member in it: the syringe photo it
       // showed (behandlerSproejte) looks like Alberte's portrait (same shoot, pose, gloves and
       // backdrop; the owner is asked, README) and sat one band above "Din behandler: Annika"
@@ -360,17 +472,38 @@ export const treatments: Treatment[] = [
       // treatment and read as results. Also the page's share image.
       // TODO: copy review (image choice + alt text)
       heroImage: photos.spejl,
-      // fillox.dk/fillers/lip-filler: behandlingstid ca. 20 min, varighed cirka 6–9 måneder.
+      // Varighed (the treatment time) and "Udføres af": Alberte 2026-11-26 ("Vis 30 minutter som
+      // behandlingstid og kosmetisk sygeplejerske under Behandlingen udføres af"); the labels stay the
+      // site's ("Varighed", "Udføres af"; "BEHANDLINGSTID" does not fit a tile at 320px). Was "ca. 20
+      // min" and "Læge / sygeplejerske" (fillox.dk/fillers/lip-filler). Holdbarhed: the live page's
+      // 6–9 måneder, as her FAQ answer. TODO: copy review (2026-11-26, Alberte)
       facts: [
         { label: "Pris", value: from(lowestListPrice("lip-filler")) },
-        { label: "Varighed", value: "ca. 20 min" },
+        { label: "Varighed", value: "30 min" },
         { label: "Holdbarhed", value: "ca. 6–9 mdr" },
-        { label: "Udføres af", value: "Læge / sygeplejerske" },
+        { label: "Udføres af", value: "Kosmetisk sygeplejerske" },
       ],
       secondaryCta: { label: "Gratis konsultation", href: site.booking.href },
-      about: [
-        "Lip filler er lavet af hyaluronsyre, det samme fugt- og volumengivende stof, som naturligt findes i huden. Behandlingen kan give diskret volumen, forbedre symmetri og definere læbekanten.",
-        "Vi starter altid med en konsultation, hvor din behandler vurderer din anatomi og lægger en plan sammen med dig. Resultatet ses med det samme, og det endelige resultat ses efter cirka en uge, når hævelsen har lagt sig.",
+      // Alberte's three blocks (see the comment at `headingAccent`). TODO: copy review (2026-11-26, Alberte)
+      aboutBlocks: [
+        {
+          title: "Hvad er filler?",
+          paragraphs: [
+            "Filler er en gel, der injiceres for at tilføre volumen eller fremhæve konturer. Hos Fillox bruger vi filler baseret på hyaluronsyre, som findes naturligt i kroppen. I læberne kan filleren tilføre midlertidig fylde og fremhæve læbernes form.",
+          ],
+        },
+        {
+          title: "Vi bruger Revanesse®",
+          paragraphs: [
+            "Revanesse® er en serie hyaluronsyrefillers fra den canadiske producent Prollenium Medical Technologies.",
+          ],
+        },
+        {
+          title: "Vi starter med at lytte",
+          paragraphs: [
+            "Når vi møder dig første gang, tager vi os tid til at høre, hvad du ønsker dig, og svare på dine spørgsmål. Din behandler vurderer, om læbefiller er egnet til dig, og hvilken mængde der passer til dine læber ud fra dine ønsker, din læbeform og ansigtets proportioner. Du får en ærlig vurdering af, hvad du kan forvente, så du kan tage stilling i ro og mag.",
+          ],
+        },
       ],
       goodFor: [
         "Diskret, naturlig volumen",
@@ -390,10 +523,11 @@ export const treatments: Treatment[] = [
       pricesIntro:
         "Din behandler anbefaler mængden ved konsultationen. Mange starter med 0,5 ml og bygger på senere.",
       prices: [
-        row("Revanesse 0,3 ml", listPrice(FILLERS, "Lip filler · Revanesse 0,3 ml")),
-        row("Revanesse 0,5 ml", listPrice(FILLERS, "Lip filler · Revanesse 0,5 ml")),
-        row("Revanesse 0,7 ml", listPrice(FILLERS, "Lip filler · Revanesse 0,7 ml")),
-        row("Revanesse 1,0 ml", listPrice(FILLERS, "Lip filler · Revanesse 1,0 ml")),
+        // "Revanesse®" as in Alberte's texts and on /priser (2026-11-27). TODO: copy review (2026-11-27, Alberte)
+        row("Revanesse® 0,3 ml", listPrice(FILLERS, "Lip filler · Revanesse® 0,3 ml")),
+        row("Revanesse® 0,5 ml", listPrice(FILLERS, "Lip filler · Revanesse® 0,5 ml")),
+        row("Revanesse® 0,7 ml", listPrice(FILLERS, "Lip filler · Revanesse® 0,7 ml")),
+        row("Revanesse® 1,0 ml", listPrice(FILLERS, "Lip filler · Revanesse® 1,0 ml")),
         // The price list's label without the product name (content/prices.ts; owner 2026-11-26), so
         // no shorter mobile label is needed any more.
         row("Opløsning af filler", listPrice(FILLERS, "Opløsning af filler")),
@@ -406,11 +540,9 @@ export const treatments: Treatment[] = [
           answer:
             "Læberne er følsomme, så de fleste mærker noget ubehag, men tåler det godt. Filleren er tilsat et lokalbedøvende middel, og du kan også få bedøvende creme før behandlingen.",
         },
-        {
-          question: "Hvor længe holder resultatet?",
-          answer:
-            "Typisk 6–9 måneder, men det varierer fra person til person. Kroppen nedbryder hyaluronsyren gradvist, så resultatet aftager langsomt, og du kan vælge at bygge på igen.",
-        },
+        // Alberte's question and interval (was "Hvor længe holder resultatet?" / "Typisk 6–9 måneder,
+        // men det varierer fra person til person. Kroppen nedbryder hyaluronsyren gradvist, …").
+        fillerFaq.longevity(LIPS_LAST),
         {
           question: "Er der bivirkninger?",
           answer:
@@ -426,9 +558,19 @@ export const treatments: Treatment[] = [
           answer: `Ja. Filler af hyaluronsyre kan opløses igen. Opløsning af filler koster ${formatPrice(listPrice(FILLERS, "Opløsning af filler"))} pr. område pr. gang.`,
         },
         {
-          question: "Hvilken filler bruger I?",
-          answer: "Til læber bruger vi Revanesse.",
+          // Alberte 2026-11-26 (forwarded by the owner), verbatim, her last sentence included: "Efter
+          // en faglig vurdering kan hyaluronidase bruges til at nedbryde filleren hurtigere ved ønske
+          // om opløsning." Hyaluronidase is a prescription medicine (lægemiddelloven § 66,
+          // https://www.retsinformation.dk/eli/lta/2023/339). The owner, told about § 66: "gør hvad
+          // hun skriver og det samme gælder botox", an accepted risk (README "Før lancering");
+          // check:market rule 18 allows the name in this answer only (`HYALURONIDASE_SENTENCE`).
+          // 2026-11-26 to 27 it said "et enzym, der nedbryder hyaluronsyre" instead. Also the
+          // FAQPage JSON-LD answer. TODO: copy review (2026-11-27, Alberte)
+          question: "Hvorfor vælger nogle at få opløst læbefiller?",
+          answer:
+            "Det kan være relevant at opløse filler, hvis den har flyttet sig uden for det ønskede område, hvis resultatet er ujævnt, eller hvis man ønsker mindre fylde. Opløsning kan også være nødvendig ved visse komplikationer. Hos Fillox bruger vi ikke-permanent filler baseret på hyaluronsyre, som gradvist nedbrydes i kroppen. Efter en faglig vurdering kan hyaluronidase bruges til at nedbryde filleren hurtigere ved ønske om opløsning.",
         },
+        fillerFaq.products,
       ],
       relatedPostsTitle: "Læs mere om lip filler",
       relatedPostsIntro,
@@ -439,13 +581,8 @@ export const treatments: Treatment[] = [
         "haevelse-og-blaa-maerker",
       ],
       bookingText: "Eller book en gratis konsultation, hvis du er i tvivl.",
+      // No mobile lead or "Om behandlingen" of its own since 2026-11-26: Alberte's texts at every width.
       mobile: {
-        lead: "Naturlig volumen og symmetri, formet efter din læbeform. Vi doserer konservativt, så du altid kan bygge på senere.",
-        // "kan give", as the desktop text (before: "Behandlingen giver …"; owner 2026-11-26, VEJ
-        // 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319). TODO: copy review
-        about: [
-          "Lip filler er lavet af hyaluronsyre, et stof, der findes naturligt i huden. Behandlingen kan give diskret volumen, bedre symmetri og en tydeligere læbekant. Resultatet ses med det samme, og det endelige resultat efter cirka en uge.",
-        ],
         pricesIntro: "Mange starter med 0,5 ml. Din behandler anbefaler mængden ved konsultationen.",
       },
     },
@@ -462,19 +599,32 @@ export const treatments: Treatment[] = [
     // TODO: copy review
     short: "Filler, der kan give markerede kindben og genoprette tabt volumen.",
     detail: {
-      lead: "Markerede kindben kan give en flot profil og løfte ansigtet. Filler i kindbenene kan også genoprette tabt volumen og give en strammere hud.",
+      // Lead, behandlingstid, "Om behandlingen" and "Godt til dig, der ønsker": Alberte 2026-11-26
+      // (forwarded by the owner), "Kindben", verbatim (the list items without her full stops, as every
+      // list on the site). Was: lead "Markerede kindben kan give en flot profil og løfte ansigtet. …",
+      // Varighed "ca. 20 min", two paragraphs ("Med hyaluronsyre genskaber vi volumen og blødhed …")
+      // and "Godt til": "Tabt volumen i kinderne", "Mere markerede kindben", "Et slankere ansigt",
+      // "Opstramning af huden". TODO: copy review (2026-11-26, Alberte)
+      lead: "Med filler kan vi fremhæve kindbenenes naturlige kontur og genskabe tabt volumen. Målet er et diskret løft i kindområdet, der passer til dine ansigtstræk.",
       heroImage: categoryImage("fillers"),
       facts: [
         { label: "Pris", value: from(lowestListPrice("kindben")) },
-        { label: "Varighed", value: "ca. 20 min" },
-        { label: "Holdbarhed", value: "ca. 6–12 mdr" },
+        // "Behandlingstid · 35 minutter" (Alberte); the site's label, as on lip filler.
+        { label: "Varighed", value: "35 min" },
+        // Her FAQ interval for kindben and kæbelinje (was "ca. 6–12 mdr", the live page).
+        { label: "Holdbarhed", value: "ca. 9–12 mdr" },
         { label: "Restitution", value: "Ingen reel" },
       ],
       about: [
-        "Med hyaluronsyre genskaber vi volumen og blødhed i ansigtet. Du ser effekten med det samme, og fylden kan stramme huden op, så du kan fremstå slankere i ansigtet og med en klarere karakter.",
-        "Behandlingen passer både til dig, der har mistet volumen i kinderne med alderen, og til dig, der ønsker mere fylde og et konturet look. Skal du bruge mere end 1 ml, fx til kindben og kæbelinje, er ansigtskonturering med 4 ml ofte et godt valg.",
+        "Med filler baseret på hyaluronsyre kan vi genskabe tabt volumen i kinderne eller fremhæve kindbenenes naturlige kontur. Målet er at give kindområdet et diskret løft og skabe balance i ansigtet. Ændringen i volumen kan ofte ses med det samme, men hævelse efter behandlingen kan påvirke det første indtryk. Derfor vurderes resultatet bedst, når hævelsen har lagt sig.",
+        "Behandlingen kan være relevant, hvis du med tiden har mistet fylde i kinderne, eller hvis du ønsker lidt mere definition omkring kindbenene. Ved konsultationen vurderer din behandler, hvor filleren skal placeres, og hvilken mængde der passer til dine ønsker og ansigtets anatomi. Ønsker du at få behandlet flere områder, for eksempel kindben og kæbelinje, lægger vi en samlet plan og vurderer mængden for hvert område.",
       ],
-      goodFor: ["Tabt volumen i kinderne", "Mere markerede kindben", "Et slankere ansigt", "Opstramning af huden"],
+      goodForLabel: "Godt til dig, der ønsker",
+      goodFor: [
+        "At genskabe tabt volumen i kinderne",
+        "At fremhæve kindbenenes naturlige kontur og understrege feminine eller maskuline træk",
+        "Et diskret løft i kindområdet",
+      ],
       faq: [
         {
           question: "Hvordan foregår behandlingen?",
@@ -482,6 +632,7 @@ export const treatments: Treatment[] = [
             "Vi starter med en analyse af dit ansigt, og sammen aftaler vi det ønskede resultat. Filleren sprøjtes ind med en meget tynd nål, og i kinderne placeres den normalt dybere i huden end i andre områder.",
         },
         fillerFaq.results("Det endelige resultat ses efter cirka en uge, når hævelsen har lagt sig."),
+        fillerFaq.longevity(CHEEKS_JAW_LAST),
         fillerFaq.pain,
         fillerFaq.sideEffects,
         fillerFaq.aftercare,
@@ -498,12 +649,22 @@ export const treatments: Treatment[] = [
     // fremstår slankere i ansigtet."). Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt
     // fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319.
     // TODO: copy review
-    short: "Filler, der kan give en tydeligere kæbelinje og en mere markant profil.",
+    // Alberte's first paragraph (2026-11-27; was "… en tydeligere kæbelinje og en mere markant
+    // profil."). TODO: copy review (2026-11-27, Alberte)
+    short: "Filler, der kan fremhæve kæbelinjens kontur og give en tydeligere overgang mellem kæbe og hals.",
     detail: {
-      lead: "Filler i kæbelinjen kan give en tydeligere overgang mellem hoved og hals og en mere markant profil, så du kan fremstå slankere i ansigtet.",
+      // Also the meta description (≤ 160 characters). From Alberte's "Om behandlingen" (2026-11-26):
+      // her first paragraph's "fremhæve kæbelinjens kontur og give en tydeligere overgang mellem kæbe
+      // og hals" and her last sentence's goal ("… harmonerer med dine naturlige træk"), in the shape of
+      // her kindben lead. Was "Filler i kæbelinjen kan give en tydeligere overgang mellem hoved og hals
+      // og en mere markant profil, så du kan fremstå slankere i ansigtet." (no slimming claim in her
+      // text). TODO: copy review (2026-11-27, Alberte)
+      lead: "Med filler kan vi fremhæve kæbelinjens kontur og give en tydeligere overgang mellem kæbe og hals. Målet er en kæbelinje, der harmonerer med dine naturlige træk.",
+      // The fillers category photo (no person named on the page). Its before/after pair moved to
+      // Hage (Alberte 2026-11-26: it is a chin; see "Before/after results" above): no results
+      // section here until a kæbelinje pair arrives. TODO: copy review (2026-11-26, Alberte)
       heroImage: categoryImage("fillers"),
       ...kaebelinjeAbout,
-      ...chinResults,
     },
   },
   {
@@ -512,6 +673,14 @@ export const treatments: Treatment[] = [
     categorySlug: "fillers",
     priceFrom: lowestListPrice("hage"),
     short: "Filler, der kan give hagen mere form og balance i profilen.", // TODO: copy review (no live page)
+    // The before/after pair (from Kæbelinje, Alberte 2026-11-26: "før/efter billede af hage") and
+    // the filler FAQ's Revanesse® question (`fillerFaqFallback`); hero, facts, "Om behandlingen" and
+    // prices stay the template's fallbacks (no `lead`: the one-liner, and the shared meta description
+    // with the price). TODO: copy review (2026-11-26, Alberte)
+    detail: {
+      ...chinResults,
+      ...sharedFillerFaq,
+    },
   },
   {
     slug: "tear-trough",
@@ -545,6 +714,9 @@ export const treatments: Treatment[] = [
             "Placeres filleren for overfladisk, giver det et flot resultat med det samme, men problemer efter få uger: ujævnheder bliver synlige, området kan hæve, fordi lymfedrænagen blokeres, og huden kan få et hvidligt skær (Tyndall-effekt). Vores behandlere er grundigt uddannet i at placere filleren rigtigt, så risikoen for det bliver så lille som muligt.", // TODO: copy review (no guarantee: "så du undgår det")
         },
         fillerFaq.results("Det bedste resultat ses efter 2–4 uger."),
+        // No interval from Alberte for this area: the page's own "ca. 6–12 mdr" (facts above).
+        // TODO: copy review (2026-11-26, Alberte)
+        fillerFaq.longevity("Under øjnene holder resultatet cirka 6–12 måneder."),
         fillerFaq.pain,
         fillerFaq.sideEffects,
         fillerFaq.products,
@@ -588,6 +760,9 @@ export const treatments: Treatment[] = [
             "Vi starter med en analyse af din næse, og sammen med lægen aftaler du det ønskede resultat. Filleren sprøjtes ind med en tynd nål under huden og over næsebenet.",
         },
         fillerFaq.results("Det endelige resultat ses efter cirka 2 uger, når hævelsen har lagt sig."),
+        // No interval from Alberte for this area: the page's own "ca. 6–12 mdr" (facts above).
+        // TODO: copy review (2026-11-26, Alberte)
+        fillerFaq.longevity("Ved næsekorrektion holder resultatet cirka 6–12 måneder."),
         {
           question: "Gør det ondt?",
           // No active substance (before: "tilsat lidocain, et bedøvelsesmiddel"), as `fillerFaq.pain`
@@ -598,6 +773,57 @@ export const treatments: Treatment[] = [
         fillerFaq.sideEffects,
         fillerFaq.products,
       ],
+    },
+  },
+  /*
+   * The areas without a page until 2026-11-26. Alberte (forwarded by the owner): "Gør de manglende
+   * områder synlige i oversigten. Jeg har samlet marionetlinjer og nasolabiale folder under Linjer og
+   * folder og lagt ansigtskonturering under Fillox Signatur, så oversigten fortsat har ni kort."
+   * Each `short` is her card text, verbatim: the hero lead, the first sentence of "Om behandlingen"
+   * and the fillers page's card (content/pages/fillers.ts). Everything else is the template's
+   * fallback for fillers (facts, "Om behandlingen", closing band; content/pages/treatments.ts), and
+   * the FAQ is the shared one plus the Revanesse® question (`fillerFaqFallback`): no behandlingstid,
+   * holdbarhed or "Hvor længe holder filler?" of their own until Fillox documents them (README; Alberte
+   * gave intervals only for lips, kindben and kæbelinje). Prices:
+   * the price-list rows tagged with the slug (content/prices.ts), never typed here.
+   * TODO: copy review (2026-11-26, Alberte)
+   */
+  {
+    slug: "tindinger",
+    name: "Tindinger",
+    categorySlug: "fillers",
+    priceFrom: lowestListPrice("tindinger"),
+    short: "Genskab fylde ved tindingerne, og blødgør overgangen mellem pande og kindben.",
+    detail: sharedFillerFaq,
+  },
+  {
+    // Marionetlinjer and nasolabiale folder (the price list's "Marionetlinjer" and "Nasolabiale
+    // folder", both tagged with this page).
+    slug: "linjer-og-folder",
+    name: "Linjer og folder",
+    categorySlug: "fillers",
+    priceFrom: lowestListPrice("linjer-og-folder"),
+    short: "Blødgør nasolabiale folder fra næsen til mundvigene eller marionetlinjer fra mundvigene ned mod hagen.",
+    detail: sharedFillerFaq,
+  },
+  {
+    // Ansigtskonturering (the price list's "Ansigtskonturering · 4 ml"), under Alberte's name "Fillox
+    // Signatur". Not the facial "Signatur ansigtsbehandling" (Dr. Dennis Gross, hudforbedring; on
+    // /priser "Signatur · Dr. Dennis Gross"): two treatments called "Signatur" (README, open
+    // question). So the H1, the title and the mobile menu add "ansigtskonturering" (her word).
+    slug: "ansigtskonturering",
+    name: "Fillox Signatur",
+    mobileMenuName: "Fillox Signatur (ansigtskonturering)",
+    // It names the brand, so no " · Fillox" after it (as the fillers page, absoluteTitle).
+    metaTitle: "Fillox Signatur – ansigtskonturering",
+    metaTitleAbsolute: true,
+    categorySlug: "fillers",
+    priceFrom: lowestListPrice("ansigtskonturering"),
+    short:
+      "Ansigtskonturering med en individuel plan, hvor vi ser på flere områder i sammenhæng og diskret genskaber volumen og fremhæver konturer.",
+    detail: {
+      headingAccent: "ansigtskonturering",
+      ...sharedFillerFaq,
     },
   },
   // Rynkebehandling: long-form pages, the owner's copy verbatim (see the header).
@@ -689,6 +915,40 @@ export const treatments: Treatment[] = [
               " kan også være relevante at vurdere i forhold til hudforbedrende behandlinger som microneedling eller peeling.",
             ],
             "Behandlingerne har forskellige formål, effekter og risici. Det er derfor vigtigt at vælge ud fra en individuel vurdering frem for blot at vælge en behandling ud fra navnet.",
+          ],
+        },
+        // Alberte 2026-11-26 (forwarded by the owner), under "Botox", in her order: "Hvad er Botox" (her
+        // heading with a question mark, as the page's other question headings) and "Vi forbedrer, vi
+        // forandrer ikke"; her paragraphs verbatim, not the agency's text. Placed right after the band
+        // that introduces the muscle-relaxing treatment for mimic wrinkles, which "Behandlingen" and
+        // "dosis til din mimik" refer to.
+        // "Hvad er Botox?" names the product and its active substance (botulinumtoksin type A), a
+        // prescription medicine: lægemiddelloven § 66 forbids advertising it to the public, also on
+        // the clinic's own site (https://www.retsinformation.dk/eli/lta/2023/339). The owner was told
+        // and answered "gør hvad hun skriver og det samme gælder botox" (2026-11-26): an accepted
+        // § 66 risk (README "Før lancering" → "Botox og markedsføring"). Until 2026-11-27 it was held
+        // back. TODO: copy review (2026-11-27, Alberte)
+        {
+          id: "hvad-er-botox",
+          title: "Hvad er Botox?",
+          paragraphs: [
+            "Botulinumtoksin type A er det aktive stof i en række lægemidler. Stoffet dæmper midlertidigt aktiviteten i udvalgte muskler, så de linjer, der opstår, når du for eksempel smiler eller rynker panden, kan blive mindre synlige. Behandlingen bruges blandt andet til pandelinjer, bekymringsrynken mellem brynene og smilerynker ved øjenkrogene.",
+          ],
+        },
+        // Her second paragraph is the closing sentence she offered: "Hvis Fillox tilbyder gratis
+        // opfølgning efter 14 dage, kan teksten afsluttes sådan." The price list already has "Kontrol
+        // efter behandling – valgfri, ca. 14 dage efter – gratis" (content/prices.ts → konsultation),
+        // and the blog's aftercare posts say "Cirka 14 dage efter behandlingen kan du komme til en
+        // gratis kontrol … skal ligge inden for 21 dage" (14 days typical, 21 the deadline: no
+        // contradiction). Added 2026-11-27 (the owner: "gør hvad hun skriver"). A free offer right under
+        // "Hvad er Botox?" is part of the accepted § 66 risk, with its own bullet in README "Kendt § 66-
+        // risiko" (and how to lower it: no "gratis" here). TODO: copy review (2026-11-27, Alberte)
+        {
+          id: "vi-forbedrer",
+          title: "Vi forbedrer, vi forandrer ikke",
+          paragraphs: [
+            "Når vi møder dig første gang hos Fillox, tager vi os tid til at høre, hvilke linjer du gerne vil blødgøre, og se, hvordan dit ansigt bevæger sig. Ved konsultationen vurderer vi, om behandlingen passer til dig. Hvis den er egnet, tilpasses placering og dosis til din mimik og dine ønsker. Målet er at blødgøre udvalgte linjer, så dit udtryk stadig føles som dit eget.",
+            "Cirka 14 dage efter behandlingen tilbyder vi en gratis opfølgning, hvor vi sammen vurderer resultatet og tager stilling til, om der er behov for en justering.",
           ],
         },
         {
@@ -956,47 +1216,114 @@ export const treatments: Treatment[] = [
     slug: "skinbooster",
     name: "Skinbooster",
     categorySlug: "hudforbedring",
-    // Ejal 40, 1 behandling (the live price list; also "fra 1.499 kr" on Alberte's profile). The
+    // Ejal40 · 1 behandling (the price list; also "fra 1.499 kr" on Alberte's profile). The
     // design's home bestseller row (6a/mf) said "fra 999 kr"; the live list confirms 1.499 kr.
     priceFrom: lowestListPrice("skinbooster"),
     short: "Fugt, glød og forbedring af hudens kvalitet.",
     detail: {
-      // No result promised (before: lead "… der fugter, strammer slap hud op og forbedrer …"; about
-      // "Den strammer slap hud op, mindsker rynker og forbedrer …" and "Sunekos … er særligt god til …
-      // så resultatet ser naturligt ud"; "bruges særligt til" as in content/blog.ts). Owner 2026-11-26:
-      // "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013 pkt. 6.2 and 12,
-      // https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
-      lead: "Skinboosters med hyaluronsyre, der kan fugte, stramme slap hud op og forbedre hudens kvalitet. Vi bruger Ejal 40 og Sunekos.",
+      // Alberte 2026-11-26 (forwarded by the owner), "Skinbooster hos Fillox (forslag)": her heading is
+      // the H1 (as "Filler hos Fillox", content/pages/fillers.ts) and her intro the lead, verbatim
+      // except one fix: "bred valg af skinbooster" → "et bredt udvalg af skinboostere". "Ejal40" is her
+      // spelling and the maker's (Medixa srl, https://www.medixasrl.com/ejal40/), on the whole site
+      // since 2026-11-27 (the live price list says "Ejal 40"). Her other four texts are the "Om
+      // behandlingen" blocks below. Was: lead "Skinboosters med hyaluronsyre, der kan fugte, stramme
+      // slap hud op og forbedre hudens kvalitet. Vi bruger Ejal 40 og Sunekos." and two paragraphs
+      // (Ejal 40 "… stimulerer dannelsen af nyt kollagen og elastin. Den kan stramme slap hud op,
+      // mindske rynker …"; Sunekos "… bruges særligt til svære områder som mørke rande og poser under
+      // øjnene …"). No product of another brand was on this page (Belotero only in the legacy redirect
+      // /hudforbedring/belotero-revive, content/redirects.ts). Skinboosters are medical devices, so the
+      // products may be named; no result is promised ("kan", "Målet er …"; VEJ 9319/2013 pkt. 6.2 and
+      // 12, https://www.retsinformation.dk/eli/retsinfo/2013/9319).
+      // TODO: copy review (2026-11-26, Alberte)
+      heading: "Skinbooster hos Fillox",
+      lead: "Når du ønsker mere fugt, en glattere hudstruktur eller mindre synlige fine linjer, kan en skinbooster være en mulighed. Hos Fillox tilbyder vi et bredt udvalg af skinboostere: Ejal40, Sunekos og polynukleotider. Ved konsultationen ser vi på din hud og taler om, hvad du gerne vil forbedre, og hvad du kan forvente af de forskellige behandlinger.",
+      // ≤ 160 characters (the lead is ≈ 340): her heading, products and first sentence's wishes.
+      // TODO: copy review (2026-11-26, Alberte)
+      metaDescription:
+        "Skinbooster hos Fillox: Ejal40, Sunekos og polynukleotider, når du ønsker mere fugt, en glattere hudstruktur eller mindre synlige fine linjer.",
       heroImage: categoryImage("hudforbedring"),
-      // Ejal 40: ca. 20 min, omtrent 12 mdr, 12–24 timer; Sunekos: ca. 30 min, cirka 6 mdr, ingen.
+      // Ejal40: ca. 20 min, omtrent 12 mdr, 12–24 timer; Sunekos: ca. 30 min, cirka 6 mdr, ingen.
       facts: [
         { label: "Pris", value: from(lowestListPrice("skinbooster")) },
         { label: "Varighed", value: "ca. 20–30 min" },
         { label: "Holdbarhed", value: "ca. 6–12 mdr" },
         { label: "Restitution", value: "Op til 24 timer" },
       ],
-      about: [
-        // TODO: source — "40 mg" is not on fillox.dk/skinbooster/ejal-40 or /skinbooster, and no volume
-        // is given (the blog leaves it out). Owner: source and volume, or drop "med 40 mg".
-        "Ejal 40 er en biorevitaliserende gel med 40 mg hyaluronsyre, der stimulerer dannelsen af nyt kollagen og elastin. Den kan stramme slap hud op, mindske rynker og forbedre hudtone og elasticitet.",
-        "Sunekos kombinerer hyaluronsyre og aminosyrer og bruges særligt til svære områder som mørke rande og poser under øjnene, linjer på overlæben og hudkvaliteten på panden. Sunekos er ikke en filler, og målet er et naturligt resultat.",
+      // Alberte 2026-11-26 (forwarded by the owner): "Hvad er forskellen på skinbooster og filler?",
+      // "Vores skinboostere" (three products) and "Hvilken behandling passer til din hud?", verbatim.
+      // "Vores skinboostere" is a group block (since 2026-11-27; before, it had no heading): her
+      // heading as an h3 with the three products under it as h4s (her titles, "Ejal40 · Fokus på
+      // fugt" …), so the outline is "Om behandlingen" → "Vores skinboostere" → the products. Fix: her last polynukleotider sentence, "Tilbyder til ansigt, urner
+      // øjnen og hår", → "Vi tilbyder behandlingen i ansigtet, under øjnene og i hårbunden." (the
+      // price list's PolyPhil classic / med HA, eye and Hair rows, content/prices.ts). Her "40 mg
+      // hyaluronsyre pr. 2 ml" is the source the earlier text lacked ("40 mg", no volume). The block
+      // ids are anchors: Profhilo links #polynukleotider. Polynukleotider: the agency's draft (Drive)
+      // asks for the product documentation to be checked before a categorical text (README).
+      // TODO: copy review (2026-11-26, Alberte)
+      aboutBlocks: [
+        {
+          title: "Hvad er forskellen på skinbooster og filler?",
+          paragraphs: [
+            "En skinbooster er en injektionsbehandling med fokus på hudens kvalitet. Afhængigt af produktet kan målet være at øge hudens fugtindhold, gøre hudstrukturen mere jævn eller blødgøre fine linjer. Filler bruges primært til at tilføre volumen eller fremhæve konturer, for eksempel i læberne, ved kindbenene eller langs kæbelinjen. Begge typer behandling kan indeholde hyaluronsyre, og valget afhænger af, hvad du ønsker at opnå.",
+          ],
+        },
+        {
+          // TODO: copy review (2026-11-27, Alberte)
+          title: "Vores skinboostere",
+          paragraphs: [],
+          blocks: [
+            {
+              id: "ejal-40",
+              title: "Ejal40 · Fokus på fugt",
+              paragraphs: [
+                "Ejal40 indeholder 40 mg hyaluronsyre pr. 2 ml. Hyaluronsyre binder vand, og behandlingen kan være relevant, hvis din hud føles tør eller ser mat ud. Målet er et mere fugtmættet og glat udseende med mere glød.",
+              ],
+            },
+            {
+              id: "sunekos",
+              title: "Sunekos · Fokus på hudstruktur og fine linjer",
+              paragraphs: [
+                "Sunekos kombinerer hyaluronsyre og seks aminosyrer. Behandlingen kan være relevant, hvis du ønsker en glattere hudstruktur og mindre synlige fine linjer. Målet er en diskret forbedring af hudens udseende, som varierer fra person til person.",
+              ],
+            },
+            {
+              id: "polynukleotider",
+              title: "Polynukleotider · Fokus på struktur og spændstighed",
+              paragraphs: [
+                "Polynukleotider er kæder af DNA-byggesten. I produkter til æstetisk behandling er de ofte fremstillet af oprenset DNA fra fisk. Behandlingen kan være relevant, hvis du ønsker at arbejde med hudens struktur, spændstighed eller fine linjer. Vi tilbyder behandlingen i ansigtet, under øjnene og i hårbunden.",
+              ],
+            },
+          ],
+        },
+        {
+          title: "Hvilken behandling passer til din hud?",
+          paragraphs: [
+            "Vi starter med at lytte til dine ønsker og vurdere din hud. Sammen taler vi om, hvilken behandling der eventuelt passer til dig, hvor mange behandlinger der kan være relevante, og hvilke resultater du realistisk kan forvente.",
+          ],
+        },
       ],
-      goodFor: ["Slap hud og rynker", "Mørke rande og poser under øjnene", "Hudtone og elasticitet", "Fugt og spændstighed"],
+      // In Alberte's words (her intro and the polynukleotider block). Was "Slap hud og rynker", "Mørke
+      // rande og poser under øjnene", "Hudtone og elasticitet", "Fugt og spændstighed": the old Ejal40
+      // and Sunekos texts' claims, which her texts no longer make. TODO: copy review (2026-11-26, Alberte)
+      goodFor: ["Mere fugt i huden", "En glattere hudstruktur", "Mindre synlige fine linjer", "Hudens struktur og spændstighed"],
       faq: [
         {
           question: "Hvor mange behandlinger skal jeg have?",
           answer:
-            "Med Ejal 40 gentager du behandlingen 2–3 uger efter den første og vedligeholder derefter 1–2 gange om året. Sunekos gives som et forløb på 3–4 behandlinger med 1–2 ugers mellemrum og derefter en opfølgning cirka hver 6. måned.",
+            "Med Ejal40 gentager du behandlingen 2–3 uger efter den første og vedligeholder derefter 1–2 gange om året. Sunekos gives som et forløb på 3–4 behandlinger med 1–2 ugers mellemrum og derefter en opfølgning cirka hver 6. måned.",
         },
         {
           question: "Hvornår kan jeg se resultatet?",
+          // "Resultater varierer …" added 2026-11-26 with Alberte's texts (her Sunekos block says it
+          // too): the answer states times, which no client is promised (VEJ 9319/2013 pkt. 6.2). Ejal40
+          // and Sunekos only: no times for polynukleotider yet. TODO: copy review (2026-11-26, Alberte)
           answer:
-            "Resultatet af Ejal 40 viser sig efter cirka 1–2 uger og holder omtrent 12 måneder. Sunekos holder cirka 6 måneder. Effekten aftager gradvist, fordi hyaluronsyre nedbrydes med tiden.",
+            "Resultatet af Ejal40 viser sig efter cirka 1–2 uger og holder omtrent 12 måneder. Sunekos holder cirka 6 måneder. Effekten aftager gradvist, fordi hyaluronsyre nedbrydes med tiden. Resultater varierer fra person til person.",
         },
         {
           question: "Gør det ondt?",
           answer:
-            "Ikke meget. Ejal 40 ligger på cirka 2 ud af 10 på smerteskalaen, så bedøvelse er ikke nødvendig. Vil du have bedøvende creme, så sig det til klinikken, da cremen skal virke i cirka 30 minutter.",
+            "Ikke meget. Ejal40 ligger på cirka 2 ud af 10 på smerteskalaen, så bedøvelse er ikke nødvendig. Vil du have bedøvende creme, så sig det til klinikken, da cremen skal virke i cirka 30 minutter.",
         },
         // fillox.dk/skinbooster/ejal-40 and /profhilo: "De første 12 timer … ikke gnide eller massere
         // området … Man bør også undgå … makeup/hudcreme, … sauna, træne samt … ekstra kolde eller varme
@@ -1034,6 +1361,31 @@ export const treatments: Treatment[] = [
       about: [
         "Profhilo er fremstillet i Schweiz med en patenteret teknologi. Takket være termisk tværbinding er hyaluronsyren modstandsdygtig over for det enzym, der naturligt nedbryder den, så effekten holder længe.",
         "Profhilo stimulerer produktionen af flere typer kollagen og elastin. Vi sprøjter produktet ind i 5 punkter på hver side af ansigtet, 1 ml på hver side.",
+      ],
+      // Alberte 2026-11-26 (forwarded by the owner): "Under skinbooster: PROFHILO mangler du også
+      // Profhilo Structura og polyneokleotider (se matirale om tekst hertil, som Anette har delt med dig
+      // på drev)". Anette's Drive document has no Structura text (only the old Profhilo text) and only a
+      // short polynukleotider intro. So (2026-11-27): two facts about Structura, no performance claim,
+      // from the fact-check of 2026-11-26 (IBSA's press release "IBSA Derma presenta Profhilo
+      // Structura", Milan, 1 October 2024, https://www.ibsaitaly.it/en/dam/jcr:bb96496d-2a97-4424-9fa3-e300d1d8bcae/Comunicato%20Stampa%20-%20IBSA%20Derma%20presenta%20Profhilo%20Structura.pdf;
+      // IBSA group news, https://www.ibsagroup.com/media/news/2024/profhilo-structura-the-new-frontier-in-the-restoration-of-facial-adipose-tissue.html;
+      // the IBSA-sponsored study injected the lateral cheek fat compartment,
+      // https://pmc.ncbi.nlm.nih.gov/articles/PMC10801275/). The official indication, "ripristino del
+      // tessuto adiposo", is left out: it reads as an effect claim. Then the link to Alberte's
+      // polynukleotider text on the skinbooster page. The Structura prices are the price list's
+      // "Profhilo Structura 2 ml" rows (tagged "profhilo" in content/prices.ts), shown in this page's
+      // price section. Was (2026-11-26) only "Vi tilbyder også Profhilo Structura og polynukleotider.".
+      // The facts and the FAQ above are Profhilo's own. "Profhilo" without ®, as on the rest of the
+      // page; "fra IBSA Derma" next to the product's name, so it cannot read as the hyaluronsyre's
+      // origin. TODO: copy review (2026-11-27, Alberte)
+      aboutBlocks: [
+        {
+          title: "Profhilo Structura og polynukleotider",
+          paragraphs: [
+            "Vi tilbyder også Profhilo Structura fra IBSA Derma, firmaet bag Profhilo. Det er et produkt med hyaluronsyre, som er beregnet til at blive injiceret i fedtvævet i siden af ansigtet.",
+          ],
+          link: { label: "Læs om polynukleotider", href: `${treatmentHref("skinbooster")}#polynukleotider` },
+        },
       ],
       goodFor: ["Løs hud i ansigtet", "Løs hud på halsen", "Naturlige anti-age-resultater"],
       faq: [
@@ -1242,9 +1594,15 @@ export const treatments: Treatment[] = [
     // "kan", as on Kæbelinje (before: "Filler, der giver …"; lead "Filler giver en tydeligere …").
     // Owner 2026-11-26: "ret det hele som du har skrevet til mig. alt fra punkt 1-9"; VEJ 9319/2013
     // pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. TODO: copy review
-    short: "Filler, der kan give en mere markant kæbelinje og en skarpere profil.",
+    // Alberte's masculine expression (2026-11-27; was "… en mere markant kæbelinje og en skarpere
+    // profil."). TODO: copy review (2026-11-27, Alberte)
+    short: "Filler, der kan give en tydeligere kæbevinkel og en mere markeret kontur.",
     detail: {
-      lead: "Kæbelinjen definerer maskulinitet. Filler kan give en tydeligere overgang mellem hoved og hals, en mere markant profil og et slankere ansigt.",
+      // Also the meta description. Alberte's masculine expression ("en tydeligere kæbevinkel og en mere
+      // markeret kontur") and the goal of her last sentence, as on Kæbelinje. Was "Kæbelinjen definerer
+      // maskulinitet. Filler kan give en tydeligere overgang mellem hoved og hals, en mere markant
+      // profil og et slankere ansigt." TODO: copy review (2026-11-27, Alberte)
+      lead: "Med filler kan vi fremhæve kæbelinjen med en tydeligere kæbevinkel og en mere markeret kontur. Målet er et udtryk, der harmonerer med dine naturlige træk.",
       heroImage: categoryImage("for-maend"),
       ...kaebelinjeAboutMen,
     },
@@ -1297,13 +1655,16 @@ function bestsellerTreatment(slug: string): Pick<Bestseller, "priceFrom" | "href
   return { priceFrom, href: treatmentHref(slug) };
 }
 
-/** Same for a row that links to a whole category: its lowest "fra" price. */
+/**
+ * Same for a row that links to a whole category: its lowest "fra" price, and its own page when it
+ * has one (Fillers → /behandlinger/fillers since 2026-11-26), else its section on /behandlinger.
+ */
 function bestsellerCategory(categorySlug: string): Pick<Bestseller, "priceFrom" | "href"> {
   const prices = treatments
     .filter((t) => t.categorySlug === categorySlug)
     .flatMap((t) => (t.priceFrom === undefined ? [] : [t.priceFrom]));
   if (!prices.length) throw new Error(`bestsellers: empty category "${categorySlug}"`);
-  return { priceFrom: Math.min(...prices), href: `${routes.treatments}#${categorySlug}` };
+  return { priceFrom: Math.min(...prices), href: treatmentCategoryHref(categorySlug) };
 }
 
 /** Home page "Vores bestsellers" (design 6a desktop, mf mobile). */
@@ -1329,7 +1690,7 @@ export const bestsellers: Bestseller[] = [
     name: "Skinbooster",
     description: "Fugt, glød og forbedring af hudens kvalitet.",
     mobileDescription: "Fugt, glød og bedre hudkvalitet.",
-    // 6a/mf show "fra 999 kr" here; the live price list starts skinboosters at 1.499 kr (Ejal 40).
+    // 6a/mf show "fra 999 kr" here; the live price list starts skinboosters at 1.499 kr (Ejal40).
     ...bestsellerTreatment("skinbooster"),
   },
   {

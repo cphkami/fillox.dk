@@ -184,8 +184,10 @@ export const treatmentPage = {
    * Treatments whose name keeps its capital letter inside a sentence (brand names).
    * Other names are lower-cased there: "Læs mere om skinbooster", as in the design
    * ("Læs mere om lip filler", "Læs mere om botox"). Acronyms (PRF) are never lower-cased.
+   * "ansigtskonturering" is "Fillox Signatur", the clinic's own name for it (Alberte 2026-11-26):
+   * "Læs mere om Fillox Signatur", not "… fillox Signatur".
    */
-  brandNames: ["profhilo", "polyphil-hair"] as string[],
+  brandNames: ["profhilo", "polyphil-hair", "ansigtskonturering"] as string[],
 
   faq: {
     title: "Ofte stillede spørgsmål",
@@ -226,11 +228,16 @@ export const treatmentPage = {
   },
 
   /**
-   * Meta description for treatments without `detail`: one-liner + price + consultation note.
+   * Meta description for treatments without a `detail.lead`: one-liner + price + consultation note,
+   * without the consultation note when that would pass 160 characters (search results cut it): the
+   * long one-liners of 2026-11-26 (Alberte's card texts for "Linjer og folder", "Fillox Signatur").
    */
   // TODO: copy review
-  metaDescription: (text: string, price?: string) =>
-    price ? `${text} Pris ${price}. Konsultation og kontrol er altid gratis.` : `${text} Konsultation og kontrol er altid gratis.`,
+  metaDescription: (text: string, price?: string) => {
+    const priced = price ? `${text} Pris ${price}.` : text;
+    const full = `${priced} Konsultation og kontrol er altid gratis.`;
+    return full.length <= 160 ? full : priced;
+  },
 
   /**
    * Fact cards for treatments without `detail.facts`. `price` is "fra 999 kr".
@@ -390,6 +397,16 @@ export const treatmentsOverview = {
   } as Record<string, string>,
   /** Link from a category to its card on /priser. */
   seePrices: "Se priser",
+  /**
+   * Categories with a page of their own (content/navigation.ts → categoryPages) that keep their
+   * section here, with this link to the page beside "Se priser". Fillers (Alberte 2026-11-26: "Opret
+   * Filler som underside under Behandlinger"): the overview still lists every treatment. The label
+   * is /ny-hos-fillox's link to the same page. Categories not listed (For mænd) get a teaser instead.
+   */
+  // TODO: copy review (2026-11-26, Alberte)
+  categoryPageLinks: {
+    fillers: "Læs om fillers",
+  } as Record<string, string>,
   /** Closing band. */
   cta: {
     title: "Usikker på, hvad du skal vælge?",

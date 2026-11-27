@@ -161,9 +161,11 @@ export const menPage = {
         name: "Kæbelinje",
         // "kan", as on the Kæbelinje for mænd page (before: "Filler, der giver …"). Owner 2026-11-26:
         // "ret det hele som du har skrevet til mig. alt fra punkt 1-9" (point 5, result promises);
-        // VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319.
-        // TODO: copy review
-        text: "Filler, der kan give en skarpere kæbelinje og en mere markant profil. Formet efter dit ansigt, ikke efter en skabelon.",
+        // VEJ 9319/2013 pkt. 6.2, https://www.retsinformation.dk/eli/retsinfo/2013/9319. Since
+        // 2026-11-27 Alberte's masculine expression from the Kæbelinje text ("en tydeligere
+        // kæbevinkel og en mere markeret kontur"; was "… en skarpere kæbelinje og en mere markant
+        // profil."). TODO: copy review (2026-11-27, Alberte)
+        text: "Filler, der kan give en tydeligere kæbevinkel og en mere markeret kontur. Formet efter dit ansigt, ikke efter en skabelon.",
       },
       {
         slug: "rynkebehandling",

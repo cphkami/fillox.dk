@@ -6,8 +6,10 @@ import { photos } from "../photos";
  * Copy for /content-creator (no design; rendered by components/text-page).
  * The live fillox.dk has no content creator page (404 on 2026-09-30). The contact routes come
  * from the owner (2026-10-01): creators send a DM on Instagram (no requirements, follower
- * counts or profile links to send: the profile says it all), and other collaborations go to
- * Annika by e-mail.
+ * counts or profile links to send: the profile says it all), and other collaborations go by
+ * e-mail to the clinic's address (config/site.ts → contact.email). Alberte 2026-11-26 (forwarded
+ * by the owner): "Under content creator og kontakt oplysninger skal henvendelse sendes til
+ * kontakt@fillox.dk"; until then they went to Annika (annika@fillox.dk), and the page named her.
  */
 
 // TODO: copy review (hero intro and meta description: our wording, not on the live site).
@@ -19,9 +21,8 @@ import { photos } from "../photos";
 /** Instagram handle shown on the page, from the profile URL in config/site.ts ("@fillox.dk"). */
 const instagramHandle = `@${new URL(site.social.instagram).pathname.replaceAll("/", "")}`;
 
-/** Other collaborations (brands, events …): Annika, by e-mail (owner, 2026-10-01). */
-const collaborationContact = { name: "Annika", email: "annika@fillox.dk" };
-const collaborationMail = `mailto:${collaborationContact.email}?subject=${encodeURIComponent("Samarbejde med Fillox")}`;
+/** Other collaborations (brands, events …): the clinic's e-mail, no person named (Alberte, 2026-11-26). */
+const collaborationMail = `${site.contact.emailHref}?subject=${encodeURIComponent("Samarbejde med Fillox")}`;
 
 export const creatorPage: TextPageContent = {
   meta: {
@@ -34,8 +35,8 @@ export const creatorPage: TextPageContent = {
     intro:
       "Laver du indhold om skønhed, hudpleje eller livsstil? Vi hører gerne fra content creators, der har lyst til at samarbejde med Fillox.",
     // The clinic's own photo (content/photos.ts): a woman with a hand mirror, no practitioner's
-    // face, since the page names Annika as a contact (her portrait was here until it became her
-    // team photo, 2026-11-25) and no treatment, as the page says nothing about treatments.
+    // face (the page named Annika as a contact until 2026-11-26, and her portrait was here until it
+    // became her team photo, 2026-11-25) and no treatment, as the page says nothing about treatments.
     // TODO: copy review (image choice + alt text)
     image: photos.spejl,
   },
@@ -52,9 +53,10 @@ export const creatorPage: TextPageContent = {
     { type: "h2", text: "Andet samarbejde?" },
     {
       type: "paragraph",
+      // TODO: copy review (2026-11-26, Alberte): was "… så skriv til Annika på annika@fillox.dk."
       text: [
-        `Har du en anden idé til et samarbejde, så skriv til ${collaborationContact.name} på `,
-        { text: collaborationContact.email, href: collaborationMail },
+        "Har du en anden idé til et samarbejde, så skriv til os på ",
+        { text: site.contact.email, href: collaborationMail },
         ".",
       ],
     },

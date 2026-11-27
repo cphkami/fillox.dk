@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { CardClinics } from "@/components/practitioner/CardClinics";
+import { ContactLinks } from "@/components/practitioner/ContactLinks";
 import { CropPhoto } from "@/components/practitioner/CropPhoto";
 import { PortraitPlaceholder } from "@/components/practitioner/PortraitPlaceholder";
+import { TitleParts } from "@/components/practitioner/TitleParts";
 import { ResponsiveText } from "@/components/ui";
-import { drawnWidthScale, framedPortrait, hasProfilePage, teamMemberHref, teamSlots } from "@/content/team";
+import { contactLinks, drawnWidthScale, framedPortrait, hasProfilePage, teamMemberHref, teamSlots } from "@/content/team";
 import type { ImageRef, TeamRosterMember } from "@/content/types";
 import { cn } from "@/lib/cn";
 
@@ -45,6 +48,8 @@ function Portrait({ member }: { member: { slug: string; image: ImageRef; crops?:
  *   in the same slot (PortraitPlaceholder), chosen by the missing `image`.
  * - Mobile (mo): a white card (10px padding) with name, short title, short bio, quote and a 44px
  *   arrow link. From 768px the card is borderless on the page, as the 6om grid cards were.
+ * - Under the title, the member's clinics (CardClinics: accent, medium, the title's size; Alberte,
+ *   2026-11-26), as on /behandlere and the home cards.
  * - Type follows the fluid scale from 1280px (name 24 → 28, bio 16 → 18, title 14 → 15, link
  *   14 → 16 at 1600). Names are the heading font in the accent; titles, bios, quotes and links are
  *   Figtree. The quote rule and the link use the accent; the link's underline (from 768px) is the
@@ -57,7 +62,9 @@ function Portrait({ member }: { member: { slug: string; image: ImageRef; crops?:
  * A member with a profile page: the whole card links to it (/behandlere/<slug>). When the card's
  * link goes elsewhere, the name carries the profile link and the CTA stays a separate link on top.
  * A card-only member (content/types.ts: no profile page yet): the same card as plain content, with
- * name, title and text in the same type and places, and no link at all (nothing to hover or focus).
+ * name, title and clinics in the same type and places, and no link to a profile (nothing to hover);
+ * its only links are the work contact under the clinics (ContactLinks: the e-mail, Instagram once
+ * live), which has no profile page to sit on.
  */
 export function TeamMemberCard({ member }: { member: TeamRosterMember }) {
   const profileHref = hasProfilePage(member) ? teamMemberHref(member.slug) : undefined;
@@ -86,9 +93,15 @@ export function TeamMemberCard({ member }: { member: TeamRosterMember }) {
             </Link>
           )}
         </h3>
-        <p className="text-[13px] text-muted md:mb-3.5 md:text-small">
-          <ResponsiveText mobile={member.titleShort} desktop={member.title ?? member.role} />
-        </p>
+        <div className="flex flex-col gap-0.5 md:mb-3.5">
+          <p className="text-[13px] text-muted md:text-small">
+            <ResponsiveText
+              mobile={member.titleShort && <TitleParts text={member.titleShort} />}
+              desktop={<TitleParts text={member.title ?? member.role} />}
+            />
+          </p>
+          <CardClinics member={member} className="text-[13px] font-medium text-accent md:text-small" />
+        </div>
         {member.bio ? (
           <p className="text-[15px] leading-[1.65] text-pretty text-muted md:text-body md:leading-[1.75]">
             <ResponsiveText mobile={member.bioShort} desktop={member.bio} />
@@ -116,6 +129,10 @@ export function TeamMemberCard({ member }: { member: TeamRosterMember }) {
             </Link>
           </div>
         ) : null}
+        {profileHref ? null : (
+          // No profile page to carry the work contact, so the card shows it, right under the clinics.
+          <ContactLinks name={member.name} links={contactLinks(member)} className="pt-2 md:pt-1" />
+        )}
       </div>
     </article>
   );

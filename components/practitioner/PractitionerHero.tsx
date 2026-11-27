@@ -1,18 +1,22 @@
 import Link from "next/link";
 import { ButtonLink, Container, Eyebrow, ResponsiveText } from "@/components/ui";
 import { practitionerPage } from "@/content/pages/practitioner";
+import { ContactLinks } from "./ContactLinks";
 import { CropPhoto } from "./CropPhoto";
 import type { ResolvedProfile } from "./profile";
+import { TitleParts } from "./TitleParts";
 
 type PractitionerHeroProps = { profile: ResolvedProfile; titleId: string };
 
 /**
  * Profile hero (6alb / ma).
  *
- * - Desktop: sand panel, text left (breadcrumb, H1, title, intro, CTAs), portrait right;
- *   fact cards in a 3-column row underneath.
+ * - Desktop: sand panel, text left (breadcrumb, H1, title, intro, CTAs, work contact), portrait
+ *   right; fact cards in a 3-column row underneath.
  * - Mobile: portrait card on top, then breadcrumb, title as eyebrow, H1, short intro,
- *   full-width CTA and the facts as label/value rows.
+ *   full-width CTA, work contact and the facts as label/value rows.
+ * - Work contact (ContactLinks; Alberte, 2026-11-26): the practitioner's work e-mail and Instagram
+ *   under the buttons, each under a label in the fact cards' style. None for Dr. Tom.
  * - From 1280px the type grows with the fluid scale (breadcrumb 14 → 15, fact labels 12 → 13,
  *   fact values 22 → 25, H1 64 → 76 at 1600px) and so do the fact card paddings. The text
  *   column's gaps grow too (breadcrumb 18 → 26, H1 8 → 14, title 22 → 32, intro 30 → 44px), so
@@ -92,8 +96,11 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
             </ol>
           </nav>
 
+          {/* Mobile only, so the short title when there is one. TitleParts: a two-part title
+              ("Kosmetisk sygeplejerske · Klinikansvarlig") wraps between its parts, without a
+              dangling "·". */}
           <Eyebrow className="md:hidden">
-            <ResponsiveText mobile={profile.titleShort} desktop={profile.title} />
+            <TitleParts text={profile.titleShort ?? profile.title} />
           </Eyebrow>
 
           <h1
@@ -103,7 +110,9 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
             {profile.displayName}
           </h1>
 
-          <p className="text-lead text-muted max-md:hidden md:mt-2 md:mb-[22px] xl:mt-fluid-8/14 xl:mb-fluid-22/32">{profile.title}</p>
+          <p className="text-lead text-muted max-md:hidden md:mt-2 md:mb-[22px] xl:mt-fluid-8/14 xl:mb-fluid-22/32">
+            <TitleParts text={profile.title} />
+          </p>
 
           {profile.intro ? (
             <p className="text-[16px] leading-[1.7] text-muted md:mb-[30px] md:max-w-[44ch] md:text-lead md:leading-[1.75] xl:mb-fluid-30/44">
@@ -129,6 +138,13 @@ export function PractitionerHero({ profile, titleId }: PractitionerHeroProps) {
               </ButtonLink>
             ) : null}
           </div>
+
+          {/* Work e-mail and Instagram (Alberte, 2026-11-26), under the buttons at every width. */}
+          <ContactLinks
+            name={profile.name}
+            links={profile.contact}
+            className="max-md:mt-2 md:mt-8 xl:mt-fluid-32"
+          />
         </div>
       </div>
 

@@ -107,13 +107,19 @@ export const blogPage = {
     // VEJ nr. 9319 af 26/06/2013, pkt. 5.1, calls usaglig for health services
     // (https://www.retsinformation.dk/eli/retsinfo/2013/9319). The text is what the visitor consents
     // to (markedsføringsloven § 10), so it matches the footer (content/layout.ts → footer.newsletter)
-    // and the privacy policy ("12. Nyhedsbrev"). The short versions stay the long ones minus one
-    // passage (components/blog/Responsive renders the shared words once).
-    // TODO: copy review (2026-11-26)
-    title: "Få tips og nyheder i din indbakke",
-    titleShort: "Få tips og nyheder",
-    text: "Én mail om måneden med nye artikler og gode råd om vores behandlinger. Ingen spam.",
-    textShort: "Én mail om måneden. Ingen spam.",
+    // and the privacy policy ("12. Nyhedsbrev").
+    // Title and text: Alberte 2026-11-26 (forwarded by the owner), the footer's words (content/layout.ts
+    // → footer.newsletter: "Få nyt fra Fillox" / "Tilmeld dig vores nyhedsbrev, og få seneste nyt om
+    // vores behandlinger, produktnyheder og særlige invitationer."; "det seneste nyt": grammar). Was
+    // "Få tips og nyheder i din indbakke" / "Én mail om måneden med nye artikler og gode råd om vores
+    // behandlinger. Ingen spam." (the frequency and "Ingen spam" are not in her text). The mobile
+    // versions are the same words: the description is what the visitor consents to, so it is not
+    // shortened on a phone (components/blog/Responsive renders equal texts once).
+    // TODO: copy review (2026-11-26, Alberte)
+    title: "Få nyt fra Fillox",
+    titleShort: "Få nyt fra Fillox",
+    text: "Tilmeld dig vores nyhedsbrev, og få det seneste nyt om vores behandlinger, produktnyheder og særlige invitationer.",
+    textShort: "Tilmeld dig vores nyhedsbrev, og få det seneste nyt om vores behandlinger, produktnyheder og særlige invitationer.",
     placeholder: "Din e-mail",
     submit: "Tilmeld",
     // TODO: copy review (field label, states and messages below are not in the design)

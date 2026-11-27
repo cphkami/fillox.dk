@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CardClinics } from "@/components/practitioner/CardClinics";
 import { CropPhoto } from "@/components/practitioner/CropPhoto";
 import { PortraitPlaceholder } from "@/components/practitioner/PortraitPlaceholder";
 import { teamGridStart } from "@/components/practitioner/teamGrid";
@@ -74,8 +75,17 @@ function Portrait({ member }: { member: { slug: string; image: ImageRef; crops?:
  *   member: the 4:5 team-card crop in the mobile row (150 × 188, as on /om-os and /behandlere),
  *   the square crop (teamSlots.square) from 768px. A member without a photo gets the placeholder
  *   in the same slot (PortraitPlaceholder).
+ * - Under the role, where the member works (CardClinics, muted, from `clinicSlugs`: "Frederiksberg
+ *   & Amager Centret", "Alle klinikker"; Alberte, 2026-11-26: "Vis også, hvilke afdelinger hver
+ *   behandler er tilknyttet"). The role is the short `role` ("Kosmetisk sygeplejerske"), with a
+ *   responsibility on a line of its own under it, in the role's style (`responsibility`:
+ *   "Klinikansvarlig" for Alberte, "Fagligt ansvarlig" for Annika; Alberte 2026-11-26 under
+ *   "Mød dine behandlere"). It is a separate paragraph, not "role · responsibility" on one line,
+ *   so it never breaks inside a part at 150px or in the uppercase label. Cards in a row still end
+ *   level: the grid and the scroll row stretch every card to the tallest one.
  * - A member with a profile page is a link to it. A card-only member (content/types.ts: no
- *   profile page yet) is the same card as plain content: no link, no hover effect, not focusable.
+ *   profile page yet) is the same card as plain content: no link, no hover effect, not focusable
+ *   (its work e-mail is on its /om-os and /behandlere cards, where there is room for it).
  * - Names are Poppins (font-heading): accent on mobile, heading colour from 768px under a 1px
  *   accent rule. On hover the name is underlined (and turns accent): heading (espresso) and accent
  *   (plum) are both dark (1.5:1 apart), so the colour change alone was barely visible.
@@ -129,6 +139,12 @@ export function Team({ copy, members }: { copy: HomePage["team"]; members: TeamR
                 <p className="text-[13px] text-muted md:mt-1 md:text-micro md:tracking-[2px] md:text-accent md:uppercase">
                   {member.role}
                 </p>
+                {member.responsibility ? (
+                  <p className="text-[13px] text-muted md:text-micro md:tracking-[2px] md:text-accent md:uppercase">
+                    {member.responsibility}
+                  </p>
+                ) : null}
+                <CardClinics member={member} className="mt-0.5 text-[13px] leading-[1.4] text-muted md:mt-1.5 md:text-small" />
               </>
             );
             return (

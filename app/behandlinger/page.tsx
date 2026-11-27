@@ -27,15 +27,24 @@ export const metadata: Metadata = pageMetadata(copy.meta, PATH);
  * moves into the first column(s) of the same grid and the cards fill the rest.
  * `leading-[1.5]` on the containers: Poppins' "normal" (Figtree's is 1.2), as on the treatment pages.
  *
- * Categories with a page of their own (content/navigation.ts → categoryPages: "For mænd" →
- * /behandlinger/for-maend) get no section here: their jump chip links to the page, and "For mænd"
- * closes the list as a teaser card (MenTeaser) that keeps id="for-maend" for old links.
+ * Categories with a page of their own (content/navigation.ts → categoryPages): Fillers
+ * (/behandlinger/fillers) keeps its section and jump chip, with a link to its page beside "Se
+ * priser" (content/pages/treatments.ts → treatmentsOverview.categoryPageLinks); the others ("For
+ * mænd" → /behandlinger/for-maend) get no section here: their jump chip links to the page, and "For
+ * mænd" closes the list as a teaser card (MenTeaser) that keeps id="for-maend" for old links.
  */
 export default function TreatmentsOverviewPage() {
   const categories = treatmentCategories
     .map((category) => ({ category, items: treatmentsInCategory(category.slug) }))
     .filter(({ items }) => items.length > 0);
-  const sections = categories.filter(({ category }) => !categoryPages[category.slug]);
+  /** The page a category's section links to, when it has one and keeps its section. */
+  const pageLink = (slug: string) => {
+    const href = categoryPages[slug];
+    const label = copy.categoryPageLinks[slug];
+    return href && label ? { href, label } : undefined;
+  };
+  const hasSection = (slug: string) => !categoryPages[slug] || Boolean(pageLink(slug));
+  const sections = categories.filter(({ category }) => hasSection(category.slug));
   const showMenTeaser = categories.some(({ category }) => category.slug === menCategorySlug);
 
   return (
@@ -58,10 +67,14 @@ export default function TreatmentsOverviewPage() {
               >
                 {categories.map(({ category }) => (
                   <li key={category.slug} className="shrink-0 snap-start">
-                    <ButtonLink href={categoryPages[category.slug] ?? `#${category.slug}`} variant="white" size="chip">
+                    <ButtonLink
+                      href={hasSection(category.slug) ? `#${category.slug}` : (categoryPages[category.slug] ?? "")}
+                      variant="white"
+                      size="chip"
+                    >
                       {category.name}
                       {/* A page of its own, not a jump within this page (as the teaser's button). */}
-                      {categoryPages[category.slug] ? (
+                      {!hasSection(category.slug) ? (
                         <>
                           &nbsp;<span aria-hidden="true">→</span>
                         </>
@@ -95,6 +108,7 @@ export default function TreatmentsOverviewPage() {
             const intro = items.some((t) => t.short === categoryIntro) ? undefined : categoryIntro;
             const count = items.length;
             const side = count === 1 || count === 2 || count === 4;
+            const page = pageLink(category.slug);
             return (
               <section
                 key={category.slug}
@@ -120,10 +134,15 @@ export default function TreatmentsOverviewPage() {
                       <p className="max-w-[52ch] text-body leading-[1.7] text-muted md:leading-[1.75]">{intro}</p>
                     ) : null}
                   </div>
-                  {card ? (
-                    <ArrowLink href={`${treatmentPage.prices.allPricesLink.href}#${card.id}`} className="shrink-0">
-                      {copy.seePrices}
-                    </ArrowLink>
+                  {/* The category's own page (Fillers) and its /priser card: one row, 24px apart, so
+                      the links' 44px hit areas never overlap. */}
+                  {page || card ? (
+                    <div className="flex shrink-0 flex-wrap gap-x-6 gap-y-6">
+                      {page ? <ArrowLink href={page.href}>{page.label}</ArrowLink> : null}
+                      {card ? (
+                        <ArrowLink href={`${treatmentPage.prices.allPricesLink.href}#${card.id}`}>{copy.seePrices}</ArrowLink>
+                      ) : null}
+                    </div>
                   ) : null}
                 </div>
                 <ul

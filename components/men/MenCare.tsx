@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TitleParts } from "@/components/practitioner/TitleParts";
 import { ArrowLink, Container, Eyebrow, Photo } from "@/components/ui";
 import type { MenPage } from "@/content/pages/men";
 import { drawnWidthScale } from "@/content/team";
@@ -68,7 +69,11 @@ export function MenCare({ copy, people }: { copy: MenPage["care"]; people: MenCa
                   {member.fullName ?? member.name}
                 </Link>
               </h3>
-              <p className="mt-1 text-small text-muted">{member.title ?? member.role}</p>
+              {/* TitleParts: a two-part title ("Kosmetisk sygeplejerske · Klinikansvarlig") wraps
+                  between its parts, never after a dangling "·" (as on the other team grids). */}
+              <p className="mt-1 text-small text-muted">
+                <TitleParts text={member.title ?? member.role} />
+              </p>
               {member.quote ? (
                 <blockquote className="mt-3 border-l-2 border-rule pl-3 text-body leading-[1.6] text-pretty text-ink md:mt-4">
                   <p>{member.quote}</p>

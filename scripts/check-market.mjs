@@ -15,7 +15,8 @@
  * 4. every redirect in content/redirects.ts lands on a route (or on a page of a collection, or on
  *    a file the site serves: the generated /sitemap.xml, a metadata file in app/ such as
  *    /apple-icon.png, or a file in public/ such as /legacy-sitemap.xml); one
- *    to a treatment page names an existing treatment, and its #anchor (if any) is a section or
+ *    to a treatment page (not a static route inside it, such as /behandlinger/fillers) names an
+ *    existing treatment, and its #anchor (if any) is a section or
  *    item id of that page's long-form content (content/types.ts → TreatmentSection); the same for
  *    the price list's links (content/prices.ts → treatmentSlug / treatmentAnchor);
  * 5. the no-JavaScript form targets forward to their thank-you routes:
@@ -29,7 +30,8 @@
  * 7. the booking provider has what it needs: with "timma" every open clinic has
  *    booking.timmaId (content/clinics.ts); with "gecko" clinics without a calendar id are listed;
  * 8. every open clinic's address and opening hours parse into the structured data
- *    (components/seo/OrganizationJsonLd.tsx), which otherwise silently drops them;
+ *    (components/seo/OrganizationJsonLd.tsx), which otherwise silently drops them; a closed day
+ *    (`closed: true`, "Søn lukket") is left out of it, has a known day label and no hours too;
  * 9. no string in app/, components/ or lib/ contains æ, ø or å (copy belongs in content/); the
  *    dev-only tools in components/dev/ (never in a production build) keep their labels inline;
  * 10. customer reviews (content/reviews.ts) are quoted verbatim: every excerpt (`short`) is whole
@@ -78,8 +80,28 @@
  *     row of the price list (labels, notes), every text of content/treatments.ts (FAQ answers
  *     included), of the team (content/team.ts: cards, bios, offers) and of every page's copy
  *     (each export of content/pages/*.ts), and every text of a published post, its body included.
+ *     A treatment another module embeds (the fillers page's cards) is checked once, as itself.
+ *     One exception (`HYALURONIDASE_SENTENCE`): Alberte's last sentence of the lip filler FAQ "Hvorfor
+ *     vælger nogle at få opløst læbefiller?", which names hyaluronidase, in that answer of the lip
+ *     filler treatment only (the owner: "gør hvad hun skriver og det samme gælder botox", an
+ *     accepted § 66 risk, README).
  *     Botox is not checked here: the rynkebehandling hub keeps the agency's FAQ "Hvad er forskellen
  *     på Botox og filler?" (an open legal question, README).
+ * 19. Botox (or another botulinum toxin brand) is named in no menu or category (content/navigation.ts,
+ *     the mobile menu's copy in content/layout.ts), no price card, no treatment's slug, name, mobile
+ *     menu name, meta title, one-liner, title, heading, lead, meta description or photo alt text,
+ *     and nowhere on the fillers page (content/pages/fillers.ts; its cards' treatments are checked
+ *     as treatments, above): those say "rynkebehandling"
+ *     (owner 2026-11-25). Exceptions, exactly these menu labels (`BOTOX_MENU_LABELS`): the mega menu
+ *     column of the rynkebehandling pages (eyebrow "Botox", its "Alle …" link), the category's
+ *     mobile menu label (`mobileName`) and its "Se alle …" link. Alberte 2026-11-26: "Brug botox som
+ *     menupunkt i stedet for Rynker"; the owner, told about § 66 first: "gør hvad hun skriver og det
+ *     samme gælder botox" (an accepted risk, README "Før lancering").
+ * 20. no text of content/ (every export of every module but content/redirects.ts, whose legacy
+ *     addresses and notes no visitor reads) or config/site.ts names the FDA (the owner 2026-11-27:
+ *     "ja ikke fda godkendt det dropper vi.. skal du ikke skrive") or the filler brands Fillox does
+ *     not use, Juvéderm and Belotero (Alberte 2026-11-26: "Brug Revanesse® som det eneste
+ *     fillermærke"). Code comments are not texts, so they may quote the decisions.
  *
  * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
  * in config/site.ts last checked more than 60 days ago (11).
@@ -254,6 +276,7 @@ if (site.booking.provider === "timma") {
 
 // 8. Structured data: every open clinic's address and hours parse.
 const { organizationGraph } = await importSite("components/seo/OrganizationJsonLd.tsx");
+const { seoContent } = await importSite("content/seo.ts");
 const nodes = organizationGraph();
 for (const clinic of openClinics) {
   const node = nodes.find((n) => n.name === clinic.fullName && n.address);
@@ -264,11 +287,23 @@ for (const clinic of openClinics) {
   if (!node.address.postalCode) {
     errors.push(`content/clinics.ts "${clinic.slug}": last address line "${clinic.address.at(-1)}" is not "<postal code> <city>"`);
   }
-  if (node.openingHoursSpecification.length !== clinic.hours.length) {
+  // A closed day ({ days: "Søn", hours: "lukket", closed: true }) is shown but left out of the
+  // structured data; its day label must still be known, and it must not also have opening hours.
+  const open = clinic.hours.filter((h) => !h.closed);
+  if (node.openingHoursSpecification.length !== open.length) {
     errors.push(
-      `content/clinics.ts "${clinic.slug}": opening hours ${JSON.stringify(clinic.hours)} do not all parse ` +
+      `content/clinics.ts "${clinic.slug}": opening hours ${JSON.stringify(open)} do not all parse ` +
         `(hours as "10–20" / "9.30–18", day labels listed in content/seo.ts openingDays)`,
     );
+  }
+  const openDays = new Set(node.openingHoursSpecification.flatMap((spec) => spec.dayOfWeek));
+  for (const h of clinic.hours.filter((h) => h.closed)) {
+    const days = seoContent.openingDays[h.days];
+    if (!days) {
+      errors.push(`content/clinics.ts "${clinic.slug}": closed day "${h.days}" is not listed in content/seo.ts openingDays`);
+    } else if (days.some((day) => openDays.has(day))) {
+      errors.push(`content/clinics.ts "${clinic.slug}": "${h.days}" is closed and has opening hours`);
+    }
   }
 }
 
@@ -397,6 +432,9 @@ for (const slug of treatmentsWithoutReviews) {
   const treatmentsBase = routes.treatments;
   for (const { source, destination } of legacyRedirects) {
     const [path, anchor] = destination.split("#");
+    // A static page inside the collection (app/behandlinger/fillers, …/for-maend) is a route, not a
+    // treatment (rule 12 keeps the two apart).
+    if (routePaths.has(path)) continue;
     const match = path.match(new RegExp(`^${treatmentsBase}/([^/?]+)$`));
     if (match) checkTreatmentLink(`redirect ${source} → ${destination}`, match[1], anchor);
   }
@@ -509,6 +547,9 @@ for (const slug of treatmentsWithoutReviews) {
 // for Botox): hyaluronidase, which dissolves filler (Hyalase), and the local anaesthetic lidocaine
 // (Xylocain). Rule 14 (posts) and rule 18 (price list, treatment pages, post bodies).
 const OTHER_PRESCRIPTION_NAME = /hyalase|hyaluronidase|lidocain|lidokain|xylocain/i;
+// Botox: the product, its active substance and the other brands of botulinum toxin (rules 14 and 19).
+const BOTULINUM_NAME =
+  /botox|botulin|vistabel|bocouture|xeomin|azzalure|dysport|alluzience|letybo|nuceiva|jeuveau|relfydess|daxxify/i;
 
 // 14. Blog: posts on hold are linked from nowhere; published posts are signed by the team, consistent and
 //     name no prescription medicine.
@@ -526,10 +567,7 @@ const blog = await importSite("content/blog.ts");
   // Botox is a prescription medicine: never advertised to the public, also not on the clinic's own
   // site (lægemiddelloven § 66; owner 2026-11-25). The brands of botulinum toxin and its name, and the
   // other prescription medicines above (owner 2026-11-26).
-  const PRESCRIPTION_NAME = new RegExp(
-    `botox|botulin|vistabel|bocouture|xeomin|azzalure|dysport|alluzience|letybo|nuceiva|jeuveau|relfydess|daxxify|${OTHER_PRESCRIPTION_NAME.source}`,
-    "i",
-  );
+  const PRESCRIPTION_NAME = new RegExp(`${BOTULINUM_NAME.source}|${OTHER_PRESCRIPTION_NAME.source}`, "i");
   /** The pages about a prescription medicine (no reviews, no price): no booking card points there. */
   const prescriptionPages = new Set(treatmentsWithoutReviews);
   for (const filter of allBlogFilters) {
@@ -938,8 +976,14 @@ const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config
       .sort()
       .map(async (file) => [`content/pages/${file}`, await importSite(`content/pages/${file}`)]),
   );
-  /** Every string in `value`, with the path to it ("detail.faq.4.answer"); functions are skipped. */
+  /**
+   * Every string in `value`, with the path to it ("detail.faq.4.answer"); functions are skipped, and
+   * so is a treatment below the top (the fillers page's cards, the `treatments` array): rules 18–20
+   * check each treatment as a source of its own, once, under its slug.
+   */
+  const treatmentObjects = new Set(treatments);
   const textsOf = (value, path = "") => {
+    if (path && treatmentObjects.has(value)) return [];
     if (typeof value === "string") return [[path, value]];
     if (Array.isArray(value)) return value.flatMap((v, i) => textsOf(v, path ? `${path}.${i}` : String(i)));
     if (value && typeof value === "object") {
@@ -954,13 +998,119 @@ const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config
     ...teamRoster.map((member) => [`content/team.ts "${member.slug}"`, member]),
     ...pageModules.flatMap(([file, mod]) => Object.entries(mod).map(([name, value]) => [`${file} ${name}`, value])),
   ];
+  // The one place that names hyaluronidase: Alberte's sentence (2026-11-26, forwarded by the owner)
+  // at the end of lip filler's FAQ answer "Hvorfor vælger nogle at få opløst læbefiller?". The owner,
+  // told first that lægemiddelloven § 66 forbids advertising a prescription medicine to the public:
+  // "gør hvad hun skriver og det samme gælder botox" (README "Før lancering", an accepted risk). Only
+  // that answer of the lip filler treatment (where another module embeds the treatment, textsOf
+  // skips it), only with her sentence verbatim at its end, and no other name of the rule before it.
+  const HYALURONIDASE_SENTENCE =
+    "Efter en faglig vurdering kan hyaluronidase bruges til at nedbryde filleren hurtigere ved ønske om opløsning.";
+  const lipFaq = treatments.find((t) => t.slug === "lip-filler")?.detail?.faq ?? [];
+  const dissolveAnswer = lipFaq.find((item) => item.question === "Hvorfor vælger nogle at få opløst læbefiller?")?.answer;
+  const LIP_FILLER_SOURCE = 'content/treatments.ts "lip-filler"';
+  const allowedPrescriptionText = (where, path, text) =>
+    where === LIP_FILLER_SOURCE &&
+    text === dissolveAnswer &&
+    /^detail\.faq\.\d+\.answer$/.test(path) &&
+    text.endsWith(HYALURONIDASE_SENTENCE) &&
+    !OTHER_PRESCRIPTION_NAME.test(text.slice(0, -HYALURONIDASE_SENTENCE.length));
   for (const [where, value] of sources) {
     for (const [path, text] of textsOf(value)) {
       const name = OTHER_PRESCRIPTION_NAME.exec(text)?.[0];
-      if (name) {
+      if (name && !allowedPrescriptionText(where, path, text)) {
         errors.push(
           `${where} ${path}: names a prescription medicine ("${name}"); describe it without the name ` +
             `(e.g. "Opløsning af filler", "et lokalbedøvende middel")`,
+        );
+      }
+    }
+  }
+
+  // 19. Botox (or another botulinum toxin) is named in no menu, category or price card, in no
+  //     treatment's slug, name, title, heading, lead, one-liner, meta text or photo alt text, and
+  //     nowhere on the fillers page (owner 2026-11-25: "Rynkebehandling", never the product, in
+  //     titles, headings, menus, slugs, cards, meta and alt texts). The hub's body (the agency's FAQ
+  //     and consultation paragraph, Alberte's "Hvad er Botox?") is not checked here.
+  //     Exception, exactly these menu labels (`BOTOX_MENU_LABELS`): Alberte 2026-11-26 (forwarded by
+  //     the owner), "Brug botox som menupunkt i stedet for Rynker"; the owner, told first that
+  //     lægemiddelloven § 66 forbids advertising a prescription medicine to the public, also on the
+  //     clinic's own site: "gør hvad hun skriver og det samme gælder botox" (README "Før lancering",
+  //     an accepted risk). Located by the category slug, not by position, and nothing else in those
+  //     objects is exempt (the column's treatment names, the category's name and slug stay checked).
+  const navigation = await importSite("content/navigation.ts");
+  const { layoutCopy } = await importSite("content/layout.ts");
+  const { fillersPage } = await importSite("content/pages/fillers.ts");
+  const WRINKLE_CATEGORY = "rynkebehandling";
+  const botoxColumn = navigation.megaMenu.columns.findIndex((column) => column.treatmentSlugs.includes(WRINKLE_CATEGORY));
+  const botoxCategory = navigation.treatmentCategories.findIndex((category) => category.slug === WRINKLE_CATEGORY);
+  const BOTOX_MENU_LABELS = new Set([
+    `content/navigation.ts megaMenu columns.${botoxColumn}.eyebrow`,
+    `content/navigation.ts megaMenu columns.${botoxColumn}.allLink.label`,
+    `content/navigation.ts treatmentCategories ${botoxCategory}.mobileName`,
+    `content/layout.ts layoutCopy.mobileMenu categoryAllLabels.${WRINKLE_CATEGORY}`,
+  ]);
+  const titleTexts = (treatment) => {
+    const d = treatment.detail ?? {};
+    return {
+      slug: treatment.slug,
+      name: treatment.name,
+      mobileMenuName: treatment.mobileMenuName,
+      metaTitle: treatment.metaTitle,
+      short: treatment.short,
+      detail: {
+        title: d.title,
+        heading: d.heading,
+        headingAccent: d.headingAccent,
+        lead: d.lead,
+        metaDescription: d.metaDescription,
+        heroImage: d.heroImage?.alt,
+        results: (d.results ?? []).map((pair) => [pair.before.alt, pair.after.alt, pair.caption]),
+      },
+    };
+  };
+  const titleSources = [
+    ...Object.entries(navigation).map(([name, value]) => [`content/navigation.ts ${name}`, value]),
+    ["content/layout.ts layoutCopy.mobileMenu", layoutCopy.mobileMenu],
+    ...priceCards.map((card) => [`content/prices.ts "${card.id}"`, card]),
+    ...treatments.map((treatment) => [`content/treatments.ts "${treatment.slug}"`, titleTexts(treatment)]),
+    ["content/pages/fillers.ts fillersPage", fillersPage],
+  ];
+  for (const [where, value] of titleSources) {
+    for (const [path, text] of textsOf(value)) {
+      const name = BOTULINUM_NAME.exec(text)?.[0];
+      if (name && !BOTOX_MENU_LABELS.has(`${where} ${path}`)) {
+        errors.push(`${where} ${path}: names a prescription medicine ("${name}"); say "rynkebehandling"`);
+      }
+    }
+  }
+
+  // 20. No FDA (the owner 2026-11-27: "ja ikke fda godkendt det dropper vi.. skal du ikke skrive. det
+  //     noget usa noget") and no filler brand but Revanesse® (Alberte 2026-11-26, forwarded by the
+  //     owner: "Fjern henvisninger til Infini, Juvéderm og Belotero … Brug Revanesse® som det eneste
+  //     fillermærke"; Infini is still on the microneedling page, an open question, README). Every
+  //     export of every content/ module (content/redirects.ts aside: legacy addresses such as
+  //     /hudforbedring/belotero-revive and their notes, never shown) and config/site.ts. Values, not
+  //     source text: comments may quote the decisions. Each treatment is checked once, by its slug
+  //     (textsOf skips it where it is embedded, the `treatments` array included).
+  const FORBIDDEN_NAME = /\bFDA\b|juv[eé]derm|belotero/i;
+  const contentModules = readdirSync(join(root, "content"), { recursive: true })
+    .map((file) => String(file).split(sep).join("/"))
+    .filter((file) => file.endsWith(".ts") && file !== "redirects.ts")
+    .sort()
+    .map((file) => `content/${file}`);
+  const allTexts = treatments.map((treatment) => [`content/treatments.ts "${treatment.slug}"`, treatment]);
+  for (const file of [...contentModules, "config/site.ts"]) {
+    const mod = await importSite(file);
+    allTexts.push(...Object.entries(mod).map(([name, value]) => [`${file} ${name}`, value]));
+  }
+  for (const [where, value] of allTexts) {
+    for (const [path, text] of textsOf(value)) {
+      const found = FORBIDDEN_NAME.exec(text)?.[0];
+      if (found) {
+        errors.push(
+          `${where}${path ? ` ${path}` : ""}: names "${found}"; Fillox names no FDA approval and no filler ` +
+            `brand but Revanesse® (owner 2026-11-27, Alberte 2026-11-26)`,
         );
       }
     }

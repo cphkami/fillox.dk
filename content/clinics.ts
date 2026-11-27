@@ -5,22 +5,60 @@ import { withBookingLinks } from "@/lib/booking";
  * Facts (addresses, opening hours, notes) are from the live site, fillox.dk/kontakt
  * (checked 1 October 2026). Day labels must be listed in content/seo.ts `openingDays` so the
  * structured data (JSON-LD) can read them; mobile spells them out via content/pages/clinics.ts
- * `card.daysLong`. Closed days are left out (schema.org: a day without hours is closed).
+ * `card.daysLong`. Sunday is shown as closed at every clinic (`closedSunday`); the structured data
+ * leaves closed days out (schema.org: a day without hours is closed).
  */
+
+/**
+ * Sunday, closed, at all four clinics. Alberte 2026-11-26 (forwarded by the owner): "City2 og Amager
+ * skal begge stå som lukket om søndagen"; Frederiksberg and Østerbro are closed on Sundays too
+ * (fillox.dk/kontakt: "Søndag: Lukket"; the owner on 25 November: "søndag er der lukket"), so every
+ * clinic says it the same way. Until 2026-11-27 the closed day was simply not listed. `closed`: the
+ * structured data skips it (components/seo/OrganizationJsonLd.tsx), check:market rule 8 too.
+ */
+// TODO: copy review (2026-11-27, Alberte)
+const closedSunday: OpeningHours = { days: "Søn", hours: "lukket", closed: true };
 
 /**
  * City2 and Amager Centret (shopping centres) share their hours. fillox.dk/kontakt:
  * "Hverdage: 10 – 19", "Weekend: 10 – 17". (The live site's mobile-only City2 block says
  * "Weekend: 10 – 19"; the desktop block, kept here, says 10 – 17 like Amager Centret.)
+ * Closed on Sundays since Alberte 2026-11-26 (forwarded by the owner): "City2 og Amager skal begge
+ * stå som lukket om søndagen" (was "Lør–søn 10–17"), shown as "Søn lukket" (`closedSunday`).
  */
-// TODO: owner to confirm City2 weekend hours (fillox.dk mobile block says 10–19, desktop 10–17).
+// TODO: owner to confirm City2 Saturday hours (fillox.dk's mobile block says weekend 10–19, the
+// desktop block 10–17).
+// TODO: copy review (2026-11-26, Alberte)
 const centreHours: OpeningHours[] = [
   { days: "Man–fre", hours: "10–19" },
-  { days: "Lør–søn", hours: "10–17" },
+  { days: "Lør", hours: "10–17" },
+  closedSunday,
 ];
 
-/** Home page (6a / mf) wording of the same hours, as fillox.dk/kontakt words them. */
-const centreHoursSummary = "Hverdage 10–19 · Weekend 10–17";
+/**
+ * Home page (6a / mf) line of the same hours, in the other clinics' words ("Man–tir 8–20 · Ons–fre
+ * 8–16 · Lør 9–17"). Was fillox.dk/kontakt's "Hverdage 10–19 · Weekend 10–17": with Sunday closed,
+ * the weekend is Saturday only.
+ */
+const centreHoursSummary = "Man–fre 10–19 · Lør 10–17 · Søn lukket";
+
+/**
+ * Frederiksberg and Østerbro share their hours. Alberte 2026-11-26 (forwarded by the owner):
+ * "Østerbro og Frederiksberg skal vise samme åbningstider"; the owner answered the same evening
+ * that Frederiksberg's hours are the right ones and Østerbro gets the same. Frederiksberg's are
+ * fillox.dk/kontakt's: "Man – Tir: 08:00 – 20:00", "Ons – Fre: 08:00 – 16:00", "Lørdag: 09:00 –
+ * 17:00", "Søndag: Lukket". Østerbro had the owner's 25 November hours ("9-18 i hverdagene og
+ * 10-17 lørdag, søndag er der lukket"). The owner confirmed on 2026-11-27: "de tider frb har er de
+ * rigtige tider".
+ */
+// TODO: copy review (2026-11-26, Alberte)
+const streetHours: OpeningHours[] = [
+  { days: "Man–tir", hours: "8–20" },
+  { days: "Ons–fre", hours: "8–16" },
+  { days: "Lør", hours: "9–17" },
+  closedSunday,
+];
+const streetHoursSummary = "Man–tir 8–20 · Ons–fre 8–16 · Lør 9–17 · Søn lukket";
 
 /**
  * Clinics in display order (design 6kl / footer).
@@ -78,14 +116,9 @@ export const clinics: Clinic[] = withBookingLinks([
     name: "Frederiksberg",
     fullName: "Fillox Frederiksberg",
     address: ["Rathsacksvej 1", "1852 Frederiksberg"],
-    // fillox.dk/kontakt: "Man – Tir: 08:00 – 20:00", "Ons – Fre: 08:00 – 16:00",
-    // "Lørdag: 09:00 – 17:00", "Søndag: Lukket".
-    hours: [
-      { days: "Man–tir", hours: "8–20" },
-      { days: "Ons–fre", hours: "8–16" },
-      { days: "Lør", hours: "9–17" },
-    ],
-    hoursSummary: "Man–tir 8–20 · Ons–fre 8–16 · Lør 9–17",
+    // The same hours as Østerbro (streetHours above).
+    hours: streetHours,
+    hoursSummary: streetHoursSummary,
     // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to preselect it.
     booking: {},
     // No transport / parking note: fillox.dk has none for Frederiksberg.
@@ -102,12 +135,9 @@ export const clinics: Clinic[] = withBookingLinks([
     // From the owner, 25 November 2026: "Nordre Frihavnsgade 13A", "2100 København Ø" (postcode and
     // the map position below checked against OpenStreetMap: Indre Østerbro).
     address: ["Nordre Frihavnsgade 13A", "2100 København Ø"],
-    // From the owner, 25 November 2026: "9-18 i hverdagene og 10-17 lørdag, søndag er der lukket".
-    hours: [
-      { days: "Man–fre", hours: "9–18" },
-      { days: "Lør", hours: "10–17" },
-    ],
-    hoursSummary: "Man–fre 9–18 · Lør 10–17",
+    // The same hours as Frederiksberg (streetHours above; owner 2026-11-26, after Alberte).
+    hours: streetHours,
+    hoursSummary: streetHoursSummary,
     // TODO: add the clinic's Gecko calendar id (Gecko admin), e.g. { geckoCalendarId: "12" }, to
     // preselect it. Gecko's public booking page lists the clinic as "Fillox - Østerbro"
     // (behandlingssted id 14667).

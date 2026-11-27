@@ -309,13 +309,15 @@ export const privacyPage: TextPageContent = {
       type: "lines",
       card: true,
       lines: [
-        // Company name, CVR number and phone from config/site.ts (same text as the live page).
-        // TODO: Fillox to confirm the registered address and the data-protection mailbox
-        // (info@ here, kontakt@ in config/site.ts → contact.email).
+        // Company name, CVR number, e-mail and phone from config/site.ts. E-mail: site.contact.email
+        // (kontakt@fillox.dk) since 2026-11-27, was info@fillox.dk (the live page). Alberte
+        // 2026-11-26 (forwarded by the owner): "Under content creator og kontakt oplysninger skal
+        // henvendelse sendes til kontakt@fillox.dk"; the whole site now gives one address.
+        // TODO: Fillox to confirm the registered address. TODO: copy review (2026-11-27, Alberte)
         [{ text: site.legalName, strong: true }],
         `CVR-nr.: ${site.company.registrationNumber}`,
         "Adresse: Cityringen 20, 242, 2630 Taastrup",
-        ["E-mail: ", { text: "info@fillox.dk", href: "mailto:info@fillox.dk" }],
+        ["E-mail: ", { text: site.contact.email, href: site.contact.emailHref }],
         ["Telefon: ", { text: site.contact.phone, href: site.contact.phoneHref }],
       ],
     },
@@ -393,11 +395,14 @@ export const privacyPage: TextPageContent = {
     // - name the e-mail tool that will send the newsletter (it is a processor too) and confirm the
     //   data processing agreement with it (and its transfer basis, if it is outside the EU);
     // - confirm how long the proof of consent is kept after an unsubscribe.
-    // The newsletter sends news, articles and tips only: no offers (owner 2026-11-26, point 4 of the
-    // pre-launch audit, "ret det med priser osv"). The purpose below is what the signups promise
-    // (content/layout.ts → footer.newsletter, content/pages/blog.ts → newsletter); change all of them
-    // together before a newsletter ever carries offers (markedsføringsloven § 10: the consent covers
-    // what it describes). Never rynkebehandling or other prescription medicines (lægemiddelloven § 66).
+    // The newsletter carries no offers (owner 2026-11-26, point 4 of the pre-launch audit, "ret det
+    // med priser osv"). The purpose below is what the signups promise (content/layout.ts →
+    // footer.newsletter, content/pages/blog.ts → newsletter); change all of them together before a
+    // newsletter ever carries offers (markedsføringsloven § 10: the consent covers what it
+    // describes). Never rynkebehandling or other prescription medicines (lægemiddelloven § 66).
+    // Since 2026-11-26 the signups promise Alberte's "det seneste nyt om vores behandlinger,
+    // produktnyheder og særlige invitationer" (forwarded by the owner), so the purpose says the same
+    // (it said "nyheder, artikler og gode råd om vores behandlinger").
     { type: "h2", id: privacyNewsletterAnchor, text: "12. Nyhedsbrev" },
     {
       type: "paragraph",
@@ -408,9 +413,11 @@ export const privacyPage: TextPageContent = {
       items: [
         [
           { text: "Formål: ", strong: true },
-          // Was "… med tilbud, nyheder og tips …" (owner 2026-11-26: no offers in the newsletter).
-          // TODO: copy review
-          "at sende dig vores nyhedsbrev med nyheder, artikler og gode råd om vores behandlinger.",
+          // Was "… med tilbud, nyheder og tips …" (owner 2026-11-26: no offers in the newsletter), then
+          // "… med nyheder, artikler og gode råd om vores behandlinger." The signup text's words
+          // (Alberte, 2026-11-26).
+          // TODO: copy review (2026-11-26, Alberte) + legal review (owner)
+          "at sende dig vores nyhedsbrev med det seneste nyt om vores behandlinger, produktnyheder og særlige invitationer.",
         ],
         [
           { text: "Retsgrundlag: ", strong: true },

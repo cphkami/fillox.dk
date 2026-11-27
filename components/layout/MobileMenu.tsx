@@ -386,7 +386,7 @@ export function MobileMenu({ items, categories, clinics, navLabel, homeLabel }: 
                     <span aria-hidden="true">‹&nbsp;</span>
                     {treatmentsItem?.label}
                   </button>
-                  <h2 className="mt-1 mb-3 font-heading text-[28px] tracking-display text-heading">{category.name}</h2>
+                  <h2 className="mt-1 mb-3 font-heading text-[28px] tracking-display text-heading">{category.label}</h2>
                   <ul>
                     {category.treatments.map((t) => (
                       <li key={t.slug}>

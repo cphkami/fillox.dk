@@ -26,7 +26,9 @@ const divider = cn(
 );
 
 /**
- * "Vores bestsellers". Desktop (6a): numbered rows on a band panel (the design's plum panel, in
+ * "I trygge hænder fra første møde" (the design's "Vores bestsellers"; heading and intro are
+ * Alberte's, 2026-11-26, content/pages/home.ts → `bestsellers`), with the design's treatment rows
+ * under the intro. Desktop (6a): numbered rows on a band panel (the design's plum panel, in
  * the Lys Rosa band colours). Mobile (mf): white cards with a round arrow and `shadow-card` (white
  * alone is only 1.05:1 on the offwhite page).
  *
@@ -48,7 +50,7 @@ export function Bestsellers({ copy, items }: { copy: HomePage["bestsellers"]; it
       <SectionHeading
         id="home-bestsellers-title"
         title={copy.title}
-        intro={<ResponsiveText mobile={copy.introShort} desktop={copy.intro} />}
+        intro={copy.intro}
         // 48ch, not SectionHeading's 52ch: Figtree fits more characters into a ch than Poppins
         // did (production's 56ch ran to 75–80 characters a line); 48ch keeps the design's breaks.
         introClassName="max-md:mt-3 max-md:leading-[1.7] md:max-w-[48ch]"

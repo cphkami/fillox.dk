@@ -78,8 +78,16 @@ function heroSizes(image: ImageRef, longform: boolean): string {
  * Long-form pages (no facts): more intro paragraphs after the lead (below the photo on mobile),
  * the CTAs only when the content sets them, and optional jump links to the page's sections
  * (white chips as on /behandlinger; a scroll row below 768px).
+ *
+ * Takes only the hero's part of a TreatmentView, so a category page built like a treatment page
+ * (/behandlinger/fillers, content/pages/fillers.ts) uses the same hero.
  */
-export function TreatmentHero({ view }: { view: TreatmentView }) {
+export type TreatmentHeroView = Pick<
+  TreatmentView,
+  "hero" | "heading" | "headingAccent" | "headingSize" | "overviewLink" | "category" | "title" | "longform"
+>;
+
+export function TreatmentHero({ view }: { view: TreatmentHeroView }) {
   const { hero } = view;
   const hasIntro = Boolean(hero.intro?.length);
   // The H1 keeps the design size (36px / 64px, growing to 76px on wide screens via --text-h1; a
