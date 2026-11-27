@@ -1,5 +1,6 @@
-import type { Link, TextBlock, TextPageContent } from "../types";
+import type { Link, RichSpan, TextBlock, TextPageContent } from "../types";
 import { site } from "@/config/site";
+import type { FormsConfig } from "@/config/types";
 import { privacyCookieBlocks } from "../consent";
 import { privacyNewsletterAnchor, routes } from "../routes";
 
@@ -8,6 +9,199 @@ import { privacyNewsletterAnchor, routes } from "../routes";
  * contact form on /kontakt (content/pages/contact.ts → form.privacy) as `${routes.privacy}#${…}`.
  */
 export const privacyContactFormAnchor = "kontaktformular";
+
+/*
+ * Who receives what the two forms send: the "Databehandler" item of "12. Nyhedsbrev" and of "14.
+ * Kontaktformular" below ("Modtager" where no data processing agreement is confirmed: Formspree).
+ * Each follows its form's provider (config/site.ts → forms; lib/forms.ts sends there), so the
+ * policy changes with the same one line as the form does, and a new provider in config/types.ts
+ * → FormsConfig does not compile until it has a text here.
+ *
+ * Owner 2026-11-27, about section 12's "tilmeldinger modtages og opbevares hos vores
+ * hostingudbyder, Netlify": "nej vi kommer ikke til at opbevare data hos netlify. det finder vi en
+ * løsning på.. vi skal intet have i USA" and "måske bruger vi https://formward.eu hvis vi skal
+ * være helt sikkert. men tanken er at emails registerees måske direkte i klaviyo via nyhedsbrev".
+ * Later the same day they sent a Formspree endpoint for the CONTACT form; told that Formspree is
+ * a US company with its data in the USA, they chose "Formspree alligevel" and added "det bare
+ * lige nu så vi kan starte, senere rykker vi til det svenske" (= Formward). So section 14 shows
+ * the `formspree` text today. The newsletter is not decided: section 12 still shows its
+ * `netlify` text, unchanged (sources in the comment above "14. Kontaktformular"). Every text
+ * states only what the research of 2026-11-27 found in the providers' own documents (no account
+ * of ours existed, nothing was ever sent).
+ *
+ * - formspree — the owner's TEMPORARY choice for the contact form. Read 2026-11-27 (GET only) in
+ *   Formspree's own pages and two public registers:
+ *   · The contracting party is "Formspree, Inc.", San Antonio, Texas
+ *     (https://formspree.io/legal/terms-of-service/, last updated December 20, 2022; Texas
+ *     Comptroller, franchise tax record). No EU entity, EU representative or DPO is named.
+ *   · "Our services are hosted with Amazon Web Services in the United States."
+ *     (https://formspree.io/security/). No EU data residency is documented.
+ *   · NOT an active participant in the EU-U.S. Data Privacy Framework: the official list
+ *     (https://www.dataprivacyframework.gov/list, 2026-11-27) has "Formspree, Inc." under
+ *     inactive participants ("Inactive - Withdrawal", certified 04/23/2019, inactive since
+ *     04/26/2022). A second check the same day could not repeat the search (the list's search is
+ *     a POST to its API); the owner can look the name up in a minute (README). So the text names
+ *     no DPF basis.
+ *   · Transfer basis: only what Formspree says of itself, one sentence on its security page:
+ *     "We rely on Standard Contractual Clauses (SCCs) as a data processor." Which clauses
+ *     (version, module), and whether they are part of any contract with a customer, is shown
+ *     nowhere. Hence "oplyser" in the text.
+ *   · NO data processing agreement is published: the legal section lists Data Request, Privacy
+ *     Policy, Subprocessors and Terms of Service only, /legal/dpa is a 404, and the Terms contain
+ *     none. The Terms (section 2) call Formspree's customers "separate and independent data
+ *     controllers", while the security and sub-processor pages speak of Formspree "as a data
+ *     processor". So the label is "Modtager", not "Databehandler", and the text does NOT say
+ *     "kun efter vores instruks".
+ *   · Stored besides the fields: the privacy policy (https://formspree.io/legal/privacy-policy/,
+ *     last updated April 24, 2022) lists "your IP address, browser type, domain names, access
+ *     times and referring website addresses"; the dashboard's own code keeps IP address, user
+ *     agent and a geo lookup with each submission.
+ *   · 27 sub-processors, 26 in the United States and one in Germany, listed without purposes
+ *     (https://formspree.io/legal/subprocessors/; among them Amazon, Cloudflare, Google, Mailgun,
+ *     SendGrid, Sentry, Automattic, OpenAI and Anthropic). Which of them see a message is not
+ *     stated; "underleverandører" in the text, since "underdatabehandlere" would claim the
+ *     processor role.
+ *   OPEN LEGAL POINTS for the owner / a jurist (README → "Formularerne væk fra Netlify"):
+ *   1. No art. 28 agreement. The owner asks team@formspree.io for one that includes the EU
+ *      standard contractual clauses. With it in hand: the label can become "Databehandler", the
+ *      text can say "kun efter vores instruks" if the agreement does, and GDPR art. 13, stk. 1,
+ *      litra f's "how to get a copy" of the safeguards can be added. Until then the transfer
+ *      rests on Formspree's own statement, not on a contract the clinic holds.
+ *   2. Formspree's privacy policy: "You agree not to use the Formspree Service to collect
+ *      sensitive personal data" (not defined; liability disclaimed). A clinic's contact form can
+ *      receive health details whatever it says: the hint at the message field and section 14's
+ *      "Helbredsoplysninger" lower how often, they do not stop it.
+ *   3. "Opbevaring: … Derefter sletter vi den" is true only if the clinic deletes handled
+ *      messages in the Formspree dashboard: "Every submission is stored until you delete it"
+ *      (https://formspree.io/plans), and no auto-delete setting is documented. On the Free plan
+ *      the dashboard shows the last 30 days only; older ones "aren't deleted" (help centre,
+ *      "Account limits"). README has the routine.
+ *   4. Section 7 ("Oplysninger videregives kun, når det er nødvendigt eller lovpligtigt"): if
+ *      Formspree is an independent controller, as its Terms say, the form discloses to it.
+ *   The `formspree` text for the newsletter exists because the config allows that provider there
+ *   too; it says the same and is as open.
+ * - formward — Formward is "EGF Group AB (trading as Formward)", Swedish org.nr 559501-3573,
+ *   Stockholm (https://formward.eu/impressum; allabolag.se/5595013573). Submissions, files, logs
+ *   and backups are stored at Hostup AB in Sweden (https://formward.eu/eu-data-residency,
+ *   https://formward.eu/compliance/subprocessors; forms.formward.eu resolved to a Hostup AB
+ *   address in Sweden, 2026-11-27). Art. 28 agreement: https://formward.eu/dpa (v1.2,
+ *   2026-11-18), accepted in the dashboard. The texts say WHERE the data is stored and do NOT
+ *   say "ingen overførsel uden for EU/EØS": Formward's notification e-mails go through Mailjet
+ *   (EU; on Google Cloud in Germany and Belgium, with US support tooling at its parent Sinch:
+ *   https://sinch.com/data-protection-agreement/sub-processors/), and a notification to a Gmail or
+ *   Outlook mailbox leaves a copy with a US provider unless the form's notifications are "Link
+ *   only" (https://formward.eu/integrations/email). Add the sentence only when the owner has set
+ *   that up (README → "Formularerne væk fra Netlify"). Formward's DPA § 3: the service is "not
+ *   intended for" art. 9 data and the customer "must not submit such data through the Service
+ *   without appropriate safeguards": the same residual risk as with Netlify (section 14's
+ *   health hint lowers it, it does not remove it).
+ * - klaviyo (newsletter only) — the contracting party is Klaviyo, Inc., Boston, also for EU
+ *   customers (https://www.klaviyo.com/legal/dpa, updated 2026-09-11). "All existing customer
+ *   accounts are hosted and processed in the United States"
+ *   (https://www.klaviyo.com/legal/subprocessors, updated 2026-11-25). Transfer basis, DPA § 11.2:
+ *   "Klaviyo is self-certified under the DPF" (§ 11.1: the EU standard contractual clauses when
+ *   it cannot rely on the DPF). NOT yet checked against https://www.dataprivacyframework.gov/list:
+ *   do that before the switch (check:market prints a note). THIS TEXT CONFLICTS WITH THE OWNER'S
+ *   "vi skal intet have i USA": it is here so that the policy is true if Klaviyo is chosen
+ *   anyway. An account created in Klaviyo's EU environment (Germany; "Limited Availability" for
+ *   new contracted customers since 2026-09-15) stores in the EU, but DPA § 4.4 still lets Klaviyo
+ *   and its sub-processors process outside the EU: with such an account, rewrite this text from
+ *   the account's own documents. Klaviyo both stores the signups and sends the newsletter, so the
+ *   sentence about "vores e-mailudbyder" is gone from its text.
+ * The sender of the newsletter in the `netlify` and `formward` texts is still an unnamed "vores
+ * e-mailudbyder" (`unnamedNewsletterSender`; the open TODO above section 12): name it, and its
+ * transfer basis, once chosen. Until then `npm run check:market` prints a note as soon as the
+ * newsletter has left Netlify (`newsletterSenderIsUnnamed` below): were that tool Klaviyo or
+ * another US service, section 12 would hide a transfer to the USA.
+ */
+type ProcessorItem = { label: string; text: string };
+
+/** How section 12 names the tool that sends the newsletter while none is chosen. */
+const unnamedNewsletterSender = "vores e-mailudbyder";
+
+const dpfDecision =
+  "EU-Kommissionens afgørelse af 10. juli 2023 om, at rammen sikrer et tilstrækkeligt beskyttelsesniveau";
+
+/**
+ * What the `formspree` texts say about Formspree, Inc. itself, after a sentence that names
+ * "Formspree"; `submission` is "indsendelsen" / "tilmeldingen". Each sentence has its source in
+ * the comment above; nothing here claims a data processing agreement, an instruction or a DPF
+ * certification.
+ */
+const formspreeFacts = (submission: string) =>
+  `Formspree, Inc. ligger i USA, og tjenesten drives på servere hos Amazon Web Services i USA. Virksomheden er ikke certificeret under EU-U.S. Data Privacy Framework og oplyser, at den bruger EU-Kommissionens standardkontraktbestemmelser som grundlag for overførslen. Ud over det, du selv skriver, registrerer Formspree tekniske oplysninger om ${submission}, herunder din IP-adresse og oplysninger om din browser. Formspree bruger underleverandører, hvoraf de fleste ligger i USA; listen findes på formspree.io/legal/subprocessors.`;
+
+const formProcessorTexts = {
+  newsletter: {
+    // TODO: copy review (the second half, the transfer basis, is new 2026-11-26). Unchanged 2026-11-27.
+    netlify: {
+      label: "Databehandlere: ",
+      text: `tilmeldinger modtages og opbevares hos vores hostingudbyder, Netlify, og nyhedsbrevet sendes via ${unnamedNewsletterSender}. De behandler kun oplysningerne efter vores instruks. Netlify, Inc. ligger i USA. Overførslen dertil sker på grundlag af EU-U.S. Data Privacy Framework, som Netlify, Inc. er certificeret under, og ${dpfDecision}.`,
+    },
+    // TODO: copy review (2026-11-27): new text, shown when config/site.ts → forms.newsletter is "formward".
+    formward: {
+      label: "Databehandlere: ",
+      text: `tilmeldinger modtages og opbevares hos Formward, som drives af det svenske selskab EGF Group AB. Formward opbevarer dem på servere i Sverige. Nyhedsbrevet sendes via ${unnamedNewsletterSender}. Begge behandler kun oplysningerne efter vores instruks.`,
+    },
+    // TODO: copy review (2026-11-27): new text, shown when config/site.ts → forms.newsletter is
+    // "formspree" (not chosen; the owner may start the newsletter there too). "Modtagere", not
+    // "Databehandlere": no data processing agreement with Formspree is confirmed (see above), so
+    // "kun efter vores instruks" is said of the e-mail provider only.
+    formspree: {
+      label: "Modtagere: ",
+      text: `tilmeldinger modtages og opbevares hos vores formularudbyder, Formspree. Nyhedsbrevet sendes via ${unnamedNewsletterSender}, som kun behandler oplysningerne efter vores instruks. ${formspreeFacts("tilmeldingen")}`,
+    },
+    // TODO: copy review (2026-11-27): new text, shown when config/site.ts → forms.newsletter is
+    // "klaviyo". Names a transfer to the USA, which the owner does not want (see above).
+    klaviyo: {
+      label: "Databehandler: ",
+      text: `tilmeldinger modtages og opbevares hos Klaviyo, Inc., som vi også sender nyhedsbrevet med. Klaviyo behandler kun oplysningerne efter vores instruks. Klaviyo, Inc. ligger i USA og opbevarer oplysningerne dér. Overførslen sker på grundlag af EU-U.S. Data Privacy Framework, som Klaviyo, Inc. er certificeret under, og ${dpfDecision}.`,
+    },
+  } satisfies Record<FormsConfig["newsletter"]["provider"], ProcessorItem>,
+  contact: {
+    // Unchanged 2026-11-27 (written 2026-11-26; sources in the comment above "14. Kontaktformular").
+    netlify: {
+      label: "Databehandler: ",
+      text: `det, du sender via formularen, modtages og opbevares hos vores hostingudbyder, Netlify, Inc. (Netlify Forms), som kun behandler oplysningerne efter vores instruks. Netlify, Inc. ligger i USA. Overførslen dertil sker på grundlag af EU-U.S. Data Privacy Framework, som Netlify, Inc. er certificeret under, og ${dpfDecision}.`,
+    },
+    // TODO: copy review (2026-11-27): new text, shown when config/site.ts → forms.contact is "formward".
+    formward: {
+      label: "Databehandler: ",
+      text: "det, du sender via formularen, modtages og opbevares hos Formward, som drives af det svenske selskab EGF Group AB. Formward opbevarer oplysningerne på servere i Sverige og behandler dem kun efter vores instruks.",
+    },
+    // TODO: copy review (2026-11-27) + legal review (owner / jurist): new text, SHOWN TODAY
+    // (config/site.ts → forms.contact is "formspree"; owner 2026-11-27: "Formspree alligevel",
+    // "det bare lige nu så vi kan starte, senere rykker vi til det svenske"). "Modtager", not
+    // "Databehandler", and no "kun efter vores instruks": no data processing agreement with
+    // Formspree is confirmed. The sources and the open legal points are in the comment above.
+    formspree: {
+      label: "Modtager: ",
+      text: `det, du sender via formularen, modtages og opbevares hos vores formularudbyder, Formspree. ${formspreeFacts("indsendelsen")}`,
+    },
+  } satisfies Record<FormsConfig["contact"]["provider"], ProcessorItem>,
+};
+
+/**
+ * True while "12. Nyhedsbrev" does not say who sends the newsletter (the text of the newsletter's
+ * provider still has `unnamedNewsletterSender`). Read by scripts/check-market.mjs (rule 21), which
+ * prints a note about it once the newsletter has left Netlify.
+ */
+export const newsletterSenderIsUnnamed: boolean =
+  formProcessorTexts.newsletter[site.forms.newsletter.provider].text.includes(unnamedNewsletterSender);
+
+/**
+ * The "Databehandler" (Formspree: "Modtager") list item of a form's section, for the provider
+ * the form uses. Each record above `satisfies` its form's providers, so the lookup always finds
+ * a text.
+ */
+function formProcessorItem(kind: keyof FormsConfig): RichSpan[] {
+  const texts: Record<string, ProcessorItem | undefined> = formProcessorTexts[kind];
+  const { provider } = site.forms[kind];
+  const item = texts[provider];
+  // Only reachable with a config that does not type-check (`npm run check:market` names it first).
+  if (!item) throw new Error(`content/pages/legal.ts: no "Databehandler" text for forms.${kind} at "${provider}"`);
+  return [{ text: item.label, strong: true }, item.text];
+}
 
 /**
  * Copy for /handelsbetingelser and /privatlivspolitik (no design; rendered by
@@ -389,11 +583,15 @@ export const privacyPage: TextPageContent = {
     // NOT on the live page: added 2026-10 for the newsletter signup in the footer of every page
     // and on /blog (GDPR art. 13 information where the address is collected; every signup links
     // here, routes.privacyNewsletter).
-    // Transfer to the USA (Netlify): resolved 2026-11-26, the same basis as in "14. Kontaktformular"
-    // below (sources there).
+    // Who stores the signups ("Databehandlere") follows the newsletter's provider: formProcessorTexts
+    // at the top of this file (owner 2026-11-27: nothing at Netlify, nothing in the USA). While it is
+    // Netlify Forms (still the case: only the contact form moved to Formspree on 2026-11-27):
+    // transfer to the USA, resolved 2026-11-26 on the same basis as the `netlify` text of "14.
+    // Kontaktformular" (sources in the comment above that section).
     // TODO: copy review + legal review by Fillox before launch:
     // - name the e-mail tool that will send the newsletter (it is a processor too) and confirm the
-    //   data processing agreement with it (and its transfer basis, if it is outside the EU);
+    //   data processing agreement with it (and its transfer basis, if it is outside the EU); with
+    //   Klaviyo as the provider it is named already;
     // - confirm how long the proof of consent is kept after an unsubscribe.
     // The newsletter carries no offers (owner 2026-11-26, point 4 of the pre-launch audit, "ret det
     // med priser osv"). The purpose below is what the signups promise (content/layout.ts →
@@ -424,11 +622,8 @@ export const privacyPage: TextPageContent = {
           "dit samtykke, jf. GDPR artikel 6, stk. 1, litra a, og markedsføringslovens § 10.",
         ],
         [{ text: "Opbevaring: ", strong: true }, "vi opbevarer din e-mailadresse, indtil du afmelder dig nyhedsbrevet."],
-        [
-          { text: "Databehandlere: ", strong: true },
-          // TODO: copy review (the second sentence, the transfer basis, is new 2026-11-26)
-          "tilmeldinger modtages og opbevares hos vores hostingudbyder, Netlify, og nyhedsbrevet sendes via vores e-mailudbyder. De behandler kun oplysningerne efter vores instruks. Netlify, Inc. ligger i USA. Overførslen dertil sker på grundlag af EU-U.S. Data Privacy Framework, som Netlify, Inc. er certificeret under, og EU-Kommissionens afgørelse af 10. juli 2023 om, at rammen sikrer et tilstrækkeligt beskyttelsesniveau.",
-        ],
+        // By the newsletter's provider (config/site.ts → forms.newsletter): formProcessorTexts above.
+        formProcessorItem("newsletter"),
         [
           { text: "Afmelding: ", strong: true },
           "du kan til enhver tid trække dit samtykke tilbage via afmeldingslinket i bunden af hvert nyhedsbrev eller ved at skrive til os på ",
@@ -450,8 +645,25 @@ export const privacyPage: TextPageContent = {
      * and legal basis), litra d (the legitimate interest), litra e (recipients), litra f (transfer to a
      * third country), stk. 2, litra a (retention: the criteria, no period given by the owner); art. 21,
      * stk. 4 (the right to object, in its own list item).
-     * - Fields: components/contact/ContactForm.tsx and public/__forms.html ("kontakt": name, email,
-     *   phone, clinic, message; phone and clinic are optional). The mobile consent checkbox (design mc)
+     * - Recipient: the "Databehandler" / "Modtager" item follows the form's provider (config/site.ts
+     *   → forms.contact; formProcessorTexts at the top of this file, with the sources of the
+     *   Formward and Formspree texts). Owner 2026-11-27: "nej vi kommer ikke til at opbevare data hos
+     *   netlify … vi skal intet have i USA", then, for this form: "Formspree alligevel" and "det bare
+     *   lige nu så vi kan starte, senere rykker vi til det svenske". SINCE 2026-11-27 THE FORM IS AT
+     *   FORMSPREE, so the page shows the `formspree` text ("Modtager: …"). The points below that
+     *   name Netlify (the DPA's Exhibit I, "Netlify Forms stores submissions", "Transfer", "Not
+     *   listed above", the dashboard in "Retention") describe the `netlify` text, which is no longer
+     *   shown for this form; they are kept as the record of that text. The legal basis, the health
+     *   hint and the condition on who reads the messages hold for every provider: read "Netlify
+     *   Forms" there as "the provider's dashboard". What is different at Formspree, and open (see
+     *   the comment at the top): no data processing agreement is published; its privacy policy
+     *   forbids collecting "sensitive personal data" through the service; the IP address and
+     *   browser details it keeps with each message are now named in the item itself; and
+     *   "Opbevaring … Derefter sletter vi den" below is true only if the clinic deletes handled
+     *   messages in the Formspree dashboard, which keeps everything until then (README).
+     * - Fields: components/contact/ContactForm.tsx (name, email, phone, clinic, message; phone and
+     *   clinic are optional), the same fields for every provider; while the form is at Netlify Forms
+     *   also declared in public/__forms.html ("kontakt"). The mobile consent checkbox (design mc)
      *   was removed on 2026-11-26 (owner: "ja fjern krydset"), so the form collects no tick.
      * - Legal basis, rewritten 2026-11-26 after the owner rejected a ban on health information in the
      *   form ("virker dumt.. ingen sender hvis der ikke er mulighed for at sende?") and asked for a short
@@ -548,10 +760,8 @@ export const privacyPage: TextPageContent = {
           { text: "Opbevaring: ", strong: true },
           "vi gemmer din henvendelse, så længe det er nødvendigt for at besvare og følge op på den. Derefter sletter vi den. Det, der er skrevet i din journal, opbevarer vi som beskrevet i afsnit 6.",
         ],
-        [
-          { text: "Databehandler: ", strong: true },
-          "det, du sender via formularen, modtages og opbevares hos vores hostingudbyder, Netlify, Inc. (Netlify Forms), som kun behandler oplysningerne efter vores instruks. Netlify, Inc. ligger i USA. Overførslen dertil sker på grundlag af EU-U.S. Data Privacy Framework, som Netlify, Inc. er certificeret under, og EU-Kommissionens afgørelse af 10. juli 2023 om, at rammen sikrer et tilstrækkeligt beskyttelsesniveau.",
-        ],
+        // By the contact form's provider (config/site.ts → forms.contact): formProcessorTexts above.
+        formProcessorItem("contact"),
         // 2026-11-26: was "Tilbagetrækning" (withdrawing consent). With no consent there is nothing to
         // withdraw (art. 13, stk. 2, litra c); art. 6, stk. 1, litra f gives the right to object, which
         // must be shown clearly and separately (art. 21, stk. 4).

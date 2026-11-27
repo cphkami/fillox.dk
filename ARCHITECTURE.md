@@ -7,7 +7,7 @@ lives in two places:
 
 | What | Where |
 |---|---|
-| Domain, locale, currency, phone, email, CVR, booking provider, GTM container + consent settings (`analytics`), logos | `config/site.ts` |
+| Domain, locale, currency, phone, email, CVR, booking provider, form providers (`forms`), GTM container + consent settings (`analytics`), logos | `config/site.ts` |
 | All visible copy and data (nav, clinics, treatments, prices, team, blog, page copy, UI strings) | `content/**` |
 
 **Rule: components and pages never contain market copy.** No Danish strings, prices,
@@ -35,8 +35,9 @@ in `README.md` → "Rebranding til fillox.no".
   `config/site.ts`, colours = `pageColor` in `lib/metadata.ts`).
 - Deploy target: Netlify (`netlify.toml`: Node 22; README → "Deploy til Netlify").
 - Security headers (HSTS, nosniff, Referrer-Policy, X-Frame-Options, Permissions-Policy and a
-  report-only CSP that allows only Gecko's hosts and the hosts of the GTM container's tags, which
-  load only after consent) live in ONE module, `config/securityHeaders.ts` (no imports;
+  report-only CSP that allows only Gecko's hosts, the hosts of the GTM container's tags, which
+  load only after consent, and the form providers in use: none while both forms are at Netlify
+  Forms, see "Forms providers") live in ONE module, `config/securityHeaders.ts` (no imports;
   `cspDirectives` holds one source list per directive, `cspHeaderName` is
   `Content-Security-Policy-Report-Only` until the launch-week test booking is clean).
   `next.config.ts` → `headers()` sends them on `/:path*`, which covers every response of the
@@ -46,7 +47,8 @@ in `README.md` → "Rebranding til fillox.no".
   the copy differs in any name or value, when another `[[headers]]` block sets one of them, when
   `next.config.ts` → `headers()` (evaluated through scripts/ts-hooks.mjs) does not return exactly
   one `/:path*` rule with exactly that list (or sets one of them on another path), or when the CSP
-  does not allow the booking provider (and www.googletagmanager.com with a GTM container). The
+  does not allow the booking provider (and www.googletagmanager.com with a GTM container), does
+  not allow a form provider in use, or lists one that no form uses (rule 21). The
   CSP's Google hosts include ad.doubleclick.net and www.googleadservices.com, which the GA4 tag's
   Ads link calls. Next.js drops config headers on its own config
   redirects (resolve-routes returns `resHeaders: null`), so the legacy 308s carry none; Netlify
@@ -56,6 +58,10 @@ in `README.md` → "Rebranding til fillox.no".
 
 ```
 config/site.ts                 market config (see above)
+config/types.ts                the contract of config/site.ts (SiteConfig: BookingConfig, FormsConfig,
+                               AnalyticsConfig), shared by both markets
+config/formProviders.ts        what the site relies on at each form provider (hosts, field names,
+                               Klaviyo's API revision; see "Forms providers"), shared by both markets
 config/securityHeaders.ts      security headers + CSP directives (one source; next.config.ts sends
                                them, netlify.toml copies them; see "Stack")
 content/
@@ -74,15 +80,24 @@ content/
                                new-here, fillers …)
   redirects.ts                 legacy fillox.dk URLs → new routes
   routes.ts                    every route path; code, canonicals and the sitemap link through it
+  forms.ts                     the forms' names and the Netlify Forms no-JS targets (no imports)
 lib/                           helpers (formatPrice, cn, …); metadata.ts builds every route's
-                               metadata + Open Graph (pageMetadata), forms.ts posts to Netlify Forms,
+                               metadata + Open Graph (pageMetadata), forms.ts sends each form to its
+                               provider and gives its no-JS form attributes (see "Forms providers"),
                                analytics.ts: Consent Mode, stored choice, GTM loader, cookie deletion
 scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes.ts ↔ app/ folders,
                                redirect targets (and the price list's treatment links: the treatment
                                exists, an #anchor is a section / item id of its long-form page; a
                                static page inside /behandlinger, e.g. /behandlinger/fillers, is a
                                route, not a treatment: rule 4),
-                               no-JS form targets (contact, newsletter), Netlify form names,
+                               the forms (thank-you routes; for forms at Netlify Forms the no-JS
+                               targets and public/__forms.html, which declares no form that has left
+                               Netlify; form providers, rule 21: a Formward or Formspree endpoint
+                               or Klaviyo ids (and opt-in) well-formed, the CSP allows exactly the
+                               providers in use, Referrer-Policy keeps the Origin / Referer that
+                               Formward and Formspree need; NOTES, never errors: a form still at
+                               Netlify Forms, a form at Formspree, Klaviyo's US storage, a privacy
+                               policy that names no newsletter sender),
                                booking provider ids, clinic address/hours parse for JSON-LD
                                (a closed day, `closed: true` "Søn lukket", is shown everywhere
                                the hours are and left out of the JSON-LD),
@@ -104,7 +119,7 @@ scripts/check-market.mjs       `npm run check:market` (runs as prebuild): routes
                                any text of content/ (but redirects.ts) or config/site.ts (rule 20:
                                Revanesse® is the only filler brand, no FDA sentence); security
                                headers (netlify.toml = config/securityHeaders.ts, the CSP allows the
-                               booking provider + GTM); the team (no photo → no profile page; a
+                               booking provider + GTM + the form providers in use); the team (no photo → no profile page; a
                                profile page → photo, share image, face row) and where practitioners
                                work (clinicSlugs: open clinics, texts agree; "Team" below)
 scripts/ts-hooks.mjs           lets check-market import the site's .ts modules (no build step)
@@ -152,7 +167,7 @@ public/images/                 fillox/ (the clinic's mood photos), resultater/ (
 | `/kontakt` | `6ko` / `mc`. The form links to the privacy policy's "14. Kontaktformular" (`/privatlivspolitik#kontaktformular`, `content/pages/legal.ts` → `privacyContactFormAnchor`) with a `text-fine` line above the button at every width (copy `content/pages/contact.ts` → `form.privacy`; link in the text pages' style, one unbroken line, an invisible 15px hit area above and below). mc's consent checkbox was removed (owner 2026-11-26: "ja fjern krydset"; the policy does not rest on consent) |
 | `/blog`, `/blog/[slug]` | `6blog`, `6art` / `mbl`, `mar` (see "Blog"). A post without its written article (`content/blog.ts` → `hasArticleBody`) gets an excerpt page (noindex, not in the sitemap) and shows no reading time anywhere: article header, blog cards, "Læs også" and the treatment pages' article cards (`components/blog/postView.ts` → `readingTime`, `shortReadingTime`) |
 | `/booking` | no design: intro band (with the 18-year line under the intro, `content/layout.ts` → `booking.ageNote`, BEK 834/2014 § 3; also an FAQ on `/ny-hos-fillox`) + the booking provider's embed (`components/booking/BookingEmbed.tsx`, see "Booking providers") |
-| `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style. The legal texts (`content/pages/legal.ts`) come from the live fillox.dk but are no longer verbatim (owner 2026-11-26): the terms are corrected (language; business terms unchanged). Withdrawal: gift cards and subscriptions bought online, by phone or otherwise outside the clinics get the statutory 14 days (forbrugeraftaleloven §§ 18–20, 22, 25: no reason needed, the used part is paid for, the rest refunded within 14 days); clinic purchases keep the live 14-day promise as Fillox's own term ("medmindre du har taget gavekortet i brug"). The privacy policy's section 1 gives `site.contact.email` (kontakt@fillox.dk, was info@fillox.dk) and /content-creator sends other collaborations there too (was Annika's address), so the site gives one address (Alberte, 2026-11-26: "Under content creator og kontakt oplysninger skal henvendelse sendes til kontakt@fillox.dk"). The privacy policy has the new sections 12 (newsletter; its purpose is the signup text, see "Footer newsletter"), 13 (cookies, `content/consent.ts`) and 14 (contact form: answering on art. 6(1)(f); health information in the message on art. 9(2)(h) / databeskyttelsesloven § 7, stk. 3, which holds only while practitioners alone read the submissions, README → "Hvem læser beskederne?"; the form has no consent checkbox). The message field has a hint, "Du behøver ikke at skrive detaljer om dit helbred – giv os dit nummer, så ringer vi …" (`form.fields.message.hint`, owner 2026-11-26: a reassurance, never a ban) |
+| `/handelsbetingelser`, `/privatlivspolitik`, `/ledige-stillinger`, `/content-creator` | simple text pages in the same style. The legal texts (`content/pages/legal.ts`) come from the live fillox.dk but are no longer verbatim (owner 2026-11-26): the terms are corrected (language; business terms unchanged). Withdrawal: gift cards and subscriptions bought online, by phone or otherwise outside the clinics get the statutory 14 days (forbrugeraftaleloven §§ 18–20, 22, 25: no reason needed, the used part is paid for, the rest refunded within 14 days); clinic purchases keep the live 14-day promise as Fillox's own term ("medmindre du har taget gavekortet i brug"). The privacy policy's section 1 gives `site.contact.email` (kontakt@fillox.dk, was info@fillox.dk) and /content-creator sends other collaborations there too (was Annika's address), so the site gives one address (Alberte, 2026-11-26: "Under content creator og kontakt oplysninger skal henvendelse sendes til kontakt@fillox.dk"). The privacy policy has the new sections 12 (newsletter; its purpose is the signup text, see "Footer newsletter"), 13 (cookies, `content/consent.ts`) and 14 (contact form: answering on art. 6(1)(f); health information in the message on art. 9(2)(h) / databeskyttelsesloven § 7, stk. 3, which holds only while practitioners alone read the submissions, README → "Hvem læser beskederne?"; the form has no consent checkbox). The "Databehandler" item of 12 and of 14 follows that form's provider (`formProcessorTexts` in `content/pages/legal.ts`; see "Forms providers"). The message field has a hint, "Du behøver ikke at skrive detaljer om dit helbred – giv os dit nummer, så ringer vi …" (`form.fields.message.hint`, owner 2026-11-26: a reassurance, never a ban) |
 
 ## The owner's agency texts (2026-10)
 
@@ -592,6 +607,143 @@ type `ClinicBookingIds`).
 - `npm run check:market` fails when the provider is `timma` and an open clinic has no
   `timmaId`, and lists clinics without a Gecko calendar id as a note.
 
+## Forms providers
+
+`config/site.ts` → `forms` gives ONE backend per form (`config/types.ts` → `FormsConfig`, a
+discriminated union per form): `contact` (the /kontakt form) and `newsletter` (the footer signup
+and the /blog band, one form). `lib/forms.ts` is the only code that knows the providers;
+`config/formProviders.ts` holds each provider's facts (hosts, field names, Klaviyo's API revision
+and its doc URL, and what the documentation does not confirm, marked UNCONFIRMED there).
+
+**Today (2026-11-27): the contact form is at Formspree, the newsletter still at Netlify Forms.**
+The owner sent the Formspree endpoint, was told that Formspree, Inc. is a US company that stores
+on Amazon Web Services in the USA, chose "Formspree alligevel" and added "det bare lige nu så vi
+kan starte, senere rykker vi til det svenske" (= Formward: one line in `config/site.ts`). About
+the rest, the same day: "glem alt det med data mm og bare sat formspree op. det jo lige til..?".
+So **no form provider fails a build any more**: `npm run check:market` prints a note on every
+build for a form at Formspree and for a form still at Netlify Forms (the newsletter), also on the
+build that goes live. Until then a form at Netlify Forms failed that build (the owner's earlier
+"vi skal intet have i USA"); a failed go-live build would leave the previous build, the noindex
+preview, on the domain. The privacy policy names each form's real recipient and the transfer to
+the USA (below). README → "Før lancering" → "Formularerne væk fra Netlify" has the owner's steps
+in the Formspree dashboard and the options for the newsletter.
+
+| Provider | Forms | Config (`site.forms.<form>`) | With JavaScript (`submitForm`) | Without JavaScript (`formPost`) | CSP (`config/securityHeaders.ts` + `netlify.toml`) |
+|---|---|---|---|---|---|
+| `netlify` (the newsletter today; Netlify, Inc., USA) | contact, newsletter | `{ provider: "netlify" }` | `POST /__forms.html`, url-encoded: `form-name` (the name in `content/forms.ts`), the fields, honeypot `bot-field`; any 2xx = sent. The form must be declared in `public/__forms.html` | `<form method="post" action>` = the static file in `content/forms.ts` → `netlifyNoJsActions` (`/__kontakt-sendt.html`, `/__nyhedsbrev-tilmeldt.html`) with a hidden `form-name`; Netlify stores the POST and serves the file, a meta-refresh to the thank-you route | nothing (`'self'`) |
+| `formward` (EGF Group AB, Sweden; stored in Sweden) | contact, newsletter | `{ provider: "formward", endpoint: "https://forms.formward.eu/f/<form id>" }`, one Formward form per site form | `POST <endpoint>`, url-encoded, header `Accept: application/json` (a CORS-simple request, no preflight): the fields + honeypot `_gotcha` (rendered off-screen, not `display: none`, as Formward's field reference asks: `FormPost.honeypotOffscreen`); sent = HTTP 2xx **and** `{ ok: true }`; `{ ok: false, error }` with 4xx / 5xx throws; never retried (a retry of a 500 can store a second copy) | `action` = the endpoint, hidden `_redirect` = the thank-you route as a **relative** path (`/kontakt/tak`, `/nyhedsbrev/tak`): Formward answers 302 to it, resolved against the page's origin, so it also works on the preview. An absolute URL is ignored unless its origin is on the form's allowed-origins list; Formward's fallback is the redirect URL in the form's dashboard settings (the owner sets it to the absolute thank-you URL, README option A), then its own /thanks page. On an error (rate limit, origin not allowed) the visitor gets Formward's own minimal error page, with no way back but the browser's | `https://forms.formward.eu` in `connect-src` and `form-action` |
+| `formspree` (the contact form today, temporary; Formspree, Inc., USA; stored on AWS in the USA until deleted in the dashboard) | contact, newsletter | `{ provider: "formspree", endpoint: "https://formspree.io/f/<form id>" }` (the form's Integration tab; not the dashboard address `/forms/<id>`), one Formspree form per site form | `POST <endpoint>` with fetch: a `FormData` body (multipart; no Content-Type set by the site), exactly one header `Accept: application/json` (CORS-simple, no preflight), `credentials: "omit"`; the form's own fields + honeypot `_gotcha` (off-screen), never `form-name`; sent = HTTP 2xx **and** a JSON object without an `errors` array or an `error` string; 404 / 429 / any other answer, or one that is not JSON, throws; Formspree's English messages are never shown; never retried | none, on purpose: a plain POST would end on Formspree's own "Thank You" page (Google's tag, a Cloudflare beacon, a cookie; a redirect back is a paid dashboard setting). The form has **no `action`** and a `disabled` submit until React runs; a line (`copy.noScript`: phone and e-mail for the contact form) shows without JavaScript and after 8s on a page whose scripts never started, by the same `form[data-script-only]` CSS as Klaviyo's newsletter | `https://formspree.io` in `connect-src` only |
+| `klaviyo` (Klaviyo, Inc., USA, unless the account is in its EU environment) | newsletter only | `{ provider: "klaviyo", companyId: "<public key, 6 characters>", listId: "<list id>", optIn: "double" \| "single" }`; `optIn` states the list's own "Opt-in process" in Klaviyo, which the site cannot read | `POST https://a.klaviyo.com/client/subscriptions?company_id=<companyId>` ("Create Client Subscription"), headers `revision` (`klaviyo.revision`, the one constant) and `content-type` / `accept: application/vnd.api+json` (so the browser sends a preflight), JSON:API body: `email`, e-mail marketing `SUBSCRIBED`, `custom_source` = the form's `source`, the list; 202 (any 2xx) = accepted, 4xx / 429 / 5xx throw. With `optIn: "double"` the receipt is `copy.successConfirm` ("Tjek din indbakke … bekræfte din tilmelding"), because the visitor is not subscribed until they confirm in Klaviyo's mail (`formNeedsConfirmation`). A filled honeypot resolves as sent **without any request** (Klaviyo has no honeypot) | none: Klaviyo documents no plain form POST. The form has **no `action`**, its submit button is `disabled` until React runs (a disabled default button also blocks Enter), and a line (`copy.noScript`) offers an e-mail to the clinic. So the address can never be posted to this site's own host (Netlify) or end up in a URL. How the state looks is CSS on `form[data-script-only]` (`app/globals.css`): nothing on a normal load; without scripting the button is dimmed at once (`@media (scripting: none)`) and the `<noscript>` copy of the line shows; with scripting on but no React after 8s (a blocked or failed chunk) a delayed animation dims the button and shows the line (`data-script-only-note`) | `https://a.klaviyo.com` in `connect-src` |
+
+- **Components do not know the provider.** `ContactForm` and `NewsletterForm` call
+  `formPost(kind)` (the `<form>`'s `name`, `action`, the provider's hidden control fields, the
+  honeypot's field name and how it is hidden: the same on the server and in the browser),
+  `honeypotValue(kind, formData)` and `submitForm(kind, fields, honeypot)`, which resolves when
+  the provider accepted the submission and throws otherwise: an error answer, no answer, or no
+  answer within 15 seconds (`SUBMIT_TIMEOUT_MS`: the request is aborted, so a form never hangs
+  on "Sender …"; the provider may still have stored it). Their success and error UI is the same
+  for every provider; the contact form's error names the phone number. The one exception is the
+  newsletter's receipt on a double opt-in list (`formNeedsConfirmation`, above).
+  Fields (`FormFields` in `lib/forms.ts`, checked by TypeScript at the call): contact `name`,
+  `email`, `phone`, `clinic`, `message`; newsletter `email`, `source` (`footer:/path` or
+  `blog:/blog`, where the visitor consented). Formward uses a field named `email` as the
+  notification's Reply-To.
+- **Adding a provider** = a variant in `FormsConfig` + a case in `formPost`, `submitForm` and
+  `formCspSources` (each switch ends in `unknownFormProvider(backend)`, a `never`, so TypeScript
+  lists the missing case) + a "Databehandler" text in `content/pages/legal.ts` →
+  `formProcessorTexts` (a `satisfies Record<provider, …>` per form: it does not compile without
+  one) + the provider's row in check:market rule 21.
+- **Privacy policy.** The "Databehandler" item of "12. Nyhedsbrev" and of "14. Kontaktformular"
+  is chosen by `site.forms.*.provider` (`formProcessorTexts`; sources in the comment above it).
+  `netlify`: the texts of 2026-11-26, unchanged. `formspree` (shown today in section 14): the
+  label is "Modtager", not "Databehandler", and there is no "kun efter vores instruks", because
+  no data processing agreement with Formspree is confirmed; it states only what Formspree's own
+  pages say (Formspree, Inc. in the USA on Amazon Web Services; not certified under the EU-U.S.
+  Data Privacy Framework; standard contractual clauses as Formspree states them; IP address and
+  browser details stored with a submission; sub-processors mostly in the USA). `formward`: operator, country and where the
+  data is stored (Sweden), "kun efter vores instruks"; it does **not** say "no transfer outside
+  the EU" (Formward's notification e-mails pass Mailjet, and a notification mailbox at a US
+  provider gets a copy unless the form is on "Link only"). `klaviyo`: Klaviyo, Inc. stores in the
+  USA on the EU-U.S. Data Privacy Framework (from Klaviyo's own DPA, not yet checked on the
+  official list) and also sends the newsletter, so "vores e-mailudbyder" is gone from that text.
+  It conflicts with the owner's "intet i USA": the text exists so the policy is true if Klaviyo
+  is chosen anyway. All new texts are `TODO: copy review (2026-11-27)`.
+- **CSP.** `config/securityHeaders.ts` cannot import the config, so the provider sources are
+  written into its `connect-src` / `form-action` lists (and the copy in `netlify.toml`) when a
+  form changes provider. check:market fails, with the source to add, while a provider in use is
+  missing, and while a provider no form uses is still listed in any directive.
+- **`npm run check:market`** (rule 21, with 5, 6 and 15): every form of `content/forms.ts` has a
+  backend; a Formward endpoint is exactly `https://forms.formward.eu/f/<one segment>` as `new
+  URL()` writes it (https, that host in lower case, no credentials, port, query or placeholder)
+  and no two forms share one; a Formspree endpoint is exactly `https://formspree.io/f/<letters
+  and digits>` by the same rules (the dashboard address `/forms/<id>` gets its own hint); Klaviyo is on the newsletter only, its `companyId` is 6 letters or
+  digits (the public key, never a private `pk_…` key), its `listId` is not empty and no
+  placeholder, its `optIn` is "single" or "double"; a form at Netlify Forms is declared in
+  `public/__forms.html` and has its no-JS target; a form that has left Netlify is **not**
+  declared there (Netlify would keep storing what is posted to it); the CSP as above (a
+  provider whose backend failed these checks gets no "unused source" error on top); while a form
+  is at Formward or Formspree, `Referrer-Policy` is not "no-referrer" or "same-origin" (Formward's
+  plain POST without JavaScript would carry `Origin: null`, which an exact-match allowed-origins
+  list refuses; Formspree's "Restrict to Domain" reads the Referer and would file every message
+  as spam). **Notes only, on every build** (since 2026-11-27 also on the one that goes live):
+  "forms still at Netlify Forms: …" and "… form at Formspree, Inc. …". Also notes: with Klaviyo, the US storage, the DPF check and the opt-in
+  stated in the config; once the newsletter has left Netlify, that "12. Nyhedsbrev" still names
+  no sender of the newsletter (`newsletterSenderIsUnnamed` in `content/pages/legal.ts`).
+- **Switching a form** (one line in `config/site.ts`, then what check:market names): the
+  provider line; the CSP sources in `config/securityHeaders.ts` and `netlify.toml`; delete the
+  form's `<form>` from `public/__forms.html`. Not checkable by the script: that Klaviyo's
+  `optIn` matches the list's real setting (the receipt follows the config), and everything
+  `config/formProviders.ts` marks UNCONFIRMED. The first real submission from the preview
+  settles those (README → "Når vi har fået endpoint / id'er"): for Formward one submission with
+  and one without JavaScript in Chrome, Firefox and Safari (allowed origins, the relative
+  `_redirect`); for Klaviyo the preflight and the 202 in the same browsers from each origin
+  (its CORS answer is not documented), the profile on the list with its `custom_source`, one
+  signup with a content blocker on (a.klaviyo.com is a tracking host), and, for an account in
+  Klaviyo's EU environment, the host to call (only a.klaviyo.com is documented). Nothing was
+  ever sent to Formward or Klaviyo from this repo; the provider paths were tested against a
+  local mock of the documented answers.
+- **Formspree, tested 2026-11-27** (the real config in a scratch build; every request to
+  formspree.io was answered inside the test browser's request interception and none was let
+  through; Chrome resolved no host but localhost). The contact form on /kontakt at 390 and
+  1440px: the request (one `POST https://formspree.io/f/<id>` from fetch; `Accept:
+  application/json` as the only header set, `credentials: "omit"`, a multipart body of name,
+  email, phone, clinic, message and `_gotcha`, nothing else; Referer = the origin only; no
+  preflight); the receipt; the site's own Danish submit error after a 422 with `errors`, a 404,
+  a 429, a 500, a 200 with `errors`, a 200 that is not JSON, a dropped connection and a request
+  that is never answered (15 s); a filled honeypot (sent as `_gotcha`); a double-click (one
+  request). Without JavaScript: no `action`, a disabled and dimmed button, the line with the
+  phone number and the e-mail address under it, Enter and a click send nothing. With the page's
+  scripts blocked: nothing to see at first, the dimmed button and the line after 8 s; the form is
+  as high before hydration as after. axe 0 on /kontakt, no CSP violation, and the footer
+  newsletter still posts to `/__forms.html`. The new check:market rules were each broken once
+  (27 cases, the go-live environment among them: notes only). **Never posted to the owner's
+  form**: the owner sends the first real message from the preview (README), which also settles
+  what `config/formProviders.ts` marks UNCONFIRMED for Formspree (the success answer, the
+  reCAPTCHA setting). The Formward / Klaviyo variants below were not re-run after this change
+  (the owner: "bare sat formspree op"); the launch-guard cases among the 76 are obsolete, since
+  that rule is now a note.
+- **Tested (2026-11-27, scratch builds, fake ids, nothing left the machine)**: Chrome resolved
+  the two provider hosts to a local mock of their documented answers and no other host at all.
+  Four variants (netlify + netlify; formward + formward; formward + klaviyo on a double opt-in
+  list; netlify + klaviyo on a single opt-in list) × contact at /kontakt and the newsletter in
+  the footer and on /blog, at 390 and 1440px. With JavaScript: the request's URL, method,
+  headers and body; the success message (Klaviyo: the receipt of the configured opt-in); the
+  submit error after a 4xx, a 429 (Formward, Klaviyo), a 5xx, a dropped connection and a request
+  that is accepted and never answered (the error after 15 s); one POST per submit from the
+  page's code (no retry); the honeypot (off-screen for Formward, `hidden` otherwise; Klaviyo: no
+  request, not even a preflight); no CSP violation; axe 0 on /kontakt and /. Without
+  JavaScript: the plain POST and its redirect to the thank-you page (Netlify, Formward), and
+  with Klaviyo that Enter and a click send nothing, the button is dimmed and one line shows.
+  With the page's scripts blocked (Klaviyo): nothing to see at first, the dimmed button and the
+  line after 8 s, with and without reduced motion. Every check:market rule was broken once and
+  failed with its message (76 cases), the go-live build among them (`NETLIFY=true
+  CONTEXT=production URL=https://fillox.dk`, also with www; a note on the netlify.app address
+  and on deploy previews). The netlify variant's HTML is identical to the build before this
+  change on all 53 prerendered pages. Not tested: the real providers, because no account exists
+  (see "Switching a form"), and browsers other than Chrome (the `[data-script-only]` CSS needs
+  the `scripting` media feature and `display` in keyframes: Safari 17.4+, Firefox 129+; older
+  browsers keep the `<noscript>` line only).
+
 ## Reviews
 
 Every customer quote on the site is a real Trustpilot review, quoted verbatim, and they rotate
@@ -953,18 +1105,24 @@ green squares, "4,7 ud af 5 · 172 anmeldelser på Trustpilot" from `config/site
 one link to the profile in a new tab, a `footer-card` pill ≥ 44px, a full-width card below 768px).
 - The form is `components/ui/NewsletterForm` (client), shared with the /blog band
   (`components/blog/NewsletterSignup`, `tone="band"`): inline validation, focus to the field on an
-  error, `role="alert"` on a failed POST, a focused `role="status"` on success. It posts `email`,
+  error, `role="alert"` on a failed request, a focused `role="status"` on success. It sends `email`,
   `source` (`footer:/path` or `blog:/blog`, where the visitor consented) and the honeypot to the
-  Netlify form `nyhedsbrev` (`public/__forms.html` declares all three). Without JavaScript (or before
-  hydration) the browser validates the field (`noValidate={useHydrated()}`, as in ContactForm) and
-  the form POSTs to `content/forms.ts` → `newsletterNoJsAction` (`public/__nyhedsbrev-tilmeldt.html`,
-  a meta-refresh to `routes.newsletterThanks`, `/nyhedsbrev/tak`, noindex, copy in
-  `content/layout.ts` → `newsletterThanks`; `check:market` rule 5 checks the forward), so the address
-  never lands in the URL.
+  newsletter's provider through `lib/forms.ts` (see "Forms providers"; today the Netlify form
+  `nyhedsbrev`, which `public/__forms.html` declares with all three fields). Without JavaScript (or
+  before hydration) the browser validates the field (`noValidate={useHydrated()}`, as in ContactForm)
+  and the form POSTs straight to the provider (`formPost("newsletter")`; with Netlify Forms to
+  `content/forms.ts` → `netlifyNoJsActions.newsletter`, `public/__nyhedsbrev-tilmeldt.html`, a
+  meta-refresh to `routes.newsletterThanks`, `/nyhedsbrev/tak`, noindex, copy in `content/layout.ts`
+  → `newsletterThanks`; `check:market` rule 5 checks the forward), so the address never lands in
+  the URL. With a provider that takes no plain POST (Klaviyo) the button is disabled until the
+  page runs and a line (`footer.newsletter.noScript`) offers an e-mail instead: at once without
+  JavaScript, after 8 seconds on a page whose scripts never started (see "Forms providers"). On
+  a double opt-in list at Klaviyo the receipt is `successConfirm` ("Tjek din indbakke …").
 - Consent: no checkbox (nothing pre-ticked); the visitor's own signup after the text that says what
   they get, and the line under the field (same wording on /blog) linking to the privacy policy's
   newsletter section (`routes.privacyNewsletter`, `content/pages/legal.ts` → "12. Nyhedsbrev":
-  purpose, legal basis, retention, processors and the transfer basis for Netlify, unsubscribing;
+  purpose, legal basis, retention, the processor by provider (with Netlify Forms and Klaviyo
+  also the transfer basis), unsubscribing;
   pending the owner's legal review). Heading and text since 2026-11-26 are Alberte's: "Få nyt fra
   Fillox" / "Tilmeld dig vores nyhedsbrev, og få det seneste nyt om vores behandlinger,
   produktnyheder og særlige invitationer." (was "Tilmeld dig vores nyhedsbrev" / "Få nyheder og gode

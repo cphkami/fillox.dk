@@ -414,3 +414,55 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * A form that can only be sent with JavaScript: the contact form while its provider is Formspree
+ * and the newsletter while its provider is Klaviyo or Formspree (config/site.ts → forms;
+ * components/contact/ContactForm, components/ui/NewsletterForm). Until React runs the form
+ * carries `data-script-only` and its submit button is `disabled`. How that looks:
+ * - on a normal page load, nothing: for the first 8 seconds the button keeps its look and the
+ *   fallback line (`data-script-only-note`) is hidden, so the page never flashes;
+ * - scripting off: the button looks disabled at once (the <noscript> line under it says why);
+ * - scripting on, but still no React after 8 seconds (a blocked or failed script, a very slow
+ *   connection): the button dims and the fallback line appears. Both are animations without a
+ *   duration and with a delay (the reduced-motion rule above shortens durations, not delays).
+ *   The line is `display: block` with an animation that holds it at `display: none` during
+ *   the delay (fill-mode backwards). The other way round does not work: an element whose own
+ *   style is `display: none` runs no animations.
+ * Unlayered on purpose: these rules win over the Button's layered `disabled:opacity-50`.
+ * A browser without the `scripting` media feature, or without `display` in keyframes
+ * (`transition-behavior` shipped with it and is what @supports can ask for; before 2024),
+ * keeps the button's look and shows the line through <noscript> only.
+ */
+[data-script-only] button[type="submit"]:disabled {
+  opacity: 1;
+}
+[data-script-only] [data-script-only-note] {
+  display: none;
+}
+@media (scripting: none) {
+  [data-script-only] button[type="submit"]:disabled {
+    opacity: 0.5;
+  }
+}
+@media (scripting: enabled) {
+  [data-script-only] button[type="submit"]:disabled {
+    animation: script-only-dim 0s 8s forwards;
+  }
+  @supports (transition-behavior: allow-discrete) {
+    [data-script-only] [data-script-only-note] {
+      display: block;
+      animation: script-only-note 0s 8s backwards;
+    }
+  }
+}
+@keyframes script-only-dim {
+  to {
+    opacity: 0.5;
+  }
+}
+@keyframes script-only-note {
+  from {
+    display: none;
+  }
+}

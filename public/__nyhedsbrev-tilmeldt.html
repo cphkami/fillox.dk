@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<!-- No-JavaScript target of the "nyhedsbrev" form (content/forms.ts → newsletterNoJsAction).
-     Never linked. Netlify Forms stores the POST and serves this static file, which forwards
-     to the thank-you page (routes.newsletterThanks, app/nyhedsbrev/tak). With JavaScript the
-     form posts via lib/forms.ts and shows its success message in place instead. -->
+<!-- No-JavaScript target of the "nyhedsbrev" form while it is at Netlify Forms (config/site.ts →
+     forms.newsletter; content/forms.ts → netlifyNoJsActions.newsletter). Never linked. Netlify
+     Forms stores the POST and serves this static file, which forwards to the thank-you page
+     (routes.newsletterThanks, app/nyhedsbrev/tak). With JavaScript the form posts via
+     lib/forms.ts and shows its success message in place instead. Not used by the other form
+     providers (Formward redirects to the thank-you page itself; Klaviyo needs JavaScript). -->
 <html>
   <head>
     <meta charset="utf-8" />

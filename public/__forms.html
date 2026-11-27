@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <!-- Netlify Forms detection file. Never linked; see lib/forms.ts.
-     Keep field names in sync with the forms that submit to it. -->
+     Declares ONLY the forms whose provider is "netlify" (config/site.ts → forms): when a form
+     moves to another provider, delete its <form> here, or Netlify keeps accepting and storing
+     what is posted to it (npm run check:market fails until it is gone).
+     Keep field names in sync with the forms that submit to it.
+     Not here since 2026-11-27: "kontakt" (the contact form is at Formspree). Were it ever to
+     return to Netlify Forms, its fields are name, email, phone, clinic, message (lib/forms.ts →
+     FormFields), with the same hidden form-name input and bot-field honeypot as below. -->
 <html>
   <body>
-    <form name="kontakt" data-netlify="true" netlify-honeypot="bot-field" hidden>
-      <input type="hidden" name="form-name" value="kontakt" />
-      <input name="bot-field" />
-      <input name="name" />
-      <input name="email" />
-      <input name="phone" />
-      <input name="clinic" />
-      <textarea name="message"></textarea>
-    </form>
     <form name="nyhedsbrev" data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input type="hidden" name="form-name" value="nyhedsbrev" />
       <input name="bot-field" />

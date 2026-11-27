@@ -15,7 +15,7 @@ import { buttonClasses } from "@/components/ui/Button";
 import { HoneypotField } from "@/components/ui/HoneypotField";
 import type { ContactFormCopy } from "@/content/pages/contact";
 import { cn } from "@/lib/cn";
-import { honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
+import { formPost, honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
 import { useHydrated } from "@/lib/useHydrated";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 
@@ -34,6 +34,15 @@ const PHONE_PATTERN = /^\+?[\d\s()-]+$/;
 const MOBILE_QUERY = "(max-width: 47.99rem)";
 
 /**
+ * The form's plain POST for its provider (config/site.ts → forms.contact): name, action, the
+ * provider's hidden control fields and the honeypot's field name. A constant: the same in the
+ * server HTML and in the browser.
+ */
+const post = formPost("contact");
+/** No plain POST at this provider: the form can only be sent once React runs (see below). */
+const scriptOnly = post.action === undefined;
+
+/**
  * The privacy-policy link in the fine print: the text pages' link style (components/text-page/RichText),
  * one unbroken line, and an invisible hit area 15px above and below the link's own box (15–16px high at
  * text-fine, so the target is 45–46px; 12px gave 39–41px). It stays clear of the submit button, which
@@ -41,6 +50,16 @@ const MOBILE_QUERY = "(max-width: 47.99rem)";
  */
 const inlineLinkClasses =
   "relative font-medium whitespace-nowrap text-accent underline decoration-rule-strong underline-offset-[3px] transition-colors after:absolute after:-inset-x-1 after:-inset-y-[15px] hover:decoration-accent";
+
+/**
+ * The line under the disabled button of a form that needs JavaScript (see ContactForm): the
+ * submit error's look. Its two links (phone, e-mail) can wrap onto neighbouring lines, so they get
+ * no invisible hit area (one would cover the other's text): 4px of padding above and below
+ * instead, which makes each at least 24px high and takes no room in the line.
+ */
+const scriptOnlyLineClasses = "text-small leading-[1.6] font-semibold text-accent md:col-span-2";
+const scriptOnlyLinkClasses =
+  "py-1 whitespace-nowrap underline decoration-rule-strong underline-offset-[3px] transition-colors hover:decoration-accent";
 
 /**
  * Mobile (mc): white pills, 52px high. Desktop (6ko): cream fields, 16px radius, 59px high.
@@ -76,10 +95,23 @@ type ContactFormProps = {
 /**
  * "Send en besked" (6ko / mc): name, phone, e-mail, clinic and message, and a fine-print line
  * above the button that links to the privacy policy's contact-form section (mc's consent box was
- * removed on 2026-11-26, content/pages/contact.ts → form.privacy). Validates on submit, posts
- * to Netlify Forms via lib/forms.ts, and shows inline errors, a submit error and a success
- * message. Without JavaScript the form posts straight to Netlify (method="post" to
- * `copy.noJsAction`, a static file that forwards to the /kontakt/tak thank-you page).
+ * removed on 2026-11-26, content/pages/contact.ts → form.privacy). Validates on submit, sends
+ * the fields to the form's provider via lib/forms.ts (submitForm; the component does not know
+ * which provider: ARCHITECTURE.md → "Forms providers"), and shows inline errors, a submit error
+ * and a success message. Without JavaScript the form posts straight to the provider
+ * (method="post" to `formPost("contact").action`), which ends on the /kontakt/tak thank-you
+ * page. A provider without a plain POST gives no action (Formspree, where the form is today: a
+ * form posted there without JavaScript would end on a page at formspree.io): then the submit
+ * button is disabled until React runs (a disabled default button also blocks Enter), so the form
+ * can never be posted to this site's own address or put in a URL, and a line under the button
+ * (`copy.noScript`) gives the phone number and the e-mail address instead. How that state looks
+ * is CSS (app/globals.css → `[data-script-only]`, set on the form until React runs), as for the
+ * newsletter (components/ui/NewsletterForm): on a normal page load nothing shows (the button
+ * keeps its look for the moment before hydration, the line is hidden, so nothing moves); without
+ * JavaScript the button looks disabled and the <noscript> copy of the line shows; with JavaScript
+ * on but still no React after 8 seconds (a blocked or failed script, a very slow connection) the
+ * button dims and the line (`data-script-only-note`) appears.
+ * A request without an answer ends after lib/forms.ts's time limit, with the submit error.
  */
 export function ContactForm({ copy, clinics, titleId, className }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
@@ -194,14 +226,11 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
 
     setStatus("sending");
     try {
-      await submitForm(copy.formName, {
-        name,
-        email,
-        phone,
-        clinic: value("clinic"),
-        message,
-        ...honeypotValue(data),
-      });
+      await submitForm(
+        "contact",
+        { name, email, phone, clinic: value("clinic"), message },
+        honeypotValue("contact", data),
+      );
       focusNext.current = "success";
       setStatus("success");
     } catch {
@@ -209,6 +238,21 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
       setStatus("idle");
     }
   }
+
+  /** The other ways to reach the clinic, for a provider that needs JavaScript (see above); rendered twice below. */
+  const scriptOnlyLine = scriptOnly ? (
+    <>
+      {copy.noScript.text}{" "}
+      <a href={copy.noScript.phone.href} className={scriptOnlyLinkClasses}>
+        {copy.noScript.phone.label}
+      </a>
+      {copy.noScript.or}{" "}
+      <a href={copy.noScript.email.href} className={scriptOnlyLinkClasses}>
+        {copy.noScript.email.label}
+      </a>
+      {copy.noScript.end}
+    </>
+  ) : null;
 
   /** The field's hint (if it has one) and its error, in reading order. */
   const describedBy = (field: Field, hasHint = false) =>
@@ -219,17 +263,21 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
   return (
     <FormCard titleId={titleId} title={copy.title} className={className}>
       <form
-        name={copy.formName}
+        name={post.name}
         method="post"
-        action={copy.noJsAction}
+        action={post.action}
+        // Until React runs: how the disabled button and the fallback line look (app/globals.css).
+        data-script-only={scriptOnly && !hydrated ? "" : undefined}
         aria-labelledby={titleId}
         noValidate={hydrated}
         onSubmit={onSubmit}
         className="grid gap-3.5 md:grid-cols-2 md:gap-y-[18px]"
       >
-        {/* Posted by the no-JS fallback; submitForm() adds it itself. */}
-        <input type="hidden" name="form-name" value={copy.formName} />
-        <HoneypotField />
+        {/* The provider's control fields for the plain POST (no JavaScript); submitForm() sends its own. */}
+        {post.hidden.map((field) => (
+          <input key={field.name} type="hidden" name={field.name} value={field.value} />
+        ))}
+        <HoneypotField name={post.honeypot} offscreen={post.honeypotOffscreen} />
 
         {/*
           DOM (and tab) order is the desktop order: name, phone, e-mail (6ko puts phone next to
@@ -374,6 +422,8 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
 
         <button
           type="submit"
+          // Only for a provider without a plain POST (see above): no native submit before React runs.
+          disabled={scriptOnly && !hydrated ? true : undefined}
           aria-disabled={sending || undefined}
           className={cn(
             buttonClasses({ variant: "primary", size: "md", mobileSize: "lg", fullWidth: true }),
@@ -384,6 +434,21 @@ export function ContactForm({ copy, clinics, titleId, className }: ContactFormPr
         >
           {sending ? copy.sending : copy.submit}
         </button>
+
+        {scriptOnly ? (
+          <>
+            {/* Without JavaScript: at once, in every browser. */}
+            <noscript className="md:col-span-2">
+              <p className={scriptOnlyLineClasses}>{scriptOnlyLine}</p>
+            </noscript>
+            {/* With JavaScript but no React yet: hidden, shown by CSS after 8 seconds; gone once React runs. */}
+            {hydrated ? null : (
+              <p data-script-only-note="" className={scriptOnlyLineClasses}>
+                {scriptOnlyLine}
+              </p>
+            )}
+          </>
+        ) : null}
       </form>
     </FormCard>
   );

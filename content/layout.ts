@@ -4,7 +4,6 @@
  * never hard-code these strings.
  */
 import { site } from "@/config/site";
-import { forms } from "./forms";
 import { routes } from "./routes";
 import { photos } from "./photos";
 
@@ -100,7 +99,8 @@ export const layoutCopy = {
     /**
      * Newsletter signup at the top of the footer, on every page (owner, 2026-10: "så det er
      * fast"); hidden on /blog, which has its own band right above the footer. Form strings as
-     * on /blog (content/pages/blog.ts → newsletter); posts to the same Netlify form.
+     * on /blog (content/pages/blog.ts → newsletter); both are the same form and go to the same
+     * provider (config/site.ts → forms.newsletter).
      */
     // TODO: copy review (owner's request, not in the design: eyebrow, title, text, success, privacy line)
     // Owner note: `text` is what the visitor consents to, so it names what the mails are about
@@ -124,7 +124,6 @@ export const layoutCopy = {
       eyebrow: "Nyhedsbrev",
       title: "Få nyt fra Fillox",
       text: "Tilmeld dig vores nyhedsbrev, og få det seneste nyt om vores behandlinger, produktnyheder og særlige invitationer.",
-      formName: forms.newsletter,
       placeholder: "Din e-mail",
       submit: "Tilmeld",
       emailLabel: "Din e-mail",
@@ -141,6 +140,19 @@ export const layoutCopy = {
         text: "Du hører fra os, så snart vi har nyheder.",
       },
       /**
+       * The receipt when the signup must be confirmed by e-mail first: only with the newsletter
+       * at Klaviyo on a double opt-in list (config/site.ts → forms.newsletter.optIn: "double";
+       * lib/forms.ts → formNeedsConfirmation). `success` above would then be untrue: the visitor
+       * is not signed up until they confirm, and Klaviyo sends that mail. Same words on /blog
+       * (content/pages/blog.ts → newsletter.successConfirm).
+       */
+      // TODO: copy review (2026-11-27): new text, not in the design. Owner 2026-11-27: "tanken er
+      // at emails registerees måske direkte i klaviyo via nyhedsbrev".
+      successConfirm: {
+        title: "Tjek din indbakke",
+        text: "Vi har sendt dig en mail. Klik på linket i den for at bekræfte din tilmelding.",
+      },
+      /**
        * The line under the field, worded as on /blog (content/pages/blog.ts → newsletter.privacy).
        * The link opens the privacy policy's newsletter section (purpose, legal basis, retention,
        * processors, how to unsubscribe).
@@ -149,6 +161,24 @@ export const layoutCopy = {
         text: "Vi bruger kun din e-mail til nyhedsbrevet, og du kan altid afmelde dig.",
         link: { label: "Læs vores privatlivspolitik", href: routes.privacyNewsletter },
         end: ".",
+      },
+      /**
+       * Only when the newsletter's provider cannot take a plain form POST (config/site.ts →
+       * forms.newsletter: Klaviyo, which documents none, or Formspree, whose plain POST the site
+       * never uses: config/formProviders.ts): the signup then needs JavaScript, the
+       * button is disabled until the page runs, and this line offers an e-mail to the clinic
+       * instead. Shown without JavaScript, and when the page has still not started 8 seconds
+       * after it loaded (components/ui/NewsletterForm). Same words on /blog
+       * (content/pages/blog.ts → newsletter.noScript). Not shown while the provider is Netlify
+       * Forms or Formward, which both take the plain POST.
+       */
+      // TODO: copy review (2026-11-27): new text, not in the design. Owner 2026-11-27: "tanken er
+      // at emails registerees måske direkte i klaviyo via nyhedsbrev". It promises that the clinic
+      // signs the sender up by hand: say so to whoever reads kontakt@.
+      noScript: {
+        text: "Tilmeldingen virker kun med JavaScript slået til. Skriv til os på",
+        link: { label: site.contact.email, href: site.contact.emailHref },
+        end: ", så tilmelder vi dig.",
       },
     },
 
@@ -165,8 +195,9 @@ export const layoutCopy = {
 
   /**
    * /nyhedsbrev/tak (routes.newsletterThanks): the thank-you page after the newsletter signup
-   * WITHOUT JavaScript. The form posts to public/__nyhedsbrev-tilmeldt.html (Netlify stores the
-   * signup and serves that file), which forwards here. With JavaScript the form shows
+   * WITHOUT JavaScript. The plain POST goes to the newsletter's provider (lib/forms.ts →
+   * formPost): Netlify Forms stores the signup and serves public/__nyhedsbrev-tilmeldt.html, which
+   * forwards here; Formward redirects here itself. With JavaScript the form shows
    * footer.newsletter.success in place. noindex.
    */
   // TODO: copy review (no design; all copy invented)

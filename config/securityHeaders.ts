@@ -46,6 +46,25 @@
  *     www.facebook.com (/tr), form-action www.facebook.com (fbevents' form POST fallback to /tr).
  *   A new tag in the container (Hotjar, TikTok, Google Ads remarketing …) needs its hosts here (and
  *   in netlify.toml) AND a line in the cookie list (content/consent.ts) with a new consentVersion.
+ * - Forms (config/site.ts → forms; lib/forms.ts sends; config/formProviders.ts has the hosts):
+ *   exactly what the providers in use need, and nothing for the others.
+ *   · Netlify Forms (the newsletter today): nothing. The fetch goes to /__forms.html and the
+ *     plain POST without JavaScript to a static file, both 'self'.
+ *   · Formspree (the contact form today; the owner's temporary choice, 2026-11-27):
+ *     "https://formspree.io" in connect-src only. The form is sent with fetch and never as a
+ *     plain POST (that would end on Formspree's own page, with Google's tag and a cookie), so
+ *     formspree.io is NOT in form-action.
+ *   · Formward: "https://forms.formward.eu" in connect-src (the fetch) AND in form-action (the
+ *     plain POST without JavaScript goes straight to the endpoint, which redirects back to 'self').
+ *   · Klaviyo (newsletter): "https://a.klaviyo.com" in connect-src only (its call needs JavaScript,
+ *     so there is no plain POST).
+ *   This module cannot import the config, so the sources are written out in the two lists below
+ *   (and in netlify.toml) when a form changes provider: check:market (rules 15 and 21) fails with
+ *   the line to add while a provider in use is missing, and while a provider no form uses is
+ *   still listed. When the newsletter leaves Netlify Forms (README → "Formularerne væk fra
+ *   Netlify"), its provider's source is added here. Klaviyo's host for an account in its EU
+ *   environment is not documented: if it differs, it changes here with
+ *   config/formProviders.ts → klaviyo.origin.
  */
 
 export type SecurityHeader = { key: string; value: string };
@@ -90,6 +109,8 @@ export const cspDirectives: Record<string, string[]> = {
     "https://pagead2.googlesyndication.com",
     "https://connect.facebook.net",
     "https://www.facebook.com",
+    // Form providers in use (see "Forms" above): the contact form at Formspree, sent with fetch.
+    "https://formspree.io",
   ],
   "frame-src": [
     "https://*.geckobooking.dk", // the Gecko calendar
@@ -98,6 +119,8 @@ export const cspDirectives: Record<string, string[]> = {
     "https://*.onpay.io",
     "https://www.googletagmanager.com",
   ],
+  // + a form provider that takes the plain POST without JavaScript (Formward); none today
+  // (Formspree is never posted to without JavaScript, so it does not belong here).
   "form-action": ["'self'", "https://www.facebook.com"],
   "frame-ancestors": ["'self'"],
   "base-uri": ["'self'"],
@@ -113,6 +136,10 @@ export const contentSecurityPolicy = Object.entries(cspDirectives)
 export const securityHeaders: SecurityHeader[] = [
   { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
+  // Not "no-referrer" or "same-origin" while a form is at Formspree or Formward. Formspree's
+  // "Restrict to Domain" reads the Referer header and files a post without one as spam;
+  // Formward's plain POST without JavaScript would carry `Origin: null`
+  // (config/formProviders.ts → formspree, formward; check:market rule 21).
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), browsing-topics=()" },

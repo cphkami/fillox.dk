@@ -19,14 +19,17 @@
  *    existing treatment, and its #anchor (if any) is a section or
  *    item id of that page's long-form content (content/types.ts → TreatmentSection); the same for
  *    the price list's links (content/prices.ts → treatmentSlug / treatmentAnchor);
- * 5. the no-JavaScript form targets forward to their thank-you routes:
- *    public/__kontakt-sendt.html → routes.contactThanks, and the newsletter's
- *    (content/forms.ts → newsletterNoJsAction, public/__nyhedsbrev-tilmeldt.html) →
- *    routes.newsletterThanks; the copy lives on those routes, never in public/.
+ * 5. every form has its thank-you route (routes.contactThanks, routes.newsletterThanks), and the
+ *    no-JavaScript targets of the forms that are at Netlify Forms (content/forms.ts →
+ *    netlifyNoJsActions: public/__kontakt-sendt.html, public/__nyhedsbrev-tilmeldt.html) forward
+ *    to it; the copy lives on those routes, never in public/. (Formward redirects to the route
+ *    itself; Formspree and Klaviyo are sent with JavaScript only: lib/forms.ts → formPost.)
  *
  * And the other market data that lives outside content/ or is only checked at runtime:
  *
- * 6. every Netlify form in content/forms.ts is declared in public/__forms.html (and back);
+ * 6. every form of content/forms.ts whose provider is "netlify" (config/site.ts → forms) is
+ *    declared in public/__forms.html, and that file declares no other form: not an unknown one,
+ *    and not one that has left Netlify (Netlify would keep accepting and storing posts to it);
  * 7. the booking provider has what it needs: with "timma" every open clinic has
  *    booking.timmaId (content/clinics.ts); with "gecko" clinics without a calendar id are listed;
  * 8. every open clinic's address and opening hours parse into the structured data
@@ -102,9 +105,33 @@
  *     "ja ikke fda godkendt det dropper vi.. skal du ikke skrive") or the filler brands Fillox does
  *     not use, Juvéderm and Belotero (Alberte 2026-11-26: "Brug Revanesse® som det eneste
  *     fillermærke"). Code comments are not texts, so they may quote the decisions.
+ * 21. form providers (config/site.ts → forms, one backend per form of content/forms.ts;
+ *     config/formProviders.ts has each provider's facts): a "formward" endpoint is exactly
+ *     https://forms.formward.eu/f/<form id> (as `new URL()` writes it: no credentials, port,
+ *     query or placeholder), and no two forms share one; a "formspree" endpoint is exactly
+ *     https://formspree.io/f/<form id> by the same rules (https, that host, letters and digits;
+ *     the dashboard address /forms/<id> is named in the error), one per form; "klaviyo" (newsletter only) has the
+ *     account's 6-character PUBLIC key as companyId, never a private key, a list id, and
+ *     optIn "single" or "double" (the list's own setting, which decides the receipt's text); and
+ *     (checked with rule 15) the CSP's connect-src and form-action allow what the providers in
+ *     use need, no directive lists a form provider that no form uses, and, while a form is at
+ *     Formward or Formspree, Referrer-Policy is not "no-referrer" or "same-origin" (Formward's
+ *     plain POST without JavaScript would then carry `Origin: null`; Formspree's "Restrict to
+ *     Domain" reads the Referer header and would file every message as spam).
+ *     NOT a launch blocker any more: a form that is still at Netlify Forms (today the
+ *     newsletter) is a NOTE on every build, the one that goes live included. Until 27/11-2026
+ *     that build failed (the owner: "vi skal intet have i USA"). Later that day the owner chose
+ *     to start with what works: "glem alt det med data mm og bare sat formspree op. det jo lige
+ *     til..?". A failed go-live build would also be worse than the note: Netlify keeps serving
+ *     the previous build, the noindex preview, on the domain.
  *
- * Notes (never fail the build): clinics without a Gecko calendar id (7), and Trustpilot numbers
- * in config/site.ts last checked more than 60 days ago (11).
+ * Notes (never fail the build): clinics without a Gecko calendar id (7), Trustpilot numbers
+ * in config/site.ts last checked more than 60 days ago (11), a form that is still at Netlify
+ * Forms (21, above), a form at Formspree (21: Formspree, Inc., USA; no published data processing
+ * agreement; the owner's temporary choice, 27/11-2026), the newsletter at Klaviyo (21:
+ * stored in the USA unless the account is in Klaviyo's EU environment; the opt-in stated in
+ * the config), and, once the newsletter has left Netlify, a privacy policy whose "12.
+ * Nyhedsbrev" still names no sender of the newsletter (21).
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import nodeModule from "node:module";
@@ -209,25 +236,8 @@ for (const { source, destination } of legacyRedirects) {
   }
 }
 
-// 5. The no-JS form targets forward to their thank-you routes (static files in public/ hold no copy).
-const { newsletterNoJsAction } = await importTs("content/forms.ts");
-const noJsTargets = [
-  ["__kontakt-sendt.html", "contactThanks"],
-  [newsletterNoJsAction.replace(/^\//, ""), "newsletterThanks"],
-];
-for (const [file, key] of noJsTargets) {
-  const noJs = join(root, "public", file);
-  if (!routes[key]) {
-    errors.push(`routes.${key} is missing (thank-you route of public/${file})`);
-  } else if (!existsSync(noJs)) {
-    errors.push(`public/${file} is missing (no-JavaScript form target)`);
-  } else if (!readFileSync(noJs, "utf8").includes(`url=${routes[key]}"`)) {
-    errors.push(`public/${file} does not forward to routes.${key} ("${routes[key]}")`);
-  }
-}
-
 /* ------------------------------------------------------------------------------------------
- * 6–8 import the site's modules with their imports (config/site.ts, content/clinics.ts …)
+ * 5–8 and 21 import the site's modules with their imports (config/site.ts, content/clinics.ts …)
  * through scripts/ts-hooks.mjs.
  */
 if (typeof nodeModule.registerHooks === "function") {
@@ -237,13 +247,239 @@ if (typeof nodeModule.registerHooks === "function") {
 }
 const importSite = (file) => import(pathToFileURL(join(root, file)).href);
 const notes = [];
+const { site } = await importSite("config/site.ts");
 
-// 6. Netlify forms: content/forms.ts ↔ public/__forms.html.
-const { forms } = await importSite("content/forms.ts");
-const formsHtml = readFileSync(join(root, "public", "__forms.html"), "utf8");
+// 21. Form providers: one well-formed backend per form (placed here: rules 5, 6 and 15 use it).
+const { forms, netlifyNoJsActions } = await importTs("content/forms.ts");
+const formProviders = await importSite("config/formProviders.ts");
+/** [directive, url, what] of every well-formed backend: what the CSP must allow (rule 15). */
+const formCspNeeds = [];
+/**
+ * Providers a form names with a backend that failed the checks below: what the CSP needs for it
+ * is unknown until the config is right, so rule 15 does not call its sources unused (following
+ * that advice would remove a source the form needs the moment its id is fixed).
+ */
+const formProvidersUnchecked = new Set();
+/** A form without a provider the site knows for it: the content modules cannot be loaded (they throw). */
+let formsConfigUnusable = false;
+{
+  const { formward, formspree, klaviyo, formCspSources } = formProviders;
+  // "<form id>", "YOUR_FORM_ID", "…": a value copied from the comment or a provider's docs, not an id.
+  const placeholder = /[<>\s…]|your[_-]|\.\.\./i;
+  for (const kind of Object.keys(site.forms ?? {})) {
+    if (!forms[kind]) errors.push(`config/site.ts forms.${kind}: content/forms.ts has no form "${kind}"`);
+  }
+  for (const [kind, name] of Object.entries(forms)) {
+    const where = `config/site.ts forms.${kind}`;
+    const backend = site.forms?.[kind];
+    if (!backend) {
+      errors.push(`${where} is missing: the form "${name}" (content/forms.ts) has no provider`);
+      formsConfigUnusable = true;
+      continue;
+    }
+    let ok = true;
+    const fail = (message) => void ((ok = false), errors.push(message));
+    if (backend.provider === "netlify") {
+      // Declared in public/__forms.html: rule 6.
+    } else if (backend.provider === "formward") {
+      const endpoint = String(backend.endpoint ?? "");
+      let url = null;
+      try {
+        url = new URL(endpoint);
+      } catch {}
+      // `url.href === endpoint`: the canonical spelling only (lower-case host, no ":443", nothing to
+      // encode), so two spellings of one form cannot pass as two. No credentials: fetch() rejects such a URL.
+      if (
+        !url ||
+        url.href !== endpoint ||
+        url.username ||
+        url.password ||
+        url.origin !== formward.origin ||
+        !formward.endpointPath.test(url.pathname) ||
+        url.search ||
+        url.hash ||
+        placeholder.test(endpoint)
+      ) {
+        fail(`${where}.endpoint must be "${formward.origin}/f/<form id>", as the Formward dashboard shows it for this form (got "${endpoint}")`);
+      }
+    } else if (backend.provider === "formspree") {
+      const endpoint = String(backend.endpoint ?? "");
+      let url = null;
+      try {
+        url = new URL(endpoint);
+      } catch {}
+      // As for Formward: https, exactly that host, the canonical spelling, nothing but /f/<form id>.
+      if (
+        !url ||
+        url.href !== endpoint ||
+        url.username ||
+        url.password ||
+        url.origin !== formspree.origin ||
+        !formspree.endpointPath.test(url.pathname) ||
+        url.search ||
+        url.hash ||
+        placeholder.test(endpoint)
+      ) {
+        // The address people copy by mistake: the form's page in the dashboard.
+        const dashboard = url?.origin === formspree.origin && formspree.dashboardPath.test(url.pathname);
+        fail(
+          `${where}.endpoint must be "${formspree.origin}/f/<form id>", as the form's Integration tab in the Formspree dashboard shows it` +
+            `${dashboard ? ` ("${formspree.origin}/forms/<form id>" is the form's page in the dashboard, not its endpoint)` : ""} (got "${endpoint}")`,
+        );
+      }
+    } else if (backend.provider === "klaviyo") {
+      if (kind !== "newsletter") {
+        fail(`${where}: Klaviyo takes newsletter signups only (config/types.ts → FormsConfig)`);
+        formsConfigUnusable = true;
+      }
+      const companyId = String(backend.companyId ?? "");
+      const listId = String(backend.listId ?? "");
+      if (!klaviyo.companyIdPattern.test(companyId)) {
+        fail(
+          `${where}.companyId must be the Klaviyo account's 6-character PUBLIC API key ("Site ID"; it is sent from the browser, ` +
+            `so never a private "pk_…" key) (got "${companyId}")`,
+        );
+      }
+      // The list id's alphabet is not in Klaviyo's spec: only empty ids, spaces and placeholders are rejected.
+      if (!/^[A-Za-z0-9_-]+$/.test(listId) || placeholder.test(listId)) {
+        fail(`${where}.listId must be the id of the Klaviyo list the signups go to (Lists & segments → the list → Settings) (got "${listId}")`);
+      }
+      // The site cannot read the list's setting (Klaviyo answers 202 either way), so the config states it.
+      if (backend.optIn !== "single" && backend.optIn !== "double") {
+        fail(
+          `${where}.optIn must be "double" or "single": the list's own "Opt-in process" in Klaviyo (the list → Settings → Consent). ` +
+            `It decides the receipt on the page: with "double" the visitor is asked to confirm via the mail (got ${JSON.stringify(backend.optIn)})`,
+        );
+      }
+    } else {
+      fail(`${where}.provider "${backend.provider}" is unknown (config/types.ts → FormsConfig: netlify, formward, formspree, klaviyo)`);
+      formsConfigUnusable = true;
+    }
+    if (ok) {
+      for (const { directive, url } of formCspSources(backend)) formCspNeeds.push([directive, url, `the ${kind} form at ${backend.provider}`]);
+    } else {
+      formProvidersUnchecked.add(backend.provider);
+    }
+  }
+
+  // One Formward / Formspree form (endpoint) per site form: a shared one would mix contact
+  // messages and newsletter signups in one inbox, with one retention period and one notification setting.
+  const formwardEndpoints = new Map();
+  for (const kind of Object.keys(forms)) {
+    const backend = site.forms?.[kind];
+    if ((backend?.provider !== "formward" && backend?.provider !== "formspree") || !backend.endpoint) continue;
+    // Compared as parsed URLs, so another spelling of the same endpoint is still the same form.
+    let endpoint = String(backend.endpoint);
+    try {
+      endpoint = new URL(endpoint).href;
+    } catch {}
+    const other = formwardEndpoints.get(endpoint);
+    if (other) {
+      errors.push(
+        `config/site.ts forms.${kind}.endpoint is the same ${backend.provider === "formspree" ? "Formspree" : "Formward"} form as forms.${other}: ` +
+          `each form needs its own form there (its own retention, notifications and allowed origins)`,
+      );
+    }
+    formwardEndpoints.set(endpoint, kind);
+  }
+
+  // A form still at Netlify Forms: a NOTE on every build, also the one that goes live. Until
+  // 27/11-2026 it was an error on that build (the Netlify production build on the market's own
+  // domain), after the owner's "vi skal intet have i USA". Later the same day the owner chose to
+  // start with what works: "glem alt det med data mm og bare sat formspree op. det jo lige
+  // til..? du har jo det info du skal bruge.. kræver jo ikke meget at sat det op med forrmspree."
+  // So the newsletter may go live at Netlify Forms. An error there would also do more harm than
+  // the note: Netlify keeps serving the previous build when one fails, and the previous build
+  // is the noindex preview (README → "Domæneskiftet"). The privacy policy's "12. Nyhedsbrev"
+  // names Netlify and the transfer to the USA while the newsletter is there.
+  const atNetlifyForms = Object.keys(forms).filter((kind) => site.forms?.[kind]?.provider === "netlify");
+  if (atNetlifyForms.length) {
+    notes.push(
+      `forms still at Netlify Forms: ${atNetlifyForms.join(", ")} — stored at Netlify, Inc. in the USA, on the live site too ` +
+        `(a note only since 27/11-2026, owner: "glem alt det med data mm og bare sat formspree op"). ` +
+        `To move a form: config/site.ts → forms; README → "Formularerne væk fra Netlify"`,
+    );
+  }
+  // A form at Formspree: the owner's knowing, temporary choice (27/11-2026: "Formspree alligevel",
+  // "det bare lige nu så vi kan starte, senere rykker vi til det svenske"), so never an error.
+  const atFormspree = Object.keys(forms).filter((kind) => site.forms?.[kind]?.provider === "formspree");
+  if (atFormspree.length) {
+    notes.push(
+      `${atFormspree.join(", ")} form at Formspree, Inc. (USA; no published data processing agreement; owner 27/11-2026: temporary, ` +
+        `Formward later). Sent with JavaScript only; Formspree's own reCAPTCHA must be OFF for the form (README → "Formularerne væk fra Netlify")`,
+    );
+  }
+  const klaviyoBackend = Object.values(site.forms ?? {}).find((backend) => backend?.provider === "klaviyo");
+  if (klaviyoBackend) {
+    notes.push(
+      `the newsletter is at Klaviyo: Klaviyo, Inc. stores its accounts in the USA unless the account was created in its EU ` +
+        `environment (owner 27/11-2026: "vi skal intet have i USA"). The privacy policy's "12. Nyhedsbrev" names the transfer and the ` +
+        `EU-U.S. Data Privacy Framework: check that Klaviyo, Inc. is "Active" on dataprivacyframework.gov/list (content/pages/legal.ts). ` +
+        `Opt-in: "${klaviyoBackend.optIn}" in config/site.ts; the list's "Opt-in process" in Klaviyo must say the same (the receipt on the page follows the config)`,
+    );
+  }
+}
+if (formsConfigUnusable) {
+  // The checks below import content modules that read the forms' providers (the privacy policy's
+  // "Databehandler" texts) and throw without one, so stop here with the reason.
+  console.error(
+    `check:market failed (${errors.length}; stopped at config/site.ts → forms, which the other checks need):\n` +
+      errors.map((e) => `  - ${e}`).join("\n"),
+  );
+  process.exit(1);
+}
+/** Is this form (a key of content/forms.ts) at Netlify Forms? */
+const atNetlify = (kind) => site.forms?.[kind]?.provider === "netlify";
+
+// 21 (continued). Once the newsletter has left Netlify, the note above no longer speaks of it, but
+// "12. Nyhedsbrev" may still say "vores e-mailudbyder" for the tool that sends the newsletter: an
+// unnamed processor, and, were it a US service, an unnamed transfer (owner 27/11-2026: "vi skal
+// intet have i USA").
+if (!atNetlify("newsletter")) {
+  const { newsletterSenderIsUnnamed } = await importSite("content/pages/legal.ts");
+  if (newsletterSenderIsUnnamed) {
+    notes.push(
+      `the privacy policy's "12. Nyhedsbrev" names no sender of the newsletter ("vores e-mailudbyder"): name the tool, and its transfer ` +
+        `basis if it is outside the EU, before the first newsletter is sent (content/pages/legal.ts → formProcessorTexts)`,
+    );
+  }
+}
+
+// 5. Every form has its thank-you route; the Netlify no-JS targets forward to it (static files in
+//    public/ hold no copy). Formward redirects to the route itself; Formspree and Klaviyo are
+//    sent with JavaScript only (no plain POST).
+const thanksRouteKeys = { contact: "contactThanks", newsletter: "newsletterThanks" };
+for (const kind of Object.keys(forms)) {
+  const key = thanksRouteKeys[kind];
+  if (!key || !routes[key]) {
+    errors.push(`the ${kind} form has no thank-you route (${key ? `routes.${key} is missing` : "scripts/check-market.mjs thanksRouteKeys and lib/forms.ts thanksRoutes"})`);
+    continue;
+  }
+  if (!atNetlify(kind)) continue;
+  const file = String(netlifyNoJsActions[kind] ?? "").replace(/^\//, "");
+  const noJs = join(root, "public", file);
+  if (!file) {
+    errors.push(`content/forms.ts netlifyNoJsActions.${kind} is missing (no-JavaScript target of the form at Netlify Forms)`);
+  } else if (!existsSync(noJs)) {
+    errors.push(`public/${file} is missing (no-JavaScript form target)`);
+  } else if (!readFileSync(noJs, "utf8").includes(`url=${routes[key]}"`)) {
+    errors.push(`public/${file} does not forward to routes.${key} ("${routes[key]}")`);
+  }
+}
+
+// 6. Netlify Forms: the forms whose provider is "netlify" ↔ public/__forms.html.
+const formsHtmlFile = join(root, "public", "__forms.html");
+const formsHtml = existsSync(formsHtmlFile) ? readFileSync(formsHtmlFile, "utf8") : "";
 const declaredForms = [...formsHtml.matchAll(/<form\b[^>]*\bname="([^"]+)"/g)].map((m) => m[1]);
 for (const [key, name] of Object.entries(forms)) {
-  if (!declaredForms.includes(name)) {
+  if (!atNetlify(key)) {
+    if (declaredForms.includes(name) && site.forms?.[key]) {
+      errors.push(
+        `public/__forms.html still declares form "${name}", but config/site.ts forms.${key} is at ${site.forms[key].provider}: ` +
+          `delete its <form> there (Netlify would keep accepting and storing whatever is posted to it)`,
+      );
+    }
+  } else if (!declaredForms.includes(name)) {
     errors.push(`forms.${key} = "${name}" is not declared in public/__forms.html (Netlify rejects its submissions)`);
   } else if (!formsHtml.includes(`name="form-name" value="${name}"`)) {
     errors.push(`public/__forms.html: form "${name}" has no hidden form-name input with value "${name}"`);
@@ -256,7 +492,6 @@ for (const name of declaredForms) {
 }
 
 // 7. Booking provider ids.
-const { site } = await importSite("config/site.ts");
 const { openClinics } = await importSite("content/clinics.ts");
 if (site.booking.provider === "timma") {
   if (!/^https:\/\//.test(site.booking.timmaBaseUrl ?? "")) {
@@ -799,14 +1034,14 @@ const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config
     }
   }
   // The CSP lets in what the site loads from other hosts (scheme + host; "*.x.dk" matches subdomains).
-  const allows = (directive, url) => {
+  const sourceAllows = (source, url) => {
     const { protocol, hostname } = new URL(url);
-    return (cspDirectives[directive] ?? cspDirectives["default-src"] ?? []).some((source) => {
-      const m = /^(https?:)\/\/(\*\.)?([^/:]+)/.exec(source);
-      if (!m || m[1] !== protocol) return false;
-      return m[2] ? hostname.endsWith(`.${m[3]}`) : hostname === m[3];
-    });
+    const m = /^(https?:)\/\/(\*\.)?([^/:]+)/.exec(source);
+    if (!m || m[1] !== protocol) return false;
+    return m[2] ? hostname.endsWith(`.${m[3]}`) : hostname === m[3];
   };
+  const allows = (directive, url) =>
+    (cspDirectives[directive] ?? cspDirectives["default-src"] ?? []).some((source) => sourceAllows(source, url));
   const needs = [];
   if (site.booking.provider === "gecko") {
     needs.push(["script-src", `https://${site.booking.geckoHost}/site/iframe.js`, "Gecko's iframe.js"]);
@@ -818,6 +1053,72 @@ const { securityHeaders, cspDirectives, cspHeaderName } = await importTs("config
   for (const [directive, url, what] of needs) {
     if (!allows(directive, url)) {
       errors.push(`config/securityHeaders.ts: ${cspHeaderName} ${directive} does not allow ${new URL(url).origin} (${what})`);
+    }
+  }
+  // Form providers (rule 21): the fetch needs connect-src, the plain POST without JavaScript
+  // form-action. Exactly the providers in use: a provider no form uses is listed nowhere.
+  for (const [directive, url, what] of formCspNeeds) {
+    if (!allows(directive, url)) {
+      const { origin } = new URL(url);
+      errors.push(
+        `config/securityHeaders.ts: ${cspHeaderName} ${directive} does not allow ${origin} (${what}): ` +
+          `add "${origin}" to cspDirectives["${directive}"] and to the same directive in netlify.toml`,
+      );
+    }
+  }
+  for (const [provider, origin] of Object.entries(formProviders.formProviderOrigins)) {
+    // A form names this provider, but its endpoint / ids failed rule 21: say nothing about its sources yet.
+    if (formProvidersUnchecked.has(provider)) continue;
+    for (const [directive, sources] of Object.entries(cspDirectives)) {
+      const needed = formCspNeeds.some(([d, url]) => d === directive && new URL(url).origin === origin);
+      const listed = sources.find((source) => sourceAllows(source, `${origin}/`));
+      if (listed && !needed) {
+        errors.push(
+          `config/securityHeaders.ts: ${cspHeaderName} ${directive} lists ${listed} (${provider}), which no form needs there ` +
+            `(config/site.ts → forms): remove it, also from netlify.toml`,
+        );
+      }
+    }
+  }
+  // Formward's plain POST (no JavaScript) is a navigation to another origin. Under these two
+  // policies the browser sends it with `Origin: null` (Fetch standard), which Formward's
+  // exact-match allowed-origins list refuses and which leaves the relative `_redirect` without
+  // an origin to resolve against (config/formProviders.ts → formward).
+  // Formspree's "Restrict to Domain" compares the Referer header with the site's domain: under the
+  // same two policies the browser sends none, and Formspree files every message as spam
+  // (config/formProviders.ts → formspree).
+  const referrerProviders = ["formward", "formspree"].filter((provider) =>
+    Object.values(site.forms).some((backend) => backend?.provider === provider),
+  );
+  if (referrerProviders.length) {
+    // A comma-separated value is a fallback list: the browser uses the last policy it knows.
+    const known = [
+      "no-referrer",
+      "no-referrer-when-downgrade",
+      "same-origin",
+      "origin",
+      "strict-origin",
+      "origin-when-cross-origin",
+      "strict-origin-when-cross-origin",
+      "unsafe-url",
+    ];
+    const policy = securityHeaders.find((h) => name(h.key) === "referrer-policy")?.value ?? "";
+    const inUse = policy
+      .split(",")
+      .map((value) => value.trim().toLowerCase())
+      .filter((value) => known.includes(value))
+      .at(-1);
+    const breaking = inUse === "no-referrer" || inUse === "same-origin" ? inUse : null;
+    if (breaking) {
+      const why = {
+        formward: "breaks the form at Formward without JavaScript (the browser then sends Origin: null with the plain POST)",
+        formspree: `makes Formspree's "Restrict to Domain" file the form's messages as spam (the browser then sends no Referer)`,
+      };
+      for (const provider of referrerProviders) {
+        errors.push(
+          `config/securityHeaders.ts: Referrer-Policy "${breaking}" ${why[provider]}: keep "strict-origin-when-cross-origin", also in netlify.toml`,
+        );
+      }
     }
   }
 }
@@ -1125,6 +1426,7 @@ if (errors.length) {
 }
 console.log(
   `check:market ok: ${routePaths.size} routes, ${collections.length} collections, ${legacyRedirects.length} redirects, ` +
-    `${declaredForms.length} forms, ${openClinics.length} open clinics (booking: ${site.booking.provider}), ` +
+    `${Object.keys(forms).length} forms (${Object.keys(forms).map((kind) => `${kind}: ${site.forms[kind].provider}`).join(", ")}), ` +
+    `${openClinics.length} open clinics (booking: ${site.booking.provider}), ` +
     `${reviews.length} reviews, ${blog.posts.length} published posts (${blog.allPosts.length - blog.posts.length} on hold)`,
 );

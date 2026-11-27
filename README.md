@@ -14,7 +14,9 @@ står i `ARCHITECTURE.md`.
 - **Next.js 16** (App Router, React 19, TypeScript) — alle sider genereres statisk
 - **Tailwind CSS v4** — design-tokens i `app/globals.css`
 - **Netlify** — hosting (`netlify.toml`, Next.js-runtime)
-- **Netlify Forms** — kontaktformular og nyhedsbrev (ingen backend)
+- **Formularer** — kontaktformular og nyhedsbrev sendes til den udbyder, der står i
+  `config/site.ts` → `forms` (ingen backend). I dag: kontaktformularen hos Formspree
+  (midlertidigt), nyhedsbrevet hos Netlify Forms (se "Formularerne væk fra Netlify")
 - **Gecko Booking** — online booking på `/booking` (TIMMA understøttes til fillox.no)
 - **Cookiebanner + Google Tag Manager** — statistik og marketing indlæses først efter samtykke
   (se "Cookiebanner og måling")
@@ -53,9 +55,14 @@ npm run build            # kører check:market først (prebuild)
 - en redirect eller en prisrække (`content/prices.ts` → `treatmentSlug` / `treatmentAnchor`) peger
   på en behandling, der ikke findes, eller på et `#anker`, som siden ikke har (afsnit og kort på
   de lange behandlingssider, fx `/behandlinger/andre-behandlingsmuligheder#lip-flip`);
-- en formular i `content/forms.ts` ikke er erklæret i `public/__forms.html` (eller omvendt), eller
-  `public/__kontakt-sendt.html` / `public/__nyhedsbrev-tilmeldt.html` ikke sender videre til deres
-  takkeside (`routes.contactThanks` / `routes.newsletterThanks`);
+- en formular, der ligger hos Netlify Forms (`config/site.ts` → `forms`), ikke er erklæret i
+  `public/__forms.html`, filen erklærer en formular, der er flyttet væk fra Netlify (eller en, der
+  ikke findes), eller `public/__kontakt-sendt.html` / `public/__nyhedsbrev-tilmeldt.html` ikke
+  sender videre til deres takkeside (`routes.contactThanks` / `routes.newsletterThanks`);
+- en formulars udbyder mangler eller er skrevet forkert (regel 21): et Formward-endpoint skal være
+  `https://forms.formward.eu/f/<formular-id>`, og hver formular skal have sit eget; Klaviyo (kun nyhedsbrevet) skal have den offentlige
+  nøgle på 6 tegn (aldrig en privat nøgle) og et liste-id; og CSP'en skal tillade præcis de
+  udbydere, der er i brug (`connect-src`, for Formward også `form-action`), og ingen andre;
 - booking-udbyderen mangler id'er (TIMMA: `timmaId` på hver åben klinik);
 - en åben kliniks adresse eller åbningstider ikke kan læses ind i de strukturerede data
   (sidste adresselinje skal være `<postnr> <by>`, tider som `10–20`, dag-labels i
@@ -89,7 +96,14 @@ npm run build            # kører check:market først (prebuild)
   `content/`; udviklerværktøjet i `components/dev/` er undtaget).
 
 Klinikker uden Gecko-kalender-id vises som en note (ikke en fejl), og det samme gør
-Trustpilot-tallene i `config/site.ts`, når `trustpilot.checked` er mere end 60 dage gammel.
+Trustpilot-tallene i `config/site.ts`, når `trustpilot.checked` er mere end 60 dage gammel, og
+formularer, der stadig ligger hos Netlify Forms ("forms still at Netlify Forms …") eller hos
+Formspree ("… form at Formspree, Inc. …"): se "Formularerne væk fra Netlify". **Ingen
+formularudbyder stopper længere et build**, heller ikke det, der går live (indtil 27/11-2026
+fejlede det build, hvis en formular lå hos Netlify Forms). Med Klaviyo som udbyder minder en note
+om, at Klaviyo gemmer i USA, og om hvilken tilmelding (`optIn`: dobbelt eller enkelt) der står i
+`config/site.ts`. Når nyhedsbrevet har forladt Netlify, minder en note om, at
+privatlivspolitikkens afsnit 12 endnu ikke navngiver det værktøj, der sender nyhedsbrevet.
 
 ## Deploy til Netlify
 
@@ -111,7 +125,9 @@ Netlify sætter selv HSTS og nosniff på dem.
 CSP'en (`config/securityHeaders.ts` → `cspDirectives`) tillader kun Gecko (script +
 kalender-iframe), de betalingssider, Gecko kan åbne i iframen (Nets Easy, OnPay), og værterne for
 taggene i GTM-containeren (Google Tag Manager, Google Analytics, Google Ads, Meta Pixel; de indlæses
-kun efter samtykke). Lægger I et nyt tredjepartsscript, en ny iframe eller et nyt tag i containeren
+kun efter samtykke) og `https://formspree.io` (kontaktformularen sendes dertil). En formular hos
+Netlify Forms kræver intet; flyttes en formular til en anden udbyder, skal dens vært med, og den
+gamle ud (`check:market` siger hvilken og hvor, se "Formularer"). Lægger I et nyt tredjepartsscript, en ny iframe eller et nyt tag i containeren
 på sitet, skal værten med i CSP'en (begge filer).
 
 1. Forbind repoet i Netlify → build-indstillingerne læses fra `netlify.toml`.
@@ -133,43 +149,79 @@ indekserbart. Buildet på `fillox-dk.netlify.app` svarer `Disallow: /` i robots.
 fortsætter præcis det build på fillox.dk, og hele sitet er blokeret for søgemaskiner (også de gamle
 adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne rækkefølge:
 
-1. Netlify → **Domain management**: tilføj `fillox.dk`, og sæt **`fillox.dk` (apex) som primært
+1. **Formularerne stopper ikke længere skiftet.** Indtil 27/11-2026 fejlede det nye
+   production-build, hvis en formular lå hos Netlify Forms. Det gør det ikke mere (du, 27/11-2026:
+   "glem alt det med data mm og bare sat formspree op"): buildet skriver kun en note. Nyhedsbrevet
+   går altså live hos Netlify Forms (tilmeldinger gemmes hos Netlify, Inc. i USA, som afsnit 12 i
+   privatlivspolitikken siger), og kontaktformularen hos Formspree (se "Før lancering" →
+   "Formularerne væk fra Netlify"). Send testbeskeden til Formspree fra preview'et, før domænet
+   peges om.
+2. Netlify → **Domain management**: tilføj `fillox.dk`, og sæt **`fillox.dk` (apex) som primært
    domæne**; `www.fillox.dk` er et alias, der viderestiller dertil. Bliver www primært (Netlify kan
    foreslå det), er `URL` `https://www.fillox.dk`: sitet bliver aldrig indekserbart, og alle
    canonicals peger på et domæne, der viderestiller.
-2. **Deploys → Trigger deploy → "Deploy site"** ("Clear cache and deploy site" skader ikke): et nyt
+3. **Deploys → Trigger deploy → "Deploy site"** ("Clear cache and deploy site" skader ikke): et nyt
    production-build, der ser det nye primære domæne.
-3. Tjek bagefter:
+4. Tjek bagefter:
    - `curl -s https://fillox.dk/robots.txt` viser `Allow: /` og `Sitemap: https://fillox.dk/sitemap.xml`;
    - `curl -s https://fillox.dk/ | grep -o '<meta name="robots"[^>]*>'` viser kun
      `max-image-preview:large` (intet `noindex`);
    - `curl -sI https://www.fillox.dk/` giver 301 til `https://fillox.dk/`.
 
-## Formularer via Netlify Forms
+## Formularer
 
-| Formular | Navn (`content/forms.ts`) | Hvor |
-|---|---|---|
-| Kontakt | `kontakt` | `/kontakt` |
-| Nyhedsbrev | `nyhedsbrev` | footeren på alle sider + `/blog` |
+**Hvor formularerne sender hen, står ét sted: `config/site.ts` → `forms`** (én linje pr. formular).
+I dag (27/11-2026): **kontaktformularen sender til Formspree** (dit valg, midlertidigt: "det bare
+lige nu så vi kan starte, senere rykker vi til det svenske"), **nyhedsbrevet stadig til Netlify
+Forms**. Se "Før lancering" → "Formularerne væk fra Netlify" for det, du skal gøre hos Formspree,
+og for mulighederne bagefter.
 
-- Netlify finder formularerne ved deploy i `public/__forms.html` (skjult, aldrig linket).
-  Feltnavnene dér skal matche det, komponenterne sender.
-- Med JavaScript sender siden data til `/__forms.html` (`lib/forms.ts`) og viser en kvittering
-  på stedet. Uden JavaScript poster kontaktformularen til `public/__kontakt-sendt.html`, som
-  sender videre til `/kontakt/tak`, og nyhedsbrevet til `public/__nyhedsbrev-tilmeldt.html`, som
-  sender videre til `/nyhedsbrev/tak`. Filerne i `public/` indeholder ingen tekst.
+| Formular | Navn (`content/forms.ts`) | Hvor | Udbyder i dag | Kan skiftes til |
+|---|---|---|---|---|
+| Kontakt | `kontakt` | `/kontakt` | Formspree (`https://formspree.io/f/mbgoerad`) | Formward |
+| Nyhedsbrev | `nyhedsbrev` | footeren på alle sider + `/blog` | Netlify Forms | Klaviyo, Formward eller Formspree |
+
+| Udbyder | Linje i `config/site.ts` → `forms` | Med JavaScript | Uden JavaScript |
+|---|---|---|---|
+| Netlify Forms (Netlify, Inc., USA) | `{ provider: "netlify" }` | sender til `/__forms.html` | poster til `public/__kontakt-sendt.html` / `public/__nyhedsbrev-tilmeldt.html`, som sender videre til takkesiden |
+| Formward (EGF Group AB, Sverige; gemmes i Sverige) | `{ provider: "formward", endpoint: "https://forms.formward.eu/f/<id>" }` | sender direkte til endpoint'et | poster direkte til endpoint'et, som sender videre til takkesiden (`/kontakt/tak`, `/nyhedsbrev/tak`) |
+| Formspree (Formspree, Inc., USA; gemmes hos Amazon i USA, til I sletter det) | `{ provider: "formspree", endpoint: "https://formspree.io/f/<id>" }` (adressen fra formularens fane **Integration**, ikke `…/forms/<id>`) | sender direkte til endpoint'et (kun felterne og det skjulte spamfelt; ingen cookies) | kan ikke sendes: en almindelig indsendelse ville ende på Formsprees egen takkeside (med Googles tag og en cookie). Knappen er slået fra, og der står "Formularen kan kun sendes med JavaScript slået til. Ring til os på 35 10 00 50, eller skriv til kontakt@fillox.dk, så hjælper vi dig." Samme linje vises, hvis sidens scripts ikke er kommet i gang efter 8 sekunder |
+| Klaviyo (kun nyhedsbrevet; Klaviyo, Inc., USA) | `{ provider: "klaviyo", companyId: "<offentlig nøgle, 6 tegn>", listId: "<liste-id>", optIn: "double" }` (`optIn` er listens egen indstilling i Klaviyo, dobbelt eller enkelt tilmelding) | tilmelder direkte på listen i Klaviyo; med `optIn: "double"` siger kvitteringen "Tjek din indbakke … Klik på linket i den for at bekræfte din tilmelding." | kan ikke sendes: knappen er slået fra (og ser slået fra ud), og der står "Tilmeldingen virker kun med JavaScript slået til. Skriv til os på kontakt@fillox.dk, så tilmelder vi dig." Samme linje vises, hvis sidens scripts ikke er kommet i gang efter 8 sekunder (en blokeret eller fejlet fil) |
+
+- Koden, der sender, er `lib/forms.ts`; komponenterne ved ikke, hvilken udbyder der bruges.
+  Kvitteringen og fejlbeskeden på siden er de samme for alle udbydere (fejlbeskeden ved
+  kontaktformularen nævner telefonnummeret, så ingen står uden en vej til jer, hvis udbyderen er
+  nede). Eneste undtagelse: nyhedsbrevets kvittering ved dobbelt tilmelding hos Klaviyo (se
+  tabellen). Svarer udbyderen ikke inden for 15 sekunder, opgiver formularen og viser
+  fejlbeskeden; beskeden kan alligevel være nået frem, så et nyt forsøg kan give en dublet.
+- **Sådan skiftes en formular** (udvikleren, når du har sendt endpoint / id'er): læs først, hvad
+  `config/formProviders.ts` lister som UNCONFIRMED for udbyderen (det, deres dokumentation ikke
+  bekræfter, og som den første rigtige testindsendelse skal afklare). Ret så linjen i
+  `config/site.ts` → `forms`, og kør `npm run check:market`. Den siger præcis, hvad der mangler:
+  udbyderens adresse i CSP'en (`config/securityHeaders.ts` **og** `netlify.toml`) og formularen, der
+  skal slettes fra `public/__forms.html` (ellers bliver Netlify ved med at tage imod og gemme det,
+  der sendes dertil). Privatlivspolitikkens "Databehandler"-punkter (afsnit 12 og 14) skifter selv
+  tekst efter udbyderen (`content/pages/legal.ts` → `formProcessorTexts`).
+- Kun for formularer hos Netlify Forms: Netlify finder dem ved deploy i `public/__forms.html`
+  (skjult, aldrig linket), og feltnavnene dér skal matche det, komponenterne sender.
+- Filerne i `public/` indeholder ingen tekst; takkesiderne er `/kontakt/tak` og `/nyhedsbrev/tak`.
 - Nyhedsbrevet: privatlivspolitikken har et afsnit om det (`content/pages/legal.ts`, "12.
   Nyhedsbrev"), som begge tilmeldinger linker til. Skal godkendes af Fillox inden lancering (se
   TODO'en dér: mailværktøjet og databehandleraftalen med det, og hvor længe beviset for samtykket
-  gemmes; overførslen til USA via Netlify står i afsnittet siden 26/11-2026). Nyhedsbrevet sender
-  det, tilmeldingen lover (Albertes tekst, 26/11-2026): "det seneste nyt om vores behandlinger,
-  produktnyheder og særlige invitationer". Ingen tilbud, og aldrig reklame for rynkebehandling
-  eller andre receptpligtige lægemidler (se "'Tilbud' i nyhedsbrevet").
+  gemmes; hvem der gemmer tilmeldingerne, og en eventuel overførsel til USA, følger udbyderen).
+  Nyhedsbrevet sender det, tilmeldingen lover (Albertes tekst, 26/11-2026): "det seneste nyt om
+  vores behandlinger, produktnyheder og særlige invitationer". Ingen tilbud, og aldrig reklame for
+  rynkebehandling eller andre receptpligtige lægemidler (se "'Tilbud' i nyhedsbrevet").
 - Kontaktformularen: afsnittet "14. Kontaktformular" i privatlivspolitikken, som formularen linker
   til (se "Privatlivspolitikken og kontaktformularen").
-- Spam: honeypot-feltet `bot-field`.
-- Notifikationer (e-mail ved ny besked) sættes op i Netlify under **Forms → Form notifications**,
-  kun til en mailboks, som kun behandlerne læser (se "Hvem læser beskederne?").
+- Spam: et skjult honeypot-felt (`bot-field` hos Netlify, `_gotcha` hos Formward og Formspree; ved Klaviyo
+  stopper sitet selv en tilmelding, hvor feltet er udfyldt, uden at sende noget). Hos Formward
+  ligger feltet uden for skærmen i stedet for at være skjult med `display: none`, som Formwards
+  feltvejledning beder om ("which some bots detect"); skærmlæsere og tabulator springer det over.
+- Notifikationer (e-mail ved ny besked) sættes op hos udbyderen (Netlify: **Forms → Form
+  notifications**; Formspree: formularens **Workflow** → Email; Formward: formularens
+  **Notifications**), kun til en mailboks, som kun
+  behandlerne læser (se "Hvem læser beskederne?").
 
 ## Cookiebanner og måling
 
@@ -220,6 +272,203 @@ adressers 308-viderestillinger), indtil nogen deployer igen. Derfor, i denne ræ
 Albertes rettelser fra 26.–27/11-2026 (det, der er gjort, og hendes åbne spørgsmål) står samlet
 sidst i listen under "Albertes rettelser 26.–27/11-2026".
 
+- [ ] **Formularerne væk fra Netlify (du, 27/11-2026).** Du
+      skrev om privatlivspolitikkens "tilmeldinger modtages og opbevares hos vores hostingudbyder,
+      Netlify": "nej vi kommer ikke til at opbevare data hos netlify. det finder vi en løsning på..
+      vi skal intet have i USA" og "måske bruger vi https://formward.eu hvis vi skal være helt
+      sikkert. men tanken er at emails registerees måske direkte i klaviyo via nyhedsbrev".
+      Senere samme dag sendte du Formspree-adressen til kontaktformularen ("Formspree alligevel",
+      "det bare lige nu så vi kan starte, senere rykker vi til det svenske") og skrev: "glem alt
+      det med data mm og bare sat formspree op. det jo lige til..?". **Derfor stopper
+      formularerne ikke længere lanceringen**: buildet skriver kun en note om dem.
+  - **Sådan er det i dag**: kontaktformularen sender til Formspree (nedenfor). Nyhedsbrevet
+    sender stadig til Netlify Forms, som gemmer tilmeldingerne hos Netlify, Inc. i USA, også når
+    sitet er live; afsnit 12 i privatlivspolitikken siger det. Vil du have nyhedsbrevet væk fra
+    Netlify, så vælg en af mulighederne B, C eller en Formspree-formular mere (send os dens
+    adresse).
+  - [ ] **Formspree til kontaktformularen (gør dette, før sitet går live).** Sitet sender
+        navn, e-mail, telefon, klinik og besked direkte til `https://formspree.io/f/mbgoerad`.
+        **Vi har aldrig sendt noget til din formular**; den første besked sender du selv (trin 3).
+        I Formsprees kontrolpanel:
+    1. **Slå Formsprees reCAPTCHA fra for formularen**: formularen → **Settings** → "Spam
+       protection". Den er en side hos Formspree med Googles reCAPTCHA, som ikke virker sammen
+       med vores formular: er den slået til, får alle "Vi kunne ikke sende din besked …". Sitet
+       har sit eget skjulte spamfelt.
+    2. **Hvem får besked**: formularen → **Workflow** → Email → Settings. Adressen skal være en
+       af kontoens bekræftede adresser (**Account** → Linked Emails) og en mailboks, som kun
+       behandlerne læser (se "Hvem læser beskederne?").
+    3. **Send én testbesked** fra `https://fillox-dk.netlify.app/kontakt`, når ændringen er
+       deployet. Du skal se "Tak for din besked", beskeden under formularens **Submissions**, og
+       mailen i mailboksen. Ser du "Vi kunne ikke sende din besked", så sig til (oftest trin 1).
+    4. **Slet besvarede beskeder** under **Submissions** i en fast rytme: Formspree gemmer alt,
+       til I sletter det, og afsnit 14 lover "Derefter sletter vi den".
+    5. Gratisplanen dækker 50 beskeder om måneden. Kommer der flere, bliver formularen ifølge
+       Formspree ved med at virke for de besøgende, men I får ingen mail, før beskeden er
+       frigivet ("Reprocess") i mappen "Over Limit" under **Submissions**.
+    - Uden JavaScript kan formularen ikke sendes hos Formspree; sitet viser i stedet
+      telefonnummer og e-mail (se tabellen under "Formularer").
+    - Afsnit 14 i privatlivspolitikken siger nu, at beskederne modtages og gemmes hos Formspree,
+      Inc. i USA, og at Formspree ikke er certificeret under EU-U.S. Data Privacy Framework
+      (slå evt. "Formspree" op på dataprivacyframework.gov/list) (`content/pages/legal.ts`,
+      mærket `TODO: copy review (2026-11-27)`). Formspree har ingen offentlig
+      databehandleraftale; vil I have en, så skriv til team@formspree.io.
+    - **Når I rykker til Formward** ("det svenske"): mulighed A nedenfor, og så én linje i
+      `config/site.ts` → `forms` (udvikleren).
+  - **Sitet er klar til at skifte videre**: én linje pr. formular i `config/site.ts` → `forms` (se
+    "Formularer" ovenfor). Formward og Klaviyo er bygget ind og testet mod en lokal efterligning
+    af deres dokumenterede svar; **intet er nogensinde sendt til Formward eller Klaviyo**, og der
+    er ikke oprettet nogen konto dér. Vi mangler kun dit valg og adresserne / id'erne nedenfor.
+  - [ ] **Mulighed A: Formward til kontaktformularen** (senere, i stedet for Formspree; passer bedst til "intet i USA").
+        Formward drives af det svenske selskab EGF Group AB (org.nr. 559501-3573, Stockholm).
+        Beskeder, logfiler og backup ligger på én server hos Hostup AB i Sverige, med en natlig
+        krypteret backup på en anden server samme sted (gemmes 30 dage). Det, du skal
+        vide først: produktet er fra 2025 (lanceret 16/12-2025), selskabet har to ansatte, der er
+        ingen SLA og ingen ISO 27001- eller SOC 2-certificering, og databasen er ikke krypteret på
+        disken. Er Formward nede, eller svarer den ikke inden for 15 sekunder, viser formularen
+        "Vi kunne ikke sende din besked. Prøv igen, eller ring til os på 35 10 00 50." Pris: Free (50 beskeder om måneden, slettes altid efter 30 dage)
+        eller Personal, 15 € om måneden (10 € ved årsbetaling): 200 beskeder, valgfri
+        opbevaringstid, sletning pr. e-mailadresse og CSV-eksport. Kommer der flere beskeder end
+        planen dækker, får afsenderen stadig "Tak for din besked", men beskeden lægges i mappen
+        "Over limit" **uden notifikation**, til I frigiver den: hold øje med forbruget. Bliv på Free
+        eller Personal: på de dyrere planer (Professional, Business) sendes beskederne som standard
+        til AI-behandling hos Mistral (Frankrig), som så skal slås fra pr. formular. Du gør
+        (navnene i Formwards kontrolpanel kan afvige lidt: vi har ikke haft en konto):
+    1. Opret en konto på formward.eu (det skal du selv gøre; vi opretter ingen konti).
+    2. **Account → Data Processing Agreement**: accepter databehandleraftalen (version 1.2 af
+       18/11-2026). Skal I have et underskrevet eksemplar, så skriv til privacy@formward.eu.
+    3. Opret en formular, fx "Fillox kontakt".
+    4. **Allowed origins**: `https://fillox.dk` og `https://www.fillox.dk` (præcis sådan, med
+       https). Mens vi tester, også `https://fillox-dk.netlify.app`, eller lav en ekstra
+       testformular uden liste.
+    5. **Redirect URL** (formularens indstillinger): `https://fillox.dk/kontakt/tak`. Sitet
+       sender selv takkesidens adresse med, når nogen sender uden JavaScript; denne indstilling
+       er Formwards reserve, hvis den ikke kan bruges, så ingen ender på Formwards egen
+       takkeside (som næppe findes på dansk: Formward er på ni sprog, og dansk er ikke et af dem).
+    6. **Notifications**: modtageren skal være en mailboks, som kun behandlerne læser (se "Hvem
+       læser beskederne?"). Formward sender først en bekræftelsesmail til den adresse; beskeder
+       holdes tilbage, til nogen har bekræftet den. Slå **"Link only"** til, så mailen kun siger, at der er kommet en besked,
+       og ikke indeholder beskeden. Uden "Link only" sendes indholdet gennem Formwards mailudbyder
+       (Mailjet, som ifølge moderselskabet Sinch kører på Google Cloud i Tyskland og Belgien) og
+       ender i jeres mailboks; er den hos Gmail eller Outlook, har en amerikansk udbyder så en kopi.
+    7. **Retention** (opbevaring): 30–90 dage (på Free er den fast 30 dage). Så passer afsnit 14's
+       "Derefter sletter vi den" af sig selv.
+    8. **Lad disse indstillinger være slået fra**, ellers afviser Formward det, sitet sender:
+       - **Cloudflare Turnstile** (Cloudflare er amerikansk) og Formwards egen captcha (den
+         virker kun med JavaScript). Sitet har sit eget skjulte spamfelt.
+       - **Krav om samtykke** ("require consent"): sitet sender ikke Formwards samtykkefelt, så
+         alle beskeder ville blive afvist.
+       - **Påkrævede felter og feltregler**: sitet tjekker selv navn, e-mail og besked og sender
+         telefon og klinik som tomme felter, når de ikke er udfyldt. Gør dem ikke påkrævede.
+    9. **Send os formularens endpoint**: `https://forms.formward.eu/f/…`. Det er ikke hemmeligt.
+    10. Spørg privacy@formward.eu skriftligt: (a) Deres aftale (§ 3) siger, at tjenesten "is not
+        intended for" helbredsoplysninger uden "appropriate safeguards". Er en kliniks
+        kontaktformular, hvor nogen kan komme til at skrive om deres helbred, i orden? (b) Hvad
+        bruger de Brevo til (står i deres mail-opsætning, men ikke på listen over
+        underdatabehandlere)?
+  - [ ] **Mulighed B: Klaviyo til nyhedsbrevet** (din tanke: "emails registerees måske direkte i
+        klaviyo"). **Det strider mod "intet i USA"**: aftaleparten er Klaviyo, Inc. i Boston, og
+        Klaviyo skriver selv "All existing customer accounts are hosted and processed in the United
+        States" (Amazon, Virginia). Et EU-miljø i Tyskland findes siden 15/9-2026, men kun for nye
+        kunder med kontrakt ("Limited Availability"), og det vælges, når kontoen oprettes; en
+        eksisterende konto kan ikke flyttes endnu (Klaviyo forventer fra 1. kvartal 2027). Selv med
+        EU-miljøet må Klaviyo og dets underleverandører ifølge aftalen (§ 4.4) behandle data uden
+        for EU. Overførslen er lovlig (EU-U.S. Data Privacy Framework), men det er noget andet end
+        "intet i USA". Vælger I Klaviyo alligevel, skriver afsnit 12 det ærligt: "Klaviyo, Inc.
+        ligger i USA og opbevarer oplysningerne dér …". Du gør:
+    1. Har Fillox allerede en Klaviyo-konto? Så ligger den i USA. Spørg Klaviyo, om I kan få en
+       ny konto i EU-miljøet (Tyskland), og send os svaret: så skal afsnit 12 skrives ud fra den
+       kontos papirer. Spørg dem samtidig skriftligt, **hvilken adresse** hjemmesidens
+       tilmelding skal sende til for en EU-konto, og hvor `a.klaviyo.com` står: Klaviyos
+       dokumentation nævner kun `a.klaviyo.com` og siger ikke, om en EU-konto bruger en anden.
+    2. **Lists & segments**: opret eller vælg listen til nyhedsbrevet → **Settings**. Send os
+       listens id (står øverst på siden og i adressen).
+    3. Samme sted, **Consent → "Opt-in process"**: **vælg dobbelt tilmelding** (double opt-in:
+       Klaviyo sender en mail, hvor man bekræfter; det beviser, at adressen er den tilmeldtes).
+       Adressen, sitet sender tilmeldinger til, er offentlig, så med enkelt tilmelding kan
+       enhver tilmelde andres e-mailadresser. **Sig, hvad du har valgt**: det står som `optIn` i
+       `config/site.ts`, og kvitteringen på sitet følger det. Med dobbelt står der "Tjek din
+       indbakke. Vi har sendt dig en mail. Klik på linket i den for at bekræfte din tilmelding.",
+       med enkelt "Tak for din tilmelding …". Ændrer du indstillingen i Klaviyo senere, skal vi
+       rette `optIn` samme dag, ellers lover kvitteringen noget forkert.
+    4. **Kontonavnet nederst til venstre → Settings → API keys**: send os "Site ID" (den
+       offentlige nøgle, 6 tegn). **Aldrig en privat nøgle** (dem, der begynder med `pk_`): nøglen
+       ligger synligt i sidens kode.
+    5. Tjek, at Klaviyo, Inc. står som "Active" på dataprivacyframework.gov/list (det har vi
+       kun fra Klaviyos egen aftale), og at databehandleraftalen gælder for jeres konto (den er en
+       del af Klaviyos vilkår).
+    6. Uden JavaScript kan man ikke tilmelde sig hos Klaviyo. Sitet viser i stedet "Tilmeldingen
+       virker kun med JavaScript slået til. Skriv til os på kontakt@fillox.dk, så tilmelder vi
+       dig." Er det i orden, at I tilmelder dem, der skriver? Samme linje vises (og knappen
+       bliver grå), hvis sidens scripts ikke er kommet i gang efter 8 sekunder, fx fordi en fil
+       er blokeret eller fejlet. Klaviyo har også en tilmeldingsside pr. liste hos dem selv
+       (listen → Sign-up forms → "Copy Subscribe Page URL"); vil du hellere have, at linjen
+       linker dertil, så sig til (den besøgende forlader så sitet).
+    7. **Annonceblokkere** (ikke undersøgt): `a.klaviyo.com` er også Klaviyos sporingsadresse og
+       står sandsynligvis på blokeringslister (uBlock Origin, Brave, Firefox' strenge
+       beskyttelse, DNS-filtre). For de besøgende ender tilmeldingen i fejlbeskeden "Vi kunne
+       ikke gennemføre din tilmelding. Prøv igen, eller skriv til os på kontakt@fillox.dk." Det
+       kan ramme langt flere end dem uden JavaScript. Vi prøver det i den første rigtige test
+       (én tilmelding med en blokker slået til) og siger til, før I vælger endeligt.
+    8. **Hvilken side man tilmeldte sig på**: sitet sender fx "footer:/behandlinger/hyperhidrose"
+       med som bevis for samtykket (afsnit 12 oplyser det: "den side, du tilmeldte dig på"). Hos
+       Klaviyo kobler det en e-mailadresse til interessen for en bestemt behandling i et
+       amerikansk markedsføringsværktøj. Skal vi i stedet kun sende "footer" / "blog" til
+       Klaviyo? Så retter vi også første sætning i afsnit 12.
+  - [ ] **Mulighed C: nyhedsbrevet til Formward** (helt uden USA): tilmeldingerne samles i en
+        Formward-formular nr. 2 i Sverige (trin 3–9 ovenfor, med sit eget endpoint og Redirect
+        URL `https://fillox.dk/nyhedsbrev/tak`), og I henter dem derfra (CSV-eksport på
+        Personal) ind i det værktøj, der sender nyhedsbrevet. Det kræver Personal: på Free
+        slettes en tilmelding efter 30 dage, og der er ingen CSV-eksport.
+    - **Opbevaring for denne formular (i stedet for trin 7)**: vælg 30 eller 90 dage, og
+      eksportér i en fast rytme, der er kortere end perioden (fx hver uge). En tilmelding, der
+      ikke er eksporteret, når perioden udløber, slettes uden varsel. Vælg ikke "keep until
+      deleted": så bliver adressen liggende hos Formward, også efter at personen har afmeldt
+      sig, og det passer ikke med afsnit 12's "vi opbevarer din e-mailadresse, indtil du
+      afmelder dig nyhedsbrevet".
+    - **Gem eksporten** (e-mail, tidspunkt og siden, man tilmeldte sig på): den er beviset for
+      samtykket, også efter en afmelding. Hvor længe den gemmes derefter, er det åbne punkt i
+      afsnit 12 (se "Formularer"); sig, hvad I vælger, så det kan stå der.
+    - **Værktøjet, der sender nyhedsbrevet**, er databehandler og skal stå i afsnit 12
+      (`check:market` minder om det med en note, indtil det er navngivet). Europæiske
+      nyhedsbrevsværktøjer, vi har set på: **Ubivox** (Odense; data "primært i Danmark og altid
+      inden for EU", ingen amerikanske underleverandører, ISAE 3000-revideret), **rapidmail**
+      (Tyskland; alle servere i Tyskland, ingen overførsel til tredjelande), CleverReach
+      (Tyskland/EU) og MailerLite (irsk selskab, men på Google Cloud). Sitet kan i dag ikke
+      sende direkte til dem; vælger I et af dem, bygger vi det ind som en udbyder mere (sig til).
+  - [ ] **Svar os**: (1) Formward til kontaktformularen: ja/nej? (2) Nyhedsbrevet: Klaviyo
+        (USA), Formward + et europæisk værktøj, eller noget tredje? (3) Hvilken mailboks skal have
+        besked om nye henvendelser, og hvem læser den?
+  - [ ] **Hvad ligger ellers i USA? Skal "intet i USA" også gælde det?**
+    - **Hostingen**: selve sitet leveres af Netlify (amerikansk selskab), også når ingen
+      formular ligger der. Netlify ser alle besøgendes IP-adresser, som enhver webhost gør.
+      Skal sitet også flyttes til en europæisk host? Det er en større opgave end formularerne.
+    - **Google og Meta** (kun efter ja i cookiebanneret): Google Tag Manager, Google Analytics,
+      Google Ads og Meta Pixel sender oplysninger om besøget til Google og Meta (USA).
+      Overførselsgrundlaget er stadig et åbent punkt (se "Cookiebanner og måling").
+    - **Gecko-kalenderen** på `/booking` indlæser selv Google Tag Manager inde i sin ramme,
+      uanset cookievalget (se "Cookiebanner og måling").
+    - **Mailboksen**, der modtager notifikationer: ligger den hos Google eller Microsoft, er
+      det en amerikansk udbyder (derfor "Link only" i mulighed A).
+    - **Klaviyo**, hvis I vælger det (se mulighed B).
+  - **Når vi har fået endpoint / id'er** (udvikleren): linjen i `config/site.ts` → `forms`
+    (ved Klaviyo med `optIn`, som du har valgt i trin 3), det `check:market` beder om (CSP i
+    `config/securityHeaders.ts` og `netlify.toml`; formularen ud af `public/__forms.html`), og
+    **den første rigtige test fra preview'et**, som du ser ankomme hos udbyderen. Intet er
+    nogensinde sendt til Formward eller Klaviyo, så den test afklarer det, deres dokumentation
+    ikke bekræfter (`config/formProviders.ts`, "UNCONFIRMED"):
+    - **Formward**: én besked med JavaScript og én uden, i Chrome, Firefox og Safari. Uden
+      JavaScript skal man ende på `/kontakt/tak` (ikke på en side hos Formward), og beskeden
+      skal ligge i Formwards indbakke og udløse notifikationen.
+    - **Klaviyo**: skift først linjen permanent, når testen er bestået. Klaviyo dokumenterer
+      ikke, hvordan deres server svarer browserens forhåndsforespørgsel (CORS); svarer den ikke
+      rigtigt, fejler alle tilmeldinger. Se i browserens netværkspanel, i Chrome, Firefox og
+      Safari og fra hver adresse sitet bruges på (preview'et, senere `https://fillox.dk`), at
+      OPTIONS-kaldet får 2xx og POST-kaldet 202 (ingen 3xx). Find derefter profilen på listen i
+      Klaviyo med kilden ("footer:/…"): 202 betyder kun "modtaget", og vi ved ikke, hvad Klaviyo
+      svarer på et forkert liste-id. Prøv også én tilmelding med en annonceblokker slået til.
+    De nye tekster i privatlivspolitikken (afsnit 12 og 14 for Formward og Klaviyo), linjen
+    uden JavaScript og kvitteringen ved dobbelt tilmelding ("Tjek din indbakke …") er mærket
+    `TODO: copy review (2026-11-27)` og skal læses af dig / en jurist.
 - [ ] **Gecko-kalender-id'er** på City2, Amager Centret og Frederiksberg i `content/clinics.ts`
       (`booking.geckoCalendarId`), så klinik-links vælger klinikken i kalenderen.
 - [ ] **Gecko-tema**: sæt den nye `integrations/gecko/fillox-booking-theme.css` (Figtree,
@@ -261,7 +510,12 @@ sidst i listen under "Albertes rettelser 26.–27/11-2026".
   - [ ] `content/pages/legal.ts`: meta-beskrivelser og "Juridisk"-eyebrow, og siden 26/11-2026 hele
         `/handelsbetingelser`, afsnit 14 i privatlivspolitikken og de nye sætninger i afsnit 12
         (formålet og overførslen til USA; se "Handelsbetingelserne" og "Privatlivspolitikken og
-        kontaktformularen")
+        kontaktformularen"); og siden 27/11-2026 "Databehandler"-teksterne for Formward (afsnit 12
+        og 14) og Klaviyo (afsnit 12), som først vises, når formularen skifter udbyder
+        (`formProcessorTexts`, `TODO: copy review (2026-11-27)`)
+  - [ ] `content/layout.ts` og `content/pages/blog.ts` → `newsletter.noScript` (27/11-2026): linjen
+        "Tilmeldingen virker kun med JavaScript slået til. Skriv til os på kontakt@fillox.dk, så
+        tilmelder vi dig.", som kun vises uden JavaScript, og kun hvis nyhedsbrevet lægges hos Klaviyo
   - [ ] **Rettet efter ejerens svar 26/11-2026** (punkt 1–7 og 9 i gennemgangen, alle markeret
         `// TODO: copy review`): de nye sætninger i `content/treatments.ts`, `content/blog.ts`,
         `content/pages/treatments.ts` (løfter om resultater, opløsning af filler, "et lokalbedøvende
@@ -338,12 +592,18 @@ sidst i listen under "Albertes rettelser 26.–27/11-2026".
       i formularen" nedenfor), opbevaring, Netlify, Inc. som databehandler, overførslen til
       USA via EU-U.S. Data Privacy Framework (Netlify, Inc står som "Active" på
       dataprivacyframework.gov, tjekket 26/11-2026) og retten til indsigelse; afsnit 12 har fået samme
-      overførselsgrundlag. Formularen linker dertil med en linje over knappen ("Vi bruger dine
+      overførselsgrundlag. **Siden 27/11-2026 følger "Databehandler"-punktet i afsnit 12 og 14
+      formularens udbyder** (`config/site.ts` → `forms`): Netlify-teksten står der kun, så længe
+      formularen ligger hos Netlify (se "Formularerne væk fra Netlify" øverst). Punkterne nedenfor,
+      der nævner Netlify, gælder derfor **kun, mens udbyderen er Netlify**; det står ved hvert. Formularen linker dertil med en linje over knappen ("Vi bruger dine
       oplysninger til at besvare din henvendelse. Læs mere i vores privatlivspolitik."), på mobil
       i stedet for det tidligere afkrydsningsfelt (se "Krydset på mobil" nedenfor). Opfølgning:
-  - [ ] **Slet besvarede beskeder i Netlify** (Forms → "kontakt"): afsnit 14 lover, at en henvendelse
-        slettes, når den er besvaret og fulgt op, og Netlify gemmer dem, til de slettes. Aftal en fast
-        rytme, fx hver måned.
+  - [ ] **Slet besvarede beskeder i Netlify** (Forms → "kontakt"; *kun mens kontaktformularen
+        ligger hos Netlify*): afsnit 14 lover, at en henvendelse slettes, når den er besvaret og
+        fulgt op, og Netlify gemmer dem, til de slettes. Aftal en fast rytme, fx hver måned. Hos
+        Formward sætter I i stedet en opbevaringstid på formularen (30–90 dage), så sletter den selv.
+        **Ved skiftet**: slet også alle testbeskeder og -tilmeldinger, der ligger i Netlify (Forms),
+        og slet de to formularer dér.
   - [x] **Helbredsoplysninger i formularen** (du, 26/11-2026: "nej du skal ikke skeive det i
         kontaktformularen. virker dumt.. ingen sender hvis der ikke er mulighed for at sende?" og
         "måske skriv kort sætning med du behøves ikke at skrive personlig oplysnigner, vi ringer til
@@ -361,8 +621,9 @@ sidst i listen under "Albertes rettelser 26.–27/11-2026".
         af "Indsigelse" (art. 21). Ingen jurist har vurderet afsnit 14. Kilderne står i kommentaren
         over afsnittet. Åbent:
     - [ ] **Hvem læser beskederne? (svar før lanceringen)**: § 7, stk. 3 gælder kun, når
-          oplysningerne behandles af sundhedspersoner med tavshedspligt efter loven. Hvem kan åbne
-          beskederne i Netlify (Forms) og i den mailboks, der får besked om nye beskeder? Er det kun
+          oplysningerne behandles af sundhedspersoner med tavshedspligt efter loven. Det gælder
+          uanset udbyder: hvem kan åbne beskederne hos udbyderen (i dag Netlify → Forms, senere
+          fx Formwards kontrolpanel) og i den mailboks, der får besked om nye beskeder? Er det kun
           Dr. Tom og sygeplejerskerne, tilføjer vi i afsnit 14: "Hos os er det kun vores behandlere,
           der læser og besvarer beskederne. De er sundhedspersoner og har tavshedspligt." Læser andet
           sundhedsfagligt personale med på en behandlers ansvar: "Hos os læses beskederne kun af vores
@@ -370,30 +631,40 @@ sidst i listen under "Albertes rettelser 26.–27/11-2026".
           tavshedspligt." En receptionist, der kun booker, er næppe sundhedsperson (sundhedsloven § 6;
           vejledning nr. 10248 af 15/12/2025), og tavshedspligt i en ansættelseskontrakt er ikke
           tavshedspligt efter loven. Læser receptionen med, så begræns adgangen, før sitet går live:
-          kun behandlerne må kunne se beskederne i Netlify og i notifikations-mailboksen. Det hjælper
+          kun behandlerne må kunne se beskederne hos udbyderen og i notifikations-mailboksen. Det hjælper
           ikke at fjerne sætningen om art. 9 fra afsnit 14, for så har helbredsoplysninger i beskederne
           slet intet grundlag.
-    - [ ] **Netlifys databehandleraftale** (Exhibit I, punkt 4: ingen følsomme oplysninger,
-          medmindre aftalen tillader det) er stadig en restrisiko. Linjen ved beskedfeltet får færre
-          til at skrive om deres helbred, men nogle gør det alligevel. Slet besvarede beskeder hurtigt
-          (se "Slet besvarede beskeder i Netlify"), og overvej på sigt en formularudbyder, hvis aftale
-          dækker helbredsoplysninger.
+    - [ ] **Udbyderens databehandleraftale og helbredsoplysninger** er en restrisiko hos begge.
+          *Netlify (i dag)*: Exhibit I, punkt 4: ingen følsomme oplysninger, medmindre aftalen
+          tillader det. *Formward*: § 3: tjenesten er "not intended for" helbredsoplysninger, og
+          kunden må ikke sende dem "without appropriate safeguards" (spørg dem, se mulighed A, trin
+          9). Ingen af de formularudbydere, vi har set på, siger udtrykkeligt ja til
+          helbredsoplysninger. Linjen ved beskedfeltet får færre til at skrive om deres helbred, men
+          nogle gør det alligevel. Slet besvarede beskeder hurtigt (kort opbevaringstid), og brug
+          "Link only" hos Formward, så indholdet ikke også ligger i en mailboks.
     - [x] **Krydset på mobil** (du, 26/11-2026: "ja fjern krydset"): "Jeg accepterer …" lignede et
           samtykke, som afsnit 14 ikke bygger på. Feltet er fjernet (også fra `public/__forms.html`),
           og mobil viser samme linje som fra 768 px. Afsnit 14 nævner ikke længere krydset.
-  - [ ] **IP-adresse i Netlify Forms**: Netlify har oplyst (supportforum 2020–2021, ikke i deres
-        dokumentation), at IP-adressen gemmes med hver indsendelse. Åbn en indsendelse eller
-        CSV-eksporten under Forms, og se, hvad der gemmes ud over felterne. Står der mere (IP-adresse,
-        browser, henvisende side), skal afsnit 12 og 14 nævne det.
-  - [ ] **Mailudbyderen**: slår I e-mail-notifikationer til i Netlify Forms (se "Netlify Forms"), ligger
-        beskederne også i jeres mailboks. Skal mailudbyderen nævnes som databehandler i afsnit 14 (og
-        overførslen, hvis den er uden for EU)?
-  - [ ] **EU-U.S. Data Privacy Framework** blev opretholdt af EU-Retten 3/9-2025 (T-553/23), men
+  - [ ] **IP-adresse i Netlify Forms** (*kun mens en formular ligger hos Netlify*): Netlify har
+        oplyst (supportforum 2020–2021, ikke i deres dokumentation), at IP-adressen gemmes med hver
+        indsendelse. Åbn en indsendelse eller CSV-eksporten under Forms, og se, hvad der gemmes ud
+        over felterne. Står der mere (IP-adresse, browser, henvisende side), skal afsnit 12 og 14
+        nævne det. Formward oplyser, at afsenderens IP-adresse kun gemmes som en nøglet hash (og
+        afkortet i serverlogs i 30 dage). For Klaviyo har vi ikke undersøgt, hvad der gemmes ud
+        over e-mailadressen: se en profil efter den første testtilmelding.
+  - [ ] **Mailudbyderen** (uanset udbyder): slår I e-mail-notifikationer til hos udbyderen (se
+        "Formularer"), ligger beskederne også i jeres mailboks. Skal mailudbyderen nævnes som
+        databehandler i afsnit 14 (og overførslen, hvis den er uden for EU)? Med Formwards "Link
+        only" indeholder mailen ikke beskeden, og spørgsmålet falder væk for indholdet.
+  - [ ] **EU-U.S. Data Privacy Framework** (*kun mens en formular ligger hos Netlify, eller hvis
+        nyhedsbrevet lægges hos Klaviyo*) blev opretholdt af EU-Retten 3/9-2025 (T-553/23), men
         sagen er anket til EU-Domstolen (C-703/25 P, anket 31/10-2025; vi har ikke fundet en afgørelse
         26/11-2026). Netlify, Inc stod som "Active" på dataprivacyframework.gov 26/11-2026. Tjek før
         lanceringen, at rammen stadig gælder, og at Netlify stadig står på listen; ellers bruger
         Netlifys databehandleraftale EU's standardkontraktbestemmelser (DPA § 14.3), og afsnit 12 og 14
-        skal rettes.
+        skal rettes. Klaviyo, Inc. skriver i sin egen aftale (§ 11.2), at selskabet er certificeret;
+        det har vi **ikke** tjekket på den officielle liste. Med Formward til begge formularer
+        nævner afsnit 12 og 14 ingen overførsel til USA, og punktet falder væk for formularerne.
 - [x] **"Tilbud" i nyhedsbrevet** (du, 26/11-2026: "ret det med priser osv osv.. det ikke
       mening"): nyhedsbrevet lover ingen tilbud. Siden 26/11-2026 står Albertes tekst i footeren og
       på `/blog` (på alle skærme): "Få nyt fra Fillox" og "Tilmeld dig vores nyhedsbrev, og få det
@@ -905,9 +1176,12 @@ sidst i listen under "Albertes rettelser 26.–27/11-2026".
       "Priser på behandlinger · Fillox" (aldrig et receptpligtigt produkt). Skal vi skrive dem, eller
       gør bureauet? (Bloggen hedder "Blog om behandlinger og efterpleje · Fillox" fra 25/11-2026, og
       Dr. Toms profil bruger hans korte titel, "Dr. Tom Haugland – Æstetisk læge & grundlægger".)
-- [ ] **Netlify Forms**: formularerne ses under Forms efter første deploy; slå notifikationer til,
-      kun til en mailboks, som kun behandlerne læser (se "Privatlivspolitikken og kontaktformularen":
-      "Hvem læser beskederne?", slet besvarede beskeder, og mailudbyderen som databehandler).
+- [ ] **Netlify Forms** (*kun for formularer, der ligger hos Netlify: i dag nyhedsbrevet, se
+      "Formularerne væk fra Netlify" øverst*): formularerne ses under Forms efter
+      første deploy; slå notifikationer til, kun til en mailboks, som kun behandlerne læser (se
+      "Privatlivspolitikken og kontaktformularen": "Hvem læser beskederne?", slet besvarede
+      beskeder, og mailudbyderen som databehandler). Det samme gælder notifikationerne hos den nye
+      udbyder.
 - [ ] **Blog** (du, 25/11-2026: "lave bloggen. skriv et par artikler", signeret "Fillox-holdet"):
       syv artikler, dateret 25/11-2026 — "Lip filler for første gang", "0,5 eller 1 ml?",
       "Hævelse og blå mærker", "Skinbooster eller Profhilo" og de tre rynkeartikler
@@ -1032,11 +1306,13 @@ sidst i listen under "Albertes rettelser 26.–27/11-2026".
       Gecko-kalender-id (Gecko kender behandlingsstedet "Fillox - Østerbro", id 14667). Alt sættes i
       `content/clinics.ts`.
 - [ ] **City2 og Amager Centret: lørdagstider, City2's adresse** (`content/clinics.ts`):
+      **City2's tider er bekræftet** (du, 27/11-2026: "City2: Hverdage: 10 – 19, Weekend: 10 – 17"):
+      sitet viser man–fre 10–19 og lør 10–17. **Søndag**: dit svar siger "Weekend 10–17", Alberte
+      skrev 26/11 "City2 og Amager skal begge stå som lukket om søndagen". Sitet viser søndag lukket,
+      til I har sagt, hvem der har ret (én linje i `centreHours`). Stadig åbent: City2's adresse —
       fillox.dk/kontakt siger både "Cityringen 2, Plan 3" (mobil) og "Cityringen 4" (desktop,
-      centrets egen adresse); weekend 10–17 (desktop) eller 10–19 (mobil). Centrets egen side
-      (city2.dk, uge 48) siger man–tor 10–19, fre 10–21, lør–søn 10–19. Sitet viser lør 10–17 for
-      begge klinikker; Amager Centrets egen side (amagercentret.dk, uge 48) siger lør 10–18. Hvad er
-      City2's adresse og de to klinikkers lørdagstider (som i Google-profilen)?
+      centrets egen adresse) — og Amager Centrets lørdagstid (sitet viser 10–17 som i City2;
+      amagercentret.dk, uge 48, siger lør 10–18).
 - [x] **Søndag lukket** (Alberte 26/11-2026: "City2 og Amager skal begge stå som lukket om
       søndagen"): City2 og Amager Centret viser man–fre 10–19, lør 10–17 og **søn lukket**. Alle fire
       klinikker skriver nu søndag som lukket ("Søn lukket" i menuerne, footeren og på forsiden,
@@ -1339,8 +1615,8 @@ komma- og grammatikfejl er rettet, se "Godkend vores tekster"); det, vi selv har
 
 ## Efter lancering
 
-- [ ] **Domæneskiftet** (lanceringsdagen, først): primært domæne, nyt deploy og de tre tjek i
-      "Domæneskiftet" ovenfor. Indtil det er gjort, er hele fillox.dk blokeret for søgemaskiner.
+- [ ] **Domæneskiftet** (lanceringsdagen, først): formularerne væk fra Netlify, primært domæne,
+      nyt deploy og de tre tjek i "Domæneskiftet" ovenfor. Indtil det er gjort, er hele fillox.dk blokeret for søgemaskiner.
 - [ ] **Første Netlify-deploy (preview)**: alt ovenfor er målt på `next start`. På Netlify kører
       billeder gennem Netlify Image CDN og HTML/JS gennem Netlifys edge, så tjek på preview-URL'en:
       Lighthouse mobil + desktop på de vigtigste sider; at `/_next/image` svarer med `image/avif`
@@ -1373,15 +1649,15 @@ skal du rette en tekst i en komponent, hører teksten til i `content/`.
 
 | Fil / mappe | Hvad |
 |---|---|
-| `config/site.ts` | `market: "no"`, `country: "NO"`, `legalName`, `domain`/`url` (`https://fillox.no`), `locale: "nb-NO"`, `lang: "nb"`, `currency: "NOK"`, `pricePattern`, telefon/e-mail, `company` (`registrationLabel: "Org.nr."`), Instagram, Trustpilot (`score`, `reviewCount`, `url` som på profilen), **booking** (se punkt 3), `analytics.gtmId` (fillox.no's egen GTM-container, eller `null`: så intet cookiebanner og ingen tags; cookielisten i `content/consent.ts` skal passe til containerens tags) |
+| `config/site.ts` | `market: "no"`, `country: "NO"`, `legalName`, `domain`/`url` (`https://fillox.no`), `locale: "nb-NO"`, `lang: "nb"`, `currency: "NOK"`, `pricePattern`, telefon/e-mail, `company` (`registrationLabel: "Org.nr."`), Instagram, Trustpilot (`score`, `reviewCount`, `url` som på profilen), **booking** (se punkt 3), **`forms`** (fillox.no's egne formular-udbydere: egne Formward-endpoints / egen Klaviyo-liste, se "Formularer"), `analytics.gtmId` (fillox.no's egen GTM-container, eller `null`: så intet cookiebanner og ingen tags; cookielisten i `content/consent.ts` skal passe til containerens tags) |
 | `content/routes.ts` | Norske stier, fx `/om-oss`, `/personvern`, `/kontakt/takk` — **og omdøb de matchende mapper i `app/`** |
 | `content/**` | Al tekst og data: navigation, klinikker, behandlinger, priser, behandlere, blog, sidetekster, UI-strenge, 404, `/booking`-tekst, `seo.ts` (dag-labels), `forms.ts` (formularnavne), `redirects.ts` (gamle fillox.no-URL'er), `reviews.ts` (kun ægte anmeldelser fra fillox.no's Trustpilot-profil, ordret; se kommentaren øverst i filen) |
-| `public/__forms.html` | Samme formularnavne som `content/forms.ts` |
-| `public/__kontakt-sendt.html` | Videresender til `routes.contactThanks` (fx `/kontakt/takk`) |
-| `public/__nyhedsbrev-tilmeldt.html` | Videresender til `routes.newsletterThanks` (fx `/nyhetsbrev/takk`); filnavnet er `content/forms.ts` → `newsletterNoJsAction` |
+| `public/__forms.html` | Kun for formularer hos Netlify Forms (`config/site.ts` → `forms`): samme formularnavne som `content/forms.ts`; en formular hos en anden udbyder må ikke stå der |
+| `public/__kontakt-sendt.html` | Kun med Netlify Forms: videresender til `routes.contactThanks` (fx `/kontakt/takk`); filnavnet er `content/forms.ts` → `netlifyNoJsActions.contact` |
+| `public/__nyhedsbrev-tilmeldt.html` | Kun med Netlify Forms: videresender til `routes.newsletterThanks` (fx `/nyhetsbrev/takk`); filnavnet er `content/forms.ts` → `netlifyNoJsActions.newsletter` |
 | `public/images/**` | Fotos; **klinikkortet** `public/images/clinics/kort.svg` er et København-kort |
 | `public/legacy-sitemap.xml` | De gamle fillox.dk-adresser: slet filen (og de to `wp-sitemap-…`-redirects), eller erstat den med fillox.no's gamle URL'er |
-| `config/securityHeaders.ts` + `netlify.toml` | Samme ændring i begge: CSP'en nævner Geckos værter. Til TIMMA `frame-src https://bestill.timma.no` i stedet for Geckos værter, ingen Gecko-script-vært, og fillox.no's GTM-værter. `check:market` fejler, hvis CSP'en ikke tillader TIMMA-siden |
+| `config/securityHeaders.ts` + `netlify.toml` | Samme ændring i begge: CSP'en nævner Geckos værter. Til TIMMA `frame-src https://bestill.timma.no` i stedet for Geckos værter, ingen Gecko-script-vært, fillox.no's GTM-værter og formular-udbydernes værter (`connect-src`, for Formward også `form-action`). `check:market` fejler, hvis CSP'en ikke tillader TIMMA-siden eller en formular-udbyder i brug |
 | `ARCHITECTURE.md`, `README.md` | Rutetabel og tekst for NO |
 
 `config/types.ts` og `content/types.ts` er fælles kontrakter — TypeScript tjekker det norske
@@ -1456,9 +1732,12 @@ TIMMA-id'erne fra den nuværende fillox.no: `filloxdrammen`, `filloxlillestrom`,
   brødteksten i `content/pages/legal.ts` er skrevet til Danmark (Fillox Danmark ApS, dansk
   sundhedslovgivning, Datatilsynet, journalføring i Gecko Booking) og skal skrives om til
   norske forhold. Handelsbetingelsernes fortrydelsesret følger siden 26/11-2026 den danske
-  forbrugeraftalelov, og afsnit 12 og 14 i privatlivspolitikken (nyhedsbrevet, kontaktformularen)
-  nævner Netlify og EU-U.S. Data Privacy Framework.
-- **Formularnavne** vises i Netlify og i notifikationsmails — skift dem i `content/forms.ts` og
+  forbrugeraftalelov, og "Databehandler"-punkterne i afsnit 12 og 14 i privatlivspolitikken
+  (nyhedsbrevet, kontaktformularen) følger formularernes udbyder (`config/site.ts` → `forms`;
+  teksterne i `formProcessorTexts` er danske: Netlify og EU-U.S. Data Privacy Framework, Formward,
+  Klaviyo).
+- **Formularnavne** er formularens `name` på siden og vises hos Netlify Forms og i
+  notifikationsmails — skift dem i `content/forms.ts` og, for formularer hos Netlify, i
   `public/__forms.html` samtidig.
 - **Priser**: skrives som tal i `content/**`; formatet (`1 499 kr`, `kr 1 499,-`) styres af
   `locale` og `pricePattern` i `config/site.ts`.

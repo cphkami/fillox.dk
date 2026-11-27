@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<!-- No-JavaScript target of the "kontakt" form (content/pages/contact.ts → form.noJsAction).
-     Never linked. Netlify Forms stores the POST and serves this static file, which forwards
-     to the thank-you page (app/kontakt/tak). With JavaScript the form posts via lib/forms.ts. -->
+<!-- No-JavaScript target of the "kontakt" form while it is at Netlify Forms (config/site.ts →
+     forms.contact; content/forms.ts → netlifyNoJsActions.contact). Never linked. Netlify Forms
+     stores the POST and serves this static file, which forwards to the thank-you page
+     (app/kontakt/tak). With JavaScript the form posts via lib/forms.ts. Not used by the other
+     form providers (Formward redirects to the thank-you page itself; Formspree, where the form
+     is since 2026-11-27, is never posted to without JavaScript). Kept because lib/forms.ts →
+     formPost still points here for the provider "netlify" (fillox.no, or a move back): nothing
+     posts to it today, and Netlify stores nothing for a form that public/__forms.html does not
+     declare. -->
 <html>
   <head>
     <meta charset="utf-8" />

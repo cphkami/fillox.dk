@@ -12,8 +12,8 @@ const ids = { title: "blog-newsletter-title", text: "blog-newsletter-text" } as 
  * Newsletter band at the bottom of /blog, "Få nyt fra Fillox" (copy: content/pages/blog.ts →
  * newsletter; 6blog: text left, e-mail + "Tilmeld" right; mbl: stacked, full-width field and
  * button). The form, its
- * validation and the Netlify Forms post are the shared `NewsletterForm` (components/ui), the
- * same one as in the footer.
+ * validation and the request to the newsletter's provider are the shared `NewsletterForm`
+ * (components/ui), the same one as in the footer.
  *
  * `data-newsletter-band` hides the footer's own signup on this page (components/layout/
  * FooterNewsletter), so /blog doesn't ask twice in a row.

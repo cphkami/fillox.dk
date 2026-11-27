@@ -3,16 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { newsletterNoJsAction } from "@/content/forms";
 import { cn } from "@/lib/cn";
-import { honeypotValue, isValidEmail, submitForm, type FormName } from "@/lib/forms";
+import { formNeedsConfirmation, formPost, honeypotValue, isValidEmail, submitForm } from "@/lib/forms";
 import { useHydrated } from "@/lib/useHydrated";
 import { buttonClasses } from "./Button";
 import { HoneypotField } from "./HoneypotField";
 
 /** The form's copy (content/layout.ts → footer.newsletter, content/pages/blog.ts → newsletter). */
 export type NewsletterFormCopy = {
-  formName: FormName;
   placeholder: string;
   submit: string;
   /** Accessible label of the e-mail field (visually hidden; the placeholder shows it). */
@@ -22,9 +20,32 @@ export type NewsletterFormCopy = {
   sending: string;
   errors: { emailRequired: string; emailInvalid: string; submit: string };
   success: { title: string; text: string };
+  /**
+   * The receipt when the signup still has to be confirmed by e-mail (a double opt-in list at
+   * Klaviyo: lib/forms.ts → formNeedsConfirmation); shown in place of `success`.
+   */
+  successConfirm: { title: string; text: string };
   /** The line under the field: "{text} {link}{end}", e.g. "Du kan altid afmelde dig. Læs vores privatlivspolitik." */
   privacy: { text: string; link: { label: string; href: string }; end?: string };
+  /**
+   * Only when the newsletter's provider cannot take a plain form POST (Klaviyo, Formspree):
+   * shown without JavaScript, and on a page that has still not hydrated after 8 seconds (a
+   * blocked or failed script): "{text} {link}{end}", another way to sign up (an e-mail to the
+   * clinic).
+   */
+  noScript: { text: string; link: { label: string; href: string }; end?: string };
 };
+
+/**
+ * The form's plain POST for its provider (config/site.ts → forms.newsletter): name, action, the
+ * provider's hidden control fields and the honeypot's field name. A constant: the same in the
+ * server HTML and in the browser. `action` is undefined when the provider needs JavaScript.
+ */
+const post = formPost("newsletter");
+/** No plain POST at this provider: the form can only be sent once React runs (see below). */
+const scriptOnly = post.action === undefined;
+/** The provider only subscribes after a confirmation by e-mail: the receipt says so. */
+const needsConfirmation = formNeedsConfirmation("newsletter");
 
 /**
  * Colours of the surface the form sits on: the rosa band (/blog) or the footer (offwhite, the
@@ -66,19 +87,30 @@ type Status = "idle" | "sending" | "success";
 
 /**
  * Newsletter signup (e-mail + "Tilmeld"), shared by the footer of every page and the /blog band.
- * Posts to Netlify Forms (`copy.formName`, declared in public/__forms.html with the fields email,
- * source and the honeypot) via lib/forms.ts, with inline validation: an empty or malformed
- * address moves focus back to the field with the error under it; a failed POST shows an alert;
- * success replaces the form with a focused status message.
+ * Sends the fields email and source (and the honeypot) to the newsletter's provider via
+ * lib/forms.ts (submitForm; the component does not know which provider: ARCHITECTURE.md →
+ * "Forms providers"), with inline validation: an empty or malformed address moves focus back to
+ * the field with the error under it; a failed request (or no answer within lib/forms.ts's time
+ * limit) shows an alert; success replaces the form with a focused status message
+ * (`copy.success`, or `copy.successConfirm` when the provider waits for a confirmation by e-mail).
  *
  * Consent: signing up is the visitor's own action (no pre-ticked box), the text above the form
  * says what they will receive, and the line under it says the address is only used for the
  * newsletter, that they can always unsubscribe, and links to the privacy policy's newsletter
  * section (routes.privacyNewsletter: purpose, legal basis, retention, processors, unsubscribing).
  * Without JavaScript (or before hydration) the browser validates the field (`noValidate` is only
- * set once React runs) and the form POSTs straight to Netlify (content/forms.ts →
- * newsletterNoJsAction, which forwards to routes.newsletterThanks), so the address never lands
- * in the URL.
+ * set once React runs) and the form POSTs straight to the provider (`formPost("newsletter")`:
+ * action and hidden control fields), which ends on routes.newsletterThanks, so the address never
+ * lands in the URL. A provider without a plain POST (Klaviyo; Formspree, which the site never
+ * posts to without JavaScript: lib/forms.ts → formPost) gives no action: the submit button
+ * is then disabled until React runs (a disabled default button also blocks Enter), so the
+ * address can never be posted to this site's own host or put in a URL, and a line
+ * (`copy.noScript`) offers an e-mail to the clinic instead. How that state looks is CSS
+ * (app/globals.css → `[data-script-only]`, set on the form until React runs): on a normal page
+ * load nothing shows (the button keeps its look for the moment before hydration, the line is
+ * hidden); without JavaScript the button looks disabled and the <noscript> copy of the line
+ * shows; with JavaScript on but still no React after 8 seconds (a blocked or failed script, a
+ * very slow connection) the button dims and the line (`data-script-only-note`) appears.
  *
  * Layout: stacked below 768px (52px field and button, full width), one row from 768px; the error
  * and the note line up with the field's text (`md:px-6`). The field is 16px below 1280px (no iOS
@@ -125,7 +157,7 @@ export function NewsletterForm({ copy, tone, placement, describedBy, className }
     setError(null);
     setStatus("sending");
     try {
-      await submitForm(copy.formName, { email, source, ...honeypotValue(data) });
+      await submitForm("newsletter", { email, source }, honeypotValue("newsletter", data));
       focusNext.current = "success";
       setStatus("success");
     } catch {
@@ -135,21 +167,36 @@ export function NewsletterForm({ copy, tone, placement, describedBy, className }
   }
 
   if (status === "success") {
+    const receipt = needsConfirmation ? copy.successConfirm : copy.success;
     return (
       <div ref={successRef} tabIndex={-1} role="status" className={cn("focus:outline-none", className)}>
-        <p className={cn("text-body font-semibold", colors.successTitle)}>{copy.success.title}</p>
-        <p className={cn("mt-1 text-small leading-[1.6]", colors.successText)}>{copy.success.text}</p>
+        <p className={cn("text-body font-semibold", colors.successTitle)}>{receipt.title}</p>
+        <p className={cn("mt-1 text-small leading-[1.6]", colors.successText)}>{receipt.text}</p>
       </div>
     );
   }
 
   const fieldError = error && error !== copy.errors.submit;
 
+  /** Another way to sign up, for a provider that needs JavaScript (see above); rendered twice below. */
+  const scriptOnlyLine = scriptOnly ? (
+    <>
+      {copy.noScript.text}{" "}
+      <a href={copy.noScript.link.href} className={cn("underline underline-offset-2 transition-colors", colors.link)}>
+        {copy.noScript.link.label}
+      </a>
+      {copy.noScript.end}
+    </>
+  ) : null;
+  const scriptOnlyLineClasses = cn("text-fine leading-[1.5] font-semibold md:px-6", colors.error);
+
   return (
     <form
-      name={copy.formName}
+      name={post.name}
       method="post"
-      action={newsletterNoJsAction}
+      action={post.action}
+      // Until React runs: how the disabled button and the fallback line look (app/globals.css).
+      data-script-only={scriptOnly && !hydrated ? "" : undefined}
       aria-label={copy.formLabel}
       aria-describedby={cn(describedBy, ids.privacy)}
       // Native validation (required, type="email") until React runs, so the no-JS POST never sends
@@ -158,10 +205,12 @@ export function NewsletterForm({ copy, tone, placement, describedBy, className }
       onSubmit={onSubmit}
       className={cn("flex flex-col gap-3 md:gap-2.5", className)}
     >
-      {/* Posted by the no-JS fallback; submitForm() adds the form name itself. */}
-      <input type="hidden" name="form-name" value={copy.formName} />
+      {/* The provider's control fields for the plain POST (no JavaScript); submitForm() sends its own. */}
+      {post.hidden.map((field) => (
+        <input key={field.name} type="hidden" name={field.name} value={field.value} />
+      ))}
       <input type="hidden" name="source" value={source} />
-      <HoneypotField />
+      <HoneypotField name={post.honeypot} offscreen={post.honeypotOffscreen} />
 
       <div className="flex flex-col gap-3 md:flex-row md:gap-2.5">
         <label htmlFor={ids.email} className="sr-only">
@@ -190,6 +239,8 @@ export function NewsletterForm({ copy, tone, placement, describedBy, className }
         />
         <button
           type="submit"
+          // A provider without a plain POST: no native submit before React runs (see above).
+          disabled={scriptOnly && !hydrated ? true : undefined}
           aria-disabled={sending || undefined}
           className={cn(
             buttonClasses({ variant: "primary", size: "mdTight", mobileSize: "lg", fullWidth: "mobile" }),
@@ -210,6 +261,21 @@ export function NewsletterForm({ copy, tone, placement, describedBy, className }
         >
           {error}
         </p>
+      ) : null}
+
+      {scriptOnly ? (
+        <>
+          {/* Without JavaScript: at once, in every browser. */}
+          <noscript>
+            <p className={scriptOnlyLineClasses}>{scriptOnlyLine}</p>
+          </noscript>
+          {/* With JavaScript but no React yet: hidden, shown by CSS after 8 seconds; gone once React runs. */}
+          {hydrated ? null : (
+            <p data-script-only-note="" className={scriptOnlyLineClasses}>
+              {scriptOnlyLine}
+            </p>
+          )}
+        </>
       ) : null}
 
       <p id={ids.privacy} className={cn("text-fine leading-[1.6] md:px-6", colors.note)}>

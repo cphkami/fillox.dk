@@ -13,9 +13,11 @@ export const metadata: Metadata = {
 
 /**
  * /nyhedsbrev/tak — thank-you page after the newsletter signup is sent WITHOUT JavaScript: the
- * form (components/ui/NewsletterForm, footer and /blog) posts to content/forms.ts →
- * newsletterNoJsAction (public/__nyhedsbrev-tilmeldt.html), Netlify Forms stores the signup and
- * serves that file, which forwards here. With JavaScript the form shows its success text in place.
+ * form (components/ui/NewsletterForm, footer and /blog) posts straight to its provider (lib/forms.ts
+ * → formPost("newsletter")). Netlify Forms stores the signup and serves
+ * public/__nyhedsbrev-tilmeldt.html, which forwards here; Formward redirects here itself (with
+ * Klaviyo or Formspree the signup needs JavaScript, so nothing lands here). With JavaScript the
+ * form shows its success text in place.
  * Not in the design; styled like the /kontakt/tak panel, one centred column.
  * `data-newsletter-thanks` hides the footer's signup on this page (components/layout/FooterNewsletter).
  * Not in the sitemap (noindex).

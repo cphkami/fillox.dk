@@ -26,8 +26,11 @@ const closedSunday: OpeningHours = { days: "Søn", hours: "lukket", closed: true
  * Closed on Sundays since Alberte 2026-11-26 (forwarded by the owner): "City2 og Amager skal begge
  * stå som lukket om søndagen" (was "Lør–søn 10–17"), shown as "Søn lukket" (`closedSunday`).
  */
-// TODO: owner to confirm City2 Saturday hours (fillox.dk's mobile block says weekend 10–19, the
-// desktop block 10–17).
+// City2 confirmed by the owner, 2026-11-27: "City2: Hverdage: 10 – 19, Weekend: 10 – 17" (so Saturday
+// is 10–17, not the mobile block's 10–19).
+// TODO: owner to confirm Sunday at City2: that answer says "Weekend 10–17", Alberte (2026-11-26) says
+// closed on Sundays. Shown as closed until they say which (README). Amager Centret's Saturday hours
+// are not confirmed either (it shares City2's).
 // TODO: copy review (2026-11-26, Alberte)
 const centreHours: OpeningHours[] = [
   { days: "Man–fre", hours: "10–19" },

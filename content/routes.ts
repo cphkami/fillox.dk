@@ -46,7 +46,11 @@ export const routes = {
   /** Team section on the about page. */
   aboutTeam: `${about}#${aboutTeamAnchor}`,
   contact,
-  /** Thank-you page after the contact form (also the no-JS target in public/__kontakt-sendt.html). */
+  /**
+   * Thank-you page after the contact form WITHOUT JavaScript: where public/__kontakt-sendt.html
+   * forwards (Netlify Forms) and where Formward redirects (lib/forms.ts → formPost). Not reached
+   * while the form is at Formspree, which is only ever sent with JavaScript.
+   */
   contactThanks: `${contact}/tak`,
   blog: "/blog",
   booking: "/booking",
@@ -55,8 +59,9 @@ export const routes = {
   /** Newsletter section of the privacy policy (what the signups link to). */
   privacyNewsletter: `${privacy}#${privacyNewsletterAnchor}`,
   /**
-   * Thank-you page after the newsletter signup WITHOUT JavaScript (the no-JS target
-   * public/__nyhedsbrev-tilmeldt.html forwards here). noindex, not in the sitemap.
+   * Thank-you page after the newsletter signup WITHOUT JavaScript (the Netlify Forms target
+   * public/__nyhedsbrev-tilmeldt.html forwards here; Formward redirects here: lib/forms.ts →
+   * formPost). noindex, not in the sitemap.
    */
   newsletterThanks: "/nyhedsbrev/tak",
   jobs: "/ledige-stillinger",

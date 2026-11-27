@@ -1,6 +1,4 @@
 import { site } from "@/config/site";
-import type { FormName } from "@/lib/forms";
-import { forms } from "../forms";
 import { routes } from "../routes";
 import type { Link } from "../types";
 import { ui } from "../ui";
@@ -41,15 +39,12 @@ export type ContactChannel = {
   tone: "plain" | "accent";
 };
 
+/**
+ * The form's copy. Its name, where it posts (with and without JavaScript) and its hidden control
+ * fields are not copy: lib/forms.ts → formPost("contact") / submitForm("contact"), from
+ * content/forms.ts and config/site.ts → forms.contact.
+ */
 export type ContactFormCopy = {
-  /** Netlify form name; field names must match public/__forms.html. */
-  formName: FormName;
-  /**
-   * Where the form posts without JavaScript: a static file in public/, so Netlify Forms
-   * stores the submission and serves that file, which forwards to the thank-you page
-   * (app/kontakt/tak). With JavaScript the form posts via lib/forms.ts instead.
-   */
-  noJsAction: string;
   title: string;
   fields: {
     name: { label: string; placeholder: string; placeholderShort: string };
@@ -79,6 +74,14 @@ export type ContactFormCopy = {
     submit: string;
   };
   success: { title: string; text: string; again: string };
+  /**
+   * Only when the contact form's provider cannot be posted to without JavaScript (config/site.ts
+   * → forms.contact: Formspree, which is sent with fetch only; lib/forms.ts → formPost): the line
+   * under the disabled button, shown without JavaScript and on a page that has still not started
+   * 8 seconds after it loaded (a blocked or failed script): "{text} {phone}{or} {email}{end}",
+   * the two other ways to reach the clinic.
+   */
+  noScript: { text: string; phone: Link; or: string; email: Link; end: string };
 };
 
 const phoneNoBreak = site.contact.phone.replace(/ /g, " ");
@@ -138,8 +141,6 @@ export const contactPage = {
   ] satisfies ContactChannel[],
 
   form: {
-    formName: forms.contact,
-    noJsAction: "/__kontakt-sendt.html",
     title: "Send en besked",
     fields: {
       name: { label: "Navn", placeholder: "Dit navn", placeholderShort: "Dit fulde navn" },
@@ -191,6 +192,20 @@ export const contactPage = {
       // (6ko's "Svar inden for 24 timer" changed to match).
       text: "Vi har modtaget din henvendelse, og en af vores behandlere svarer dig inden for én hverdag.",
       again: "Send en ny besked",
+    },
+    // Not in the design. Shown only while the form can be sent with JavaScript alone: today,
+    // because the contact form is at Formspree (owner 2026-11-27: "Formspree alligevel" and "det
+    // bare lige nu så vi kan starte, senere rykker vi til det svenske"), and a form posted there
+    // without JavaScript would end on a page at formspree.io. Worded like the newsletter's line
+    // (content/layout.ts → footer.newsletter.noScript); phone and e-mail from config/site.ts.
+    // Not shown with Netlify Forms or Formward, which take the plain POST.
+    // TODO: copy review (2026-11-27)
+    noScript: {
+      text: "Formularen kan kun sendes med JavaScript slået til. Ring til os på",
+      phone: { label: phoneNoBreak, href: site.contact.phoneHref },
+      or: ", eller skriv til",
+      email: { label: site.contact.email, href: site.contact.emailHref },
+      end: ", så hjælper vi dig.",
     },
   } satisfies ContactFormCopy,
 

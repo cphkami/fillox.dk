@@ -76,6 +76,96 @@ export type AnalyticsConfig = {
   blockCustomHtmlWithoutMarketing: boolean;
 };
 
+/**
+ * Where each form's submissions go: ONE backend per form. lib/forms.ts switches on `provider`
+ * (submitForm, formPost), so the components never know which provider is in use; adding a
+ * provider means a variant here and a case there (the `never` default lists what is missing).
+ * The providers' own facts (hosts, field names, API revision) are config/formProviders.ts.
+ *
+ * - netlify: Netlify Forms. The form is declared in public/__forms.html; submissions are stored
+ *   at Netlify, Inc. (USA). Owner 2026-11-27: "nej vi kommer ikke til at opbevare data hos
+ *   netlify. det finder vi en løsning på.. vi skal intet have i USA". Later the same day, about
+ *   getting the site started: "glem alt det med data mm og bare sat formspree op", so a form
+ *   that is still here (the newsletter) no longer fails the build that goes live: check:market
+ *   prints a note on every build while a form uses it.
+ * - formward: Formward (formward.eu; EGF Group AB, Sweden; submissions stored in Sweden). The
+ *   form POSTs straight to `endpoint`, with and without JavaScript.
+ * - formspree: Formspree (formspree.io; Formspree, Inc., San Antonio, Texas, USA; submissions
+ *   stored on Amazon Web Services in the USA, each one until somebody deletes it in the
+ *   dashboard). The owner's TEMPORARY choice for the contact form, 2026-11-27: they sent the
+ *   form's endpoint, were told that Formspree is a US company with its data in the USA, chose
+ *   "Formspree alligevel", and added "det bare lige nu så vi kan starte, senere rykker vi til det
+ *   svenske" (= Formward). So it does not fail any build; check:market prints a note on every
+ *   build while a form is here. The form is sent with fetch only, to `endpoint`. Needs
+ *   JavaScript: a plain HTML POST would leave the visitor on a page at formspree.io that loads
+ *   Google's tag and a Cloudflare beacon and sets a cookie (a redirect back is a paid dashboard
+ *   setting), so the site never makes one (config/formProviders.ts → formspree).
+ * - klaviyo (newsletter only): Klaviyo's "Create Client Subscription" API, called from the
+ *   browser with the account's PUBLIC key. Needs JavaScript (Klaviyo's developer docs describe
+ *   no plain HTML form POST). Klaviyo, Inc. stores its accounts in the USA unless the account
+ *   was created in its EU (Germany) environment; which host such an account's browser calls
+ *   must use is not documented (config/formProviders.ts → klaviyo, UNCONFIRMED; README →
+ *   "Formularerne væk fra Netlify").
+ */
+export type NetlifyFormBackend = { provider: "netlify" };
+
+export type FormwardFormBackend = {
+  provider: "formward";
+  /**
+   * The form's endpoint, copied from the Formward dashboard:
+   * "https://forms.formward.eu/f/<form id>". One Formward form (and id) per form. The id is
+   * public by design (no API key); Formward's allowed-origins list is what limits who may post.
+   */
+  endpoint: string;
+};
+
+export type FormspreeFormBackend = {
+  provider: "formspree";
+  /**
+   * The form's endpoint, copied from the form's "Integration" tab in the Formspree dashboard:
+   * "https://formspree.io/f/<form id>" (not the dashboard page ".../forms/<form id>"). One
+   * Formspree form (and id) per form. The id is public by design: the endpoint checks no key;
+   * "Restrict to Domain" in the Formspree project's settings is what limits where posts may
+   * come from (README → "Formularerne væk fra Netlify").
+   */
+  endpoint: string;
+};
+
+export type KlaviyoFormBackend = {
+  provider: "klaviyo";
+  /**
+   * The account's PUBLIC API key / "Site ID" (6 characters; Klaviyo → Settings → API keys).
+   * Never a private key ("pk_…"): this value is sent from the browser.
+   */
+  companyId: string;
+  /** Id of the list the signups are added to (Klaviyo → Lists & segments → the list → Settings). */
+  listId: string;
+  /**
+   * The list's own "Opt-in process" in Klaviyo (the list → Settings → Consent), stated here
+   * because the site cannot read it: Klaviyo answers 202 either way. With "double" the visitor
+   * is not subscribed until they confirm in the mail Klaviyo sends, so the receipt on the page
+   * asks for that (lib/forms.ts → formNeedsConfirmation; `successConfirm` in the newsletter
+   * copy); with "single" it says they are signed up. Change the list's setting and this value
+   * together. "double" is the one to choose: the endpoint is public (public key + list id), so
+   * with "single" anyone can sign up somebody else's address.
+   */
+  optIn: "single" | "double";
+};
+
+export type FormsConfig = {
+  /** The contact form on /kontakt (components/contact/ContactForm.tsx). */
+  contact: NetlifyFormBackend | FormwardFormBackend | FormspreeFormBackend;
+  /** The newsletter signup in the footer and on /blog (components/ui/NewsletterForm.tsx). */
+  newsletter: NetlifyFormBackend | FormwardFormBackend | FormspreeFormBackend | KlaviyoFormBackend;
+};
+
+/** "contact" | "newsletter": what components pass to lib/forms.ts. */
+export type FormKind = keyof FormsConfig;
+
+export type FormBackend = FormsConfig[FormKind];
+
+export type FormProvider = FormBackend["provider"];
+
 export type SiteConfig = {
   /** Market code, e.g. "dk" / "no". */
   market: string;
@@ -134,6 +224,9 @@ export type SiteConfig = {
   };
 
   booking: BookingConfig;
+
+  /** Where the contact form and the newsletter signup send their submissions (see FormsConfig). */
+  forms: FormsConfig;
 
   /** Statistics / marketing tags behind the cookie banner (see AnalyticsConfig). */
   analytics: AnalyticsConfig;

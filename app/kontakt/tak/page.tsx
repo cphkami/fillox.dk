@@ -14,8 +14,11 @@ export const metadata: Metadata = {
 
 /**
  * /kontakt/tak — thank-you page after the contact form is sent WITHOUT JavaScript: the form
- * posts to `form.noJsAction` (public/__kontakt-sendt.html), Netlify Forms stores it and serves
- * that file, which forwards here. With JavaScript the form shows the same text in place.
+ * posts straight to its provider (lib/forms.ts → formPost("contact")). Netlify Forms stores the
+ * message and serves public/__kontakt-sendt.html, which forwards here; Formward redirects here
+ * itself. With JavaScript the form shows the same text in place. While the form is at Formspree
+ * (config/site.ts → forms.contact, since 2026-11-27) nothing leads here: that provider is never
+ * posted to without JavaScript. The page stays for Formward ("senere rykker vi til det svenske").
  * Not in the design; styled like the /kontakt hero panel. From lg the panel is two columns
  * like /kontakt: the text on the left, the contact cards on the right (as with JavaScript,
  * where the success text replaces the form next to the cards). Below lg the cards stack

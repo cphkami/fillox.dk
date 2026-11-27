@@ -1,7 +1,5 @@
 import type { Link } from "../types";
 import { site } from "@/config/site";
-import type { FormName } from "@/lib/forms";
-import { forms } from "../forms";
 import { routes } from "../routes";
 
 /**
@@ -24,9 +22,6 @@ const FILTER_PARAM = "kategori";
 
 /** Filter slug that shows every post (see `blogFilters`). */
 const ALL_FILTER = "alle";
-
-/** Netlify form of the newsletter signup (declared in public/__forms.html). */
-const NEWSLETTER_FORM: FormName = forms.newsletter;
 
 /** The newsletter note links to the privacy policy's newsletter section. */
 const privacyHref = routes.privacyNewsletter;
@@ -100,7 +95,6 @@ export const blogPage = {
   separator: " · ",
 
   newsletter: {
-    formName: NEWSLETTER_FORM,
     // Design 6blog/mbl: "Få tips og tilbud i din indbakke" / "Få tips og tilbud" and "Én mail om måneden
     // med nye artikler og månedens tilbud. Ingen spam." Without offers: owner 2026-11-26, point 4 of the
     // pre-launch audit ("ret det med priser osv"); "månedens tilbud" is the "her og nu" offer that
@@ -135,12 +129,35 @@ export const blogPage = {
       title: "Tak for din tilmelding",
       text: "Du får den første mail, når næste nummer udkommer.",
     },
+    /**
+     * The receipt when the signup must be confirmed by e-mail first (the newsletter at Klaviyo on
+     * a double opt-in list); as in the footer (content/layout.ts → footer.newsletter.successConfirm).
+     */
+    // TODO: copy review (2026-11-27): new text, not in the design. Owner 2026-11-27: "tanken er at
+    // emails registerees måske direkte i klaviyo via nyhedsbrev".
+    successConfirm: {
+      title: "Tjek din indbakke",
+      text: "Vi har sendt dig en mail. Klik på linket i den for at bekræfte din tilmelding.",
+    },
     /** One line under the form (13px, muted): "… afmelde dig. Læs vores privatlivspolitik". */
     // TODO: copy review (not in the design; added so the signup links to the privacy policy)
     privacy: {
       text: "Vi bruger kun din e-mail til nyhedsbrevet, og du kan altid afmelde dig.",
       link: { label: "Læs vores privatlivspolitik", href: privacyHref } satisfies Link,
       end: ".",
+    },
+    /**
+     * Only when the newsletter's provider cannot take a plain form POST (config/site.ts →
+     * forms.newsletter: Klaviyo, Formspree): shown without JavaScript and on a page that never
+     * started; as in the footer (content/layout.ts → footer.newsletter.noScript). Not shown while
+     * the provider is Netlify Forms or Formward.
+     */
+    // TODO: copy review (2026-11-27): new text, not in the design. Owner 2026-11-27: "tanken er at
+    // emails registerees måske direkte i klaviyo via nyhedsbrev".
+    noScript: {
+      text: "Tilmeldingen virker kun med JavaScript slået til. Skriv til os på",
+      link: { label: site.contact.email, href: site.contact.emailHref } satisfies Link,
+      end: ", så tilmelder vi dig.",
     },
   },
 };
